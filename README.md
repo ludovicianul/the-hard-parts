@@ -175,16 +175,23 @@ host (Netlify, GitHub Pages, etc.) without changes.
   shape: `warningSigns: { early, mid, late }`; first-class `oftenLeadsTo` /
   `oftenCausedBy` relationship fields; closed `frequency` enum; slugs omit
   leading articles ("the-"). No compatibility layer.
-- **Tech Decisions** — schema reflects the actual JSON shape (which differs
-  from `docs/schema-tech-decisions.md` in several places, e.g. `family` vs
-  `category`, object-shaped `costBearer`/`timeHorizonNotes`, etc.).
-  Reconciliation deferred.
+- **Tech Decisions** — **aligned**. Content, docs, and types agree. Canonical
+  naming (`category` / `categories`); canonical subcategories (`architecture`,
+  `product-delivery`, `team-operations`, `quality-delivery`, `ai-systems`);
+  richer content model kept (including `whatThisIsReallyAbout`, `whyItFeelsHard`,
+  `keyFactors`, `evidenceNeeded`, `defaultBias`, `reversibility`,
+  `whenToRevisit`, `commonBadReasons`, `antiPatterns`, `goodSignalsForA/B`,
+  `costBearer`, `timeHorizonNotes`, `adjacentDecisions`); strict structured
+  comparison objects; AI fields renamed to site-wide canonical
+  (`aiCanHelpWith` / `aiCanMakeWorseBy` / `aiSpecificNotes`); option objects
+  use plural `failureModesWhenMisused`; `patternConfidence` allows
+  `low | medium | medium-high | high`. No compatibility layer.
 - **Red Flags** — schema reflects the actual JSON shape (`layer`/`signalType`
   vs docs' `category`; renamed AI fields; etc.). Reconciliation deferred.
 - **Engineering Playbook** — matches docs closely, no major drift.
 
 See the docstring at the top of each schema file under
-`src/content/schemas/` for the specific mismatches still open in TD / RF.
+`src/content/schemas/` for the specific mismatches still open in RF.
 
 ## License
 

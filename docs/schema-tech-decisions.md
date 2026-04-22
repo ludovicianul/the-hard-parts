@@ -40,12 +40,12 @@ It is **not**:
 
 A Tech Decision entry should help the user understand:
 
-* what decision is actually being made
-* what the real trade-off is
+* what decision is actually being asked
+* what the decision is really about underneath the surface framing
+* what two concrete poles represent the trade-off
 * when each option fits naturally
-* what hidden costs appear later
-* what bad reasoning commonly drives the wrong choice
-* what adjacent decisions or failure modes it connects to
+* what hidden costs and bad reasoning patterns show up
+* how the decision connects to failure modes, red flags, and playbooks
 
 The reader should come away with better judgment, not just a preferred answer.
 
@@ -53,7 +53,7 @@ The reader should come away with better judgment, not just a preferred answer.
 
 ## Top-Level JSON Convention
 
-Tech Decisions should follow the shared top-level structure from `docs/content-schema.md`.
+Tech Decisions follow the site-wide top-level structure from `docs/content-schema.md`.
 
 Expected top-level shape:
 
@@ -80,95 +80,131 @@ Must be:
 "code": "TD"
 ```
 
+### Naming
+
+The top-level block uses **`category.categories`** — not `families`.
+The entry-level field is **`category`** — not `family`.
+This matches the naming used by the other site categories.
+
 ---
 
-## Category/Subcategory Values
+## Category / Subcategory Values
 
-Recommended Tech Decisions subcategories:
+Canonical Tech Decisions subcategories:
 
 * `architecture`
-* `data`
-* `delivery`
-* `platform`
-* `process`
-* `ai`
+* `product-delivery`
+* `team-operations`
+* `quality-delivery`
+* `ai-systems`
 
-These should be listed in:
+These are listed in:
 
 ```json
 "category": {
-  "categories": ["architecture", "data", "delivery", "platform", "process", "ai"]
+  "categories": [
+    "architecture",
+    "product-delivery",
+    "team-operations",
+    "quality-delivery",
+    "ai-systems"
+  ]
 }
 ```
 
 Each entry’s `category` value must match one of these.
 
-If the category list expands later, do so intentionally.
+These are intentionally different from the Failure Modes subcategories. Tech Decisions group by *the axis of the decision* (architecture shape, delivery model, team model, quality posture, AI systems posture), not by the kind of pain. If the category list expands later, expand it intentionally.
 
 ---
 
 ## Entry Schema Overview
 
-Each Tech Decision entry should use this structure:
+Each Tech Decision entry uses this structure:
 
 ```json
 {
   "slug": "",
   "title": "",
-  "decision": "",
+  "decisionQuestion": "",
   "category": "",
   "summary": "",
-  "coreTradeoff": "",
-  "whyThisDecisionExists": "",
+
+  "decisionHeuristic": "",
+  "whatThisIsReallyAbout": "",
+  "notActuallyAbout": "",
+  "whyItFeelsHard": "",
+
   "optionA": {
     "name": "",
-    "summary": "",
     "bestWhen": [],
     "strengths": [],
     "costs": [],
-    "failureModes": [],
+    "hiddenCosts": [],
+    "failureModesWhenMisused": [],
     "realWorldFits": []
   },
   "optionB": {
     "name": "",
-    "summary": "",
     "bestWhen": [],
     "strengths": [],
     "costs": [],
-    "failureModes": [],
+    "hiddenCosts": [],
+    "failureModesWhenMisused": [],
     "realWorldFits": []
   },
-  "hiddenVariables": [],
-  "commonMistakes": [],
-  "falseSignals": [],
-  "secondOrderEffects": [],
-  "decisionHeuristics": [],
+
+  "keyFactors": [],
   "questionsToAsk": [],
+  "evidenceNeeded": [],
+  "defaultBias": "",
+  "reversibility": "",
+  "whenToRevisit": [],
+
+  "commonBadReasons": [],
+  "antiPatterns": [],
+  "goodSignalsForA": [],
+  "goodSignalsForB": [],
+
+  "costBearer": {
+    "optionA": [],
+    "optionB": []
+  },
+  "timeHorizonNotes": {
+    "optionA": "",
+    "optionB": ""
+  },
+
   "aiCanHelpWith": [],
   "aiCanMakeWorseBy": [],
   "aiSpecificNotes": "",
-  "relatedFailureModes": [],
+
+  "oftenLeadsToFailureModes": [],
+  "adjacentDecisions": [],
   "relatedRedFlags": [],
-  "relatedTechDecisions": [],
   "relatedPlaybooks": [],
+
+  "frequency": "",
+  "severityIfWrong": "",
+  "audiences": [],
+
   "patternConfidence": "high"
 }
 ```
 
-This is the preferred schema for the live site.
+This is the canonical schema for the live site.
 
 ---
 
 ## Required Fields
 
-These fields should be required for every Tech Decision entry:
+These fields are required for every Tech Decision entry:
 
 * `slug`
 * `title`
-* `decision`
+* `decisionQuestion`
 * `category`
 * `summary`
-* `coreTradeoff`
 * `optionA`
 * `optionB`
 * `questionsToAsk`
@@ -176,10 +212,9 @@ These fields should be required for every Tech Decision entry:
 
 ### Why these are required
 
-Because without them, the entry cannot reliably answer:
+Because without them the entry cannot reliably answer:
 
-* what the decision is
-* what is being traded off
+* what decision is actually being asked
 * what the two poles are
 * how a reader should evaluate the choice
 
@@ -187,21 +222,36 @@ Because without them, the entry cannot reliably answer:
 
 ## Optional but Strongly Recommended Fields
 
-These fields may be optional technically, but should usually exist in strong entries:
+These fields are technically optional but should usually exist in strong entries:
 
-* `whyThisDecisionExists`
-* `hiddenVariables`
-* `commonMistakes`
-* `falseSignals`
-* `secondOrderEffects`
-* `decisionHeuristics`
+* `decisionHeuristic`
+* `whatThisIsReallyAbout`
+* `notActuallyAbout`
+* `whyItFeelsHard`
+* `keyFactors`
+* `evidenceNeeded`
+* `defaultBias`
+* `reversibility`
+* `whenToRevisit`
+* `commonBadReasons`
+* `antiPatterns`
+* `goodSignalsForA`
+* `goodSignalsForB`
+* `costBearer`
+* `timeHorizonNotes`
 * `aiCanHelpWith`
 * `aiCanMakeWorseBy`
 * `aiSpecificNotes`
-* all `related*` fields
+* `oftenLeadsToFailureModes`
+* `adjacentDecisions`
+* `relatedRedFlags`
+* `relatedPlaybooks`
+* `frequency`
+* `severityIfWrong`
+* `audiences`
 
 A weak entry may omit some of these.
-A high-quality entry should include most of them.
+A high-quality entry includes most of them.
 
 ---
 
@@ -223,9 +273,7 @@ Must follow global slug rules.
 
 ### `title`
 
-Human-readable display title.
-
-Usually matches the decision pair.
+Human-readable display title. Usually matches the trade-off pair.
 
 Example:
 
@@ -235,19 +283,17 @@ Example:
 
 ---
 
-### `decision`
+### `decisionQuestion`
 
-A short plain-language statement of the actual choice being made.
+A plain-language statement of the actual choice being made, framed as a question.
 
-This should be clearer than the title when needed.
+This keeps the entry grounded in the real decision instead of the label.
 
 Example:
 
 ```json
-"decision": "Should we build this capability ourselves or adopt an existing product/service?"
+"decisionQuestion": "Should we build this capability ourselves or adopt an existing product/service?"
 ```
-
-This helps the entry stay grounded in the real decision instead of only the label.
 
 ---
 
@@ -255,7 +301,7 @@ This helps the entry stay grounded in the real decision instead of only the labe
 
 Tech Decisions subcategory.
 
-Must match an allowed subcategory value.
+Must match one of the canonical subcategories (see above).
 
 Example:
 
@@ -282,67 +328,79 @@ Example:
 
 ---
 
-### `coreTradeoff`
+### `decisionHeuristic`
 
-A short statement of the main tension.
-
-This is one of the most important fields in the schema.
-
-Examples:
-
-```json
-"coreTradeoff": "Speed and simplicity now versus autonomy and operational separation later."
-```
-
-```json
-"coreTradeoff": "Control and custom fit versus focus and external dependency."
-```
-
-This should render prominently on the entry page.
-
----
-
-### `whyThisDecisionExists`
-
-Explains why teams face this decision in the first place.
-
-This should help the reader understand:
-
-* what pressures create the choice
-* why the decision keeps recurring
-* why it is easy to misframe
+A single short directional heuristic that summarises how to think about the decision. One sentence. Not a rule.
 
 Example:
 
 ```json
-"whyThisDecisionExists": "Teams hit this decision when scale, ownership, and delivery friction start to strain the existing structure, but future growth is still uncertain."
+"decisionHeuristic": "Prefer the option that keeps common changes local, unless independent scaling needs are real and sustained."
+```
+
+This is **singular** on purpose (`decisionHeuristic`, not `decisionHeuristics`): the entry picks one high-leverage heuristic and lets the body carry the nuance.
+
+---
+
+### `whatThisIsReallyAbout`
+
+A short reframing that states the real underlying question, especially when the surface framing is misleading.
+
+Example:
+
+```json
+"whatThisIsReallyAbout": "Who should own the capability long term, and whether it is strategically differentiating."
 ```
 
 ---
 
-## Option Objects
+### `notActuallyAbout`
 
-Each entry should define two structured option objects:
+A short statement of what the decision is *not* really about, even though it often gets framed that way.
 
-* `optionA`
-* `optionB`
+Example:
 
-These are not “good vs bad.”
-They are two poles of a trade-off.
+```json
+"notActuallyAbout": "Engineering pride, resume-driven development, or ideology about internal capability."
+```
 
-### Preferred shape
+Used together, `whatThisIsReallyAbout` and `notActuallyAbout` keep the decision honest.
+
+---
+
+### `whyItFeelsHard`
+
+A short statement explaining the emotional, organizational, or technical logic that makes the decision genuinely hard — not just "it depends".
+
+Example:
+
+```json
+"whyItFeelsHard": "Both options have real strengths and real long-term costs that only show up on a different timescale."
+```
+
+---
+
+## Option Objects (`optionA`, `optionB`)
+
+Each entry defines two structured option objects.
+
+These are **not** good vs bad. They are two poles of a trade-off.
+
+### Canonical shape
 
 ```json
 {
   "name": "",
-  "summary": "",
   "bestWhen": [],
   "strengths": [],
   "costs": [],
-  "failureModes": [],
+  "hiddenCosts": [],
+  "failureModesWhenMisused": [],
   "realWorldFits": []
 }
 ```
+
+The schema is **strict** — no additional keys. This keeps the UI parallel and comparison meaningful.
 
 ### Field meanings
 
@@ -356,17 +414,11 @@ Example:
 "name": "Build"
 ```
 
-#### `summary`
-
-Short description of what this option means in practice.
-
 #### `bestWhen`
 
 List of conditions where this option is a natural fit.
 
-This should answer:
-
-* when does this option make sense without forcing it?
+Answers: when does this option make sense without forcing it?
 
 #### `strengths`
 
@@ -374,143 +426,81 @@ What this option does well.
 
 #### `costs`
 
-Real costs, not weak caveats.
-These can include:
+Real costs, not weak caveats. Includes organizational, delivery, operational, skill, and long-term maintenance costs.
 
-* organizational cost
-* delivery cost
-* operational cost
-* skill cost
-* long-term maintenance burden
+#### `hiddenCosts`
 
-#### `failureModes`
+Second-order costs that are easy to miss at decision time but become visible later.
 
-What this option tends to look like when misapplied.
-These can be entry-specific phrases or references to broader patterns.
+Example:
+
+```json
+"hiddenCosts": [
+  "long-term ownership burden of undifferentiated capability",
+  "gravity toward internal platform expansion"
+]
+```
+
+#### `failureModesWhenMisused`
+
+Plural array. What this option tends to look like when misapplied.
+
+Each item may be:
+
+* a Failure Mode slug (preferred where a named mode exists), or
+* a short descriptive phrase (where no named mode fits)
+
+Example:
+
+```json
+"failureModesWhenMisused": [
+  "platform-before-product",
+  "building undifferentiated plumbing for years"
+]
+```
+
+This is plural on purpose — one option can have multiple characteristic failure shapes.
 
 #### `realWorldFits`
 
-Examples of environments or conditions where this option naturally fits.
+Concrete environments or conditions where this option naturally fits.
 
-This field is strongly recommended.
-It helps avoid abstract comparison.
+This field is strongly recommended. It prevents abstract comparison.
 
 Example:
 
 ```json
 "realWorldFits": [
-  "small product team with tight feedback loops",
-  "early-stage product with uncertain boundaries",
-  "domain where speed of change matters more than independent deployment"
+  "core product capability with durable strategic value",
+  "domain where internal control is genuinely differentiating"
 ]
 ```
 
 ---
 
-## `hiddenVariables`
+## Decision Support Fields
 
-A list of variables that change the answer materially but are often ignored.
+### `keyFactors`
 
-Examples:
-
-* team maturity
-* operational discipline
-* regulatory pressure
-* change frequency
-* domain complexity
-* integration surface
-* cost of migration
+The small number of factors that actually drive the decision once emotion is stripped out.
 
 Example:
 
 ```json
-"hiddenVariables": [
-  "team size and ownership stability",
-  "operational maturity",
-  "how often boundaries actually change",
-  "ability to absorb migration cost"
+"keyFactors": [
+  "is the capability strategically differentiating?",
+  "can we sustain long-term ownership?",
+  "how stable is the external market for this capability?"
 ]
 ```
 
-This field is very important because it prevents rigid, ideology-driven reading.
+### `questionsToAsk`
 
----
+A list of questions the reader should ask before choosing. **Required.**
 
-## `commonMistakes`
+This turns the entry into a usable decision tool.
 
-A list of bad reasoning patterns teams fall into when making this decision.
-
-These are not generic mistakes.
-They should be specific to the decision.
-
-Examples:
-
-* choosing for prestige
-* choosing because a competitor did it
-* choosing based on one local pain while ignoring second-order effects
-* treating scale assumptions as already real
-
----
-
-## `falseSignals`
-
-A list of misleading signals that often make one option look attractive when it may not be.
-
-Examples:
-
-* current frustration mistaken for structural proof
-* number of services mistaken for maturity
-* vendor polish mistaken for long-term fit
-* local speed mistaken for system-wide success
-
-This field is especially useful and should be included often.
-
----
-
-## `secondOrderEffects`
-
-A list of downstream consequences that appear later.
-
-This should make the reader think beyond the immediate decision.
-
-Examples:
-
-* review overhead
-* coordination cost
-* debugging complexity
-* platform dependency
-* migration lock-in
-* onboarding burden
-* contract drift
-
-This field should usually render as a dedicated section.
-
----
-
-## `decisionHeuristics`
-
-A list of compact practical heuristics.
-
-These are not rules.
-They are directional aids.
-
-Examples:
-
-* “Prefer the option that keeps common changes local.”
-* “Do not optimize for autonomy you cannot operationally sustain.”
-* “If only one team needs it, shared infrastructure is probably too early.”
-
-These are highly useful for readers and strongly recommended.
-
----
-
-## `questionsToAsk`
-
-A list of questions the reader should ask before choosing.
-
-This field is required because it turns the entry into a usable decision tool.
-
-Examples:
+Example:
 
 ```json
 "questionsToAsk": [
@@ -521,13 +511,153 @@ Examples:
 ]
 ```
 
-This field should render prominently.
+### `evidenceNeeded`
+
+What evidence a team should gather before committing. Prevents intuition-only decisions.
+
+Example:
+
+```json
+"evidenceNeeded": [
+  "realistic 12-month load profile",
+  "honest assessment of ops headcount and on-call capacity",
+  "maturity of external vendors in this space"
+]
+```
+
+### `defaultBias`
+
+One short sentence naming the direction a team should lean in absence of strong signal.
+
+Example:
+
+```json
+"defaultBias": "Prefer Buy until the capability is clearly differentiating and sustainable to own."
+```
+
+### `reversibility`
+
+A short, honest statement about how reversible the decision is.
+
+Example:
+
+```json
+"reversibility": "Reversible but expensive after 12+ months of accumulated integration."
+```
+
+### `whenToRevisit`
+
+An **array** of triggers that should cause the team to re-open the decision.
+
+Example:
+
+```json
+"whenToRevisit": [
+  "vendor changes pricing or licensing model materially",
+  "the capability becomes a differentiation lever",
+  "integration cost crosses a threshold that justifies owning"
+]
+```
+
+Always an array — not a string, not a prose paragraph.
+
+---
+
+## Diagnostic Signal Fields
+
+### `commonBadReasons`
+
+Bad reasoning patterns teams fall into when making this specific decision.
+
+Example:
+
+```json
+"commonBadReasons": [
+  "choosing for prestige",
+  "treating scale assumptions as already real",
+  "reacting to one frustrating incident rather than structural pattern"
+]
+```
+
+### `antiPatterns`
+
+Shapes the decision tends to take when it goes wrong.
+
+Example:
+
+```json
+"antiPatterns": [
+  "half-built internal platform that neither owns nor integrates well",
+  "vendor contract driving the roadmap"
+]
+```
+
+### `goodSignalsForA` / `goodSignalsForB`
+
+Signals that point toward one option rather than the other. These make the decision more legible instead of more ideological.
+
+Example:
+
+```json
+"goodSignalsForA": [
+  "long-lived strategic capability",
+  "team has durable ops capacity"
+],
+"goodSignalsForB": [
+  "commodity capability",
+  "team is small and focus matters more than control"
+]
+```
+
+---
+
+## Structured Comparison Objects
+
+These are two first-class **structured A/B comparison carriers**. They are not free-form strings and not generic arrays.
+
+### `costBearer`
+
+Who bears the cost of each option. Used for operational and organizational cost attribution.
+
+Shape:
+
+```json
+"costBearer": {
+  "optionA": ["team A bears X"],
+  "optionB": ["team B bears Y"]
+}
+```
+
+* `optionA` — array of roles/teams/functions that absorb the cost when Option A is chosen
+* `optionB` — array of roles/teams/functions that absorb the cost when Option B is chosen
+
+Both arrays are required when `costBearer` is present. No extra keys allowed.
+
+### `timeHorizonNotes`
+
+Where each option wins or loses over time.
+
+Shape:
+
+```json
+"timeHorizonNotes": {
+  "optionA": "Usually wins early through speed and lower overhead.",
+  "optionB": "Wins later only if boundaries, teams, and platform maturity are genuinely ready."
+}
+```
+
+* `optionA` — non-empty string
+* `optionB` — non-empty string
+
+Both strings are required when `timeHorizonNotes` is present. No extra keys allowed.
+
+These two fields keep comparison structured and parallel. They are not to be loosened into generic strings.
 
 ---
 
 ## AI Fields
 
-Tech Decisions should often include AI impact because AI changes:
+Tech Decisions often include AI impact because AI changes:
 
 * implementation speed
 * evaluation cost
@@ -536,82 +666,114 @@ Tech Decisions should often include AI impact because AI changes:
 * abstraction temptation
 * architecture confidence
 
+AI fields use the **site-wide canonical names** shared with Failure Modes, Red Flags, and Engineering Playbook:
+
 ### `aiCanHelpWith`
 
-Array of ways AI use can improve the decision process or implementation.
+Array of ways AI can improve the decision process or the implementation of either option.
 
 ### `aiCanMakeWorseBy`
 
-Array of ways AI can distort the decision or make the wrong option easier to choose.
+Array of ways AI can distort the decision or make the wrong option feel easier.
 
 ### `aiSpecificNotes`
 
-A short synthesis explaining how AI changes this decision in a meaningful way.
+A short synthesis string explaining how AI changes this decision surface in a meaningful way.
 
-Do not add generic AI commentary.
-Only include it where it materially changes the decision surface.
+Do not include generic AI commentary. Include it only where AI materially changes the decision.
+
+The earlier content-era names `aiReduces`, `aiAmplifies`, `aiSpecificWarning` are retired. New entries must use the canonical names above.
 
 ---
 
 ## Cross-Reference Fields
 
-Use shared slug-based arrays:
+Tech Decisions carry causal and lateral references using **directional, intent-named** fields where the relationship is non-neutral:
 
-* `relatedFailureModes`
-* `relatedRedFlags`
-* `relatedTechDecisions`
-* `relatedPlaybooks`
+### `oftenLeadsToFailureModes`
 
-These should contain slugs wherever possible.
+Array of Failure Mode slugs that this decision, when misframed or misapplied, commonly leads to.
 
 Example:
 
 ```json
-"relatedFailureModes": ["friendly-rewrite", "dependency-fog"]
+"oftenLeadsToFailureModes": ["friendly-rewrite", "dependency-fog"]
 ```
+
+### `adjacentDecisions`
+
+Array of slugs of other Tech Decisions that are conceptually adjacent and often confused, entangled, or co-decided. This is the Tech-Decision-to-Tech-Decision lateral link. There is no separate `relatedTechDecisions` field.
+
+Example:
+
+```json
+"adjacentDecisions": ["modular-monolith-vs-distributed-services", "shared-database-vs-service-owned-data"]
+```
+
+### `relatedRedFlags`
+
+Array of Red Flag slugs that commonly appear around this decision.
+
+### `relatedPlaybooks`
+
+Array of Engineering Playbook slugs that help execute or recover from this decision.
 
 Cross-links should be meaningful, not inflated.
 
-Examples:
+---
 
-* `build-vs-buy` may link to failure modes about platform overreach or ownership drift
-* `monolith-vs-microservices` may link to red flags about change fan-out or unclear ownership
-* `rewrite-vs-refactor` may link to a playbook like `run-a-phased-migration`
+## Meta Fields
+
+### `frequency`
+
+Optional short label for how frequently this decision shows up in real organizations.
+
+### `severityIfWrong`
+
+Optional short label for how damaging a wrong choice tends to be.
+
+### `audiences`
+
+Optional array of roles for whom this entry is most directly useful.
+
+Example:
+
+```json
+"audiences": ["architects", "staff engineers", "engineering managers", "platform teams"]
+```
 
 ---
 
 ## `patternConfidence`
 
-Use shared allowed values:
+Allowed values:
 
-* `high`
-* `medium`
 * `low`
+* `medium`
+* `medium-high`
+* `high`
 
-Meaning:
-editorial confidence that the structure of this decision is durable and useful across many real contexts.
+Meaning: editorial confidence that the structure of this decision is durable and useful across many real contexts.
 
-Most core trade-off entries will likely be `high`.
-More emerging or AI-specific entries may be `medium`.
+`medium-high` is a deliberate notch for entries that are well-evidenced but not yet fully stable patterns. It is not a general-purpose hedge; prefer `medium` or `high` when either genuinely applies.
 
 ---
 
 ## Rendering Expectations
 
-The Tech Decisions UI should support comparison.
+The Tech Decisions UI emphasises comparison.
 
 ### A good entry page should make these sections obvious:
 
-* title
+* title + decision question
 * summary
-* core trade-off
-* option A vs option B
-* hidden variables
-* common mistakes / false signals
-* second-order effects
-* questions to ask
-* related entries
+* decision heuristic + what this is really about
+* option A vs option B (parallel layout)
+* key factors, questions to ask, evidence needed
+* cost bearer + time horizon (structured comparison blocks)
+* common bad reasons / anti-patterns / good signals
 * AI effect
+* related entries
 
 ### Important rendering principle
 
@@ -631,8 +793,7 @@ Not:
 
 ### UI implication
 
-Option A and Option B should feel structurally parallel.
-The user should be able to compare them easily.
+Option A and Option B should feel structurally parallel. The reader should be able to compare them easily.
 
 ---
 
@@ -641,55 +802,22 @@ The user should be able to compare them easily.
 At minimum, validate that:
 
 * every entry has a unique slug
-* `category` uses an allowed subcategory
-* `optionA` and `optionB` both exist
+* `category` uses one of the canonical subcategories
+* `optionA` and `optionB` both exist with valid shapes
+* option objects do not contain keys outside the canonical set
 * `questionsToAsk` is present and non-empty
-* `patternConfidence` uses an allowed value
-* all `related*` slugs resolve correctly
+* `patternConfidence` is one of `low | medium | medium-high | high`
+* `costBearer`, when present, has both `optionA` and `optionB` arrays
+* `timeHorizonNotes`, when present, has both `optionA` and `optionB` non-empty strings
+* `whenToRevisit`, when present, is an array
+* AI fields use the canonical names (`aiCanHelpWith`, `aiCanMakeWorseBy`, `aiSpecificNotes`); the legacy names are errors
+* all `related*` and `oftenLeadsToFailureModes` / `adjacentDecisions` slugs resolve where slug-based references are used
 
 Recommended additional validation:
 
 * `optionA.name` and `optionB.name` must both be non-empty
-* `coreTradeoff` must be non-empty
 * `summary` should be concise, not essay-length
-
----
-
-## Example Minimal Valid Entry
-
-```json
-{
-  "slug": "build-vs-buy",
-  "title": "Build vs Buy",
-  "decision": "Should we build this capability ourselves or use an external product/service?",
-  "category": "platform",
-  "summary": "Usually a control-versus-focus decision, not an engineering pride decision.",
-  "coreTradeoff": "Control and custom fit versus speed, focus, and external dependency.",
-  "optionA": {
-    "name": "Build",
-    "summary": "Create and maintain the capability internally.",
-    "bestWhen": ["the capability is strategically differentiating"],
-    "strengths": ["full control"],
-    "costs": ["long-term ownership burden"],
-    "failureModes": ["building undifferentiated plumbing forever"],
-    "realWorldFits": ["core product capability with durable strategic value"]
-  },
-  "optionB": {
-    "name": "Buy",
-    "summary": "Adopt a third-party product or service.",
-    "bestWhen": ["the capability is necessary but not differentiating"],
-    "strengths": ["faster time to capability"],
-    "costs": ["vendor dependence"],
-    "failureModes": ["outsourcing a core differentiator"],
-    "realWorldFits": ["commodity capability with mature external options"]
-  },
-  "questionsToAsk": [
-    "Is this actually core to our differentiation?",
-    "Can we sustain long-term ownership if we build?"
-  ],
-  "patternConfidence": "high"
-}
-```
+* `decisionQuestion` should end with a question mark
 
 ---
 
@@ -706,4 +834,3 @@ A strong Tech Decision entry should make the user feel:
 ## One-Sentence Rule
 
 **A Tech Decision entry should help the reader reason through a trade-off, not recruit them into a side.**
-

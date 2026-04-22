@@ -20,15 +20,18 @@ export const SlugSchema = z
 
 /**
  * Shared `patternConfidence` allowed values.
- * Docs (content-schema.md §Confidence) define `high | medium | low`.
- * MISMATCH: Tech Decisions content also uses `medium-high` on some entries.
- * We widen to the union of docs + observed content values.
+ *
+ * Canonical set (low -> high):
+ *   low | medium | medium-high | high
+ *
+ * `medium-high` is intentional: some Tech Decisions entries need to express
+ * "more confident than medium but not yet high" without inflating the claim.
  */
 export const PatternConfidenceSchema = z.enum([
-  "high",
-  "medium",
   "low",
+  "medium",
   "medium-high",
+  "high",
 ]);
 
 /**

@@ -27,12 +27,12 @@ export type CategoryDescriptor = {
    */
   files: string[];
   /** The key used inside `category.<k>` to list valid subcategory values. */
-  subcategoryListKey: "categories" | "families" | "layers";
+  subcategoryListKey: "categories" | "layers";
   /**
    * The entry-level key that holds the subcategory for a given entry
    * (differs by category in actual content).
    */
-  subcategoryEntryKey: "category" | "family" | "layer";
+  subcategoryEntryKey: "category" | "layer";
   /** Name of the CSS variable that sets the accent for this category. */
   accentVar: `--accent-${string}`;
 };
@@ -54,8 +54,8 @@ export const CATEGORIES: Record<CategoryCode, CategoryDescriptor> = {
     route: "tech-decisions",
     shortLabel: "TD",
     files: ["content/tech-decisions/tech-decisions.json"],
-    subcategoryListKey: "families",
-    subcategoryEntryKey: "family",
+    subcategoryListKey: "categories",
+    subcategoryEntryKey: "category",
     accentVar: "--accent-td",
   },
   RF: {

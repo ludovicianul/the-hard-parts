@@ -199,7 +199,7 @@ export function declaredSubcategories(code: CategoryCode): string[] {
     case "FM":
       return [...loadFailureModes().category.categories];
     case "TD":
-      return [...loadTechDecisions().category.families];
+      return [...loadTechDecisions().category.categories];
     case "RF":
       return [...loadRedFlags().category.layers];
     case "EP":
@@ -229,7 +229,7 @@ export function categoryBlock(code: CategoryCode): {
         code,
         name: c.name,
         summary: c.summary,
-        subcategories: [...c.families],
+        subcategories: [...c.categories],
       };
     }
     case "RF": {

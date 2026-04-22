@@ -13,7 +13,7 @@ const entry = slug ? findEntry("TD", slug) : undefined;
 if (!entry) {
   throw new Error(`Tech Decision not found for slug "${slug}"`);
 }
-const sub = (entry as any).family as string | undefined;
+const sub = (entry as any).category as string | undefined;
 ---
 <DetailLayout
   code="TD"

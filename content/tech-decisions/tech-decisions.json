@@ -3,7 +3,7 @@
     "code": "TD",
     "name": "Tech Decision Trade-offs",
     "summary": "A reference catalog for consequential engineering and product decisions where context matters more than ideology.",
-    "families": [
+    "categories": [
       "architecture",
       "product-delivery",
       "team-operations",
@@ -53,8 +53,8 @@
     {
       "slug": "monolith-vs-microservices",
       "title": "Monolith vs Microservices",
-      "family": "architecture",
       "decisionQuestion": "Should this system remain a monolith or be split into microservices?",
+      "category": "architecture",
       "summary": "Usually a team-shape and operational-maturity decision disguised as an architecture preference.",
       "decisionHeuristic": "Default to a monolith or modular monolith until service boundaries and release contention are both real.",
       "whatThisIsReallyAbout": "Coordination cost, ownership boundaries, deployment independence, and operational burden.",
@@ -67,11 +67,6 @@
           "domain boundaries are still evolving",
           "speed of delivery matters more than deployment independence",
           "operational maturity is limited"
-        ],
-        "realWorldFits": [
-          "an early-stage SaaS product with one main team",
-          "an internal business application with tightly connected workflows",
-          "a product where most changes still cut across several domains together"
         ],
         "strengths": [
           "lower operational overhead",
@@ -88,7 +83,14 @@
           "can become socially monolithic before technically unmaintainable",
           "teams may defer modularity too long"
         ],
-        "failureModeWhenMisused": "Turns into a dense system with weak boundaries and rising coordination pain."
+        "failureModesWhenMisused": [
+          "Turns into a dense system with weak boundaries and rising coordination pain."
+        ],
+        "realWorldFits": [
+          "an early-stage SaaS product with one main team",
+          "an internal business application with tightly connected workflows",
+          "a product where most changes still cut across several domains together"
+        ]
       },
       "optionB": {
         "name": "Microservices",
@@ -97,11 +99,6 @@
           "multiple teams need independent release cadence",
           "platform and observability maturity already exist",
           "operational burden is affordable"
-        ],
-        "realWorldFits": [
-          "a mature platform with several teams owning distinct business capabilities",
-          "an organization with clear bounded contexts and separate deployment cadence needs",
-          "systems where independent scaling and fault isolation are routine concerns"
         ],
         "strengths": [
           "independent deployment",
@@ -117,7 +114,14 @@
           "team communication often becomes the real bottleneck",
           "service boundaries can calcify prematurely"
         ],
-        "failureModeWhenMisused": "Creates distributed complexity without real organizational or domain benefit."
+        "failureModesWhenMisused": [
+          "Creates distributed complexity without real organizational or domain benefit."
+        ],
+        "realWorldFits": [
+          "a mature platform with several teams owning distinct business capabilities",
+          "an organization with clear bounded contexts and separate deployment cadence needs",
+          "systems where independent scaling and fault isolation are routine concerns"
+        ]
       },
       "keyFactors": [
         "team count",
@@ -182,13 +186,23 @@
         "optionA": "Usually wins early through speed and lower overhead.",
         "optionB": "Wins later only if boundaries, teams, and platform maturity are genuinely ready."
       },
-      "aiAmplifies": "AI can make service extraction look cheaper than it is by accelerating code movement without resolving boundary quality.",
-      "aiReduces": "AI can help map coupling, dependency hotspots, and candidate boundaries.",
-      "aiSpecificWarning": "Do not let generated scaffolding substitute for real domain decomposition.",
+      "aiCanHelpWith": [
+        "AI can help map coupling, dependency hotspots, and candidate boundaries."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can make service extraction look cheaper than it is by accelerating code movement without resolving boundary quality."
+      ],
+      "aiSpecificNotes": "Do not let generated scaffolding substitute for real domain decomposition.",
       "oftenLeadsToFailureModes": [
         "abstraction-addiction",
         "dependency-fog",
         "ownership-drift"
+      ],
+      "adjacentDecisions": [
+        "modular-monolith-vs-distributed-services",
+        "shared-database-vs-service-owned-data",
+        "sync-vs-event-driven",
+        "local-autonomy-vs-central-governance"
       ],
       "relatedRedFlags": [
         "nobody can explain service boundaries in business terms",
@@ -197,12 +211,6 @@
       "relatedPlaybooks": [
         "evaluate-service-boundaries",
         "run-architecture-review"
-      ],
-      "adjacentDecisions": [
-        "modular-monolith-vs-distributed-services",
-        "shared-database-vs-service-owned-data",
-        "sync-vs-event-driven",
-        "local-autonomy-vs-central-governance"
       ],
       "frequency": "very common",
       "severityIfWrong": "high",
@@ -217,8 +225,8 @@
     {
       "slug": "modular-monolith-vs-distributed-services",
       "title": "Modular Monolith vs Distributed Services",
-      "family": "architecture",
       "decisionQuestion": "Should we enforce boundaries inside one deployable unit or across independently deployed services?",
+      "category": "architecture",
       "summary": "Usually a boundary-quality and deployment-independence trade-off.",
       "decisionHeuristic": "If your boundaries are not strong enough inside one runtime, they are usually not strong enough across many.",
       "whatThisIsReallyAbout": "Whether the problem is poor modularity or genuine need for runtime/service separation.",
@@ -231,11 +239,6 @@
           "team count is limited",
           "deployment independence is helpful but not dominant",
           "refactoring across modules is still common"
-        ],
-        "realWorldFits": [
-          "a product with several clear domains but one deployment pipeline",
-          "a scale-up that needs stronger boundaries before distribution",
-          "a team wanting better separation without service-operations overhead"
         ],
         "strengths": [
           "strong internal boundaries with lower operational overhead",
@@ -250,7 +253,14 @@
           "internal contracts may be treated casually",
           "teams can pretend modularity exists when it does not"
         ],
-        "failureModeWhenMisused": "Creates a monolith with module-shaped terminology and weak real separation."
+        "failureModesWhenMisused": [
+          "Creates a monolith with module-shaped terminology and weak real separation."
+        ],
+        "realWorldFits": [
+          "a product with several clear domains but one deployment pipeline",
+          "a scale-up that needs stronger boundaries before distribution",
+          "a team wanting better separation without service-operations overhead"
+        ]
       },
       "optionB": {
         "name": "Distributed Services",
@@ -259,11 +269,6 @@
           "team ownership boundaries are mature",
           "runtime isolation matters",
           "service economics are justified"
-        ],
-        "realWorldFits": [
-          "a mature product platform with real team autonomy",
-          "a system where scaling, isolation, and release independence are economically justified",
-          "a business with clear bounded contexts and service operating capability"
         ],
         "strengths": [
           "clearer runtime separation",
@@ -279,7 +284,14 @@
           "service separation can freeze poor boundaries",
           "debugging cost grows quickly"
         ],
-        "failureModeWhenMisused": "Creates service count without service clarity."
+        "failureModesWhenMisused": [
+          "Creates service count without service clarity."
+        ],
+        "realWorldFits": [
+          "a mature product platform with real team autonomy",
+          "a system where scaling, isolation, and release independence are economically justified",
+          "a business with clear bounded contexts and service operating capability"
+        ]
       },
       "keyFactors": [
         "boundary maturity",
@@ -340,12 +352,20 @@
         "optionA": "Often wins in the medium term by buying clarity without full distribution cost.",
         "optionB": "Only wins long-term when separation and ownership are both real and durable."
       },
-      "aiAmplifies": "AI can mass-produce service wrappers and APIs without proving runtime separation is needed.",
-      "aiReduces": "AI can inspect coupling and propose module/service seams.",
-      "aiSpecificWarning": "Generated separation is not architectural justification.",
+      "aiCanHelpWith": [
+        "AI can inspect coupling and propose module/service seams."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can mass-produce service wrappers and APIs without proving runtime separation is needed."
+      ],
+      "aiSpecificNotes": "Generated separation is not architectural justification.",
       "oftenLeadsToFailureModes": [
         "dependency-fog",
         "abstraction-addiction"
+      ],
+      "adjacentDecisions": [
+        "monolith-vs-microservices",
+        "shared-database-vs-service-owned-data"
       ],
       "relatedRedFlags": [
         "distributed services share the same release lifecycle anyway",
@@ -353,10 +373,6 @@
       ],
       "relatedPlaybooks": [
         "review-boundaries-before-distribution"
-      ],
-      "adjacentDecisions": [
-        "monolith-vs-microservices",
-        "shared-database-vs-service-owned-data"
       ],
       "frequency": "common",
       "severityIfWrong": "high",
@@ -370,8 +386,8 @@
     {
       "slug": "rest-vs-graphql",
       "title": "REST vs GraphQL",
-      "family": "architecture",
       "decisionQuestion": "Should this API surface be REST-based or GraphQL-based?",
+      "category": "architecture",
       "summary": "Usually a consumer-shape and schema-governance decision, not just an API fashion choice.",
       "decisionHeuristic": "Use REST by default; move toward GraphQL when consumer variability and aggregation pressure are real and ongoing.",
       "whatThisIsReallyAbout": "Consumer flexibility, schema discipline, backend aggregation complexity, and evolution cost.",
@@ -384,11 +400,6 @@
           "consumer needs are relatively predictable",
           "HTTP semantics matter",
           "team wants simpler operational behavior"
-        ],
-        "realWorldFits": [
-          "CRUD-heavy business systems",
-          "public APIs with broad tooling compatibility needs",
-          "backend surfaces with relatively stable client shapes"
         ],
         "strengths": [
           "simplicity",
@@ -404,7 +415,14 @@
           "endpoint sprawl can grow quietly",
           "versioning pressure can become awkward"
         ],
-        "failureModeWhenMisused": "Creates fragmented APIs and client orchestration pain."
+        "failureModesWhenMisused": [
+          "Creates fragmented APIs and client orchestration pain."
+        ],
+        "realWorldFits": [
+          "CRUD-heavy business systems",
+          "public APIs with broad tooling compatibility needs",
+          "backend surfaces with relatively stable client shapes"
+        ]
       },
       "optionB": {
         "name": "GraphQL",
@@ -413,11 +431,6 @@
           "frontend aggregation needs are complex",
           "schema governance is strong",
           "team can manage query behavior and performance"
-        ],
-        "realWorldFits": [
-          "multi-client products with different view shapes",
-          "frontend-heavy experiences with complex aggregation needs",
-          "platforms willing to treat schema governance as a first-class product concern"
         ],
         "strengths": [
           "client flexibility",
@@ -433,7 +446,14 @@
           "backend ownership can blur",
           "schema becomes a product with governance overhead"
         ],
-        "failureModeWhenMisused": "Creates elegant client contracts over messy backend economics."
+        "failureModesWhenMisused": [
+          "Creates elegant client contracts over messy backend economics."
+        ],
+        "realWorldFits": [
+          "multi-client products with different view shapes",
+          "frontend-heavy experiences with complex aggregation needs",
+          "platforms willing to treat schema governance as a first-class product concern"
+        ]
       },
       "keyFactors": [
         "consumer diversity",
@@ -495,11 +515,19 @@
         "optionA": "Often wins early and mid-stage through operational simplicity.",
         "optionB": "Wins when schema governance and consumer diversity persist long enough to justify the complexity."
       },
-      "aiAmplifies": "AI can generate GraphQL layers quickly, increasing the chance of pretty schema over weak backend discipline.",
-      "aiReduces": "AI can help map repeated client fetch patterns and schema hotspots.",
-      "aiSpecificWarning": "Do not choose GraphQL because AI made it easy to scaffold.",
+      "aiCanHelpWith": [
+        "AI can help map repeated client fetch patterns and schema hotspots."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can generate GraphQL layers quickly, increasing the chance of pretty schema over weak backend discipline."
+      ],
+      "aiSpecificNotes": "Do not choose GraphQL because AI made it easy to scaffold.",
       "oftenLeadsToFailureModes": [
         "abstraction-addiction"
+      ],
+      "adjacentDecisions": [
+        "sync-vs-event-driven",
+        "manual-review-depth-vs-automation-dependence"
       ],
       "relatedRedFlags": [
         "schema ownership is unclear",
@@ -507,10 +535,6 @@
       ],
       "relatedPlaybooks": [
         "review-api-consumer-shapes"
-      ],
-      "adjacentDecisions": [
-        "sync-vs-event-driven",
-        "manual-review-depth-vs-automation-dependence"
       ],
       "frequency": "common",
       "severityIfWrong": "medium",
@@ -524,8 +548,8 @@
     {
       "slug": "sql-vs-nosql",
       "title": "SQL vs NoSQL",
-      "family": "architecture",
       "decisionQuestion": "Should this data model live in a relational or non-relational store?",
+      "category": "architecture",
       "summary": "Usually a query-shape and consistency decision, not a scalability slogan decision.",
       "decisionHeuristic": "Default to SQL unless your access patterns, document shape, or scale model clearly reward non-relational storage.",
       "whatThisIsReallyAbout": "Access patterns, relational complexity, consistency needs, and operational familiarity.",
@@ -538,11 +562,6 @@
           "querying is important",
           "consistency matters strongly",
           "schema discipline is valuable"
-        ],
-        "realWorldFits": [
-          "financial systems",
-          "business applications with reporting needs",
-          "domains with rich joins and transactional integrity requirements"
         ],
         "strengths": [
           "rich querying",
@@ -558,7 +577,14 @@
           "bad relational modeling can create performance pain",
           "teams may misuse SQL as an excuse to delay domain design"
         ],
-        "failureModeWhenMisused": "Creates dense relational coupling and poor performance through weak modeling."
+        "failureModesWhenMisused": [
+          "Creates dense relational coupling and poor performance through weak modeling."
+        ],
+        "realWorldFits": [
+          "financial systems",
+          "business applications with reporting needs",
+          "domains with rich joins and transactional integrity requirements"
+        ]
       },
       "optionB": {
         "name": "NoSQL",
@@ -567,11 +593,6 @@
           "document or key-value shape matches domain reality",
           "scalability patterns favor denormalized models",
           "query flexibility is less important"
-        ],
-        "realWorldFits": [
-          "document-centric content systems",
-          "high-scale key-value workloads",
-          "event/session-like data with simple primary access paths"
         ],
         "strengths": [
           "schema flexibility",
@@ -587,7 +608,14 @@
           "teams often recreate relational needs later",
           "read model convenience can become write model complexity"
         ],
-        "failureModeWhenMisused": "Creates flexible storage with rigid downstream reporting and consistency pain."
+        "failureModesWhenMisused": [
+          "Creates flexible storage with rigid downstream reporting and consistency pain."
+        ],
+        "realWorldFits": [
+          "document-centric content systems",
+          "high-scale key-value workloads",
+          "event/session-like data with simple primary access paths"
+        ]
       },
       "keyFactors": [
         "query complexity",
@@ -648,11 +676,19 @@
         "optionA": "Often wins long-term when query flexibility and reporting become unavoidable.",
         "optionB": "Wins when the access model stays narrow and the workload truly fits it."
       },
-      "aiAmplifies": "AI can suggest trendy datastore choices detached from real query and consistency needs.",
-      "aiReduces": "AI can analyze access patterns and generate candidate schema/query comparisons.",
-      "aiSpecificWarning": "Do not let generated examples substitute for actual production access-pattern analysis.",
+      "aiCanHelpWith": [
+        "AI can analyze access patterns and generate candidate schema/query comparisons."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can suggest trendy datastore choices detached from real query and consistency needs."
+      ],
+      "aiSpecificNotes": "Do not let generated examples substitute for actual production access-pattern analysis.",
       "oftenLeadsToFailureModes": [
         "local-optimization"
+      ],
+      "adjacentDecisions": [
+        "shared-database-vs-service-owned-data",
+        "strong-consistency-vs-eventual-consistency"
       ],
       "relatedRedFlags": [
         "teams keep rebuilding joins in application code",
@@ -660,10 +696,6 @@
       ],
       "relatedPlaybooks": [
         "analyze-data-access-patterns"
-      ],
-      "adjacentDecisions": [
-        "shared-database-vs-service-owned-data",
-        "strong-consistency-vs-eventual-consistency"
       ],
       "frequency": "very common",
       "severityIfWrong": "high",
@@ -677,8 +709,8 @@
     {
       "slug": "sync-vs-event-driven",
       "title": "Sync Communication vs Event-Driven",
-      "family": "architecture",
       "decisionQuestion": "Should services coordinate synchronously or through events?",
+      "category": "architecture",
       "summary": "Usually a coupling, resilience, and process-clarity decision—not just a latency or style choice.",
       "decisionHeuristic": "Use sync for short, direct, user-facing flows; use events when decoupling and async process shape are genuinely valuable.",
       "whatThisIsReallyAbout": "Temporal coupling, failure handling, business process clarity, and observability maturity.",
@@ -691,11 +723,6 @@
           "strong immediacy matters",
           "failure handling must be simple and explicit",
           "workflow is short and direct"
-        ],
-        "realWorldFits": [
-          "checkout confirmation flows",
-          "simple service-to-service validation calls",
-          "user-facing operations where an immediate answer is required"
         ],
         "strengths": [
           "straightforward reasoning",
@@ -711,7 +738,14 @@
           "downstream fragility can quietly accumulate",
           "availability becomes hostage to dependency behavior"
         ],
-        "failureModeWhenMisused": "Creates brittle dependency chains that make outages and latency spikes propagate quickly."
+        "failureModesWhenMisused": [
+          "Creates brittle dependency chains that make outages and latency spikes propagate quickly."
+        ],
+        "realWorldFits": [
+          "checkout confirmation flows",
+          "simple service-to-service validation calls",
+          "user-facing operations where an immediate answer is required"
+        ]
       },
       "optionB": {
         "name": "Event-Driven",
@@ -720,11 +754,6 @@
           "workflows are asynchronous by nature",
           "multiple consumers benefit from emitted facts",
           "team can manage eventual consistency and tracing"
-        ],
-        "realWorldFits": [
-          "order lifecycle processing with multiple downstream consumers",
-          "audit, notification, and enrichment flows",
-          "systems where work naturally fans out over time"
         ],
         "strengths": [
           "looser coupling",
@@ -740,7 +769,14 @@
           "business flows can become opaque",
           "replay, idempotency, and schema evolution become serious concerns"
         ],
-        "failureModeWhenMisused": "Creates a foggy workflow where events exist but ownership and process clarity do not."
+        "failureModesWhenMisused": [
+          "Creates a foggy workflow where events exist but ownership and process clarity do not."
+        ],
+        "realWorldFits": [
+          "order lifecycle processing with multiple downstream consumers",
+          "audit, notification, and enrichment flows",
+          "systems where work naturally fans out over time"
+        ]
       },
       "keyFactors": [
         "latency sensitivity",
@@ -800,12 +836,20 @@
         "optionA": "Wins earlier through clarity and simpler control flow.",
         "optionB": "Wins later if the workflow truly benefits from decoupling and the org can sustain the semantics."
       },
-      "aiAmplifies": "AI can scaffold brokers, handlers, and consumers quickly, increasing the chance of event-driven complexity without process clarity.",
-      "aiReduces": "AI can help trace flows, identify coupling hotspots, and explain event chains.",
-      "aiSpecificWarning": "Generated event plumbing does not reduce business ambiguity.",
+      "aiCanHelpWith": [
+        "AI can help trace flows, identify coupling hotspots, and explain event chains."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can scaffold brokers, handlers, and consumers quickly, increasing the chance of event-driven complexity without process clarity."
+      ],
+      "aiSpecificNotes": "Generated event plumbing does not reduce business ambiguity.",
       "oftenLeadsToFailureModes": [
         "dependency-fog",
         "ownership-drift"
+      ],
+      "adjacentDecisions": [
+        "strong-consistency-vs-eventual-consistency",
+        "shared-database-vs-service-owned-data"
       ],
       "relatedRedFlags": [
         "nobody can explain the end-to-end flow",
@@ -814,10 +858,6 @@
       "relatedPlaybooks": [
         "map-end-to-end-workflow",
         "review-event-contracts"
-      ],
-      "adjacentDecisions": [
-        "strong-consistency-vs-eventual-consistency",
-        "shared-database-vs-service-owned-data"
       ],
       "frequency": "common",
       "severityIfWrong": "high",
@@ -831,8 +871,8 @@
     {
       "slug": "shared-database-vs-service-owned-data",
       "title": "Shared Database vs Service-Owned Data",
-      "family": "architecture",
       "decisionQuestion": "Should multiple services share one database or own their data separately?",
+      "category": "architecture",
       "summary": "Usually a coupling and boundary-enforcement decision.",
       "decisionHeuristic": "If service boundaries are not real enough to own data separately, they are probably not real enough to be services yet.",
       "whatThisIsReallyAbout": "Whether data ownership follows service boundaries or cuts across them.",
@@ -844,11 +884,6 @@
           "system is still monolithic or near-monolithic",
           "boundaries are evolving",
           "operational simplicity matters more than ownership purity"
-        ],
-        "realWorldFits": [
-          "modular monoliths",
-          "tightly coupled internal systems",
-          "early-stage domains still discovering boundaries"
         ],
         "strengths": [
           "simple early development",
@@ -864,7 +899,14 @@
           "database becomes the real integration surface",
           "changes become politically coupled"
         ],
-        "failureModeWhenMisused": "Creates service names over one shared data reality."
+        "failureModesWhenMisused": [
+          "Creates service names over one shared data reality."
+        ],
+        "realWorldFits": [
+          "modular monoliths",
+          "tightly coupled internal systems",
+          "early-stage domains still discovering boundaries"
+        ]
       },
       "optionB": {
         "name": "Service-Owned Data",
@@ -872,11 +914,6 @@
           "service boundaries are real",
           "team autonomy matters",
           "data ownership must be explicit"
-        ],
-        "realWorldFits": [
-          "mature service ecosystems",
-          "business domains with distinct teams and data stewardship",
-          "systems where ownership clarity matters more than ad hoc reporting convenience"
         ],
         "strengths": [
           "clear ownership",
@@ -892,7 +929,14 @@
           "teams may underestimate data product/reporting consequences",
           "consistency questions become architectural"
         ],
-        "failureModeWhenMisused": "Creates autonomy theater with reporting pain and unclear truth sources."
+        "failureModesWhenMisused": [
+          "Creates autonomy theater with reporting pain and unclear truth sources."
+        ],
+        "realWorldFits": [
+          "mature service ecosystems",
+          "business domains with distinct teams and data stewardship",
+          "systems where ownership clarity matters more than ad hoc reporting convenience"
+        ]
       },
       "keyFactors": [
         "boundary maturity",
@@ -949,12 +993,20 @@
         "optionA": "Often wins early through simplicity.",
         "optionB": "Wins later only when ownership clarity pays back more than integration/reporting cost."
       },
-      "aiAmplifies": "AI can generate service shells that hide continued database coupling.",
-      "aiReduces": "AI can trace cross-schema dependencies and ownership violations.",
-      "aiSpecificWarning": "Generated service boundaries do not matter if the database is still the real contract.",
+      "aiCanHelpWith": [
+        "AI can trace cross-schema dependencies and ownership violations."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can generate service shells that hide continued database coupling."
+      ],
+      "aiSpecificNotes": "Generated service boundaries do not matter if the database is still the real contract.",
       "oftenLeadsToFailureModes": [
         "dependency-fog",
         "ownership-drift"
+      ],
+      "adjacentDecisions": [
+        "monolith-vs-microservices",
+        "strong-consistency-vs-eventual-consistency"
       ],
       "relatedRedFlags": [
         "multiple teams change the same tables routinely",
@@ -962,10 +1014,6 @@
       ],
       "relatedPlaybooks": [
         "review-data-ownership-boundaries"
-      ],
-      "adjacentDecisions": [
-        "monolith-vs-microservices",
-        "strong-consistency-vs-eventual-consistency"
       ],
       "frequency": "common",
       "severityIfWrong": "high",
@@ -979,8 +1027,8 @@
     {
       "slug": "strong-consistency-vs-eventual-consistency",
       "title": "Strong Consistency vs Eventual Consistency",
-      "family": "architecture",
       "decisionQuestion": "Should this workflow guarantee immediate consistency or tolerate convergence over time?",
+      "category": "architecture",
       "summary": "Usually a business-truth and user-expectation decision, not just a storage decision.",
       "decisionHeuristic": "If being temporarily wrong is expensive, default toward strong consistency.",
       "whatThisIsReallyAbout": "Whether delayed convergence is acceptable for the domain consequence of being temporarily wrong.",
@@ -992,11 +1040,6 @@
           "financial or business correctness is critical immediately",
           "user expectations require immediate truth",
           "double-spend or conflicting action risk is high"
-        ],
-        "realWorldFits": [
-          "ledgers",
-          "inventory reservation with strong conflict cost",
-          "critical identity or entitlement changes"
         ],
         "strengths": [
           "clear correctness",
@@ -1012,7 +1055,14 @@
           "can push teams toward over-centralization",
           "availability trade-offs may grow"
         ],
-        "failureModeWhenMisused": "Creates rigid coordination where looser semantics would have been enough."
+        "failureModesWhenMisused": [
+          "Creates rigid coordination where looser semantics would have been enough."
+        ],
+        "realWorldFits": [
+          "ledgers",
+          "inventory reservation with strong conflict cost",
+          "critical identity or entitlement changes"
+        ]
       },
       "optionB": {
         "name": "Eventual Consistency",
@@ -1020,11 +1070,6 @@
           "temporary divergence is acceptable",
           "workflow can tolerate lag",
           "decoupling/resilience matters strongly"
-        ],
-        "realWorldFits": [
-          "notification and enrichment pipelines",
-          "analytics or recommendation refresh flows",
-          "systems where the user can tolerate slightly stale views"
         ],
         "strengths": [
           "looser coupling",
@@ -1040,7 +1085,14 @@
           "teams often under-design compensations and user communication",
           "operational debugging gets harder"
         ],
-        "failureModeWhenMisused": "Creates business ambiguity disguised as technical flexibility."
+        "failureModesWhenMisused": [
+          "Creates business ambiguity disguised as technical flexibility."
+        ],
+        "realWorldFits": [
+          "notification and enrichment pipelines",
+          "analytics or recommendation refresh flows",
+          "systems where the user can tolerate slightly stale views"
+        ]
       },
       "keyFactors": [
         "business correctness",
@@ -1098,11 +1150,19 @@
         "optionA": "Often wins whenever trust and correctness are central.",
         "optionB": "Wins when workflow elasticity and decoupling matter more than immediate truth."
       },
-      "aiAmplifies": "AI can generate architecture proposals that invoke eventual consistency without modeling business reconciliation.",
-      "aiReduces": "AI can help simulate edge cases and identify compensation paths.",
-      "aiSpecificWarning": "Do not let architectural vocabulary outrun business semantics.",
+      "aiCanHelpWith": [
+        "AI can help simulate edge cases and identify compensation paths."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can generate architecture proposals that invoke eventual consistency without modeling business reconciliation."
+      ],
+      "aiSpecificNotes": "Do not let architectural vocabulary outrun business semantics.",
       "oftenLeadsToFailureModes": [
         "dependency-fog"
+      ],
+      "adjacentDecisions": [
+        "sync-vs-event-driven",
+        "sql-vs-nosql"
       ],
       "relatedRedFlags": [
         "teams say eventual consistency but cannot explain user-visible consequences",
@@ -1110,10 +1170,6 @@
       ],
       "relatedPlaybooks": [
         "model-consistency-consequences"
-      ],
-      "adjacentDecisions": [
-        "sync-vs-event-driven",
-        "sql-vs-nosql"
       ],
       "frequency": "common",
       "severityIfWrong": "high",
@@ -1127,8 +1183,8 @@
     {
       "slug": "batch-vs-real-time-processing",
       "title": "Batch vs Real-Time Processing",
-      "family": "architecture",
       "decisionQuestion": "Should this data or workflow be processed in scheduled batches or in real time?",
+      "category": "architecture",
       "summary": "Usually a freshness-vs-complexity decision.",
       "decisionHeuristic": "Prefer batch unless faster freshness clearly changes business value.",
       "whatThisIsReallyAbout": "How much latency the business actually needs versus how much operational complexity it can afford.",
@@ -1140,11 +1196,6 @@
           "freshness requirements are measured in minutes or hours",
           "cost efficiency matters",
           "workflow tolerates delay"
-        ],
-        "realWorldFits": [
-          "daily reporting",
-          "overnight reconciliation",
-          "periodic enrichment and recalculation jobs"
         ],
         "strengths": [
           "simpler operations",
@@ -1160,7 +1211,14 @@
           "batch windows can become implicit deadlines",
           "large failure recovery can be painful"
         ],
-        "failureModeWhenMisused": "Creates stale systems where timeliness actually matters."
+        "failureModesWhenMisused": [
+          "Creates stale systems where timeliness actually matters."
+        ],
+        "realWorldFits": [
+          "daily reporting",
+          "overnight reconciliation",
+          "periodic enrichment and recalculation jobs"
+        ]
       },
       "optionB": {
         "name": "Real Time",
@@ -1168,11 +1226,6 @@
           "freshness directly affects user value or risk",
           "latency matters materially",
           "streaming/real-time ops maturity exists"
-        ],
-        "realWorldFits": [
-          "fraud/risk detection",
-          "live personalization",
-          "user-facing workflow state that must update immediately"
         ],
         "strengths": [
           "faster reactions",
@@ -1188,7 +1241,14 @@
           "real-time pipelines can be expensive to operate for marginal business gain",
           "downstream systems may not actually be real-time ready"
         ],
-        "failureModeWhenMisused": "Creates expensive always-on pipelines without meaningful business leverage."
+        "failureModesWhenMisused": [
+          "Creates expensive always-on pipelines without meaningful business leverage."
+        ],
+        "realWorldFits": [
+          "fraud/risk detection",
+          "live personalization",
+          "user-facing workflow state that must update immediately"
+        ]
       },
       "keyFactors": [
         "latency value",
@@ -1244,11 +1304,19 @@
         "optionA": "Often wins longer than teams expect because simpler systems stay reliable.",
         "optionB": "Wins when freshness is genuinely monetized or risk-relevant."
       },
-      "aiAmplifies": "AI may recommend streaming or real-time designs as generic best practice.",
-      "aiReduces": "AI can help estimate freshness value versus complexity burden.",
-      "aiSpecificWarning": "Do not optimize latency nobody will feel.",
+      "aiCanHelpWith": [
+        "AI can help estimate freshness value versus complexity burden."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI may recommend streaming or real-time designs as generic best practice."
+      ],
+      "aiSpecificNotes": "Do not optimize latency nobody will feel.",
       "oftenLeadsToFailureModes": [
         "local-optimization"
+      ],
+      "adjacentDecisions": [
+        "edge-logic-vs-centralized-backend-logic",
+        "sync-vs-event-driven"
       ],
       "relatedRedFlags": [
         "systems are real-time upstream and batch downstream without explicit design",
@@ -1256,10 +1324,6 @@
       ],
       "relatedPlaybooks": [
         "assess-latency-value"
-      ],
-      "adjacentDecisions": [
-        "edge-logic-vs-centralized-backend-logic",
-        "sync-vs-event-driven"
       ],
       "frequency": "common",
       "severityIfWrong": "medium-high",
@@ -1273,8 +1337,8 @@
     {
       "slug": "edge-logic-vs-centralized-backend-logic",
       "title": "Edge Logic vs Centralized Backend Logic",
-      "family": "architecture",
       "decisionQuestion": "Should logic execute closer to users or requests at the edge, or remain centralized in backend systems?",
+      "category": "architecture",
       "summary": "Usually a latency-and-distribution decision with governance consequences.",
       "decisionHeuristic": "Keep logic centralized unless edge placement creates a clear latency or locality win and the logic remains governable.",
       "whatThisIsReallyAbout": "Where logic should live for performance, control, observability, and consistency.",
@@ -1286,11 +1350,6 @@
           "latency matters materially",
           "request shaping or local decisions are lightweight",
           "global distribution matters"
-        ],
-        "realWorldFits": [
-          "CDN-layer personalization",
-          "lightweight request filtering or routing",
-          "geo-sensitive edge decisions"
         ],
         "strengths": [
           "lower latency",
@@ -1306,7 +1365,14 @@
           "logic can drift between edge and core systems",
           "observability may lag behind execution spread"
         ],
-        "failureModeWhenMisused": "Creates fragmented logic with weak traceability."
+        "failureModesWhenMisused": [
+          "Creates fragmented logic with weak traceability."
+        ],
+        "realWorldFits": [
+          "CDN-layer personalization",
+          "lightweight request filtering or routing",
+          "geo-sensitive edge decisions"
+        ]
       },
       "optionB": {
         "name": "Centralized Backend Logic",
@@ -1314,11 +1380,6 @@
           "behavior consistency matters more than latency wins",
           "observability and control are priorities",
           "logic is complex or policy-heavy"
-        ],
-        "realWorldFits": [
-          "policy-heavy decision engines",
-          "compliance-sensitive backend logic",
-          "complex domain workflows where central truth matters more than milliseconds"
         ],
         "strengths": [
           "clearer governance",
@@ -1333,7 +1394,14 @@
           "teams may over-centralize simple decisions that could be local",
           "global user experience may suffer"
         ],
-        "failureModeWhenMisused": "Creates unnecessarily centralized systems with weak local responsiveness."
+        "failureModesWhenMisused": [
+          "Creates unnecessarily centralized systems with weak local responsiveness."
+        ],
+        "realWorldFits": [
+          "policy-heavy decision engines",
+          "compliance-sensitive backend logic",
+          "complex domain workflows where central truth matters more than milliseconds"
+        ]
       },
       "keyFactors": [
         "latency value",
@@ -1389,11 +1457,19 @@
         "optionA": "Wins when low-latency locality remains a durable product advantage.",
         "optionB": "Wins when coherence, policy consistency, and observability dominate."
       },
-      "aiAmplifies": "AI can scaffold edge functions quickly, increasing logic sprawl risk.",
-      "aiReduces": "AI can map duplicated logic between edge and core systems.",
-      "aiSpecificWarning": "Generated edge code increases sprawl if ownership is weak.",
+      "aiCanHelpWith": [
+        "AI can map duplicated logic between edge and core systems."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can scaffold edge functions quickly, increasing logic sprawl risk."
+      ],
+      "aiSpecificNotes": "Generated edge code increases sprawl if ownership is weak.",
       "oftenLeadsToFailureModes": [
         "ownership-drift"
+      ],
+      "adjacentDecisions": [
+        "batch-vs-real-time-processing",
+        "local-autonomy-vs-central-governance"
       ],
       "relatedRedFlags": [
         "same rule exists in multiple runtime layers",
@@ -1401,10 +1477,6 @@
       ],
       "relatedPlaybooks": [
         "map-runtime-logic-placement"
-      ],
-      "adjacentDecisions": [
-        "batch-vs-real-time-processing",
-        "local-autonomy-vs-central-governance"
       ],
       "frequency": "occasional-common",
       "severityIfWrong": "medium-high",
@@ -1418,8 +1490,8 @@
     {
       "slug": "build-vs-buy",
       "title": "Build vs Buy",
-      "family": "product-delivery",
       "decisionQuestion": "Should we build this capability ourselves or buy an external solution?",
+      "category": "product-delivery",
       "summary": "Usually a control-vs-focus decision, not an engineering pride decision.",
       "decisionHeuristic": "Buy unless the capability is core, differentiating, or structurally awkward to outsource.",
       "whatThisIsReallyAbout": "Differentiation, ownership burden, integration cost, and long-term leverage.",
@@ -1432,11 +1504,6 @@
           "internal needs are materially unique",
           "long-term ownership is affordable",
           "integration constraints make buying awkward"
-        ],
-        "realWorldFits": [
-          "core business workflow engines",
-          "customer-visible differentiation layers",
-          "cases where vendor shape would fight the product shape constantly"
         ],
         "strengths": [
           "control over roadmap",
@@ -1452,7 +1519,14 @@
           "support, compliance, security, and operational responsibilities accumulate",
           "internal products often outlive enthusiasm"
         ],
-        "failureModeWhenMisused": "Creates bespoke infrastructure or product surface that is expensive to maintain and not strategically valuable."
+        "failureModesWhenMisused": [
+          "Creates bespoke infrastructure or product surface that is expensive to maintain and not strategically valuable."
+        ],
+        "realWorldFits": [
+          "core business workflow engines",
+          "customer-visible differentiation layers",
+          "cases where vendor shape would fight the product shape constantly"
+        ]
       },
       "optionB": {
         "name": "Buy",
@@ -1461,11 +1535,6 @@
           "market solutions are mature enough",
           "speed matters more than control",
           "integration cost is tolerable"
-        ],
-        "realWorldFits": [
-          "commodity support tooling",
-          "standard business capabilities like analytics, ticketing, or auth-adjacent surfaces",
-          "areas where speed-to-value matters more than deep customization"
         ],
         "strengths": [
           "faster adoption",
@@ -1481,7 +1550,14 @@
           "integration glue can quietly become your real product",
           "switching cost can become political and technical"
         ],
-        "failureModeWhenMisused": "Creates a vendor-shaped architecture with weak internal leverage and painful lock-in."
+        "failureModesWhenMisused": [
+          "Creates a vendor-shaped architecture with weak internal leverage and painful lock-in."
+        ],
+        "realWorldFits": [
+          "commodity support tooling",
+          "standard business capabilities like analytics, ticketing, or auth-adjacent surfaces",
+          "areas where speed-to-value matters more than deep customization"
+        ]
       },
       "keyFactors": [
         "strategic differentiation",
@@ -1547,12 +1623,20 @@
         "optionA": "May win long-term if the capability is truly core and durable.",
         "optionB": "Usually wins short to medium term if the capability is commodity and integration is bounded."
       },
-      "aiAmplifies": "AI lowers the apparent cost of building prototypes, making teams underestimate lifecycle ownership.",
-      "aiReduces": "AI can accelerate vendor evaluation, integration mapping, and internal prototype comparison.",
-      "aiSpecificWarning": "A fast AI-generated prototype is not evidence that owning the full product is cheap.",
+      "aiCanHelpWith": [
+        "AI can accelerate vendor evaluation, integration mapping, and internal prototype comparison."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI lowers the apparent cost of building prototypes, making teams underestimate lifecycle ownership."
+      ],
+      "aiSpecificNotes": "A fast AI-generated prototype is not evidence that owning the full product is cheap.",
       "oftenLeadsToFailureModes": [
         "platform-before-product",
         "synthetic-velocity"
+      ],
+      "adjacentDecisions": [
+        "platform-first-vs-product-first",
+        "generic-solution-vs-case-specific-solution"
       ],
       "relatedRedFlags": [
         "internal teams are rebuilding commodity features repeatedly",
@@ -1561,10 +1645,6 @@
       "relatedPlaybooks": [
         "evaluate-buy-vs-build",
         "run-total-cost-review"
-      ],
-      "adjacentDecisions": [
-        "platform-first-vs-product-first",
-        "generic-solution-vs-case-specific-solution"
       ],
       "frequency": "very common",
       "severityIfWrong": "high",
@@ -1579,8 +1659,8 @@
     {
       "slug": "speed-vs-robustness",
       "title": "Speed vs Robustness",
-      "family": "product-delivery",
       "decisionQuestion": "Should we optimize for faster delivery now or for stronger resilience and hardening now?",
+      "category": "product-delivery",
       "summary": "Usually a risk-timing trade-off, not a values trade-off.",
       "decisionHeuristic": "Move fast where rollback is cheap; harden early where trust and consequence are expensive.",
       "whatThisIsReallyAbout": "When to ship earlier versus when fragility cost is too high.",
@@ -1592,11 +1672,6 @@
           "learning value is urgent",
           "blast radius is controlled",
           "reversibility is high"
-        ],
-        "realWorldFits": [
-          "MVP feature validation",
-          "internal tools with easy rollback",
-          "low-risk experiments"
         ],
         "strengths": [
           "faster feedback",
@@ -1611,7 +1686,14 @@
         "hiddenCosts": [
           "temporary shortcuts often become inherited defaults"
         ],
-        "failureModeWhenMisused": "Creates synthetic velocity and hidden fragility."
+        "failureModesWhenMisused": [
+          "Creates synthetic velocity and hidden fragility."
+        ],
+        "realWorldFits": [
+          "MVP feature validation",
+          "internal tools with easy rollback",
+          "low-risk experiments"
+        ]
       },
       "optionB": {
         "name": "Robustness",
@@ -1619,11 +1701,6 @@
           "blast radius is large",
           "reversibility is low",
           "trust or safety matters strongly"
-        ],
-        "realWorldFits": [
-          "payments, entitlements, or compliance-sensitive paths",
-          "public APIs with many consumers",
-          "migration cutovers with hard-to-reverse outcomes"
         ],
         "strengths": [
           "stability",
@@ -1637,7 +1714,14 @@
         "hiddenCosts": [
           "teams may over-harden before validating value"
         ],
-        "failureModeWhenMisused": "Creates overbuilt systems that solve risks nobody is yet facing."
+        "failureModesWhenMisused": [
+          "Creates overbuilt systems that solve risks nobody is yet facing."
+        ],
+        "realWorldFits": [
+          "payments, entitlements, or compliance-sensitive paths",
+          "public APIs with many consumers",
+          "migration cutovers with hard-to-reverse outcomes"
+        ]
       },
       "keyFactors": [
         "blast radius",
@@ -1698,12 +1782,20 @@
         "optionA": "Wins early when uncertainty is high and rollback is cheap.",
         "optionB": "Wins wherever trust, scale, or irreversibility make failure expensive."
       },
-      "aiAmplifies": "AI can make speed look safer than it is by increasing output without proportionate hardening.",
-      "aiReduces": "AI can help accelerate testing and review, partially reducing the trade-off.",
-      "aiSpecificWarning": "Faster generation does not eliminate robustness work.",
+      "aiCanHelpWith": [
+        "AI can help accelerate testing and review, partially reducing the trade-off."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can make speed look safer than it is by increasing output without proportionate hardening."
+      ],
+      "aiSpecificNotes": "Faster generation does not eliminate robustness work.",
       "oftenLeadsToFailureModes": [
         "synthetic-velocity",
         "invisible-deadline"
+      ],
+      "adjacentDecisions": [
+        "ci-gate-strictness-vs-developer-throughput",
+        "experimentation-vs-operational-stability"
       ],
       "relatedRedFlags": [
         "teams celebrate speed but hide rework",
@@ -1711,10 +1803,6 @@
       ],
       "relatedPlaybooks": [
         "assess-blast-radius-before-shipping"
-      ],
-      "adjacentDecisions": [
-        "ci-gate-strictness-vs-developer-throughput",
-        "experimentation-vs-operational-stability"
       ],
       "frequency": "universal",
       "severityIfWrong": "high",
@@ -1728,8 +1816,8 @@
     {
       "slug": "scope-flexibility-vs-date-certainty",
       "title": "Scope Flexibility vs Date Certainty",
-      "family": "product-delivery",
       "decisionQuestion": "Should scope move to preserve date, or should date move to preserve scope?",
+      "category": "product-delivery",
       "summary": "Usually a commitment-shape decision, not a planning-format decision.",
       "decisionHeuristic": "Be explicit: one of date, scope, or quality must be more flexible.",
       "whatThisIsReallyAbout": "Which constraint is genuinely fixed and whether everyone agrees on that reality.",
@@ -1742,11 +1830,6 @@
           "value can be shaped incrementally",
           "trade-offs can be made explicitly"
         ],
-        "realWorldFits": [
-          "conference or regulatory dates",
-          "marketing launches with fixed windows",
-          "milestones where partial value still matters"
-        ],
         "strengths": [
           "preserves date certainty",
           "forces prioritization"
@@ -1758,7 +1841,14 @@
         "hiddenCosts": [
           "scope cuts can become accidental product drift"
         ],
-        "failureModeWhenMisused": "Creates a stealthy degradation of value under fixed calendar pressure."
+        "failureModesWhenMisused": [
+          "Creates a stealthy degradation of value under fixed calendar pressure."
+        ],
+        "realWorldFits": [
+          "conference or regulatory dates",
+          "marketing launches with fixed windows",
+          "milestones where partial value still matters"
+        ]
       },
       "optionB": {
         "name": "Date Flexibility",
@@ -1766,11 +1856,6 @@
           "scope integrity matters more than fixed timing",
           "coordination cost of partial release is high",
           "value depends on coherent whole"
-        ],
-        "realWorldFits": [
-          "internal platform initiatives",
-          "complex integrated releases",
-          "products where a partial version would create more confusion than value"
         ],
         "strengths": [
           "preserves intended scope",
@@ -1783,7 +1868,14 @@
         "hiddenCosts": [
           "dates may slip repeatedly if value shaping stays weak"
         ],
-        "failureModeWhenMisused": "Creates endless extension with no real finish discipline."
+        "failureModesWhenMisused": [
+          "Creates endless extension with no real finish discipline."
+        ],
+        "realWorldFits": [
+          "internal platform initiatives",
+          "complex integrated releases",
+          "products where a partial version would create more confusion than value"
+        ]
       },
       "keyFactors": [
         "true date constraint",
@@ -1839,22 +1931,26 @@
         "optionA": "Wins when timing creates most of the value.",
         "optionB": "Wins when coherence of the delivered whole matters more than calendar precision."
       },
-      "aiAmplifies": "AI can hide schedule risk by making reports look calmer and output look faster.",
-      "aiReduces": "AI can help scenario-plan different scope and date shapes.",
-      "aiSpecificWarning": "A polished summary is not an actual constraint decision.",
+      "aiCanHelpWith": [
+        "AI can help scenario-plan different scope and date shapes."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can hide schedule risk by making reports look calmer and output look faster."
+      ],
+      "aiSpecificNotes": "A polished summary is not an actual constraint decision.",
       "oftenLeadsToFailureModes": [
         "invisible-deadline",
         "ticket-theater"
+      ],
+      "adjacentDecisions": [
+        "speed-vs-robustness",
+        "one-way-door-vs-two-way-door-rollout"
       ],
       "relatedRedFlags": [
         "nobody can say what is fixed versus flexible"
       ],
       "relatedPlaybooks": [
         "frame-scope-time-quality-explicitly"
-      ],
-      "adjacentDecisions": [
-        "speed-vs-robustness",
-        "one-way-door-vs-two-way-door-rollout"
       ],
       "frequency": "very common",
       "severityIfWrong": "high",
@@ -1868,8 +1964,8 @@
     {
       "slug": "platform-first-vs-product-first",
       "title": "Platform First vs Product First",
-      "family": "product-delivery",
       "decisionQuestion": "Should we invest in a generalized internal platform now or solve immediate product needs first?",
+      "category": "product-delivery",
       "summary": "Usually a leverage-timing decision, not a maturity decision.",
       "decisionHeuristic": "Product-first until repeated shared demand is proven; platform-first only when real adopters already exist.",
       "whatThisIsReallyAbout": "When reuse is real, when it is imaginary, and how much evidence should exist before internal platform investment.",
@@ -1882,11 +1978,6 @@
           "multiple teams are blocked by the same capability gap",
           "adoption demand is real and measurable",
           "platform ownership exists"
-        ],
-        "realWorldFits": [
-          "internal developer platform with proven consumer demand",
-          "shared deployment/runtime capability needed by many teams now",
-          "well-understood repeated workflow pain across the organization"
         ],
         "strengths": [
           "shared leverage",
@@ -1902,7 +1993,14 @@
           "platform can become prestige work without real users",
           "teams may be forced into premature standardization"
         ],
-        "failureModeWhenMisused": "Becomes platform-before-product: elegant internal infrastructure waiting for a real problem."
+        "failureModesWhenMisused": [
+          "Becomes platform-before-product: elegant internal infrastructure waiting for a real problem."
+        ],
+        "realWorldFits": [
+          "internal developer platform with proven consumer demand",
+          "shared deployment/runtime capability needed by many teams now",
+          "well-understood repeated workflow pain across the organization"
+        ]
       },
       "optionB": {
         "name": "Product First",
@@ -1911,11 +2009,6 @@
           "user value is not yet well validated",
           "reuse is still hypothetical",
           "speed of delivery matters more than generalized leverage"
-        ],
-        "realWorldFits": [
-          "new products and experiments",
-          "single-team initiatives with unclear future reuse",
-          "domains where actual usage patterns are still emerging"
         ],
         "strengths": [
           "faster user value",
@@ -1931,7 +2024,14 @@
           "teams may postpone shared investment too long",
           "local solutions can harden"
         ],
-        "failureModeWhenMisused": "Creates repeated local hacks that later resist consolidation."
+        "failureModesWhenMisused": [
+          "Creates repeated local hacks that later resist consolidation."
+        ],
+        "realWorldFits": [
+          "new products and experiments",
+          "single-team initiatives with unclear future reuse",
+          "domains where actual usage patterns are still emerging"
+        ]
       },
       "keyFactors": [
         "evidence of repeated need",
@@ -1992,12 +2092,21 @@
         "optionA": "Wins when repeated demand is already real enough to pay back shared investment.",
         "optionB": "Wins when the domain still needs to teach you what the reusable problem actually is."
       },
-      "aiAmplifies": "AI makes internal platform scaffolding cheap, increasing the temptation to build elegant but weakly demanded foundations.",
-      "aiReduces": "AI can help compare repeated patterns across teams and reveal whether the platform case is real.",
-      "aiSpecificWarning": "A fast platform prototype is not evidence of durable adoption demand.",
+      "aiCanHelpWith": [
+        "AI can help compare repeated patterns across teams and reveal whether the platform case is real."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI makes internal platform scaffolding cheap, increasing the temptation to build elegant but weakly demanded foundations."
+      ],
+      "aiSpecificNotes": "A fast platform prototype is not evidence of durable adoption demand.",
       "oftenLeadsToFailureModes": [
         "platform-before-product",
         "abstraction-addiction"
+      ],
+      "adjacentDecisions": [
+        "build-vs-buy",
+        "generic-solution-vs-case-specific-solution",
+        "central-platform-team-vs-embedded-enablement"
       ],
       "relatedRedFlags": [
         "platform has no clear adopters",
@@ -2005,11 +2114,6 @@
       ],
       "relatedPlaybooks": [
         "validate-platform-demand"
-      ],
-      "adjacentDecisions": [
-        "build-vs-buy",
-        "generic-solution-vs-case-specific-solution",
-        "central-platform-team-vs-embedded-enablement"
       ],
       "frequency": "common",
       "severityIfWrong": "high",
@@ -2024,8 +2128,8 @@
     {
       "slug": "rewrite-vs-refactor",
       "title": "Rewrite vs Refactor",
-      "family": "product-delivery",
       "decisionQuestion": "Should we replace this system wholesale or improve it incrementally?",
+      "category": "product-delivery",
       "summary": "Usually a migration-discipline decision, not a cleanliness decision.",
       "decisionHeuristic": "Refactor by default; rewrite only when migration slices and retirement logic are explicit.",
       "whatThisIsReallyAbout": "Risk containment, value continuity, and how much hidden system behavior still matters.",
@@ -2038,11 +2142,6 @@
           "migration slices are clear",
           "legacy behavior can be mapped reliably",
           "parallel investment is acceptable"
-        ],
-        "realWorldFits": [
-          "systems with irrecoverable foundational constraints and a credible migration plan",
-          "small replaceable internal tools with bounded behavior",
-          "surfaces where the legacy workload can be retired slice by slice"
         ],
         "strengths": [
           "cleaner foundations",
@@ -2058,7 +2157,14 @@
           "unknown legacy behavior surfaces late",
           "teams often add ambition while rewriting"
         ],
-        "failureModeWhenMisused": "Turns into the friendly rewrite: a prestige effort with weak cutover discipline."
+        "failureModesWhenMisused": [
+          "Turns into the friendly rewrite: a prestige effort with weak cutover discipline."
+        ],
+        "realWorldFits": [
+          "systems with irrecoverable foundational constraints and a credible migration plan",
+          "small replaceable internal tools with bounded behavior",
+          "surfaces where the legacy workload can be retired slice by slice"
+        ]
       },
       "optionB": {
         "name": "Refactor",
@@ -2067,11 +2173,6 @@
           "core behavior is still valuable",
           "teams can isolate improvements gradually",
           "delivery pressure cannot tolerate parallel rebuild"
-        ],
-        "realWorldFits": [
-          "core business systems that must keep shipping",
-          "products with valuable but messy codebases",
-          "systems where seams for incremental change already exist"
         ],
         "strengths": [
           "lower immediate risk",
@@ -2087,7 +2188,14 @@
           "without discipline, refactoring can become endless patching",
           "teams may lose morale if progress feels invisible"
         ],
-        "failureModeWhenMisused": "Becomes endless compromise without meaningful structural improvement."
+        "failureModesWhenMisused": [
+          "Becomes endless compromise without meaningful structural improvement."
+        ],
+        "realWorldFits": [
+          "core business systems that must keep shipping",
+          "products with valuable but messy codebases",
+          "systems where seams for incremental change already exist"
+        ]
       },
       "keyFactors": [
         "legacy behavior complexity",
@@ -2149,12 +2257,20 @@
         "optionA": "May win only if the new target is genuinely better and retirement is believable.",
         "optionB": "Usually wins by preserving continuity while paying down risk incrementally."
       },
-      "aiAmplifies": "AI makes rewriting feel faster by making code generation cheaper, but it does not reduce hidden behavior risk.",
-      "aiReduces": "AI can help uncover legacy behavior and identify refactor seams.",
-      "aiSpecificWarning": "Generated replacement code does not equal validated replacement behavior.",
+      "aiCanHelpWith": [
+        "AI can help uncover legacy behavior and identify refactor seams."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI makes rewriting feel faster by making code generation cheaper, but it does not reduce hidden behavior risk."
+      ],
+      "aiSpecificNotes": "Generated replacement code does not equal validated replacement behavior.",
       "oftenLeadsToFailureModes": [
         "friendly-rewrite",
         "dependency-fog"
+      ],
+      "adjacentDecisions": [
+        "monolith-vs-microservices",
+        "scope-flexibility-vs-date-certainty"
       ],
       "relatedRedFlags": [
         "nobody can define parity",
@@ -2163,10 +2279,6 @@
       "relatedPlaybooks": [
         "run-a-phased-migration",
         "identify-refactor-seams"
-      ],
-      "adjacentDecisions": [
-        "monolith-vs-microservices",
-        "scope-flexibility-vs-date-certainty"
       ],
       "frequency": "common",
       "severityIfWrong": "high",
@@ -2180,8 +2292,8 @@
     {
       "slug": "generic-solution-vs-case-specific-solution",
       "title": "Generic Solution vs Case-Specific Solution",
-      "family": "product-delivery",
       "decisionQuestion": "Should we build for broad reuse now or solve this specific case directly?",
+      "category": "product-delivery",
       "summary": "Usually an abstraction-timing decision.",
       "decisionHeuristic": "Solve the specific case first unless you already have multiple real consumers.",
       "whatThisIsReallyAbout": "Whether reuse is real yet or merely hoped for.",
@@ -2193,11 +2305,6 @@
           "multiple real consumers already exist",
           "variation is known and recurring",
           "shared constraints are understood"
-        ],
-        "realWorldFits": [
-          "internal frameworks with several real teams depending on them",
-          "repeated workflow tooling with known, stable variance",
-          "common infrastructure components with proven shared demand"
         ],
         "strengths": [
           "reuse",
@@ -2213,7 +2320,14 @@
           "genericity can outrun actual demand",
           "edge cases can dominate design too early"
         ],
-        "failureModeWhenMisused": "Creates abstraction addiction and platform-before-product dynamics."
+        "failureModesWhenMisused": [
+          "Creates abstraction addiction and platform-before-product dynamics."
+        ],
+        "realWorldFits": [
+          "internal frameworks with several real teams depending on them",
+          "repeated workflow tooling with known, stable variance",
+          "common infrastructure components with proven shared demand"
+        ]
       },
       "optionB": {
         "name": "Case-Specific Solution",
@@ -2221,11 +2335,6 @@
           "need is local and immediate",
           "variation is not yet understood",
           "speed matters more than speculative reuse"
-        ],
-        "realWorldFits": [
-          "single-team product features",
-          "first implementations of a new workflow",
-          "bounded internal tools solving one near-term pain"
         ],
         "strengths": [
           "clarity",
@@ -2239,7 +2348,14 @@
         "hiddenCosts": [
           "shortcuts can harden into defaults"
         ],
-        "failureModeWhenMisused": "Creates scattered local fixes that later resist generalization."
+        "failureModesWhenMisused": [
+          "Creates scattered local fixes that later resist generalization."
+        ],
+        "realWorldFits": [
+          "single-team product features",
+          "first implementations of a new workflow",
+          "bounded internal tools solving one near-term pain"
+        ]
       },
       "keyFactors": [
         "number of consumers",
@@ -2295,21 +2411,25 @@
         "optionA": "Wins when reuse is already real enough to justify upfront complexity.",
         "optionB": "Wins early by preserving clarity and letting the real pattern emerge."
       },
-      "aiAmplifies": "AI makes generic scaffolding cheap, increasing the temptation to generalize too early.",
-      "aiReduces": "AI can compare multiple implementations to discover whether a true pattern exists.",
-      "aiSpecificWarning": "Generated genericity is still complexity.",
+      "aiCanHelpWith": [
+        "AI can compare multiple implementations to discover whether a true pattern exists."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI makes generic scaffolding cheap, increasing the temptation to generalize too early."
+      ],
+      "aiSpecificNotes": "Generated genericity is still complexity.",
       "oftenLeadsToFailureModes": [
         "abstraction-addiction"
+      ],
+      "adjacentDecisions": [
+        "platform-first-vs-product-first",
+        "convention-over-configuration-vs-flexibility"
       ],
       "relatedRedFlags": [
         "frameworks exist before repeated use exists"
       ],
       "relatedPlaybooks": [
         "wait-for-second-real-consumer"
-      ],
-      "adjacentDecisions": [
-        "platform-first-vs-product-first",
-        "convention-over-configuration-vs-flexibility"
       ],
       "frequency": "very common",
       "severityIfWrong": "medium-high",
@@ -2323,8 +2443,8 @@
     {
       "slug": "one-way-door-vs-two-way-door-rollout",
       "title": "One-Way Door vs Two-Way Door Rollout",
-      "family": "product-delivery",
       "decisionQuestion": "Is this change hard to reverse, or can we rollout in a reversible way?",
+      "category": "product-delivery",
       "summary": "Usually a reversibility and blast-radius decision.",
       "decisionHeuristic": "If uncertainty is high and rollback is feasible, prefer a two-way door.",
       "whatThisIsReallyAbout": "How much safety comes from keeping options open versus committing fully.",
@@ -2336,11 +2456,6 @@
           "commitment is intentional",
           "reversal cost is acceptable only because confidence is high",
           "dual-running or gradual fallback is impractical"
-        ],
-        "realWorldFits": [
-          "schema migrations with no dual-running path",
-          "sunsetting legacy platforms after explicit readiness criteria",
-          "irreversible vendor or protocol cutovers"
         ],
         "strengths": [
           "clarity",
@@ -2354,7 +2469,14 @@
         "hiddenCosts": [
           "organizations often overestimate certainty"
         ],
-        "failureModeWhenMisused": "Creates abrupt, high-blast-radius transitions."
+        "failureModesWhenMisused": [
+          "Creates abrupt, high-blast-radius transitions."
+        ],
+        "realWorldFits": [
+          "schema migrations with no dual-running path",
+          "sunsetting legacy platforms after explicit readiness criteria",
+          "irreversible vendor or protocol cutovers"
+        ]
       },
       "optionB": {
         "name": "Two-Way Door",
@@ -2362,11 +2484,6 @@
           "rollback matters",
           "uncertainty is material",
           "gradual migration or flags are feasible"
-        ],
-        "realWorldFits": [
-          "feature-flagged rollouts",
-          "progressive migrations",
-          "canary and staged deployments"
         ],
         "strengths": [
           "safer experimentation",
@@ -2380,7 +2497,14 @@
         "hiddenCosts": [
           "temporary rollback paths can become permanent clutter"
         ],
-        "failureModeWhenMisused": "Creates long-lived transitional complexity nobody retires."
+        "failureModesWhenMisused": [
+          "Creates long-lived transitional complexity nobody retires."
+        ],
+        "realWorldFits": [
+          "feature-flagged rollouts",
+          "progressive migrations",
+          "canary and staged deployments"
+        ]
       },
       "keyFactors": [
         "reversibility",
@@ -2436,21 +2560,25 @@
         "optionA": "Wins when certainty is unusually high and transitional complexity is too costly.",
         "optionB": "Wins when learning under controlled risk is more valuable than clean-looking commitment."
       },
-      "aiAmplifies": "AI-generated rollout scripts can create false confidence in reversibility.",
-      "aiReduces": "AI can help enumerate rollback paths and rollout hazards.",
-      "aiSpecificWarning": "Scripted rollback is not the same as proven rollback.",
+      "aiCanHelpWith": [
+        "AI can help enumerate rollback paths and rollout hazards."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI-generated rollout scripts can create false confidence in reversibility."
+      ],
+      "aiSpecificNotes": "Scripted rollback is not the same as proven rollback.",
       "oftenLeadsToFailureModes": [
         "invisible-deadline"
+      ],
+      "adjacentDecisions": [
+        "feature-flags-vs-branch-based-release-isolation",
+        "scope-flexibility-vs-date-certainty"
       ],
       "relatedRedFlags": [
         "teams call a change reversible without rehearsing rollback"
       ],
       "relatedPlaybooks": [
         "design-safe-rollout"
-      ],
-      "adjacentDecisions": [
-        "feature-flags-vs-branch-based-release-isolation",
-        "scope-flexibility-vs-date-certainty"
       ],
       "frequency": "common",
       "severityIfWrong": "high",
@@ -2464,8 +2592,8 @@
     {
       "slug": "customization-vs-standardization",
       "title": "Customization vs Standardization",
-      "family": "product-delivery",
       "decisionQuestion": "Should we adapt the system heavily for local needs or push toward standard patterns?",
+      "category": "product-delivery",
       "summary": "Usually a local-fit vs long-term coherence decision.",
       "decisionHeuristic": "Standardize unless local variation creates real differentiated value.",
       "whatThisIsReallyAbout": "How much local variation the organization can afford to own.",
@@ -2476,11 +2604,6 @@
         "bestWhen": [
           "local requirements are materially different",
           "customer or domain value depends on variation"
-        ],
-        "realWorldFits": [
-          "regulated market-specific workflows",
-          "enterprise products with genuinely distinct customer operating models",
-          "multi-country behavior where legal rules differ materially"
         ],
         "strengths": [
           "better local fit",
@@ -2494,18 +2617,20 @@
         "hiddenCosts": [
           "variation multiplies support and testing burdens"
         ],
-        "failureModeWhenMisused": "Creates fragmented systems with weak coherence."
+        "failureModesWhenMisused": [
+          "Creates fragmented systems with weak coherence."
+        ],
+        "realWorldFits": [
+          "regulated market-specific workflows",
+          "enterprise products with genuinely distinct customer operating models",
+          "multi-country behavior where legal rules differ materially"
+        ]
       },
       "optionB": {
         "name": "Standardization",
         "bestWhen": [
           "variation is mostly preference rather than necessity",
           "operational simplicity matters strongly"
-        ],
-        "realWorldFits": [
-          "internal platforms",
-          "products where consistency is itself part of the value",
-          "shared operating workflows with low true variance"
         ],
         "strengths": [
           "consistency",
@@ -2519,7 +2644,14 @@
         "hiddenCosts": [
           "rigid standardization can ignore real value-creating differences"
         ],
-        "failureModeWhenMisused": "Creates systems that are simple to operate but weakly matched to real users."
+        "failureModesWhenMisused": [
+          "Creates systems that are simple to operate but weakly matched to real users."
+        ],
+        "realWorldFits": [
+          "internal platforms",
+          "products where consistency is itself part of the value",
+          "shared operating workflows with low true variance"
+        ]
       },
       "keyFactors": [
         "value of variation",
@@ -2575,21 +2707,25 @@
         "optionA": "May win in specific markets or regulated contexts where local fit creates durable value.",
         "optionB": "Usually wins long-term by preserving coherence and lowering support complexity."
       },
-      "aiAmplifies": "AI can make local customization cheaper, risking customization sprawl.",
-      "aiReduces": "AI can help cluster variation requests into standardizable patterns.",
-      "aiSpecificWarning": "Cheaper customization does not remove lifecycle complexity.",
+      "aiCanHelpWith": [
+        "AI can help cluster variation requests into standardizable patterns."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can make local customization cheaper, risking customization sprawl."
+      ],
+      "aiSpecificNotes": "Cheaper customization does not remove lifecycle complexity.",
       "oftenLeadsToFailureModes": [
         "local-optimization"
+      ],
+      "adjacentDecisions": [
+        "convention-over-configuration-vs-flexibility",
+        "local-autonomy-vs-central-governance"
       ],
       "relatedRedFlags": [
         "same product behaves differently in too many untracked ways"
       ],
       "relatedPlaybooks": [
         "review-variation-economics"
-      ],
-      "adjacentDecisions": [
-        "convention-over-configuration-vs-flexibility",
-        "local-autonomy-vs-central-governance"
       ],
       "frequency": "common",
       "severityIfWrong": "medium-high",
@@ -2603,8 +2739,8 @@
     {
       "slug": "experimentation-vs-operational-stability",
       "title": "Experimentation vs Operational Stability",
-      "family": "product-delivery",
       "decisionQuestion": "How much change and experimentation can this system tolerate without undermining reliability?",
+      "category": "product-delivery",
       "summary": "Usually a learning-speed vs trust-preservation decision.",
       "decisionHeuristic": "Experiment at the edges and protect trust-critical cores.",
       "whatThisIsReallyAbout": "Where experimentation belongs and how much operational surface should be exposed to it.",
@@ -2617,11 +2753,6 @@
           "blast radius is controlled",
           "learning changes decisions materially"
         ],
-        "realWorldFits": [
-          "growth experiments",
-          "low-risk UI behavior changes",
-          "controlled rollout and feature-flagged learning"
-        ],
         "strengths": [
           "faster learning",
           "better adaptation"
@@ -2633,7 +2764,14 @@
         "hiddenCosts": [
           "teams may experiment on the wrong surfaces"
         ],
-        "failureModeWhenMisused": "Creates trust erosion under a banner of learning."
+        "failureModesWhenMisused": [
+          "Creates trust erosion under a banner of learning."
+        ],
+        "realWorldFits": [
+          "growth experiments",
+          "low-risk UI behavior changes",
+          "controlled rollout and feature-flagged learning"
+        ]
       },
       "optionB": {
         "name": "Operational Stability",
@@ -2641,11 +2779,6 @@
           "user trust is sensitive",
           "critical workflows are involved",
           "learning gain is low relative to risk"
-        ],
-        "realWorldFits": [
-          "payments and core account management",
-          "critical infrastructure operations",
-          "regulated workflows where variance carries major consequence"
         ],
         "strengths": [
           "predictability",
@@ -2658,7 +2791,14 @@
         "hiddenCosts": [
           "teams may become overly change-averse"
         ],
-        "failureModeWhenMisused": "Creates safe stagnation where experimentation could have been low risk and high value."
+        "failureModesWhenMisused": [
+          "Creates safe stagnation where experimentation could have been low risk and high value."
+        ],
+        "realWorldFits": [
+          "payments and core account management",
+          "critical infrastructure operations",
+          "regulated workflows where variance carries major consequence"
+        ]
       },
       "keyFactors": [
         "blast radius",
@@ -2713,22 +2853,26 @@
         "optionA": "Wins where rapid learning compounds product advantage.",
         "optionB": "Wins where preserving trust creates more durable value than experimentation velocity."
       },
-      "aiAmplifies": "AI lowers cost of trying more things, increasing temptation to experiment without enough operational guardrails.",
-      "aiReduces": "AI can simulate scenarios and narrow where live experimentation is actually needed.",
-      "aiSpecificWarning": "Lower cost of change increases governance need, not decreases it.",
+      "aiCanHelpWith": [
+        "AI can simulate scenarios and narrow where live experimentation is actually needed."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI lowers cost of trying more things, increasing temptation to experiment without enough operational guardrails."
+      ],
+      "aiSpecificNotes": "Lower cost of change increases governance need, not decreases it.",
       "oftenLeadsToFailureModes": [
         "silent-model-drift",
         "synthetic-velocity"
+      ],
+      "adjacentDecisions": [
+        "speed-vs-robustness",
+        "human-in-the-loop-vs-full-automation"
       ],
       "relatedRedFlags": [
         "experiments are run on core trust surfaces without explicit control"
       ],
       "relatedPlaybooks": [
         "segment-experiment-safe-surfaces"
-      ],
-      "adjacentDecisions": [
-        "speed-vs-robustness",
-        "human-in-the-loop-vs-full-automation"
       ],
       "frequency": "common",
       "severityIfWrong": "high",
@@ -2742,8 +2886,8 @@
     {
       "slug": "central-platform-team-vs-embedded-enablement",
       "title": "Central Platform Team vs Embedded Enablement",
-      "family": "team-operations",
       "decisionQuestion": "Should platform capability live in a central team or be embedded to enable product teams directly?",
+      "category": "team-operations",
       "summary": "Usually a leverage-distribution decision.",
       "decisionHeuristic": "Keep a central platform core; embed selectively where adoption or context gaps are the real bottleneck.",
       "whatThisIsReallyAbout": "How platform expertise scales without becoming a bottleneck or disappearing into every team unevenly.",
@@ -2755,11 +2899,6 @@
           "shared capability needs stewardship",
           "consistency matters strongly",
           "platform product thinking exists"
-        ],
-        "realWorldFits": [
-          "internal developer platforms",
-          "shared CI/CD and runtime foundations",
-          "security or compliance-heavy shared capabilities"
         ],
         "strengths": [
           "deep expertise concentration",
@@ -2773,7 +2912,14 @@
         "hiddenCosts": [
           "platform can optimize for itself over adopters"
         ],
-        "failureModeWhenMisused": "Creates ticket-based dependency on a remote internal vendor."
+        "failureModesWhenMisused": [
+          "Creates ticket-based dependency on a remote internal vendor."
+        ],
+        "realWorldFits": [
+          "internal developer platforms",
+          "shared CI/CD and runtime foundations",
+          "security or compliance-heavy shared capabilities"
+        ]
       },
       "optionB": {
         "name": "Embedded Enablement",
@@ -2781,11 +2927,6 @@
           "product-team context matters heavily",
           "adoption friction is high",
           "temporary deep support changes outcomes"
-        ],
-        "realWorldFits": [
-          "rolling out a platform to product teams with low adoption maturity",
-          "temporary embedded reliability or developer productivity support",
-          "teams with context-sensitive enablement gaps"
         ],
         "strengths": [
           "high context proximity",
@@ -2798,7 +2939,14 @@
         "hiddenCosts": [
           "enablement people can become roaming heroes rather than capability builders"
         ],
-        "failureModeWhenMisused": "Creates dependency on individuals and inconsistent practices."
+        "failureModesWhenMisused": [
+          "Creates dependency on individuals and inconsistent practices."
+        ],
+        "realWorldFits": [
+          "rolling out a platform to product teams with low adoption maturity",
+          "temporary embedded reliability or developer productivity support",
+          "teams with context-sensitive enablement gaps"
+        ]
       },
       "keyFactors": [
         "platform maturity",
@@ -2855,22 +3003,26 @@
         "optionA": "Wins when shared leverage and standards are the main constraint.",
         "optionB": "Wins as a tactical pattern when context and adoption friction dominate."
       },
-      "aiAmplifies": "AI can accelerate platform artifact production without proving adoption quality.",
-      "aiReduces": "AI can document platform usage patterns and common friction points.",
-      "aiSpecificWarning": "Platform polish is not platform usefulness.",
+      "aiCanHelpWith": [
+        "AI can document platform usage patterns and common friction points."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can accelerate platform artifact production without proving adoption quality."
+      ],
+      "aiSpecificNotes": "Platform polish is not platform usefulness.",
       "oftenLeadsToFailureModes": [
         "hero-trap",
         "platform-before-product"
+      ],
+      "adjacentDecisions": [
+        "platform-first-vs-product-first",
+        "specialist-teams-vs-cross-functional-teams"
       ],
       "relatedRedFlags": [
         "platform success is measured by output, not adoption"
       ],
       "relatedPlaybooks": [
         "review-platform-adoption-model"
-      ],
-      "adjacentDecisions": [
-        "platform-first-vs-product-first",
-        "specialist-teams-vs-cross-functional-teams"
       ],
       "frequency": "common",
       "severityIfWrong": "medium-high",
@@ -2884,8 +3036,8 @@
     {
       "slug": "specialist-teams-vs-cross-functional-teams",
       "title": "Specialist Teams vs Cross-Functional Teams",
-      "family": "team-operations",
       "decisionQuestion": "Should work be organized around specialists or end-to-end cross-functional teams?",
+      "category": "team-operations",
       "summary": "Usually a coordination-vs-depth decision, not a modernity decision.",
       "decisionHeuristic": "Prefer cross-functional flow for product work, but keep specialist concentration where depth is genuinely scarce and valuable.",
       "whatThisIsReallyAbout": "Flow efficiency, domain depth, handoff cost, and how work actually moves through the organization.",
@@ -2897,11 +3049,6 @@
           "deep expertise is essential",
           "work requires strong concentration of skill",
           "shared standards need strong stewardship"
-        ],
-        "realWorldFits": [
-          "security engineering",
-          "DBA or performance tuning groups",
-          "specialist QA, ML, or platform disciplines with scarce expertise"
         ],
         "strengths": [
           "deep craft expertise",
@@ -2917,7 +3064,14 @@
           "teams may optimize locally instead of systemically",
           "dependencies can become structural"
         ],
-        "failureModeWhenMisused": "Creates local excellence with global delivery friction."
+        "failureModesWhenMisused": [
+          "Creates local excellence with global delivery friction."
+        ],
+        "realWorldFits": [
+          "security engineering",
+          "DBA or performance tuning groups",
+          "specialist QA, ML, or platform disciplines with scarce expertise"
+        ]
       },
       "optionB": {
         "name": "Cross-Functional Teams",
@@ -2926,11 +3080,6 @@
           "work can be owned vertically",
           "dependencies need to shrink",
           "team scope is coherent"
-        ],
-        "realWorldFits": [
-          "product squads owning customer-facing capabilities",
-          "domain-aligned teams shipping continuously",
-          "teams where handoff reduction is a major strategic gain"
         ],
         "strengths": [
           "faster flow",
@@ -2946,7 +3095,14 @@
           "not all work packages cleanly into vertical ownership",
           "cross-functional in name can still hide specialist bottlenecks"
         ],
-        "failureModeWhenMisused": "Creates teams that appear autonomous but still depend on invisible specialists."
+        "failureModesWhenMisused": [
+          "Creates teams that appear autonomous but still depend on invisible specialists."
+        ],
+        "realWorldFits": [
+          "product squads owning customer-facing capabilities",
+          "domain-aligned teams shipping continuously",
+          "teams where handoff reduction is a major strategic gain"
+        ]
       },
       "keyFactors": [
         "work shape",
@@ -3005,13 +3161,21 @@
         "optionA": "Wins where specialist depth remains the limiting factor.",
         "optionB": "Wins where flow and ownership produce more leverage than concentrated expertise."
       },
-      "aiAmplifies": "AI may make shallow generalism look stronger than it is, masking where deep expertise still matters.",
-      "aiReduces": "AI can help broaden baseline capability, documentation, and knowledge transfer across teams.",
-      "aiSpecificWarning": "AI assistance does not remove the need for real specialist judgment in high-risk domains.",
+      "aiCanHelpWith": [
+        "AI can help broaden baseline capability, documentation, and knowledge transfer across teams."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI may make shallow generalism look stronger than it is, masking where deep expertise still matters."
+      ],
+      "aiSpecificNotes": "AI assistance does not remove the need for real specialist judgment in high-risk domains.",
       "oftenLeadsToFailureModes": [
         "hero-trap",
         "dependency-fog",
         "local-optimization"
+      ],
+      "adjacentDecisions": [
+        "central-platform-team-vs-embedded-enablement",
+        "strong-ownership-vs-shared-ownership"
       ],
       "relatedRedFlags": [
         "teams look independent but escalate to the same few experts",
@@ -3020,10 +3184,6 @@
       "relatedPlaybooks": [
         "review-team-topology",
         "map-delivery-handoffs"
-      ],
-      "adjacentDecisions": [
-        "central-platform-team-vs-embedded-enablement",
-        "strong-ownership-vs-shared-ownership"
       ],
       "frequency": "common",
       "severityIfWrong": "high",
@@ -3038,8 +3198,8 @@
     {
       "slug": "strong-ownership-vs-shared-ownership",
       "title": "Strong Ownership vs Shared Ownership",
-      "family": "team-operations",
       "decisionQuestion": "Should one team clearly own this area, or should multiple teams share ownership?",
+      "category": "team-operations",
       "summary": "Usually an accountability-vs-flexibility decision.",
       "decisionHeuristic": "Prefer explicit ownership, then design collaboration around it.",
       "whatThisIsReallyAbout": "Whether clarity of responsibility matters more than broad access and collective stewardship.",
@@ -3051,11 +3211,6 @@
           "accountability must be explicit",
           "change coordination cost is high",
           "domain boundaries are real"
-        ],
-        "realWorldFits": [
-          "service ownership",
-          "domain-aligned products",
-          "critical infrastructure with clear stewardship"
         ],
         "strengths": [
           "clarity",
@@ -3069,7 +3224,14 @@
         "hiddenCosts": [
           "ownership can harden into gatekeeping"
         ],
-        "failureModeWhenMisused": "Creates hero teams or territorial behavior."
+        "failureModesWhenMisused": [
+          "Creates hero teams or territorial behavior."
+        ],
+        "realWorldFits": [
+          "service ownership",
+          "domain-aligned products",
+          "critical infrastructure with clear stewardship"
+        ]
       },
       "optionB": {
         "name": "Shared Ownership",
@@ -3077,11 +3239,6 @@
           "knowledge distribution matters",
           "surface is broad but not deeply bounded",
           "team collaboration is high quality"
-        ],
-        "realWorldFits": [
-          "shared libraries with light governance",
-          "cross-cutting standards maintained by several groups",
-          "broad documentation or enablement surfaces"
         ],
         "strengths": [
           "broader resilience",
@@ -3095,7 +3252,14 @@
         "hiddenCosts": [
           "shared ownership often means unclear ownership in practice"
         ],
-        "failureModeWhenMisused": "Leads to ownership drift."
+        "failureModesWhenMisused": [
+          "Leads to ownership drift."
+        ],
+        "realWorldFits": [
+          "shared libraries with light governance",
+          "cross-cutting standards maintained by several groups",
+          "broad documentation or enablement surfaces"
+        ]
       },
       "keyFactors": [
         "accountability need",
@@ -3147,22 +3311,26 @@
         "optionA": "Usually wins long-term because clarity compounds.",
         "optionB": "Wins only where shared stewardship is truly structured and lightweight."
       },
-      "aiAmplifies": "AI can make shared code contribution easier while leaving responsibility unclear.",
-      "aiReduces": "AI can help document ownership maps and stale areas.",
-      "aiSpecificWarning": "More contributors does not mean more ownership clarity.",
+      "aiCanHelpWith": [
+        "AI can help document ownership maps and stale areas."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can make shared code contribution easier while leaving responsibility unclear."
+      ],
+      "aiSpecificNotes": "More contributors does not mean more ownership clarity.",
       "oftenLeadsToFailureModes": [
         "ownership-drift",
         "hero-trap"
+      ],
+      "adjacentDecisions": [
+        "local-autonomy-vs-central-governance",
+        "specialist-teams-vs-cross-functional-teams"
       ],
       "relatedRedFlags": [
         "everyone can change it, nobody truly owns it"
       ],
       "relatedPlaybooks": [
         "re-establish-service-ownership"
-      ],
-      "adjacentDecisions": [
-        "local-autonomy-vs-central-governance",
-        "specialist-teams-vs-cross-functional-teams"
       ],
       "frequency": "very common",
       "severityIfWrong": "high",
@@ -3176,8 +3344,8 @@
     {
       "slug": "local-autonomy-vs-central-governance",
       "title": "Local Team Autonomy vs Central Governance",
-      "family": "team-operations",
       "decisionQuestion": "How much freedom should teams have versus centrally enforced standards and controls?",
+      "category": "team-operations",
       "summary": "Usually a flow-vs-coherence decision.",
       "decisionHeuristic": "Govern the few things that truly matter; leave the rest to teams.",
       "whatThisIsReallyAbout": "How much variation the organization can tolerate in exchange for local speed and ownership.",
@@ -3189,11 +3357,6 @@
           "teams are mature",
           "decision context is highly local",
           "variation cost is tolerable"
-        ],
-        "realWorldFits": [
-          "mature product teams with low shared dependency",
-          "non-critical implementation decisions",
-          "experimentation-heavy domains"
         ],
         "strengths": [
           "faster local decisions",
@@ -3208,7 +3371,14 @@
         "hiddenCosts": [
           "local wins can increase system-wide pain"
         ],
-        "failureModeWhenMisused": "Leads to local optimization and fragmented practices."
+        "failureModesWhenMisused": [
+          "Leads to local optimization and fragmented practices."
+        ],
+        "realWorldFits": [
+          "mature product teams with low shared dependency",
+          "non-critical implementation decisions",
+          "experimentation-heavy domains"
+        ]
       },
       "optionB": {
         "name": "Central Governance",
@@ -3216,11 +3386,6 @@
           "risk control matters",
           "shared standards materially reduce harm",
           "interoperability is important"
-        ],
-        "realWorldFits": [
-          "security and compliance controls",
-          "critical interoperability standards",
-          "shared platform rules that prevent real cross-team harm"
         ],
         "strengths": [
           "consistency",
@@ -3235,7 +3400,14 @@
         "hiddenCosts": [
           "governance can become performance theater"
         ],
-        "failureModeWhenMisused": "Leads to ticket theater and stakeholder frustration without better outcomes."
+        "failureModesWhenMisused": [
+          "Leads to ticket theater and stakeholder frustration without better outcomes."
+        ],
+        "realWorldFits": [
+          "security and compliance controls",
+          "critical interoperability standards",
+          "shared platform rules that prevent real cross-team harm"
+        ]
       },
       "keyFactors": [
         "risk level",
@@ -3291,22 +3463,26 @@
         "optionA": "Wins when local context truly dominates and teams are mature.",
         "optionB": "Wins where variation cost compounds faster than local speed gains."
       },
-      "aiAmplifies": "AI can accelerate local divergence by making alternative implementations cheap.",
-      "aiReduces": "AI can help codify governance as guidance and checks rather than meetings.",
-      "aiSpecificWarning": "Cheap local variation increases the importance of knowing which standards are non-negotiable.",
+      "aiCanHelpWith": [
+        "AI can help codify governance as guidance and checks rather than meetings."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can accelerate local divergence by making alternative implementations cheap."
+      ],
+      "aiSpecificNotes": "Cheap local variation increases the importance of knowing which standards are non-negotiable.",
       "oftenLeadsToFailureModes": [
         "local-optimization",
         "ticket-theater"
+      ],
+      "adjacentDecisions": [
+        "strong-ownership-vs-shared-ownership",
+        "customization-vs-standardization"
       ],
       "relatedRedFlags": [
         "teams differ in critical behaviors without clear intent"
       ],
       "relatedPlaybooks": [
         "define-minimum-viable-governance"
-      ],
-      "adjacentDecisions": [
-        "strong-ownership-vs-shared-ownership",
-        "customization-vs-standardization"
       ],
       "frequency": "very common",
       "severityIfWrong": "high",
@@ -3320,8 +3496,8 @@
     {
       "slug": "documentation-first-vs-tacit-coordination",
       "title": "Documentation First vs Tacit Coordination",
-      "family": "team-operations",
       "decisionQuestion": "Should teams rely primarily on written artifacts or on synchronous or tacit coordination?",
+      "category": "team-operations",
       "summary": "Usually a scale-and-memory decision.",
       "decisionHeuristic": "Document enduring decisions and critical operations; keep ephemeral coordination lightweight.",
       "whatThisIsReallyAbout": "How much of the system of work should survive beyond people's heads and meetings.",
@@ -3333,11 +3509,6 @@
           "team count is high",
           "turnover or onboarding matters",
           "decisions have lasting impact"
-        ],
-        "realWorldFits": [
-          "architecture decisions",
-          "runbooks and critical operational procedures",
-          "cross-team product or platform contracts"
         ],
         "strengths": [
           "durability",
@@ -3351,7 +3522,14 @@
         "hiddenCosts": [
           "documentation can become ritual rather than useful memory"
         ],
-        "failureModeWhenMisused": "Creates artifact theater with weak real alignment."
+        "failureModesWhenMisused": [
+          "Creates artifact theater with weak real alignment."
+        ],
+        "realWorldFits": [
+          "architecture decisions",
+          "runbooks and critical operational procedures",
+          "cross-team product or platform contracts"
+        ]
       },
       "optionB": {
         "name": "Tacit Coordination",
@@ -3359,11 +3537,6 @@
           "team is small",
           "work is fast-moving and local",
           "high-bandwidth communication is easy"
-        ],
-        "realWorldFits": [
-          "small colocated teams",
-          "short-lived decisions",
-          "rapid problem-solving loops where durability is not yet needed"
         ],
         "strengths": [
           "speed",
@@ -3377,7 +3550,14 @@
         "hiddenCosts": [
           "knowledge lives in people until the cost becomes visible"
         ],
-        "failureModeWhenMisused": "Leads to hero trap and ownership drift."
+        "failureModesWhenMisused": [
+          "Leads to hero trap and ownership drift."
+        ],
+        "realWorldFits": [
+          "small colocated teams",
+          "short-lived decisions",
+          "rapid problem-solving loops where durability is not yet needed"
+        ]
       },
       "keyFactors": [
         "team size",
@@ -3433,12 +3613,20 @@
         "optionA": "Wins as team scale and memory needs increase.",
         "optionB": "Wins only while coordination remains local and short-lived."
       },
-      "aiAmplifies": "AI can generate lots of documentation quickly, increasing the risk of stale but polished memory.",
-      "aiReduces": "AI can summarize decisions and improve findability of useful docs.",
-      "aiSpecificWarning": "Generated docs are only useful if tied to real decisions and maintained ownership.",
+      "aiCanHelpWith": [
+        "AI can summarize decisions and improve findability of useful docs."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can generate lots of documentation quickly, increasing the risk of stale but polished memory."
+      ],
+      "aiSpecificNotes": "Generated docs are only useful if tied to real decisions and maintained ownership.",
       "oftenLeadsToFailureModes": [
         "hero-trap",
         "ticket-theater"
+      ],
+      "adjacentDecisions": [
+        "synchronous-collaboration-vs-async-first",
+        "strong-ownership-vs-shared-ownership"
       ],
       "relatedRedFlags": [
         "critical knowledge exists only in chats and memory",
@@ -3446,10 +3634,6 @@
       ],
       "relatedPlaybooks": [
         "document-decisions-not-everything"
-      ],
-      "adjacentDecisions": [
-        "synchronous-collaboration-vs-async-first",
-        "strong-ownership-vs-shared-ownership"
       ],
       "frequency": "very common",
       "severityIfWrong": "medium-high",
@@ -3463,8 +3647,8 @@
     {
       "slug": "synchronous-collaboration-vs-async-first",
       "title": "Synchronous Collaboration vs Async-First Collaboration",
-      "family": "team-operations",
       "decisionQuestion": "Should the team coordinate mainly through real-time meetings or chat, or asynchronous artifacts and workflows?",
+      "category": "team-operations",
       "summary": "Usually a speed-of-alignment vs depth-of-focus decision.",
       "decisionHeuristic": "Use async for durable coordination; use sync intentionally for ambiguity and fast convergence.",
       "whatThisIsReallyAbout": "Whether communication optimizes for immediate alignment or sustainable scale and focus.",
@@ -3476,11 +3660,6 @@
           "ambiguity is high",
           "topic is complex and interactive",
           "small groups need rapid convergence"
-        ],
-        "realWorldFits": [
-          "incident response",
-          "architecture disagreement resolution",
-          "rapid cross-team decision sessions"
         ],
         "strengths": [
           "faster immediate clarification",
@@ -3494,7 +3673,14 @@
         "hiddenCosts": [
           "oral decisions can evaporate"
         ],
-        "failureModeWhenMisused": "Creates meeting culture rot and coordination dependence."
+        "failureModesWhenMisused": [
+          "Creates meeting culture rot and coordination dependence."
+        ],
+        "realWorldFits": [
+          "incident response",
+          "architecture disagreement resolution",
+          "rapid cross-team decision sessions"
+        ]
       },
       "optionB": {
         "name": "Async-First",
@@ -3502,11 +3688,6 @@
           "team is distributed",
           "focus time matters",
           "communication can be structured clearly"
-        ],
-        "realWorldFits": [
-          "distributed teams",
-          "RFC and ADR workflows",
-          "status and planning communication that benefits from durable records"
         ],
         "strengths": [
           "better focus",
@@ -3520,7 +3701,14 @@
         "hiddenCosts": [
           "teams may confuse async with low responsiveness"
         ],
-        "failureModeWhenMisused": "Creates slow drift and unresolved ambiguity under a banner of focus."
+        "failureModesWhenMisused": [
+          "Creates slow drift and unresolved ambiguity under a banner of focus."
+        ],
+        "realWorldFits": [
+          "distributed teams",
+          "RFC and ADR workflows",
+          "status and planning communication that benefits from durable records"
+        ]
       },
       "keyFactors": [
         "ambiguity level",
@@ -3576,12 +3764,19 @@
         "optionA": "Wins in short bursts when ambiguity is the real bottleneck.",
         "optionB": "Wins long-term by preserving focus and building organizational memory."
       },
-      "aiAmplifies": "AI can make async artifacts easier to produce but may also increase low-signal communication volume.",
-      "aiReduces": "AI can summarize threads and reduce sync load when signal is already present.",
-      "aiSpecificWarning": "Cheaper summaries do not remove the need for real decision clarity.",
+      "aiCanHelpWith": [
+        "AI can summarize threads and reduce sync load when signal is already present."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can make async artifacts easier to produce but may also increase low-signal communication volume."
+      ],
+      "aiSpecificNotes": "Cheaper summaries do not remove the need for real decision clarity.",
       "oftenLeadsToFailureModes": [
         "ticket-theater",
         "consensus-trap"
+      ],
+      "adjacentDecisions": [
+        "documentation-first-vs-tacit-coordination"
       ],
       "relatedRedFlags": [
         "team is constantly in meetings but still unclear",
@@ -3589,9 +3784,6 @@
       ],
       "relatedPlaybooks": [
         "use-sync-for-ambiguity-async-for-memory"
-      ],
-      "adjacentDecisions": [
-        "documentation-first-vs-tacit-coordination"
       ],
       "frequency": "very common",
       "severityIfWrong": "medium",
@@ -3605,8 +3797,8 @@
     {
       "slug": "test-pyramid-vs-heavy-end-to-end",
       "title": "Test Pyramid vs Heavy End-to-End",
-      "family": "quality-delivery",
       "decisionQuestion": "Should confidence rely mainly on lower-level tests or on broad end-to-end coverage?",
+      "category": "quality-delivery",
       "summary": "Usually a feedback-speed vs system-confidence decision.",
       "decisionHeuristic": "Bias toward fast lower-level tests, but keep enough end-to-end coverage to prove real flows.",
       "whatThisIsReallyAbout": "Where confidence should be created, where it should be verified, and how much slowness the team can afford.",
@@ -3618,11 +3810,6 @@
           "system boundaries are testable",
           "fast feedback matters strongly",
           "team can design for testability"
-        ],
-        "realWorldFits": [
-          "well-modularized services",
-          "applications with clear seam boundaries",
-          "teams optimizing for fast developer feedback"
         ],
         "strengths": [
           "fast feedback",
@@ -3636,7 +3823,14 @@
         "hiddenCosts": [
           "teams can claim confidence without enough system-level truth"
         ],
-        "failureModeWhenMisused": "Creates false confidence in isolated correctness."
+        "failureModesWhenMisused": [
+          "Creates false confidence in isolated correctness."
+        ],
+        "realWorldFits": [
+          "well-modularized services",
+          "applications with clear seam boundaries",
+          "teams optimizing for fast developer feedback"
+        ]
       },
       "optionB": {
         "name": "Heavy End-to-End",
@@ -3644,11 +3838,6 @@
           "integration risk dominates",
           "system behavior is the main concern",
           "test environments are reliable enough"
-        ],
-        "realWorldFits": [
-          "legacy integration-heavy systems",
-          "complex workflow validation",
-          "products where key failure risk lives between components"
         ],
         "strengths": [
           "higher realism",
@@ -3662,7 +3851,14 @@
         "hiddenCosts": [
           "teams may become dependent on slow brittle suites"
         ],
-        "failureModeWhenMisused": "Creates delivery drag and fragile confidence mechanisms."
+        "failureModesWhenMisused": [
+          "Creates delivery drag and fragile confidence mechanisms."
+        ],
+        "realWorldFits": [
+          "legacy integration-heavy systems",
+          "complex workflow validation",
+          "products where key failure risk lives between components"
+        ]
       },
       "keyFactors": [
         "testability",
@@ -3717,11 +3913,19 @@
         "optionA": "Wins when developer feedback speed compounds productivity.",
         "optionB": "Wins only when system confidence from real-path testing is the dominant gap."
       },
-      "aiAmplifies": "AI can generate lots of low-value tests quickly, inflating counts without confidence.",
-      "aiReduces": "AI can help identify coverage gaps and generate scenario ideas.",
-      "aiSpecificWarning": "Generated tests are not automatically meaningful tests.",
+      "aiCanHelpWith": [
+        "AI can help identify coverage gaps and generate scenario ideas."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can generate lots of low-value tests quickly, inflating counts without confidence."
+      ],
+      "aiSpecificNotes": "Generated tests are not automatically meaningful tests.",
       "oftenLeadsToFailureModes": [
         "synthetic-velocity"
+      ],
+      "adjacentDecisions": [
+        "ci-gate-strictness-vs-developer-throughput",
+        "manual-review-depth-vs-automation-dependence"
       ],
       "relatedRedFlags": [
         "test count is high but confidence is low",
@@ -3729,10 +3933,6 @@
       ],
       "relatedPlaybooks": [
         "rebalance-test-strategy"
-      ],
-      "adjacentDecisions": [
-        "ci-gate-strictness-vs-developer-throughput",
-        "manual-review-depth-vs-automation-dependence"
       ],
       "frequency": "very common",
       "severityIfWrong": "medium-high",
@@ -3746,8 +3946,8 @@
     {
       "slug": "ci-gate-strictness-vs-developer-throughput",
       "title": "CI Gate Strictness vs Developer Throughput",
-      "family": "quality-delivery",
       "decisionQuestion": "How strict should delivery gates be versus how much friction can developers tolerate?",
+      "category": "quality-delivery",
       "summary": "Usually a trust-in-automation vs speed-of-iteration decision.",
       "decisionHeuristic": "Be strict on high-risk paths and lighter where reversibility is strong.",
       "whatThisIsReallyAbout": "How much risk should be caught before merge or release versus after.",
@@ -3760,11 +3960,6 @@
           "quality escapes are expensive",
           "pipeline quality is good enough to earn trust"
         ],
-        "realWorldFits": [
-          "payments or regulated changes",
-          "high-blast-radius infrastructure changes",
-          "security-sensitive release paths"
-        ],
         "strengths": [
           "more pre-merge confidence",
           "reduced escape risk"
@@ -3776,7 +3971,14 @@
         "hiddenCosts": [
           "teams may optimize around the gate rather than the intent"
         ],
-        "failureModeWhenMisused": "Creates ritualized compliance and slow flow."
+        "failureModesWhenMisused": [
+          "Creates ritualized compliance and slow flow."
+        ],
+        "realWorldFits": [
+          "payments or regulated changes",
+          "high-blast-radius infrastructure changes",
+          "security-sensitive release paths"
+        ]
       },
       "optionB": {
         "name": "Higher Throughput",
@@ -3784,11 +3986,6 @@
           "blast radius is contained",
           "rollback is easy",
           "learning speed matters"
-        ],
-        "realWorldFits": [
-          "internal tools with safe rollback",
-          "low-risk feature iteration",
-          "early product discovery loops"
         ],
         "strengths": [
           "faster iteration",
@@ -3801,7 +3998,14 @@
         "hiddenCosts": [
           "quality debt can quietly relocate downstream"
         ],
-        "failureModeWhenMisused": "Creates fast merges with slow recovery."
+        "failureModesWhenMisused": [
+          "Creates fast merges with slow recovery."
+        ],
+        "realWorldFits": [
+          "internal tools with safe rollback",
+          "low-risk feature iteration",
+          "early product discovery loops"
+        ]
       },
       "keyFactors": [
         "blast radius",
@@ -3859,12 +4063,20 @@
         "optionA": "Wins when quality escapes are structurally expensive.",
         "optionB": "Wins where fast learning matters and rollback plus monitoring are strong."
       },
-      "aiAmplifies": "AI can increase change volume, which makes weak gates riskier and bad gates more painful.",
-      "aiReduces": "AI can help classify change risk and tune gates by surface.",
-      "aiSpecificWarning": "Higher output volume increases need for smart gating, not blanket friction.",
+      "aiCanHelpWith": [
+        "AI can help classify change risk and tune gates by surface."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can increase change volume, which makes weak gates riskier and bad gates more painful."
+      ],
+      "aiSpecificNotes": "Higher output volume increases need for smart gating, not blanket friction.",
       "oftenLeadsToFailureModes": [
         "synthetic-velocity",
         "ticket-theater"
+      ],
+      "adjacentDecisions": [
+        "test-pyramid-vs-heavy-end-to-end",
+        "speed-vs-robustness"
       ],
       "relatedRedFlags": [
         "developers distrust the pipeline",
@@ -3872,10 +4084,6 @@
       ],
       "relatedPlaybooks": [
         "risk-tier-ci-gates"
-      ],
-      "adjacentDecisions": [
-        "test-pyramid-vs-heavy-end-to-end",
-        "speed-vs-robustness"
       ],
       "frequency": "very common",
       "severityIfWrong": "medium-high",
@@ -3889,8 +4097,8 @@
     {
       "slug": "feature-flags-vs-branch-based-release-isolation",
       "title": "Feature Flags vs Branch-Based Release Isolation",
-      "family": "quality-delivery",
       "decisionQuestion": "Should release control happen through runtime flags or through branching and release isolation?",
+      "category": "quality-delivery",
       "summary": "Usually a rollout-control vs codebase-complexity decision.",
       "decisionHeuristic": "Use flags for controlled rollout if flag hygiene is strong; avoid both long-lived flags and long-lived branches.",
       "whatThisIsReallyAbout": "How to decouple deployment from release while keeping code complexity manageable.",
@@ -3902,11 +4110,6 @@
           "progressive rollout matters",
           "deploy and release decoupling is valuable",
           "flag lifecycle can be managed"
-        ],
-        "realWorldFits": [
-          "progressive product rollouts",
-          "canary exposure",
-          "A/B experimentation and controlled feature exposure"
         ],
         "strengths": [
           "safe rollout patterns",
@@ -3921,7 +4124,14 @@
         "hiddenCosts": [
           "stale flags accumulate and distort system logic"
         ],
-        "failureModeWhenMisused": "Creates permanent branching logic and operational confusion."
+        "failureModesWhenMisused": [
+          "Creates permanent branching logic and operational confusion."
+        ],
+        "realWorldFits": [
+          "progressive product rollouts",
+          "canary exposure",
+          "A/B experimentation and controlled feature exposure"
+        ]
       },
       "optionB": {
         "name": "Branch-Based Isolation",
@@ -3929,11 +4139,6 @@
           "short-lived isolation is enough",
           "runtime branching is undesirable",
           "release coordination is manageable"
-        ],
-        "realWorldFits": [
-          "short release hardening windows",
-          "small teams with low need for progressive exposure",
-          "cases where runtime toggle complexity would be worse than temporary branch isolation"
         ],
         "strengths": [
           "cleaner runtime behavior",
@@ -3947,7 +4152,14 @@
         "hiddenCosts": [
           "release branches can become hiding places for integration debt"
         ],
-        "failureModeWhenMisused": "Creates painful reintegration and late discovery of conflicts."
+        "failureModesWhenMisused": [
+          "Creates painful reintegration and late discovery of conflicts."
+        ],
+        "realWorldFits": [
+          "short release hardening windows",
+          "small teams with low need for progressive exposure",
+          "cases where runtime toggle complexity would be worse than temporary branch isolation"
+        ]
       },
       "keyFactors": [
         "rollout control need",
@@ -4002,11 +4214,19 @@
         "optionA": "Wins when safe rollout and learning matter repeatedly.",
         "optionB": "Wins in narrow cases where isolation is brief and rollout sophistication is unnecessary."
       },
-      "aiAmplifies": "AI can generate more flag-dependent code quickly, worsening toggle debt.",
-      "aiReduces": "AI can detect stale flags and branch hotspots.",
-      "aiSpecificWarning": "Cheap branching logic becomes expensive runtime complexity.",
+      "aiCanHelpWith": [
+        "AI can detect stale flags and branch hotspots."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can generate more flag-dependent code quickly, worsening toggle debt."
+      ],
+      "aiSpecificNotes": "Cheap branching logic becomes expensive runtime complexity.",
       "oftenLeadsToFailureModes": [
         "ownership-drift"
+      ],
+      "adjacentDecisions": [
+        "one-way-door-vs-two-way-door-rollout",
+        "experimentation-vs-operational-stability"
       ],
       "relatedRedFlags": [
         "nobody knows which flags are still live",
@@ -4014,10 +4234,6 @@
       ],
       "relatedPlaybooks": [
         "clean-up-flag-debt"
-      ],
-      "adjacentDecisions": [
-        "one-way-door-vs-two-way-door-rollout",
-        "experimentation-vs-operational-stability"
       ],
       "frequency": "common",
       "severityIfWrong": "medium-high",
@@ -4031,8 +4247,8 @@
     {
       "slug": "backward-compatibility-vs-faster-evolution",
       "title": "Backward Compatibility vs Faster Evolution",
-      "family": "quality-delivery",
       "decisionQuestion": "Should we preserve compatibility longer or evolve faster and accept breaking-change pressure?",
+      "category": "quality-delivery",
       "summary": "Usually a consumer-protection vs platform-evolution decision.",
       "decisionHeuristic": "Preserve compatibility where consumer trust is strategic; evolve faster only where blast radius is controlled.",
       "whatThisIsReallyAbout": "How much existing adoption should constrain future change.",
@@ -4044,11 +4260,6 @@
           "external consumers depend on stability",
           "upgrade friction is high",
           "trust in platform or API matters strongly"
-        ],
-        "realWorldFits": [
-          "public APIs",
-          "platform interfaces with many consuming teams",
-          "SDKs and contracts where upgrade coordination is expensive"
         ],
         "strengths": [
           "consumer trust",
@@ -4063,7 +4274,14 @@
         "hiddenCosts": [
           "compatibility can preserve bad design indefinitely"
         ],
-        "failureModeWhenMisused": "Creates long-lived drag through accumulated compatibility obligations."
+        "failureModesWhenMisused": [
+          "Creates long-lived drag through accumulated compatibility obligations."
+        ],
+        "realWorldFits": [
+          "public APIs",
+          "platform interfaces with many consuming teams",
+          "SDKs and contracts where upgrade coordination is expensive"
+        ]
       },
       "optionB": {
         "name": "Faster Evolution",
@@ -4071,11 +4289,6 @@
           "consumer set is controlled",
           "upgrade paths are manageable",
           "simplification gains are meaningful"
-        ],
-        "realWorldFits": [
-          "internal-only contracts with coordinated teams",
-          "products where the owning org controls all clients",
-          "short-lived internal interfaces"
         ],
         "strengths": [
           "faster cleanup",
@@ -4090,7 +4303,14 @@
         "hiddenCosts": [
           "teams may externalize their cleanup cost onto others"
         ],
-        "failureModeWhenMisused": "Creates fast-moving producers and exhausted consumers."
+        "failureModesWhenMisused": [
+          "Creates fast-moving producers and exhausted consumers."
+        ],
+        "realWorldFits": [
+          "internal-only contracts with coordinated teams",
+          "products where the owning org controls all clients",
+          "short-lived internal interfaces"
+        ]
       },
       "keyFactors": [
         "consumer dependency",
@@ -4146,21 +4366,25 @@
         "optionA": "Wins where trust and adoption ecosystem matter more than cleanup speed.",
         "optionB": "Wins where the producer truly controls migration and simplification gains are meaningful."
       },
-      "aiAmplifies": "AI can accelerate interface changes, increasing risk of silent incompatibility if governance is weak.",
-      "aiReduces": "AI can help analyze usage and generate migration guides.",
-      "aiSpecificWarning": "Faster code changes increase compatibility governance need.",
+      "aiCanHelpWith": [
+        "AI can help analyze usage and generate migration guides."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can accelerate interface changes, increasing risk of silent incompatibility if governance is weak."
+      ],
+      "aiSpecificNotes": "Faster code changes increase compatibility governance need.",
       "oftenLeadsToFailureModes": [
         "stakeholder-capture"
+      ],
+      "adjacentDecisions": [
+        "customization-vs-standardization",
+        "rest-vs-graphql"
       ],
       "relatedRedFlags": [
         "consumers discover breakage before producers announce it"
       ],
       "relatedPlaybooks": [
         "manage-deprecation-explicitly"
-      ],
-      "adjacentDecisions": [
-        "customization-vs-standardization",
-        "rest-vs-graphql"
       ],
       "frequency": "common",
       "severityIfWrong": "medium-high",
@@ -4174,8 +4398,8 @@
     {
       "slug": "convention-over-configuration-vs-flexibility",
       "title": "Convention over Configuration vs Flexibility",
-      "family": "quality-delivery",
       "decisionQuestion": "Should the system prefer opinionated defaults or expose more configuration flexibility?",
+      "category": "quality-delivery",
       "summary": "Usually a simplicity-vs-variance decision.",
       "decisionHeuristic": "Prefer strong conventions with carefully justified escape hatches.",
       "whatThisIsReallyAbout": "How much optionality users or teams really need versus how much complexity that optionality introduces.",
@@ -4187,11 +4411,6 @@
           "common path is dominant",
           "variation is low-value",
           "simplicity matters strongly"
-        ],
-        "realWorldFits": [
-          "internal frameworks",
-          "developer tooling with strong paved roads",
-          "products where supportability matters more than rare edge-case freedom"
         ],
         "strengths": [
           "faster adoption",
@@ -4205,7 +4424,14 @@
         "hiddenCosts": [
           "teams may work around rigid defaults in unofficial ways"
         ],
-        "failureModeWhenMisused": "Creates covert customization outside the official model."
+        "failureModesWhenMisused": [
+          "Creates covert customization outside the official model."
+        ],
+        "realWorldFits": [
+          "internal frameworks",
+          "developer tooling with strong paved roads",
+          "products where supportability matters more than rare edge-case freedom"
+        ]
       },
       "optionB": {
         "name": "Flexibility",
@@ -4213,11 +4439,6 @@
           "variation is real and valuable",
           "consumer needs differ materially",
           "opinionated default would be too constraining"
-        ],
-        "realWorldFits": [
-          "broad platform products",
-          "frameworks serving materially different consumers",
-          "systems where controlled variation is part of the value proposition"
         ],
         "strengths": [
           "broader fit",
@@ -4231,7 +4452,14 @@
         "hiddenCosts": [
           "config surfaces can become a product of their own"
         ],
-        "failureModeWhenMisused": "Creates complexity through optionality few users actually need."
+        "failureModesWhenMisused": [
+          "Creates complexity through optionality few users actually need."
+        ],
+        "realWorldFits": [
+          "broad platform products",
+          "frameworks serving materially different consumers",
+          "systems where controlled variation is part of the value proposition"
+        ]
       },
       "keyFactors": [
         "value of variation",
@@ -4284,21 +4512,25 @@
         "optionA": "Usually wins through lower complexity and stronger defaults.",
         "optionB": "Wins when real variance persists and is worth supporting explicitly."
       },
-      "aiAmplifies": "AI can cheaply add configuration surfaces, inflating optionality without real demand.",
-      "aiReduces": "AI can analyze config usage to find dead or valuable variation.",
-      "aiSpecificWarning": "Generated options are still product complexity.",
+      "aiCanHelpWith": [
+        "AI can analyze config usage to find dead or valuable variation."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can cheaply add configuration surfaces, inflating optionality without real demand."
+      ],
+      "aiSpecificNotes": "Generated options are still product complexity.",
       "oftenLeadsToFailureModes": [
         "abstraction-addiction"
+      ],
+      "adjacentDecisions": [
+        "generic-solution-vs-case-specific-solution",
+        "customization-vs-standardization"
       ],
       "relatedRedFlags": [
         "many options exist but most are rarely used"
       ],
       "relatedPlaybooks": [
         "design-defaults-first"
-      ],
-      "adjacentDecisions": [
-        "generic-solution-vs-case-specific-solution",
-        "customization-vs-standardization"
       ],
       "frequency": "common",
       "severityIfWrong": "medium",
@@ -4312,8 +4544,8 @@
     {
       "slug": "manual-review-depth-vs-automation-dependence",
       "title": "Manual Review Depth vs Automation Dependence",
-      "family": "quality-delivery",
       "decisionQuestion": "How much confidence should come from human judgment versus automated checks?",
+      "category": "quality-delivery",
       "summary": "Usually a human-context vs scalable-consistency decision.",
       "decisionHeuristic": "Automate the obvious; reserve human depth for what actually needs judgment.",
       "whatThisIsReallyAbout": "Which classes of defects and design issues need human reasoning and which can be reliably automated.",
@@ -4325,11 +4557,6 @@
           "changes are high-risk or conceptually subtle",
           "architectural or design nuance matters",
           "automation cannot express the real concern"
-        ],
-        "realWorldFits": [
-          "security-sensitive changes",
-          "architectural boundary changes",
-          "high-impact behavior changes where context matters"
         ],
         "strengths": [
           "contextual judgment",
@@ -4344,7 +4571,14 @@
         "hiddenCosts": [
           "manual review can become rubber-stamp or politics-shaped"
         ],
-        "failureModeWhenMisused": "Creates process drag and uneven quality."
+        "failureModesWhenMisused": [
+          "Creates process drag and uneven quality."
+        ],
+        "realWorldFits": [
+          "security-sensitive changes",
+          "architectural boundary changes",
+          "high-impact behavior changes where context matters"
+        ]
       },
       "optionB": {
         "name": "Automation Dependence",
@@ -4352,11 +4586,6 @@
           "checks are well-defined",
           "scale matters",
           "consistency is important"
-        ],
-        "realWorldFits": [
-          "linting and style checks",
-          "schema validation",
-          "repeatable static and dynamic quality checks"
         ],
         "strengths": [
           "speed",
@@ -4370,7 +4599,14 @@
         "hiddenCosts": [
           "teams may stop asking questions automation cannot ask"
         ],
-        "failureModeWhenMisused": "Creates approval-shaped quality with conceptual blind spots."
+        "failureModesWhenMisused": [
+          "Creates approval-shaped quality with conceptual blind spots."
+        ],
+        "realWorldFits": [
+          "linting and style checks",
+          "schema validation",
+          "repeatable static and dynamic quality checks"
+        ]
       },
       "keyFactors": [
         "risk level",
@@ -4426,12 +4662,20 @@
         "optionA": "Wins where contextual judgment prevents expensive errors.",
         "optionB": "Wins wherever repeatable consistency matters and the checks are genuinely good."
       },
-      "aiAmplifies": "AI increases output volume, making weak human review and weak automation both more dangerous.",
-      "aiReduces": "AI can assist reviewers by summarizing diffs and likely hotspots.",
-      "aiSpecificWarning": "AI-assisted review is not the same as real review depth.",
+      "aiCanHelpWith": [
+        "AI can assist reviewers by summarizing diffs and likely hotspots."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI increases output volume, making weak human review and weak automation both more dangerous."
+      ],
+      "aiSpecificNotes": "AI-assisted review is not the same as real review depth.",
       "oftenLeadsToFailureModes": [
         "synthetic-velocity",
         "autocomplete-architecture"
+      ],
+      "adjacentDecisions": [
+        "test-pyramid-vs-heavy-end-to-end",
+        "ai-assisted-development-vs-manual-only-development"
       ],
       "relatedRedFlags": [
         "reviews approve too much too fast",
@@ -4439,10 +4683,6 @@
       ],
       "relatedPlaybooks": [
         "review-what-automation-cannot"
-      ],
-      "adjacentDecisions": [
-        "test-pyramid-vs-heavy-end-to-end",
-        "ai-assisted-development-vs-manual-only-development"
       ],
       "frequency": "very common",
       "severityIfWrong": "high",
@@ -4456,8 +4696,8 @@
     {
       "slug": "ai-assisted-development-vs-manual-only-development",
       "title": "AI-Assisted Development vs Manual-Only Development",
-      "family": "ai-systems",
       "decisionQuestion": "How much of the engineering workflow should rely on AI assistance?",
+      "category": "ai-systems",
       "summary": "Usually a judgment-and-verification decision, not a productivity ideology decision.",
       "decisionHeuristic": "Use AI assistance selectively where verification is strong and ownership remains clear.",
       "whatThisIsReallyAbout": "Where generation is safe, where understanding is essential, and how review practices must change.",
@@ -4470,11 +4710,6 @@
           "review is strong",
           "ownership remains clear",
           "quality controls scale with generation"
-        ],
-        "realWorldFits": [
-          "boilerplate and scaffolding",
-          "test drafting",
-          "documentation, migration helpers, and repetitive code tasks under strong review"
         ],
         "strengths": [
           "faster drafting and scaffolding",
@@ -4490,7 +4725,14 @@
           "teams may confuse generation speed with durable progress",
           "style consistency can hide conceptual inconsistency"
         ],
-        "failureModeWhenMisused": "Leads to synthetic velocity and autocomplete architecture."
+        "failureModesWhenMisused": [
+          "Leads to synthetic velocity and autocomplete architecture."
+        ],
+        "realWorldFits": [
+          "boilerplate and scaffolding",
+          "test drafting",
+          "documentation, migration helpers, and repetitive code tasks under strong review"
+        ]
       },
       "optionB": {
         "name": "Manual-Only Development",
@@ -4498,11 +4740,6 @@
           "risk is extremely high",
           "deep understanding is essential everywhere",
           "team lacks safe AI workflow controls"
-        ],
-        "realWorldFits": [
-          "high-risk security and cryptographic logic",
-          "small teams without verification maturity",
-          "workflows where explainability and authorship must stay direct"
         ],
         "strengths": [
           "clearer authorship",
@@ -4518,7 +4755,14 @@
           "teams may become ideologically anti-tool rather than risk-aware",
           "manual work can waste senior attention"
         ],
-        "failureModeWhenMisused": "Creates unnecessary friction and loses competitive productivity where safe leverage exists."
+        "failureModesWhenMisused": [
+          "Creates unnecessary friction and loses competitive productivity where safe leverage exists."
+        ],
+        "realWorldFits": [
+          "high-risk security and cryptographic logic",
+          "small teams without verification maturity",
+          "workflows where explainability and authorship must stay direct"
+        ]
       },
       "keyFactors": [
         "task criticality",
@@ -4579,12 +4823,20 @@
         "optionA": "Wins when leverage compounds without eroding understanding.",
         "optionB": "Wins only where risk and explainability requirements truly outweigh the missed leverage."
       },
-      "aiAmplifies": "AI-native by definition: it can accelerate both leverage and error propagation.",
-      "aiReduces": "It reduces toil in low-risk repetitive work and accelerates exploration when well governed.",
-      "aiSpecificWarning": "The unit of safety is not whether AI was used; it is whether understanding and verification are still sufficient.",
+      "aiCanHelpWith": [
+        "It reduces toil in low-risk repetitive work and accelerates exploration when well governed."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI-native by definition: it can accelerate both leverage and error propagation."
+      ],
+      "aiSpecificNotes": "The unit of safety is not whether AI was used; it is whether understanding and verification are still sufficient.",
       "oftenLeadsToFailureModes": [
         "synthetic-velocity",
         "autocomplete-architecture"
+      ],
+      "adjacentDecisions": [
+        "manual-review-depth-vs-automation-dependence",
+        "fast-ai-adoption-vs-governance-first"
       ],
       "relatedRedFlags": [
         "more output, less certainty",
@@ -4593,10 +4845,6 @@
       "relatedPlaybooks": [
         "define-safe-ai-development-zones",
         "upgrade-code-review-for-ai-assisted-work"
-      ],
-      "adjacentDecisions": [
-        "manual-review-depth-vs-automation-dependence",
-        "fast-ai-adoption-vs-governance-first"
       ],
       "frequency": "increasing",
       "severityIfWrong": "high",
@@ -4611,8 +4859,8 @@
     {
       "slug": "model-api-vs-self-hosted-model",
       "title": "Model API vs Self-Hosted Model",
-      "family": "ai-systems",
       "decisionQuestion": "Should we rely on external model APIs or host models ourselves?",
+      "category": "ai-systems",
       "summary": "Usually a control-vs-complexity decision.",
       "decisionHeuristic": "Prefer APIs unless control, privacy, latency, or economics clearly justify self-hosting.",
       "whatThisIsReallyAbout": "Latency, cost, governance, privacy, reliability, and operational capability.",
@@ -4624,11 +4872,6 @@
           "speed of adoption matters",
           "operational AI maturity is limited",
           "model quality matters more than control"
-        ],
-        "realWorldFits": [
-          "early AI product experiments",
-          "teams without strong model-serving capability",
-          "use cases where external provider behavior is acceptable"
         ],
         "strengths": [
           "fast adoption",
@@ -4643,7 +4886,14 @@
         "hiddenCosts": [
           "provider changes can surface as silent model drift"
         ],
-        "failureModeWhenMisused": "Creates operational dependence on a provider without enough evaluation guardrails."
+        "failureModesWhenMisused": [
+          "Creates operational dependence on a provider without enough evaluation guardrails."
+        ],
+        "realWorldFits": [
+          "early AI product experiments",
+          "teams without strong model-serving capability",
+          "use cases where external provider behavior is acceptable"
+        ]
       },
       "optionB": {
         "name": "Self-Hosted Model",
@@ -4651,11 +4901,6 @@
           "privacy, governance, or control requirements are strong",
           "model serving capability exists",
           "economics justify hosting"
-        ],
-        "realWorldFits": [
-          "privacy-sensitive enterprise workflows",
-          "high-volume internal AI surfaces with stable usage",
-          "organizations with real model operations capability"
         ],
         "strengths": [
           "more control",
@@ -4670,7 +4915,14 @@
         "hiddenCosts": [
           "self-hosting can distract teams from product value"
         ],
-        "failureModeWhenMisused": "Creates an AI infrastructure program where a product decision was needed."
+        "failureModesWhenMisused": [
+          "Creates an AI infrastructure program where a product decision was needed."
+        ],
+        "realWorldFits": [
+          "privacy-sensitive enterprise workflows",
+          "high-volume internal AI surfaces with stable usage",
+          "organizations with real model operations capability"
+        ]
       },
       "keyFactors": [
         "privacy",
@@ -4728,12 +4980,20 @@
         "optionA": "Usually wins early through speed and lower ops overhead.",
         "optionB": "Wins only when control or economics sustain the ongoing infrastructure burden."
       },
-      "aiAmplifies": "AI hype can distort both directions: APIs seem magically easy, self-hosting seems strategically superior.",
-      "aiReduces": "AI can help benchmark request patterns and cost profiles across both choices.",
-      "aiSpecificWarning": "Do not turn infrastructure ownership into identity.",
+      "aiCanHelpWith": [
+        "AI can help benchmark request patterns and cost profiles across both choices."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI hype can distort both directions: APIs seem magically easy, self-hosting seems strategically superior."
+      ],
+      "aiSpecificNotes": "Do not turn infrastructure ownership into identity.",
       "oftenLeadsToFailureModes": [
         "silent-model-drift",
         "benchmark-mirage"
+      ],
+      "adjacentDecisions": [
+        "rag-vs-fine-tuning",
+        "fast-ai-adoption-vs-governance-first"
       ],
       "relatedRedFlags": [
         "provider dependence is real but unacknowledged",
@@ -4741,10 +5001,6 @@
       ],
       "relatedPlaybooks": [
         "evaluate-model-hosting-economics"
-      ],
-      "adjacentDecisions": [
-        "rag-vs-fine-tuning",
-        "fast-ai-adoption-vs-governance-first"
       ],
       "frequency": "increasing",
       "severityIfWrong": "high",
@@ -4758,8 +5014,8 @@
     {
       "slug": "rag-vs-fine-tuning",
       "title": "RAG vs Fine-Tuning",
-      "family": "ai-systems",
       "decisionQuestion": "Should this AI capability rely on retrieval-augmented generation or model fine-tuning?",
+      "category": "ai-systems",
       "summary": "Usually a knowledge-grounding vs behavior-shaping decision.",
       "decisionHeuristic": "Use RAG when knowledge changes; use fine-tuning when behavior must change.",
       "whatThisIsReallyAbout": "Where truth lives, what needs to change, and whether the core problem is missing knowledge or missing learned behavior.",
@@ -4772,11 +5028,6 @@
           "source grounding matters",
           "answers should reference trusted content",
           "behavior is acceptable but context is missing"
-        ],
-        "realWorldFits": [
-          "knowledge assistants",
-          "internal enterprise search and answer surfaces",
-          "support systems grounded in living documentation"
         ],
         "strengths": [
           "freshness of knowledge",
@@ -4792,7 +5043,14 @@
           "weak corpus quality poisons the whole system",
           "retrieval confidence can look better than truth quality"
         ],
-        "failureModeWhenMisused": "Leads to RAG without ground truth."
+        "failureModesWhenMisused": [
+          "Leads to RAG without ground truth."
+        ],
+        "realWorldFits": [
+          "knowledge assistants",
+          "internal enterprise search and answer surfaces",
+          "support systems grounded in living documentation"
+        ]
       },
       "optionB": {
         "name": "Fine-Tuning",
@@ -4800,11 +5058,6 @@
           "behavior style or patterning must change",
           "task shape is stable",
           "domain behavior matters more than changing knowledge"
-        ],
-        "realWorldFits": [
-          "stable classification or transformation tasks",
-          "style and format specialization",
-          "well-bounded domain behavior adaptation"
         ],
         "strengths": [
           "behavior adaptation",
@@ -4820,7 +5073,14 @@
           "teams may try to tune behavior to compensate for bad data or weak grounding",
           "evaluation complexity rises quickly"
         ],
-        "failureModeWhenMisused": "Creates specialized behavior without trustworthy truth sources or robust evaluation."
+        "failureModesWhenMisused": [
+          "Creates specialized behavior without trustworthy truth sources or robust evaluation."
+        ],
+        "realWorldFits": [
+          "stable classification or transformation tasks",
+          "style and format specialization",
+          "well-bounded domain behavior adaptation"
+        ]
       },
       "keyFactors": [
         "knowledge volatility",
@@ -4879,12 +5139,20 @@
         "optionA": "Wins when source truth keeps changing and grounding matters.",
         "optionB": "Wins when task behavior is stable enough to justify training investment."
       },
-      "aiAmplifies": "This is an AI-native decision; hype around both options distorts judgment fast.",
-      "aiReduces": "AI can help synthesize eval sets and compare failure patterns across both approaches.",
-      "aiSpecificWarning": "Do not use fine-tuning to hide grounding problems, and do not use RAG to solve behavior problems.",
+      "aiCanHelpWith": [
+        "AI can help synthesize eval sets and compare failure patterns across both approaches."
+      ],
+      "aiCanMakeWorseBy": [
+        "This is an AI-native decision; hype around both options distorts judgment fast."
+      ],
+      "aiSpecificNotes": "Do not use fine-tuning to hide grounding problems, and do not use RAG to solve behavior problems.",
       "oftenLeadsToFailureModes": [
         "rag-without-ground-truth",
         "benchmark-mirage"
+      ],
+      "adjacentDecisions": [
+        "model-api-vs-self-hosted-model",
+        "synthetic-evaluation-vs-real-world-evaluation"
       ],
       "relatedRedFlags": [
         "sources are cited but not trusted",
@@ -4893,10 +5161,6 @@
       "relatedPlaybooks": [
         "build-grounded-evaluation-harness",
         "define-source-trust-model"
-      ],
-      "adjacentDecisions": [
-        "model-api-vs-self-hosted-model",
-        "synthetic-evaluation-vs-real-world-evaluation"
       ],
       "frequency": "increasing",
       "severityIfWrong": "high",
@@ -4911,8 +5175,8 @@
     {
       "slug": "prompt-layer-vs-workflow-tooling-layer",
       "title": "Prompt Layer vs Workflow/Tooling Layer",
-      "family": "ai-systems",
       "decisionQuestion": "Should system quality depend mainly on prompt engineering or on stronger orchestration, tools, and workflow structure?",
+      "category": "ai-systems",
       "summary": "Usually a wording-vs-system-design decision.",
       "decisionHeuristic": "Use prompts for local behavior tuning; move to workflow and tooling when process structure matters.",
       "whatThisIsReallyAbout": "Whether the problem is prompt behavior or missing system scaffolding and tools.",
@@ -4924,11 +5188,6 @@
           "problem is narrow",
           "behavior can improve through instruction tuning",
           "workflow complexity is low"
-        ],
-        "realWorldFits": [
-          "simple summarization or classification prompts",
-          "bounded single-step assistance",
-          "early experimentation where tooling is not yet the bottleneck"
         ],
         "strengths": [
           "fast iteration",
@@ -4942,18 +5201,20 @@
         "hiddenCosts": [
           "teams may compensate for workflow gaps with brittle prompting"
         ],
-        "failureModeWhenMisused": "Leads to prompt ops chaos."
+        "failureModesWhenMisused": [
+          "Leads to prompt ops chaos."
+        ],
+        "realWorldFits": [
+          "simple summarization or classification prompts",
+          "bounded single-step assistance",
+          "early experimentation where tooling is not yet the bottleneck"
+        ]
       },
       "optionB": {
         "name": "Workflow/Tooling Layer",
         "bestWhen": [
           "task requires state, tools, or multi-step structure",
           "quality depends on process, not just phrasing"
-        ],
-        "realWorldFits": [
-          "agentic workflows",
-          "tool-using assistants",
-          "multi-step decision or retrieval pipelines"
         ],
         "strengths": [
           "stronger control",
@@ -4967,7 +5228,14 @@
         "hiddenCosts": [
           "tooling complexity can grow past value if overbuilt"
         ],
-        "failureModeWhenMisused": "Creates overengineered workflows for problems that were mostly prompt-level."
+        "failureModesWhenMisused": [
+          "Creates overengineered workflows for problems that were mostly prompt-level."
+        ],
+        "realWorldFits": [
+          "agentic workflows",
+          "tool-using assistants",
+          "multi-step decision or retrieval pipelines"
+        ]
       },
       "keyFactors": [
         "task complexity",
@@ -5022,21 +5290,25 @@
         "optionA": "Wins early for small, bounded problems.",
         "optionB": "Wins when the system must behave reliably across multi-step tasks and real-world variability."
       },
-      "aiAmplifies": "Teams can overfit prompts quickly and mistake local improvements for system quality.",
-      "aiReduces": "AI can help compare prompt variants and workflow bottlenecks.",
-      "aiSpecificWarning": "Prompt quality cannot compensate indefinitely for missing system structure.",
+      "aiCanHelpWith": [
+        "AI can help compare prompt variants and workflow bottlenecks."
+      ],
+      "aiCanMakeWorseBy": [
+        "Teams can overfit prompts quickly and mistake local improvements for system quality."
+      ],
+      "aiSpecificNotes": "Prompt quality cannot compensate indefinitely for missing system structure.",
       "oftenLeadsToFailureModes": [
         "prompt-ops-chaos"
+      ],
+      "adjacentDecisions": [
+        "rag-vs-fine-tuning",
+        "human-in-the-loop-vs-full-automation"
       ],
       "relatedRedFlags": [
         "prompts keep growing but quality remains unstable"
       ],
       "relatedPlaybooks": [
         "version-prompts-and-workflows"
-      ],
-      "adjacentDecisions": [
-        "rag-vs-fine-tuning",
-        "human-in-the-loop-vs-full-automation"
       ],
       "frequency": "increasing",
       "severityIfWrong": "medium-high",
@@ -5050,8 +5322,8 @@
     {
       "slug": "human-in-the-loop-vs-full-automation",
       "title": "Human-in-the-Loop vs Full Automation",
-      "family": "ai-systems",
       "decisionQuestion": "Should this workflow require human review or intervention, or run autonomously end to end?",
+      "category": "ai-systems",
       "summary": "Usually a trust-boundary and consequence-of-error decision.",
       "decisionHeuristic": "Keep humans in the loop until task quality is genuinely proven and consequence is bounded.",
       "whatThisIsReallyAbout": "Where human judgment is still required and what the true cost of wrong autonomous behavior is.",
@@ -5063,11 +5335,6 @@
           "error consequence is high",
           "judgment is nuanced",
           "trust is not yet earned"
-        ],
-        "realWorldFits": [
-          "compliance-sensitive review",
-          "AI-assisted support escalation",
-          "content moderation and approval workflows with real consequence"
         ],
         "strengths": [
           "better oversight",
@@ -5082,7 +5349,14 @@
         "hiddenCosts": [
           "humans can become rubber stamps if workflow design is weak"
         ],
-        "failureModeWhenMisused": "Creates expensive manual approval theater without real judgment value."
+        "failureModesWhenMisused": [
+          "Creates expensive manual approval theater without real judgment value."
+        ],
+        "realWorldFits": [
+          "compliance-sensitive review",
+          "AI-assisted support escalation",
+          "content moderation and approval workflows with real consequence"
+        ]
       },
       "optionB": {
         "name": "Full Automation",
@@ -5090,11 +5364,6 @@
           "error consequence is low or tightly bounded",
           "evaluation and rollback are strong",
           "workflow is stable and measurable"
-        ],
-        "realWorldFits": [
-          "low-risk internal automation",
-          "well-bounded routing or triage tasks",
-          "high-volume repetitive actions with strong monitoring"
         ],
         "strengths": [
           "scale",
@@ -5108,7 +5377,14 @@
         "hiddenCosts": [
           "trust can collapse quickly if autonomy outruns reliability"
         ],
-        "failureModeWhenMisused": "Creates confident automated mistakes at scale."
+        "failureModesWhenMisused": [
+          "Creates confident automated mistakes at scale."
+        ],
+        "realWorldFits": [
+          "low-risk internal automation",
+          "well-bounded routing or triage tasks",
+          "high-volume repetitive actions with strong monitoring"
+        ]
       },
       "keyFactors": [
         "error consequence",
@@ -5166,12 +5442,20 @@
         "optionA": "Wins while trust is still being earned and judgment remains expensive to encode.",
         "optionB": "Wins when the workflow is stable enough that scale matters more than human caution."
       },
-      "aiAmplifies": "AI systems can appear more capable than they are, pushing premature automation.",
-      "aiReduces": "AI can help triage where human review is actually needed most.",
-      "aiSpecificWarning": "Human presence is only valuable if the workflow preserves real judgment.",
+      "aiCanHelpWith": [
+        "AI can help triage where human review is actually needed most."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI systems can appear more capable than they are, pushing premature automation."
+      ],
+      "aiSpecificNotes": "Human presence is only valuable if the workflow preserves real judgment.",
       "oftenLeadsToFailureModes": [
         "benchmark-mirage",
         "silent-model-drift"
+      ],
+      "adjacentDecisions": [
+        "synthetic-evaluation-vs-real-world-evaluation",
+        "fast-ai-adoption-vs-governance-first"
       ],
       "relatedRedFlags": [
         "humans approve too much too quickly",
@@ -5179,10 +5463,6 @@
       ],
       "relatedPlaybooks": [
         "define-human-review-boundaries"
-      ],
-      "adjacentDecisions": [
-        "synthetic-evaluation-vs-real-world-evaluation",
-        "fast-ai-adoption-vs-governance-first"
       ],
       "frequency": "increasing",
       "severityIfWrong": "high",
@@ -5196,8 +5476,8 @@
     {
       "slug": "fast-ai-adoption-vs-governance-first",
       "title": "Fast AI Adoption vs Governance-First AI Adoption",
-      "family": "ai-systems",
       "decisionQuestion": "Should the organization move quickly on AI adoption or establish stronger governance before broad rollout?",
+      "category": "ai-systems",
       "summary": "Usually a learning-speed vs control-readiness decision.",
       "decisionHeuristic": "Move fast in bounded low-risk zones while governance catches up deliberately on high-risk surfaces.",
       "whatThisIsReallyAbout": "How much experimentation to allow before policies, controls, and risk models mature.",
@@ -5209,11 +5489,6 @@
           "learning value is urgent",
           "use cases are low-risk or sandboxed",
           "governance can evolve alongside limited rollout"
-        ],
-        "realWorldFits": [
-          "internal productivity tooling pilots",
-          "sandbox experimentation programs",
-          "low-risk knowledge and drafting assistants"
         ],
         "strengths": [
           "faster organizational learning",
@@ -5227,7 +5502,14 @@
         "hiddenCosts": [
           "early norms harden before governance catches up"
         ],
-        "failureModeWhenMisused": "Creates broad unsafe usage patterns that become hard to unwind."
+        "failureModesWhenMisused": [
+          "Creates broad unsafe usage patterns that become hard to unwind."
+        ],
+        "realWorldFits": [
+          "internal productivity tooling pilots",
+          "sandbox experimentation programs",
+          "low-risk knowledge and drafting assistants"
+        ]
       },
       "optionB": {
         "name": "Governance-First",
@@ -5235,11 +5517,6 @@
           "risk sensitivity is high",
           "data, legal, or privacy constraints are strong",
           "organization can tolerate slower learning"
-        ],
-        "realWorldFits": [
-          "regulated industries",
-          "customer-data-sensitive AI use",
-          "externally visible AI surfaces with reputational exposure"
         ],
         "strengths": [
           "clearer control",
@@ -5254,7 +5531,14 @@
         "hiddenCosts": [
           "teams may route around governance if it is too slow"
         ],
-        "failureModeWhenMisused": "Creates policy drag and shadow adoption outside the official path."
+        "failureModesWhenMisused": [
+          "Creates policy drag and shadow adoption outside the official path."
+        ],
+        "realWorldFits": [
+          "regulated industries",
+          "customer-data-sensitive AI use",
+          "externally visible AI surfaces with reputational exposure"
+        ]
       },
       "keyFactors": [
         "risk sensitivity",
@@ -5312,12 +5596,20 @@
         "optionA": "Wins by accelerating capability learning, but only in bounded zones.",
         "optionB": "Wins where the cost of a bad early pattern is larger than the value of fast experimentation."
       },
-      "aiAmplifies": "AI hype inflates pressure toward both reckless speed and performative caution.",
-      "aiReduces": "AI can help classify use cases by risk and sensitivity for staged rollout.",
-      "aiSpecificWarning": "Governance must be proportionate, not theatrical.",
+      "aiCanHelpWith": [
+        "AI can help classify use cases by risk and sensitivity for staged rollout."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI hype inflates pressure toward both reckless speed and performative caution."
+      ],
+      "aiSpecificNotes": "Governance must be proportionate, not theatrical.",
       "oftenLeadsToFailureModes": [
         "synthetic-velocity",
         "prompt-ops-chaos"
+      ],
+      "adjacentDecisions": [
+        "broad-ai-enablement-vs-restricted-high-trust-use",
+        "human-in-the-loop-vs-full-automation"
       ],
       "relatedRedFlags": [
         "teams use unapproved tools because official path is too slow",
@@ -5325,10 +5617,6 @@
       ],
       "relatedPlaybooks": [
         "define-ai-safe-zones-and-red-zones"
-      ],
-      "adjacentDecisions": [
-        "broad-ai-enablement-vs-restricted-high-trust-use",
-        "human-in-the-loop-vs-full-automation"
       ],
       "frequency": "increasing",
       "severityIfWrong": "high",
@@ -5342,8 +5630,8 @@
     {
       "slug": "broad-ai-enablement-vs-restricted-high-trust-use",
       "title": "Broad AI Enablement vs Restricted High-Trust AI Use",
-      "family": "ai-systems",
       "decisionQuestion": "Should AI use be broadly available or limited to high-trust workflows and teams?",
+      "category": "ai-systems",
       "summary": "Usually a leverage-distribution vs risk-surface decision.",
       "decisionHeuristic": "Broaden access gradually as trustworthy usage patterns are proven.",
       "whatThisIsReallyAbout": "How widely capability should spread before trust, training, and controls are mature.",
@@ -5355,11 +5643,6 @@
           "tooling is low-risk",
           "training is strong",
           "organization values widespread experimentation"
-        ],
-        "realWorldFits": [
-          "drafting and summarization tools",
-          "internal ideation and low-risk coding assistance",
-          "broad knowledge assistant access with safe boundaries"
         ],
         "strengths": [
           "wide leverage",
@@ -5374,7 +5657,14 @@
         "hiddenCosts": [
           "bad habits spread quickly"
         ],
-        "failureModeWhenMisused": "Creates broad synthetic velocity and uneven trust."
+        "failureModesWhenMisused": [
+          "Creates broad synthetic velocity and uneven trust."
+        ],
+        "realWorldFits": [
+          "drafting and summarization tools",
+          "internal ideation and low-risk coding assistance",
+          "broad knowledge assistant access with safe boundaries"
+        ]
       },
       "optionB": {
         "name": "Restricted High-Trust Use",
@@ -5382,11 +5672,6 @@
           "risk is meaningful",
           "quality variance is costly",
           "organization wants to learn in controlled zones"
-        ],
-        "realWorldFits": [
-          "sensitive production workflows",
-          "regulated or audit-heavy environments",
-          "high-trust early adopter programs"
         ],
         "strengths": [
           "better control",
@@ -5399,7 +5684,14 @@
         "hiddenCosts": [
           "restricted users may become new hero bottlenecks"
         ],
-        "failureModeWhenMisused": "Creates elite AI islands with weak organizational learning."
+        "failureModesWhenMisused": [
+          "Creates elite AI islands with weak organizational learning."
+        ],
+        "realWorldFits": [
+          "sensitive production workflows",
+          "regulated or audit-heavy environments",
+          "high-trust early adopter programs"
+        ]
       },
       "keyFactors": [
         "risk profile",
@@ -5457,22 +5749,26 @@
         "optionA": "Wins when broad low-risk leverage compounds and governance can keep up.",
         "optionB": "Wins when controlled trust-building matters more than broad experimentation."
       },
-      "aiAmplifies": "AI spread multiplies both leverage and inconsistency quickly.",
-      "aiReduces": "AI can support training and safe-use guidance as rollout widens.",
-      "aiSpecificWarning": "Access strategy is not enough; usage quality strategy matters more.",
+      "aiCanHelpWith": [
+        "AI can support training and safe-use guidance as rollout widens."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI spread multiplies both leverage and inconsistency quickly."
+      ],
+      "aiSpecificNotes": "Access strategy is not enough; usage quality strategy matters more.",
       "oftenLeadsToFailureModes": [
         "synthetic-velocity",
         "hero-trap"
+      ],
+      "adjacentDecisions": [
+        "fast-ai-adoption-vs-governance-first",
+        "ai-assisted-development-vs-manual-only-development"
       ],
       "relatedRedFlags": [
         "same tool yields wildly different quality across teams"
       ],
       "relatedPlaybooks": [
         "phase-ai-rollout-by-risk"
-      ],
-      "adjacentDecisions": [
-        "fast-ai-adoption-vs-governance-first",
-        "ai-assisted-development-vs-manual-only-development"
       ],
       "frequency": "increasing",
       "severityIfWrong": "medium-high",
@@ -5486,8 +5782,8 @@
     {
       "slug": "synthetic-evaluation-vs-real-world-evaluation",
       "title": "Synthetic Evaluation vs Real-World Evaluation",
-      "family": "ai-systems",
       "decisionQuestion": "Should model or system quality be judged mostly through synthetic evals or through real task and production evidence?",
+      "category": "ai-systems",
       "summary": "Usually a speed-of-measurement vs truth-of-measurement decision.",
       "decisionHeuristic": "Use synthetic evals for screening, but anchor major decisions in real task evidence.",
       "whatThisIsReallyAbout": "How much confidence synthetic proxies deserve relative to actual user and task behavior.",
@@ -5499,11 +5795,6 @@
           "early comparison is needed",
           "task proxies are reasonably faithful",
           "production access is limited"
-        ],
-        "realWorldFits": [
-          "early model comparison",
-          "regression suites",
-          "controlled scenario screening before live testing"
         ],
         "strengths": [
           "speed",
@@ -5517,7 +5808,14 @@
         "hiddenCosts": [
           "teams may optimize to the benchmark instead of the task"
         ],
-        "failureModeWhenMisused": "Leads to benchmark mirage."
+        "failureModesWhenMisused": [
+          "Leads to benchmark mirage."
+        ],
+        "realWorldFits": [
+          "early model comparison",
+          "regression suites",
+          "controlled scenario screening before live testing"
+        ]
       },
       "optionB": {
         "name": "Real-World Evaluation",
@@ -5525,11 +5823,6 @@
           "task quality matters more than benchmark optics",
           "production or shadow evidence is available",
           "stakes justify measurement complexity"
-        ],
-        "realWorldFits": [
-          "high-stakes copilots and assistants",
-          "production-like shadow testing",
-          "evaluation of real user workflows and escalation outcomes"
         ],
         "strengths": [
           "closer to user reality",
@@ -5543,7 +5836,14 @@
         "hiddenCosts": [
           "real-world signals can be noisy and slow to interpret"
         ],
-        "failureModeWhenMisused": "Creates evaluation lag so long that teams stop learning systematically."
+        "failureModesWhenMisused": [
+          "Creates evaluation lag so long that teams stop learning systematically."
+        ],
+        "realWorldFits": [
+          "high-stakes copilots and assistants",
+          "production-like shadow testing",
+          "evaluation of real user workflows and escalation outcomes"
+        ]
       },
       "keyFactors": [
         "proxy fidelity",
@@ -5598,12 +5898,20 @@
         "optionA": "Wins early for rapid iteration and comparison.",
         "optionB": "Wins whenever real user trust or task quality matters more than eval speed."
       },
-      "aiAmplifies": "AI systems are especially vulnerable to proxy overfitting.",
-      "aiReduces": "AI can help generate scenario-based eval sets and cluster real-world failures.",
-      "aiSpecificWarning": "A repeatable proxy can still be the wrong proxy.",
+      "aiCanHelpWith": [
+        "AI can help generate scenario-based eval sets and cluster real-world failures."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI systems are especially vulnerable to proxy overfitting."
+      ],
+      "aiSpecificNotes": "A repeatable proxy can still be the wrong proxy.",
       "oftenLeadsToFailureModes": [
         "benchmark-mirage",
         "silent-model-drift"
+      ],
+      "adjacentDecisions": [
+        "rag-vs-fine-tuning",
+        "human-in-the-loop-vs-full-automation"
       ],
       "relatedRedFlags": [
         "demos and benchmarks look good, users do not agree",
@@ -5611,10 +5919,6 @@
       ],
       "relatedPlaybooks": [
         "build-task-grounded-evaluation-harness"
-      ],
-      "adjacentDecisions": [
-        "rag-vs-fine-tuning",
-        "human-in-the-loop-vs-full-automation"
       ],
       "frequency": "increasing",
       "severityIfWrong": "high",
