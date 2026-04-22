@@ -169,14 +169,22 @@ Target: **Cloudflare Pages, Free plan**.
 The output is a plain static site and can also be served from any static
 host (Netlify, GitHub Pages, etc.) without changes.
 
-## Schema drift notes
+## Schema alignment status
 
-The schemas under `src/content/schemas/` match the **actual JSON content**,
-not the idealised field names in `docs/content-schema.md` and the category
-schema docs. Several divergences were catalogued during Phase 1 scaffolding.
-See Phase 1 completion notes in the commit history, or the docstrings at
-the top of each schema file. These will either be reconciled by migrating
-content, or by updating docs — that decision is deferred.
+- **Failure Modes** — **aligned**. Content, docs, and types agree. Canonical
+  shape: `warningSigns: { early, mid, late }`; first-class `oftenLeadsTo` /
+  `oftenCausedBy` relationship fields; closed `frequency` enum; slugs omit
+  leading articles ("the-"). No compatibility layer.
+- **Tech Decisions** — schema reflects the actual JSON shape (which differs
+  from `docs/schema-tech-decisions.md` in several places, e.g. `family` vs
+  `category`, object-shaped `costBearer`/`timeHorizonNotes`, etc.).
+  Reconciliation deferred.
+- **Red Flags** — schema reflects the actual JSON shape (`layer`/`signalType`
+  vs docs' `category`; renamed AI fields; etc.). Reconciliation deferred.
+- **Engineering Playbook** — matches docs closely, no major drift.
+
+See the docstring at the top of each schema file under
+`src/content/schemas/` for the specific mismatches still open in TD / RF.
 
 ## License
 

@@ -239,7 +239,26 @@ Example:
 
 Must follow global slug rules.
 
-Note: if legacy content already uses slugs like `the-friendly-rewrite`, preserve them if they are already established. Do not churn slugs casually.
+### Slug article rule
+
+Failure Mode **titles** may include leading articles like “The”.
+Failure Mode **slugs** must omit leading articles.
+
+Correct:
+
+```json
+"title": "The Friendly Rewrite",
+"slug":  "friendly-rewrite"
+```
+
+Not correct:
+
+```json
+"title": "The Friendly Rewrite",
+"slug":  "the-friendly-rewrite"
+```
+
+This rule is applied consistently across the Failure Modes catalog so that slugs stay clean, comparable, and easy to reference from other categories.
 
 ---
 
@@ -363,9 +382,10 @@ This expresses how damaging the pattern tends to be if allowed to develop.
 
 How commonly the failure mode appears in software organizations.
 
-Preferred allowed values:
+Allowed values (tight, controlled enum — no other values permitted):
 
 * `rare`
+* `uncommon`
 * `occasional`
 * `common`
 * `very common`
@@ -375,6 +395,18 @@ Preferred allowed values:
 ### Meaning
 
 This is editorial frequency, not telemetry.
+
+### Enum discipline
+
+`frequency` is intentionally a **closed enum**, not a freeform label.
+
+Do not introduce contextual variants such as `"common in AI work"`, `"common in platform teams"`, or `"common under deadline pressure"`. Nuance about context belongs in other fields:
+
+* AI-era specificity → `category: "ai"`, `aiCanHelpWith`, `aiCanMakeWorseBy`, `aiSpecificNotes`
+* Lifecycle specificity → `lifecycleStages`
+* Audience specificity → narrative fields (`starts`, `feelsReasonableBecause`, etc.)
+
+Keeping this enum narrow is what makes cross-entry comparison and filtering meaningful.
 
 ---
 
@@ -599,34 +631,58 @@ Do not force AI commentary into every entry, but include it where AI materially 
 
 ## Relationship Fields
 
-Failure Modes should feel interconnected.
+Failure Modes should feel interconnected, and Failure Modes express their relationships with **more precision** than a generic "related" field.
 
-### `oftenLeadsTo`
+### Canonical FM-to-FM relationship fields
 
-A list of other failure modes this one commonly causes or amplifies.
+Failure Modes use two first-class, directional relationship fields:
 
-### `oftenCausedBy`
+#### `oftenLeadsTo`
 
-A list of modes or conditions that commonly produce this one.
+A list of other failure modes this one commonly **causes, enables, or amplifies**.
 
-These can contain failure mode slugs where possible.
+This is a causal, forward-facing link.
+
+Example:
+
+```json
+"oftenLeadsTo": ["dependency-fog", "ownership-drift", "invisible-deadline"]
+```
+
+#### `oftenCausedBy`
+
+A list of failure modes, conditions, or organizational dynamics that commonly **produce** this one.
+
+This is a causal, backward-facing link.
+
+Example:
+
+```json
+"oftenCausedBy": ["weak governance structures", "hero-trap"]
+```
+
+Entries may contain either:
+
+* a Failure Mode slug (preferred where a named mode exists), or
+* a short descriptive phrase (acceptable where the cause is not itself a named mode)
+
+`oftenLeadsTo` and `oftenCausedBy` are **first-class** Failure Modes relationship fields. They must not be collapsed into a generic `relatedFailureModes` field.
+
+### `relatedFailureModes` (optional, neutral fallback)
+
+Optional. Use only when the link to another Failure Mode is genuinely **neutral / non-causal** — that is, when the two modes are conceptually adjacent but neither causes the other.
+
+If the link is causal in either direction, prefer `oftenLeadsTo` or `oftenCausedBy`. Do not duplicate slugs across `oftenLeadsTo` / `oftenCausedBy` and `relatedFailureModes`.
 
 ### Shared cross-category fields
 
 Use:
 
-* `relatedFailureModes`
 * `relatedRedFlags`
 * `relatedTechDecisions`
 * `relatedPlaybooks`
 
 These should contain slug references wherever possible.
-
-Example:
-
-```json
-"relatedFailureModes": ["dependency-fog", "ownership-drift"]
-```
 
 Cross-links should be meaningful, not inflated.
 

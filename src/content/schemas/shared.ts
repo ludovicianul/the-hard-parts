@@ -32,13 +32,18 @@ export const PatternConfidenceSchema = z.enum([
 ]);
 
 /**
- * An observed-values enum. Real content uses a richer vocabulary than the docs
- * (e.g. Failure Modes includes `"common in AI work"` under `frequency`).
- * We widen these enums to the UNION of docs + observed content values.
- * Any value not in this list should trigger a validation warning.
+ * Canonical, disciplined `frequency` enum.
+ *
+ * Matches the values defined in `docs/schema-failure-modes.md` plus `uncommon`
+ * (kept from the shared vocabulary). The enum intentionally does NOT accept
+ * contextual values like `"common in AI work"` — nuance about AI impact lives
+ * in `category: "ai"` and the AI fields (`aiCanHelpWith`, `aiCanMakeWorseBy`,
+ * `aiSpecificNotes`), not in the frequency label.
+ *
+ * Content is normalised to this set at author time. Unknown values fail the
+ * build at schema parse time.
  */
 export const FrequencyEnum = z.enum([
-  // docs-sanctioned
   "rare",
   "uncommon",
   "occasional",
@@ -46,8 +51,6 @@ export const FrequencyEnum = z.enum([
   "very common",
   "universal",
   "increasing",
-  // observed in content
-  "common in AI work",
 ]);
 
 /**

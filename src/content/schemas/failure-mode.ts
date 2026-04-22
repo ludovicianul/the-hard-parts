@@ -11,18 +11,27 @@ import {
 } from "./shared";
 
 /**
- * Failure Modes — content-level schema.
+ * Failure Modes — canonical schema.
  *
- * MISMATCHES WITH docs/schema-failure-modes.md (reported, not "fixed"):
- *  - docs describe `warningSigns: { early, mid, late }`; content uses three
- *    flat arrays: `earlyWarningSigns`, `midWarningSigns`, `lateWarningSigns`.
- *    We model what's actually there.
- *  - `relatedFailureModes` is not present on entries; intra-category links
- *    are expressed via `oftenLeadsTo` and `oftenCausedBy` instead.
- *  - `frequency` includes `"common in AI work"` which is not in the docs enum.
- *  - Slug uses `the-friendly-rewrite` (docs prefer stripping `the-` but also
- *    say preserve established slugs — so we preserve).
+ * Aligned with `docs/schema-failure-modes.md`. Content has been migrated to
+ * this shape; no compatibility layer remains.
+ *
+ * Canonical decisions (see docs for full rationale):
+ *  - `warningSigns` is a nested object: `{ early, mid, late }`.
+ *  - `oftenLeadsTo` and `oftenCausedBy` are first-class FM relationship fields.
+ *    `relatedFailureModes` exists only as an optional fallback for neutral
+ *    (non-causal) related links.
+ *  - `frequency` is a tight controlled enum; no contextual values allowed.
+ *  - Slugs omit leading articles like "the-"; titles may keep them.
  */
+
+export const WarningSignsSchema = z
+  .object({
+    early: z.array(z.string()).min(1),
+    mid: z.array(z.string()).min(1),
+    late: z.array(z.string()).min(1),
+  })
+  .strict();
 
 export const FailureModeEntrySchema = z
   .object({
@@ -49,24 +58,28 @@ export const FailureModeEntrySchema = z
     escalates: z.string().min(1),
     ends: z.string().min(1),
 
-    // Warning signs: FLAT arrays (matches actual content, not nested per docs)
-    earlyWarningSigns: z.array(z.string()).min(1),
-    midWarningSigns: z.array(z.string()).min(1),
-    lateWarningSigns: z.array(z.string()).min(1),
+    // Warning signs: canonical nested { early, mid, late }
+    warningSigns: WarningSignsSchema,
 
     whyItHappens: z.array(z.string()).min(1),
     immediateActions: z.array(z.string()).min(1),
     structuralFixes: z.array(z.string()).min(1),
     whatNotToDo: z.array(z.string()).optional(),
 
-    recoveryDifficulty: z.string().min(1), // docs: easy|medium|medium-hard|hard|very hard (widened)
+    recoveryDifficulty: z.string().min(1), // docs: easy|medium|medium-hard|hard|very hard
 
     // AI
     ...SharedAiFields.shape,
 
-    // Intra- and cross-category relations
+    // First-class FM relationship fields.
+    // `oftenLeadsTo` / `oftenCausedBy` carry causal meaning, not a weaker
+    // "related" generic. They accept either FM slugs or short descriptive
+    // causes/consequences (content may hold either).
     oftenLeadsTo: RefArray.optional(),
     oftenCausedBy: RefArray.optional(),
+
+    // Neutral cross-category related references.
+    // `relatedFailureModes` is kept optional as a non-causal fallback, per docs.
     ...RelatedRefs.shape,
 
     // Field notes

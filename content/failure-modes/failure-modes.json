@@ -57,7 +57,7 @@
   },
   "entries": [
     {
-      "slug": "the-friendly-rewrite",
+      "slug": "friendly-rewrite",
       "title": "The Friendly Rewrite",
       "alternativeNames": [
         "the big bang rewrite",
@@ -92,21 +92,23 @@
       "feelsReasonableBecause": "The existing mess is real, and a rewrite promises clarity, speed, and fewer compromises.",
       "escalates": "Parallel systems appear. Scope expands. The new system is always almost ready while the old one remains mission-critical.",
       "ends": "The team maintains two worlds, trust declines, and leadership eventually asks why nothing meaningful shipped.",
-      "earlyWarningSigns": [
-        "We should rebuild this properly.",
-        "The old system is too messy to change safely.",
-        "No one can describe what will be migrated first."
-      ],
-      "midWarningSigns": [
-        "Two systems run in parallel for months.",
-        "Net-new scope gets added before parity is reached.",
-        "Delivery dates keep moving but optimism stays strangely intact."
-      ],
-      "lateWarningSigns": [
-        "The old system still receives urgent fixes.",
-        "Nobody can define done in plain language.",
-        "The team has lost confidence in both systems."
-      ],
+      "warningSigns": {
+        "early": [
+          "We should rebuild this properly.",
+          "The old system is too messy to change safely.",
+          "No one can describe what will be migrated first."
+        ],
+        "mid": [
+          "Two systems run in parallel for months.",
+          "Net-new scope gets added before parity is reached.",
+          "Delivery dates keep moving but optimism stays strangely intact."
+        ],
+        "late": [
+          "The old system still receives urgent fixes.",
+          "Nobody can define done in plain language.",
+          "The team has lost confidence in both systems."
+        ]
+      },
       "whyItHappens": [
         "Pain in the current system is real",
         "Migration strategy is weak or absent",
@@ -137,9 +139,9 @@
       ],
       "aiSpecificNotes": "Do not confuse generated replacement code with validated replacement behavior.",
       "oftenLeadsTo": [
-        "the-dependency-fog",
+        "dependency-fog",
         "ownership-drift",
-        "the-invisible-deadline"
+        "invisible-deadline"
       ],
       "oftenCausedBy": [
         "metric-myopia",
@@ -163,7 +165,7 @@
       "patternConfidence": "high"
     },
     {
-      "slug": "the-hero-trap",
+      "slug": "hero-trap",
       "title": "The Hero Trap",
       "alternativeNames": [
         "bus factor of one",
@@ -198,21 +200,23 @@
       "feelsReasonableBecause": "The team gets quick answers, fast fixes, and a comforting sense that someone truly understands the system.",
       "escalates": "Escalations route through one person. Others stop learning certain areas. Documentation falls behind reality.",
       "ends": "Burnout, bottlenecks, fragile delivery, and organizational panic when the hero is absent.",
-      "earlyWarningSigns": [
-        "Ask Alex, they know.",
-        "The same person joins every critical call.",
-        "Some system areas have one real maintainer."
-      ],
-      "midWarningSigns": [
-        "Work queues form behind one person.",
-        "People avoid risky changes without their sign-off.",
-        "Key knowledge exists mostly in chats and memory."
-      ],
-      "lateWarningSigns": [
-        "Vacations become operational risk.",
-        "Progress stalls when one person is overloaded.",
-        "The team has strong output but weak resilience."
-      ],
+      "warningSigns": {
+        "early": [
+          "Ask Alex, they know.",
+          "The same person joins every critical call.",
+          "Some system areas have one real maintainer."
+        ],
+        "mid": [
+          "Work queues form behind one person.",
+          "People avoid risky changes without their sign-off.",
+          "Key knowledge exists mostly in chats and memory."
+        ],
+        "late": [
+          "Vacations become operational risk.",
+          "Progress stalls when one person is overloaded.",
+          "The team has strong output but weak resilience."
+        ]
+      },
       "whyItHappens": [
         "Capability and trust concentrate naturally",
         "Organizations reward rescue more than resilience",
@@ -247,7 +251,7 @@
         "silent-model-drift"
       ],
       "oftenCausedBy": [
-        "the-dependency-fog",
+        "dependency-fog",
         "local-optimization"
       ],
       "relatedRedFlags": [
@@ -302,21 +306,23 @@
       "feelsReasonableBecause": "Generalization sounds cheaper than revisiting design later, and abstraction often signals sophistication.",
       "escalates": "Interfaces multiply, wrappers appear, patterns spread, and the code becomes harder to reason about than the original problem.",
       "ends": "Simple changes take too long, onboarding slows, and engineers stop trusting the architecture.",
-      "earlyWarningSigns": [
-        "We might need this pattern later.",
-        "A simple feature requires several layers from day one.",
-        "Names become increasingly generic."
-      ],
-      "midWarningSigns": [
-        "Simple changes touch too many files.",
-        "The abstraction has more exceptions than the concrete implementation it replaced.",
-        "Developers ask why the code is so indirect."
-      ],
-      "lateWarningSigns": [
-        "Nobody can explain which layer owns the real behavior.",
-        "Refactors are feared because the architecture feels ceremonial.",
-        "Reuse is promised more often than observed."
-      ],
+      "warningSigns": {
+        "early": [
+          "We might need this pattern later.",
+          "A simple feature requires several layers from day one.",
+          "Names become increasingly generic."
+        ],
+        "mid": [
+          "Simple changes touch too many files.",
+          "The abstraction has more exceptions than the concrete implementation it replaced.",
+          "Developers ask why the code is so indirect."
+        ],
+        "late": [
+          "Nobody can explain which layer owns the real behavior.",
+          "Refactors are feared because the architecture feels ceremonial.",
+          "Reuse is promised more often than observed."
+        ]
+      },
       "whyItHappens": [
         "Teams optimize for elegance over clarity",
         "Architecture is used to manage uncertainty symbolically",
@@ -346,7 +352,7 @@
       ],
       "aiSpecificNotes": "Generated elegance is still cost. If no one can explain why a layer exists, it is already too expensive.",
       "oftenLeadsTo": [
-        "the-dependency-fog",
+        "dependency-fog",
         "synthetic-velocity"
       ],
       "oftenCausedBy": [
@@ -404,21 +410,23 @@
       "feelsReasonableBecause": "Tickets, statuses, and dashboards create an immediate sense of order.",
       "escalates": "The system of reporting becomes heavier, and teams learn which motions look like progress.",
       "ends": "Leadership sees movement, teams feel burden, and delivery quietly deteriorates.",
-      "earlyWarningSigns": [
-        "Status hygiene gets more attention than blocker removal.",
-        "Tickets are split for optics rather than flow.",
-        "People speak in board language more than delivery language."
-      ],
-      "midWarningSigns": [
-        "A lot changes state, but little reaches users.",
-        "The team spends significant time curating work representation.",
-        "Metrics improve while real predictability does not."
-      ],
-      "lateWarningSigns": [
-        "Teams optimize for appearances under review.",
-        "Stakeholders are surprised despite heavy reporting.",
-        "Nobody trusts the board, but everyone feeds it."
-      ],
+      "warningSigns": {
+        "early": [
+          "Status hygiene gets more attention than blocker removal.",
+          "Tickets are split for optics rather than flow.",
+          "People speak in board language more than delivery language."
+        ],
+        "mid": [
+          "A lot changes state, but little reaches users.",
+          "The team spends significant time curating work representation.",
+          "Metrics improve while real predictability does not."
+        ],
+        "late": [
+          "Teams optimize for appearances under review.",
+          "Stakeholders are surprised despite heavy reporting.",
+          "Nobody trusts the board, but everyone feeds it."
+        ]
+      },
       "whyItHappens": [
         "Visibility is substituted for control",
         "Low trust drives reporting inflation",
@@ -450,7 +458,7 @@
       "oftenLeadsTo": [
         "metric-myopia",
         "synthetic-velocity",
-        "the-invisible-deadline"
+        "invisible-deadline"
       ],
       "oftenCausedBy": [
         "stakeholder-capture"
@@ -473,7 +481,7 @@
       "patternConfidence": "high"
     },
     {
-      "slug": "the-invisible-deadline",
+      "slug": "invisible-deadline",
       "title": "The Invisible Deadline",
       "alternativeNames": [
         "the phantom commitment",
@@ -508,21 +516,23 @@
       "feelsReasonableBecause": "No one wants to be the person who slows momentum by forcing hard trade-off conversations.",
       "escalates": "The team senses urgency but lacks clear constraints. Local optimism fills the gap.",
       "ends": "The deadline becomes suddenly visible only when panic arrives.",
-      "earlyWarningSigns": [
-        "We should aim for around then.",
-        "People talk about timing without scope conversations.",
-        "Urgency is implied, not owned."
-      ],
-      "midWarningSigns": [
-        "Roadmaps sound precise but delivery plans stay vague.",
-        "Trade-offs are made informally and unevenly.",
-        "People are surprised by the seriousness of the date."
-      ],
-      "lateWarningSigns": [
-        "Escalation tone changes abruptly.",
-        "Quality is cut in a rush.",
-        "Teams discover they have been committed without knowing it."
-      ],
+      "warningSigns": {
+        "early": [
+          "We should aim for around then.",
+          "People talk about timing without scope conversations.",
+          "Urgency is implied, not owned."
+        ],
+        "mid": [
+          "Roadmaps sound precise but delivery plans stay vague.",
+          "Trade-offs are made informally and unevenly.",
+          "People are surprised by the seriousness of the date."
+        ],
+        "late": [
+          "Escalation tone changes abruptly.",
+          "Quality is cut in a rush.",
+          "Teams discover they have been committed without knowing it."
+        ]
+      },
       "whyItHappens": [
         "Conflict avoidance",
         "Leadership signaling without operational translation",
@@ -554,11 +564,11 @@
       "oftenLeadsTo": [
         "ticket-theater",
         "local-optimization",
-        "the-friendly-rewrite"
+        "friendly-rewrite"
       ],
       "oftenCausedBy": [
         "stakeholder-capture",
-        "the-consensus-trap"
+        "consensus-trap"
       ],
       "relatedRedFlags": [
         "nobody can say what is fixed vs flexible",
@@ -612,21 +622,23 @@
       "feelsReasonableBecause": "Responsiveness to leadership feels like good organizational citizenship.",
       "escalates": "The team learns that one voice moves priorities faster than any process. Others exploit the same channel.",
       "ends": "Roadmaps become incoherent, teams are demoralized by churn, and actual users are underserved.",
-      "earlyWarningSigns": [
-        "Roadmaps swing fast after one meeting.",
-        "Priorities keep reinterpreting without documented rationale.",
-        "One person's requests bypass normal intake."
-      ],
-      "midWarningSigns": [
-        "The team cannot explain current priorities in terms of user or business need.",
-        "Previous commitments are quietly dropped.",
-        "Team energy drops around planning cycles."
-      ],
-      "lateWarningSigns": [
-        "Churn is constant and expected.",
-        "The team stops believing roadmaps are real.",
-        "Key people start leaving."
-      ],
+      "warningSigns": {
+        "early": [
+          "Roadmaps swing fast after one meeting.",
+          "Priorities keep reinterpreting without documented rationale.",
+          "One person's requests bypass normal intake."
+        ],
+        "mid": [
+          "The team cannot explain current priorities in terms of user or business need.",
+          "Previous commitments are quietly dropped.",
+          "Team energy drops around planning cycles."
+        ],
+        "late": [
+          "Churn is constant and expected.",
+          "The team stops believing roadmaps are real.",
+          "Key people start leaving."
+        ]
+      },
       "whyItHappens": [
         "Power imbalance",
         "Unclear decision rights",
@@ -661,7 +673,7 @@
         "metric-myopia"
       ],
       "oftenCausedBy": [
-        "the-consensus-trap"
+        "consensus-trap"
       ],
       "relatedRedFlags": [
         "roadmap changes without explanation",
@@ -680,7 +692,7 @@
       "patternConfidence": "high"
     },
     {
-      "slug": "the-dependency-fog",
+      "slug": "dependency-fog",
       "title": "The Dependency Fog",
       "alternativeNames": [
         "integration surprise",
@@ -716,21 +728,23 @@
       "feelsReasonableBecause": "Dependencies are often socially known but not operationally managed.",
       "escalates": "Integration assumptions fail, handoffs slip, and blockers appear serially instead of visibly.",
       "ends": "Schedules slide, blame circulates, and teams discover they never had a shared delivery map.",
-      "earlyWarningSigns": [
-        "We'll need something from that team later.",
-        "Dependencies live mostly in conversations.",
-        "Integration points are assumed rather than tested."
-      ],
-      "midWarningSigns": [
-        "Blockers keep appearing after planning.",
-        "Teams report progress locally but not systemically.",
-        "Release plans depend on unowned external promises."
-      ],
-      "lateWarningSigns": [
-        "Everyone says they are waiting on everyone else.",
-        "Cross-team integration becomes a fire drill.",
-        "Dates move because unknowns arrive as surprises."
-      ],
+      "warningSigns": {
+        "early": [
+          "We'll need something from that team later.",
+          "Dependencies live mostly in conversations.",
+          "Integration points are assumed rather than tested."
+        ],
+        "mid": [
+          "Blockers keep appearing after planning.",
+          "Teams report progress locally but not systemically.",
+          "Release plans depend on unowned external promises."
+        ],
+        "late": [
+          "Everyone says they are waiting on everyone else.",
+          "Cross-team integration becomes a fire drill.",
+          "Dates move because unknowns arrive as surprises."
+        ]
+      },
       "whyItHappens": [
         "Local planning dominates system planning",
         "Ownership boundaries are unclear",
@@ -760,9 +774,9 @@
       ],
       "aiSpecificNotes": "Dependency maps are only useful if they are acted on, not just generated.",
       "oftenLeadsTo": [
-        "the-hero-trap",
+        "hero-trap",
         "ownership-drift",
-        "the-invisible-deadline"
+        "invisible-deadline"
       ],
       "oftenCausedBy": [
         "abstraction-addiction",
@@ -820,21 +834,23 @@
       "feelsReasonableBecause": "Teams are meant to own their numbers and improve them.",
       "escalates": "Downstream teams absorb the cost invisibly. The handoff gets worse. Queue lengths grow elsewhere.",
       "ends": "The system slows while each team reports improvement.",
-      "earlyWarningSigns": [
-        "Team celebrates throughput while downstream pain rises.",
-        "Metrics are team-level, not end-to-end.",
-        "Handoffs are not tracked."
-      ],
-      "midWarningSigns": [
-        "Queue length or wait time grows in adjacent teams.",
-        "Downstream teams describe getting too much, too fast, or in the wrong shape.",
-        "System-level lead time is not improving despite local gains."
-      ],
-      "lateWarningSigns": [
-        "Incidents arise at team boundaries.",
-        "No one owns the full flow.",
-        "Each team defends its numbers while the product suffers."
-      ],
+      "warningSigns": {
+        "early": [
+          "Team celebrates throughput while downstream pain rises.",
+          "Metrics are team-level, not end-to-end.",
+          "Handoffs are not tracked."
+        ],
+        "mid": [
+          "Queue length or wait time grows in adjacent teams.",
+          "Downstream teams describe getting too much, too fast, or in the wrong shape.",
+          "System-level lead time is not improving despite local gains."
+        ],
+        "late": [
+          "Incidents arise at team boundaries.",
+          "No one owns the full flow.",
+          "Each team defends its numbers while the product suffers."
+        ]
+      },
       "whyItHappens": [
         "Silo incentives",
         "Poor system-level metrics",
@@ -888,7 +904,7 @@
       "patternConfidence": "high"
     },
     {
-      "slug": "the-consensus-trap",
+      "slug": "consensus-trap",
       "title": "The Consensus Trap",
       "alternativeNames": [
         "decision by committee",
@@ -922,21 +938,23 @@
       "feelsReasonableBecause": "Involving people feels respectful and reduces the risk of pushback later.",
       "escalates": "Every decision needs more input. Proposals get softened. Ownership stays fuzzy.",
       "ends": "Stale proposals, missed windows, and quiet disengagement from the people who most wanted to move.",
-      "earlyWarningSigns": [
-        "Endless reviews with no clear decider.",
-        "Proposals get progressively softer.",
-        "People say we need to align more before proceeding."
-      ],
-      "midWarningSigns": [
-        "Decisions made in one meeting get reopened in the next.",
-        "No one can name who owns a key choice.",
-        "Work waits on clarity that never comes."
-      ],
-      "lateWarningSigns": [
-        "Decisions are made by attrition or accident.",
-        "The team executes on the least-contested option, not the best one.",
-        "Strong contributors disengage from the decision process."
-      ],
+      "warningSigns": {
+        "early": [
+          "Endless reviews with no clear decider.",
+          "Proposals get progressively softer.",
+          "People say we need to align more before proceeding."
+        ],
+        "mid": [
+          "Decisions made in one meeting get reopened in the next.",
+          "No one can name who owns a key choice.",
+          "Work waits on clarity that never comes."
+        ],
+        "late": [
+          "Decisions are made by attrition or accident.",
+          "The team executes on the least-contested option, not the best one.",
+          "Strong contributors disengage from the decision process."
+        ]
+      },
       "whyItHappens": [
         "Unclear decision rights",
         "Conflict avoidance",
@@ -966,7 +984,7 @@
       ],
       "aiSpecificNotes": "More arguments do not mean better decisions.",
       "oftenLeadsTo": [
-        "the-invisible-deadline",
+        "invisible-deadline",
         "stakeholder-capture"
       ],
       "oftenCausedBy": [
@@ -1025,21 +1043,23 @@
       "feelsReasonableBecause": "Quantified goals feel objective and fair.",
       "escalates": "Teams learn that the metric moves independently of the outcome. Gaming begins, usually unconsciously at first.",
       "ends": "Metrics improve, real performance does not, and management is the last to see it.",
-      "earlyWarningSigns": [
-        "Dashboards dominate planning conversations.",
-        "Nuanced concerns get dismissed if they are not in the numbers.",
-        "Teams talk about the metric more than the user."
-      ],
-      "midWarningSigns": [
-        "Metric is improving but incidents, complaints, or churn are not falling.",
-        "People work around measurement rather than around delivery.",
-        "Counter-metrics go unmeasured."
-      ],
-      "lateWarningSigns": [
-        "The metric has been gamed sufficiently that it no longer signals anything.",
-        "Real problems are visible to frontline teams but invisible to leadership.",
-        "Morale drops even as numbers look good."
-      ],
+      "warningSigns": {
+        "early": [
+          "Dashboards dominate planning conversations.",
+          "Nuanced concerns get dismissed if they are not in the numbers.",
+          "Teams talk about the metric more than the user."
+        ],
+        "mid": [
+          "Metric is improving but incidents, complaints, or churn are not falling.",
+          "People work around measurement rather than around delivery.",
+          "Counter-metrics go unmeasured."
+        ],
+        "late": [
+          "The metric has been gamed sufficiently that it no longer signals anything.",
+          "Real problems are visible to frontline teams but invisible to leadership.",
+          "Morale drops even as numbers look good."
+        ]
+      },
       "whyItHappens": [
         "Proxy metrics become targets per Goodhart's Law",
         "Measurement is detached from reality",
@@ -1129,21 +1149,23 @@
       "feelsReasonableBecause": "Internal platforms promise leverage and consistency across teams.",
       "escalates": "The platform grows features its users did not request. Adoption is weaker than expected. Teams build workarounds.",
       "ends": "The platform absorbs significant engineering time, has thin adoption, and becomes a maintenance liability.",
-      "earlyWarningSigns": [
-        "Platform language appears before usage evidence.",
-        "The team is designing for teams that have not yet asked for help.",
-        "The roadmap describes future capabilities, not solved present problems."
-      ],
-      "midWarningSigns": [
-        "Adoption is being pushed rather than pulled.",
-        "Users request features the platform cannot support without rework.",
-        "The platform team cannot describe which teams depend on them for what."
-      ],
-      "lateWarningSigns": [
-        "The platform team is large but its impact is unclear.",
-        "Consumer teams build around the platform, not on it.",
-        "The platform is defended by its creators but not loved by its users."
-      ],
+      "warningSigns": {
+        "early": [
+          "Platform language appears before usage evidence.",
+          "The team is designing for teams that have not yet asked for help.",
+          "The roadmap describes future capabilities, not solved present problems."
+        ],
+        "mid": [
+          "Adoption is being pushed rather than pulled.",
+          "Users request features the platform cannot support without rework.",
+          "The platform team cannot describe which teams depend on them for what."
+        ],
+        "late": [
+          "The platform team is large but its impact is unclear.",
+          "Consumer teams build around the platform, not on it.",
+          "The platform is defended by its creators but not loved by its users."
+        ]
+      },
       "whyItHappens": [
         "Solutionism",
         "Architecture prestige",
@@ -1174,10 +1196,10 @@
       "aiSpecificNotes": "Speed of construction is not evidence of need.",
       "oftenLeadsTo": [
         "abstraction-addiction",
-        "the-dependency-fog"
+        "dependency-fog"
       ],
       "oftenCausedBy": [
-        "the-friendly-rewrite"
+        "friendly-rewrite"
       ],
       "relatedRedFlags": [
         "platform has more features than active users",
@@ -1232,21 +1254,23 @@
       "feelsReasonableBecause": "Teams grow, reorg, and focus shifts. Ownership transfer is assumed but rarely formalized.",
       "escalates": "Documentation goes stale. On-call rotations become unclear. Incidents bounce between teams.",
       "ends": "Something breaks, nobody knows who owns it, and the same people always end up holding the bag.",
-      "earlyWarningSigns": [
-        "Unclear on-call ownership for some services.",
-        "Documentation is stale or absent.",
-        "Backlog items for certain systems go untouched."
-      ],
-      "midWarningSigns": [
-        "Incidents require escalation to find the right owner.",
-        "Fixes stall because no one feels accountable.",
-        "Teams describe services as belonging to a team that no longer exists."
-      ],
-      "lateWarningSigns": [
-        "Nobody defends quality or roadmap for the service.",
-        "The same unowned incidents recur.",
-        "The service becomes dangerous to touch and dangerous to ignore."
-      ],
+      "warningSigns": {
+        "early": [
+          "Unclear on-call ownership for some services.",
+          "Documentation is stale or absent.",
+          "Backlog items for certain systems go untouched."
+        ],
+        "mid": [
+          "Incidents require escalation to find the right owner.",
+          "Fixes stall because no one feels accountable.",
+          "Teams describe services as belonging to a team that no longer exists."
+        ],
+        "late": [
+          "Nobody defends quality or roadmap for the service.",
+          "The same unowned incidents recur.",
+          "The service becomes dangerous to touch and dangerous to ignore."
+        ]
+      },
       "whyItHappens": [
         "Reorgs reassign people but not services",
         "System sprawl outpaces stewardship",
@@ -1276,11 +1300,11 @@
       ],
       "aiSpecificNotes": "Accurate answers from stale sources are still wrong.",
       "oftenLeadsTo": [
-        "the-hero-trap",
+        "hero-trap",
         "silent-model-drift"
       ],
       "oftenCausedBy": [
-        "the-dependency-fog"
+        "dependency-fog"
       ],
       "relatedRedFlags": [
         "incidents bounce without resolution",
@@ -1335,21 +1359,23 @@
       "feelsReasonableBecause": "The increase in visible activity is real, and some of it is genuinely useful.",
       "escalates": "Review becomes shallower than generation. Ownership weakens. Rework and confusion rise slowly rather than dramatically.",
       "ends": "The organization confuses artifact volume with actual capability and pays later in defects, drift, and cognitive load.",
-      "earlyWarningSigns": [
-        "PR volume spikes faster than review capacity.",
-        "Generated docs and code proliferate quickly.",
-        "People cite speed more often than understanding."
-      ],
-      "midWarningSigns": [
-        "Rework rises quietly.",
-        "Code authorship becomes blurry.",
-        "The team closes more work while feeling less certain."
-      ],
-      "lateWarningSigns": [
-        "Incident rate, regression rate, or maintenance burden climbs.",
-        "Nobody fully owns some generated areas.",
-        "The system looks productive but feels brittle."
-      ],
+      "warningSigns": {
+        "early": [
+          "PR volume spikes faster than review capacity.",
+          "Generated docs and code proliferate quickly.",
+          "People cite speed more often than understanding."
+        ],
+        "mid": [
+          "Rework rises quietly.",
+          "Code authorship becomes blurry.",
+          "The team closes more work while feeling less certain."
+        ],
+        "late": [
+          "Incident rate, regression rate, or maintenance burden climbs.",
+          "Nobody fully owns some generated areas.",
+          "The system looks productive but feels brittle."
+        ]
+      },
       "whyItHappens": [
         "Organizations overvalue visible output",
         "Review and validation do not scale with generation",
@@ -1437,21 +1463,23 @@
       "feelsReasonableBecause": "Variance is expected, and small quality shifts rarely trigger immediate alarms.",
       "escalates": "Prompts change, provider behavior changes, data shifts, or user patterns evolve. Quality declines unevenly.",
       "ends": "Trust falls, support load rises, and the organization realizes too late that the system changed before its controls did.",
-      "earlyWarningSigns": [
-        "Some edge cases feel a bit worse lately.",
-        "User complaints are anecdotal and hard to aggregate.",
-        "Prompt or context changes are poorly tracked."
-      ],
-      "midWarningSigns": [
-        "Regression patterns appear across similar tasks.",
-        "Support gets recurring but weakly classified issues.",
-        "Internal confidence drops before formal metrics do."
-      ],
-      "lateWarningSigns": [
-        "Business errors or user trust issues become visible.",
-        "Teams cannot explain when quality started changing.",
-        "Rollback options are limited or absent."
-      ],
+      "warningSigns": {
+        "early": [
+          "Some edge cases feel a bit worse lately.",
+          "User complaints are anecdotal and hard to aggregate.",
+          "Prompt or context changes are poorly tracked."
+        ],
+        "mid": [
+          "Regression patterns appear across similar tasks.",
+          "Support gets recurring but weakly classified issues.",
+          "Internal confidence drops before formal metrics do."
+        ],
+        "late": [
+          "Business errors or user trust issues become visible.",
+          "Teams cannot explain when quality started changing.",
+          "Rollback options are limited or absent."
+        ]
+      },
       "whyItHappens": [
         "Weak behavioral monitoring",
         "Prompt, retrieval, model, or provider changes lack operational controls",
@@ -1539,21 +1567,23 @@
       "feelsReasonableBecause": "The code works, tests pass, and it saved significant time.",
       "escalates": "Patterns from the generated code spread. New code follows the same shape without questioning it. Coupling accumulates.",
       "ends": "The architecture has design decisions nobody made, nobody understands fully, and nobody knows how to change safely.",
-      "earlyWarningSigns": [
-        "Generated code lands without a design discussion.",
-        "Architectural patterns spread across the codebase from a generated starting point.",
-        "Nobody can explain why the structure is the way it is."
-      ],
-      "midWarningSigns": [
-        "Inconsistent patterns appear because different prompts produced different structures.",
-        "Hidden coupling makes changes expensive.",
-        "Reviews focus on correctness, not structure."
-      ],
-      "lateWarningSigns": [
-        "The team avoids changing structural code because nobody is confident.",
-        "Incidents have architectural causes nobody anticipated.",
-        "New joiners cannot build a mental model of the system."
-      ],
+      "warningSigns": {
+        "early": [
+          "Generated code lands without a design discussion.",
+          "Architectural patterns spread across the codebase from a generated starting point.",
+          "Nobody can explain why the structure is the way it is."
+        ],
+        "mid": [
+          "Inconsistent patterns appear because different prompts produced different structures.",
+          "Hidden coupling makes changes expensive.",
+          "Reviews focus on correctness, not structure."
+        ],
+        "late": [
+          "The team avoids changing structural code because nobody is confident.",
+          "Incidents have architectural causes nobody anticipated.",
+          "New joiners cannot build a mental model of the system."
+        ]
+      },
       "whyItHappens": [
         "Speed of generation outpaces capacity for design review",
         "Weak review practices for generated code",
@@ -1584,7 +1614,7 @@
       "aiSpecificNotes": "Passing tests do not validate architectural choices.",
       "oftenLeadsTo": [
         "abstraction-addiction",
-        "the-dependency-fog"
+        "dependency-fog"
       ],
       "oftenCausedBy": [
         "synthetic-velocity"
@@ -1624,7 +1654,7 @@
       ],
       "mistakenFor": "evidence-based evaluation",
       "severity": "high",
-      "frequency": "common in AI work",
+      "frequency": "common",
       "lifecycleStages": [
         "planning",
         "release"
@@ -1641,21 +1671,23 @@
       "feelsReasonableBecause": "Benchmarks are produced by credible sources and offer a consistent comparison point.",
       "escalates": "The chosen model performs well in demos but struggles with real user tasks, edge cases, or production formats.",
       "ends": "Trust erodes, performance is inconsistent, and the team realizes the eval never matched the use case.",
-      "earlyWarningSigns": [
-        "Model selection discussions center on benchmark rankings.",
-        "No task-specific evaluation exists.",
-        "Demo inputs are carefully selected and not representative."
-      ],
-      "midWarningSigns": [
-        "Good benchmark model underperforms on real tasks.",
-        "Users encounter failure modes that were not tested.",
-        "The team cannot explain the gap between benchmark and production."
-      ],
-      "lateWarningSigns": [
-        "Trust in the AI feature declines despite strong benchmark numbers.",
-        "Significant effort goes into prompting around model weaknesses.",
-        "The team re-evaluates the model selection with evidence that should have existed before launch."
-      ],
+      "warningSigns": {
+        "early": [
+          "Model selection discussions center on benchmark rankings.",
+          "No task-specific evaluation exists.",
+          "Demo inputs are carefully selected and not representative."
+        ],
+        "mid": [
+          "Good benchmark model underperforms on real tasks.",
+          "Users encounter failure modes that were not tested.",
+          "The team cannot explain the gap between benchmark and production."
+        ],
+        "late": [
+          "Trust in the AI feature declines despite strong benchmark numbers.",
+          "Significant effort goes into prompting around model weaknesses.",
+          "The team re-evaluates the model selection with evidence that should have existed before launch."
+        ]
+      },
       "whyItHappens": [
         "Benchmarks are accessible and published",
         "Task-level evaluation is expensive to build",
@@ -1744,21 +1776,23 @@
       "feelsReasonableBecause": "Answers look good and demos are impressive.",
       "escalates": "Answers are confidently wrong. Sources are stale, out of scope, or misinterpreted. Users trust the system more than they should.",
       "ends": "A significant error surfaces publicly or operationally. The system loses credibility that is hard to recover.",
-      "earlyWarningSigns": [
-        "Source trust and freshness are vague.",
-        "Evaluation is based on demos rather than systematic testing.",
-        "No human expert has reviewed representative outputs."
-      ],
-      "midWarningSigns": [
-        "Users encounter confident wrong answers.",
-        "Citations point to sources that do not support the claim.",
-        "Edge cases and out-of-scope questions are handled poorly."
-      ],
-      "lateWarningSigns": [
-        "User distrust becomes explicit.",
-        "Support receives escalations about false information.",
-        "The team cannot explain which sources are authoritative."
-      ],
+      "warningSigns": {
+        "early": [
+          "Source trust and freshness are vague.",
+          "Evaluation is based on demos rather than systematic testing.",
+          "No human expert has reviewed representative outputs."
+        ],
+        "mid": [
+          "Users encounter confident wrong answers.",
+          "Citations point to sources that do not support the claim.",
+          "Edge cases and out-of-scope questions are handled poorly."
+        ],
+        "late": [
+          "User distrust becomes explicit.",
+          "Support receives escalations about false information.",
+          "The team cannot explain which sources are authoritative."
+        ]
+      },
       "whyItHappens": [
         "Source quality is ignored in favor of fluency",
         "Evaluation is weak or demo-based",
@@ -1846,21 +1880,23 @@
       "feelsReasonableBecause": "Prompts feel more like text than code and iteration is fast.",
       "escalates": "Behavior changes unexpectedly. Nobody can reproduce the good version. Debugging requires archaeology.",
       "ends": "A behavior change causes a production incident and the team cannot explain when or why the prompt changed.",
-      "earlyWarningSigns": [
-        "Prompts live in chat threads, docs, or config files with no history.",
-        "Changes to prompts are not tracked alongside code changes.",
-        "Different environments use different prompts without documentation."
-      ],
-      "midWarningSigns": [
-        "Behavior changes cannot be traced to a specific change.",
-        "Testing a prompt change requires manual comparison.",
-        "The team argues about what the current prompt says."
-      ],
-      "lateWarningSigns": [
-        "A production issue is traced to an undocumented prompt change.",
-        "Rollback is not possible because no previous version was saved.",
-        "Debugging requires reconstructing history from conversations."
-      ],
+      "warningSigns": {
+        "early": [
+          "Prompts live in chat threads, docs, or config files with no history.",
+          "Changes to prompts are not tracked alongside code changes.",
+          "Different environments use different prompts without documentation."
+        ],
+        "mid": [
+          "Behavior changes cannot be traced to a specific change.",
+          "Testing a prompt change requires manual comparison.",
+          "The team argues about what the current prompt says."
+        ],
+        "late": [
+          "A production issue is traced to an undocumented prompt change.",
+          "Rollback is not possible because no previous version was saved.",
+          "Debugging requires reconstructing history from conversations."
+        ]
+      },
       "whyItHappens": [
         "Poor versioning discipline",
         "Prompts are treated as text, not configuration",
@@ -1948,21 +1984,23 @@
       "feelsReasonableBecause": "Retrofitting scale later is genuinely expensive, and the team has seen or heard about systems that did not survive success.",
       "escalates": "Operational complexity multiplies. A small team maintains distributed infrastructure designed for a system ten times larger.",
       "ends": "Velocity slows, the system is expensive to run, and the scale never arrived or arrived in a form the infrastructure did not anticipate.",
-      "earlyWarningSigns": [
-        "Scale conversations happen before product validation.",
-        "Architecture discussions reference companies at orders-of-magnitude larger scale.",
-        "Complexity is introduced to handle theoretical load."
-      ],
-      "midWarningSigns": [
-        "The system is significantly harder to run than the business problem demands.",
-        "Engineers spend more time on infrastructure than product.",
-        "Onboarding to the system takes far longer than contributing to it."
-      ],
-      "lateWarningSigns": [
-        "The scale never came, or came in a shape that required a redesign anyway.",
-        "Infrastructure cost exceeds business value at current scale.",
-        "The team cannot change product direction quickly because the architecture assumes a specific load model."
-      ],
+      "warningSigns": {
+        "early": [
+          "Scale conversations happen before product validation.",
+          "Architecture discussions reference companies at orders-of-magnitude larger scale.",
+          "Complexity is introduced to handle theoretical load."
+        ],
+        "mid": [
+          "The system is significantly harder to run than the business problem demands.",
+          "Engineers spend more time on infrastructure than product.",
+          "Onboarding to the system takes far longer than contributing to it."
+        ],
+        "late": [
+          "The scale never came, or came in a shape that required a redesign anyway.",
+          "Infrastructure cost exceeds business value at current scale.",
+          "The team cannot change product direction quickly because the architecture assumes a specific load model."
+        ]
+      },
       "whyItHappens": [
         "Survivorship bias from high-scale case studies",
         "Architecture prestige",
@@ -1994,7 +2032,7 @@
       "oftenLeadsTo": [
         "abstraction-addiction",
         "platform-before-product",
-        "the-dependency-fog"
+        "dependency-fog"
       ],
       "oftenCausedBy": [
         "platform-before-product"
@@ -2051,21 +2089,23 @@
       "feelsReasonableBecause": "The contract is known to both teams, and changing it requires coordination.",
       "escalates": "One team changes internal behavior. The other team's assumptions break silently or loudly. Nobody owns the contract.",
       "ends": "A production incident reveals that the interface had changed, been misunderstood, or accumulated incompatible assumptions on both sides.",
-      "earlyWarningSigns": [
-        "APIs are documented in a README that is not kept current.",
-        "Interface changes are communicated verbally.",
-        "No consumer tests exist for the contract."
-      ],
-      "midWarningSigns": [
-        "Integration issues appear repeatedly at release time.",
-        "One team is surprised by a change the other team considers minor.",
-        "Different teams have different understandings of what the interface guarantees."
-      ],
-      "lateWarningSigns": [
-        "A production incident is caused by a contract mismatch.",
-        "Debugging requires archaeology across both teams' code.",
-        "Fear of changing interfaces causes both teams to accumulate workarounds."
-      ],
+      "warningSigns": {
+        "early": [
+          "APIs are documented in a README that is not kept current.",
+          "Interface changes are communicated verbally.",
+          "No consumer tests exist for the contract."
+        ],
+        "mid": [
+          "Integration issues appear repeatedly at release time.",
+          "One team is surprised by a change the other team considers minor.",
+          "Different teams have different understandings of what the interface guarantees."
+        ],
+        "late": [
+          "A production incident is caused by a contract mismatch.",
+          "Debugging requires archaeology across both teams' code.",
+          "Fear of changing interfaces causes both teams to accumulate workarounds."
+        ]
+      },
       "whyItHappens": [
         "Interfaces are treated as internal rather than owned",
         "Contract testing is seen as overhead",
@@ -2095,7 +2135,7 @@
       ],
       "aiSpecificNotes": "Generated implementations may be internally consistent but externally incompatible.",
       "oftenLeadsTo": [
-        "the-dependency-fog",
+        "dependency-fog",
         "ownership-drift"
       ],
       "oftenCausedBy": [
@@ -2120,7 +2160,7 @@
       "patternConfidence": "high"
     },
     {
-      "slug": "the-quiet-quitter-team",
+      "slug": "quiet-quitter-team",
       "title": "The Quiet Quitter Team",
       "alternativeNames": [
         "silent disengagement",
@@ -2155,21 +2195,23 @@
       "feelsReasonableBecause": "Absence of conflict looks like trust and alignment.",
       "escalates": "The team executes orders without input, stops flagging risks, and withdraws from problem-solving.",
       "ends": "Preventable failures occur. Key people leave. The manager discovers the team had known about problems for months.",
-      "earlyWarningSigns": [
-        "Retrospectives produce safe feedback only.",
-        "No one pushes back in planning.",
-        "Questions from leadership are answered with agreement."
-      ],
-      "midWarningSigns": [
-        "Known risks are not escalated.",
-        "Problems are fixed silently without being surfaced.",
-        "Team engagement in decision-making drops quietly."
-      ],
-      "lateWarningSigns": [
-        "Attrition begins among the most capable.",
-        "A significant failure occurs that several people knew was coming.",
-        "Post-mortems reveal that concerns existed but were not raised."
-      ],
+      "warningSigns": {
+        "early": [
+          "Retrospectives produce safe feedback only.",
+          "No one pushes back in planning.",
+          "Questions from leadership are answered with agreement."
+        ],
+        "mid": [
+          "Known risks are not escalated.",
+          "Problems are fixed silently without being surfaced.",
+          "Team engagement in decision-making drops quietly."
+        ],
+        "late": [
+          "Attrition begins among the most capable.",
+          "A significant failure occurs that several people knew was coming.",
+          "Post-mortems reveal that concerns existed but were not raised."
+        ]
+      },
       "whyItHappens": [
         "Previous feedback was penalized or ignored",
         "Psychological safety is low",
@@ -2199,7 +2241,7 @@
       ],
       "aiSpecificNotes": "Polite language in surveys and stand-ups does not mean the team is engaged.",
       "oftenLeadsTo": [
-        "the-hero-trap",
+        "hero-trap",
         "ownership-drift",
         "ticket-theater"
       ],
@@ -2259,21 +2301,23 @@
       "feelsReasonableBecause": "The proposal is technically coherent and the engineer is capable.",
       "escalates": "The project is scoped to maximize visibility, not value. Others are pulled in. The maintenance cost is left for the team.",
       "ends": "A new system exists that nobody except its creator cares about, and the creator has moved on or been promoted.",
-      "earlyWarningSigns": [
-        "A proposal creates a new system rather than solving a problem in an existing one.",
-        "The scope is unusually well-defined for the proposer's own skills.",
-        "The proposal includes a lot of language about what it demonstrates."
-      ],
-      "midWarningSigns": [
-        "Adoption is weak but the project continues.",
-        "The engineer is the primary consumer and biggest advocate.",
-        "Feedback from other teams is not incorporated."
-      ],
-      "lateWarningSigns": [
-        "The engineer is promoted or leaves.",
-        "The system has no clear successor.",
-        "The team owns a system that solves a problem they did not have."
-      ],
+      "warningSigns": {
+        "early": [
+          "A proposal creates a new system rather than solving a problem in an existing one.",
+          "The scope is unusually well-defined for the proposer's own skills.",
+          "The proposal includes a lot of language about what it demonstrates."
+        ],
+        "mid": [
+          "Adoption is weak but the project continues.",
+          "The engineer is the primary consumer and biggest advocate.",
+          "Feedback from other teams is not incorporated."
+        ],
+        "late": [
+          "The engineer is promoted or leaves.",
+          "The system has no clear successor.",
+          "The team owns a system that solves a problem they did not have."
+        ]
+      },
       "whyItHappens": [
         "Promotion criteria reward new system creation",
         "Maintenance and improvement work is less visible than new work",
@@ -2363,21 +2407,23 @@
       "feelsReasonableBecause": "The first phase is successful and the team moves on to other priorities.",
       "escalates": "New features are built on both old and new systems. The old system receives patches. Completion keeps getting deprioritized.",
       "ends": "Years later, the system has two data stores, two deployment models, or two infrastructure patterns — and nobody is sure how to finish.",
-      "earlyWarningSigns": [
-        "Migration has no explicit completion criteria.",
-        "No one owns the migration end state.",
-        "New features begin before old ones are migrated."
-      ],
-      "midWarningSigns": [
-        "Both old and new systems receive production traffic.",
-        "Migration progress is not tracked publicly.",
-        "The team cannot describe what remains to be migrated."
-      ],
-      "lateWarningSigns": [
-        "The migration has been in progress for over a year.",
-        "New engineers learn both systems as permanent.",
-        "The completion is described as a future initiative rather than a current one."
-      ],
+      "warningSigns": {
+        "early": [
+          "Migration has no explicit completion criteria.",
+          "No one owns the migration end state.",
+          "New features begin before old ones are migrated."
+        ],
+        "mid": [
+          "Both old and new systems receive production traffic.",
+          "Migration progress is not tracked publicly.",
+          "The team cannot describe what remains to be migrated."
+        ],
+        "late": [
+          "The migration has been in progress for over a year.",
+          "New engineers learn both systems as permanent.",
+          "The completion is described as a future initiative rather than a current one."
+        ]
+      },
       "whyItHappens": [
         "Completion criteria were not defined before starting",
         "Business priorities shift mid-migration",
@@ -2407,12 +2453,12 @@
       ],
       "aiSpecificNotes": "Reducing migration pain is not the same as finishing the migration.",
       "oftenLeadsTo": [
-        "the-dependency-fog",
+        "dependency-fog",
         "ownership-drift",
-        "the-friendly-rewrite"
+        "friendly-rewrite"
       ],
       "oftenCausedBy": [
-        "the-friendly-rewrite",
+        "friendly-rewrite",
         "platform-before-product"
       ],
       "relatedRedFlags": [
@@ -2467,21 +2513,23 @@
       "feelsReasonableBecause": "Coverage numbers and passing CI are measurable and feel like quality signals.",
       "escalates": "Tests are written to hit coverage targets, not to express intent. Assertions are weak or absent.",
       "ends": "A significant regression ships despite a fully green build. The team is surprised; coverage was above the threshold.",
-      "earlyWarningSigns": [
-        "Test coverage is tracked but test quality is not discussed.",
-        "Tests have no assertions or assert only that code runs without exceptions.",
-        "The same coverage number is cited as evidence in different contexts."
-      ],
-      "midWarningSigns": [
-        "Bugs are found in areas with high coverage.",
-        "Refactors break tests that were not testing behavior.",
-        "Engineers describe tests as a formality before merging."
-      ],
-      "lateWarningSigns": [
-        "A significant production regression ships through a green build.",
-        "Post-mortem reveals tests existed but did not cover the failing scenario.",
-        "Engineers have stopped trusting the test suite."
-      ],
+      "warningSigns": {
+        "early": [
+          "Test coverage is tracked but test quality is not discussed.",
+          "Tests have no assertions or assert only that code runs without exceptions.",
+          "The same coverage number is cited as evidence in different contexts."
+        ],
+        "mid": [
+          "Bugs are found in areas with high coverage.",
+          "Refactors break tests that were not testing behavior.",
+          "Engineers describe tests as a formality before merging."
+        ],
+        "late": [
+          "A significant production regression ships through a green build.",
+          "Post-mortem reveals tests existed but did not cover the failing scenario.",
+          "Engineers have stopped trusting the test suite."
+        ]
+      },
       "whyItHappens": [
         "Coverage is used as a proxy for quality",
         "Tests are written after the fact to satisfy requirements",
@@ -2570,21 +2618,23 @@
       "feelsReasonableBecause": "Running research looks like the right thing to do.",
       "escalates": "Research is conducted after the decision is made, framed to validate rather than challenge, or ignored when inconvenient.",
       "ends": "The team ships something users do not want and cannot understand why, given that research was done.",
-      "earlyWarningSigns": [
-        "Research is scheduled after the roadmap is already committed.",
-        "Personas and journey maps are created but not referenced in design reviews.",
-        "Research findings that contradict current direction are not discussed."
-      ],
-      "midWarningSigns": [
-        "Discovery outputs are not connected to specific decisions.",
-        "The same insights appear in successive research cycles without driving change.",
-        "Researchers feel their work is not used."
-      ],
-      "lateWarningSigns": [
-        "A feature ships that contradicts known user needs.",
-        "The team is surprised by user reception despite having done research.",
-        "Researchers stop raising inconvenient findings."
-      ],
+      "warningSigns": {
+        "early": [
+          "Research is scheduled after the roadmap is already committed.",
+          "Personas and journey maps are created but not referenced in design reviews.",
+          "Research findings that contradict current direction are not discussed."
+        ],
+        "mid": [
+          "Discovery outputs are not connected to specific decisions.",
+          "The same insights appear in successive research cycles without driving change.",
+          "Researchers feel their work is not used."
+        ],
+        "late": [
+          "A feature ships that contradicts known user needs.",
+          "The team is surprised by user reception despite having done research.",
+          "Researchers stop raising inconvenient findings."
+        ]
+      },
       "whyItHappens": [
         "Decisions are made by conviction or seniority before research begins",
         "Research is treated as documentation rather than input",
@@ -2619,7 +2669,7 @@
       ],
       "oftenCausedBy": [
         "stakeholder-capture",
-        "the-consensus-trap"
+        "consensus-trap"
       ],
       "relatedRedFlags": [
         "research findings never appear in design reviews",
@@ -2638,7 +2688,7 @@
       "patternConfidence": "medium"
     },
     {
-      "slug": "the-feature-factory-trap",
+      "slug": "feature-factory-trap",
       "title": "The Feature Factory Trap",
       "alternativeNames": [
         "output over outcome",
@@ -2672,21 +2722,23 @@
       "feelsReasonableBecause": "Shipping feels like progress and the backlog always has more important features.",
       "escalates": "No feature is ever revisited. Success is defined as shipping, not as changing user behavior.",
       "ends": "The product has many features, most of which are under-used, and the team does not know which ones actually matter.",
-      "earlyWarningSigns": [
-        "Features are celebrated at launch and never reviewed afterward.",
-        "There is no definition of success for a feature before it ships.",
-        "The backlog grows faster than features are validated."
-      ],
-      "midWarningSigns": [
-        "Shipped features are not mentioned in planning until they cause problems.",
-        "Usage data exists but is not used in prioritization.",
-        "The team cannot name its three most impactful features."
-      ],
-      "lateWarningSigns": [
-        "The product is complex and hard to navigate.",
-        "Users use workarounds rather than features that were built for them.",
-        "The team is busy but the product metrics are not improving."
-      ],
+      "warningSigns": {
+        "early": [
+          "Features are celebrated at launch and never reviewed afterward.",
+          "There is no definition of success for a feature before it ships.",
+          "The backlog grows faster than features are validated."
+        ],
+        "mid": [
+          "Shipped features are not mentioned in planning until they cause problems.",
+          "Usage data exists but is not used in prioritization.",
+          "The team cannot name its three most impactful features."
+        ],
+        "late": [
+          "The product is complex and hard to navigate.",
+          "Users use workarounds rather than features that were built for them.",
+          "The team is busy but the product metrics are not improving."
+        ]
+      },
       "whyItHappens": [
         "Velocity culture overrides learning culture",
         "Shipping is measured, outcomes are not",
@@ -2776,21 +2828,23 @@
       "feelsReasonableBecause": "Evals are a legitimate and important quality signal.",
       "escalates": "The eval suite becomes the primary measure. Changes are made that improve eval scores without improving real behavior.",
       "ends": "The system scores well internally but users report deteriorating quality. The eval set has been implicitly overfitted.",
-      "earlyWarningSigns": [
-        "Eval scores are the primary success metric for AI quality.",
-        "Eval set is not regularly refreshed with new real-world cases.",
-        "Changes that hurt eval scores are rejected regardless of user signal."
-      ],
-      "midWarningSigns": [
-        "Eval scores improve but user complaints do not decrease.",
-        "The eval set has not changed significantly in months.",
-        "Production behavior diverges from eval behavior in specific scenarios."
-      ],
-      "lateWarningSigns": [
-        "A production failure occurs in a scenario the eval does not cover.",
-        "The team realizes the eval set reflects old use cases, not current ones.",
-        "Trust in the eval as a quality signal collapses internally."
-      ],
+      "warningSigns": {
+        "early": [
+          "Eval scores are the primary success metric for AI quality.",
+          "Eval set is not regularly refreshed with new real-world cases.",
+          "Changes that hurt eval scores are rejected regardless of user signal."
+        ],
+        "mid": [
+          "Eval scores improve but user complaints do not decrease.",
+          "The eval set has not changed significantly in months.",
+          "Production behavior diverges from eval behavior in specific scenarios."
+        ],
+        "late": [
+          "A production failure occurs in a scenario the eval does not cover.",
+          "The team realizes the eval set reflects old use cases, not current ones.",
+          "Trust in the eval as a quality signal collapses internally."
+        ]
+      },
       "whyItHappens": [
         "Evals are treated as targets rather than signals",
         "Eval sets are not maintained alongside production behavior",
@@ -2879,21 +2933,23 @@
       "feelsReasonableBecause": "In many cases, more relevant context does improve output.",
       "escalates": "Context grows uncritically. Old instructions accumulate. Retrieval dumps everything. The prompt is enormous.",
       "ends": "Behavior becomes unpredictable, cost is high, debugging requires reading thousands of tokens, and nobody can explain why output changed.",
-      "earlyWarningSigns": [
-        "Context length grows over time without review.",
-        "Instructions accumulate without removing obsolete ones.",
-        "Retrieval returns everything above a low similarity threshold."
-      ],
-      "midWarningSigns": [
-        "Behavior changes after minor context additions that should not matter.",
-        "Token cost is high relative to task complexity.",
-        "Debugging requires reading the full prompt to understand a failure."
-      ],
-      "lateWarningSigns": [
-        "Nobody knows what all the context instructions do.",
-        "Removing context causes unpredictable behavior changes.",
-        "The team treats the context as brittle and stops modifying it."
-      ],
+      "warningSigns": {
+        "early": [
+          "Context length grows over time without review.",
+          "Instructions accumulate without removing obsolete ones.",
+          "Retrieval returns everything above a low similarity threshold."
+        ],
+        "mid": [
+          "Behavior changes after minor context additions that should not matter.",
+          "Token cost is high relative to task complexity.",
+          "Debugging requires reading the full prompt to understand a failure."
+        ],
+        "late": [
+          "Nobody knows what all the context instructions do.",
+          "Removing context causes unpredictable behavior changes.",
+          "The team treats the context as brittle and stops modifying it."
+        ]
+      },
       "whyItHappens": [
         "More context sometimes helps and the heuristic overgeneralizes",
         "Context additions are easier than context removals",
@@ -2981,21 +3037,23 @@
       "feelsReasonableBecause": "The system performs well, reviewers rarely catch errors, and the review feels like a bottleneck.",
       "escalates": "Review frequency drops. Sample sizes shrink. Approval becomes rubber-stamping. Eventually the step is automated or removed.",
       "ends": "An AI error that the review was designed to catch propagates without detection, causing a significant incident.",
-      "earlyWarningSigns": [
-        "Reviewers rarely reject or modify AI output.",
-        "Review is described as a bottleneck rather than a quality gate.",
-        "Proposals emerge to reduce review frequency or sample size."
-      ],
-      "midWarningSigns": [
-        "Reviewers spend less time per item.",
-        "Review outcomes are not tracked or analyzed.",
-        "The review step has become nominal in practice."
-      ],
-      "lateWarningSigns": [
-        "The review step is removed, automated, or formally deprioritized.",
-        "An error propagates that the original review would have caught.",
-        "The team cannot reconstruct when oversight was last meaningful."
-      ],
+      "warningSigns": {
+        "early": [
+          "Reviewers rarely reject or modify AI output.",
+          "Review is described as a bottleneck rather than a quality gate.",
+          "Proposals emerge to reduce review frequency or sample size."
+        ],
+        "mid": [
+          "Reviewers spend less time per item.",
+          "Review outcomes are not tracked or analyzed.",
+          "The review step has become nominal in practice."
+        ],
+        "late": [
+          "The review step is removed, automated, or formally deprioritized.",
+          "An error propagates that the original review would have caught.",
+          "The team cannot reconstruct when oversight was last meaningful."
+        ]
+      },
       "whyItHappens": [
         "Apparent system reliability reduces perceived need for oversight",
         "Volume makes thorough review impractical without investment",
@@ -3084,21 +3142,23 @@
       "feelsReasonableBecause": "The process of negotiation and cutting looks like good trade-off management.",
       "escalates": "The cut items are treated as deferred, not removed. Stakeholders expect them anyway. The team is held to the full original scope at delivery.",
       "ends": "The team misses expectations despite having had an agreed-upon reduced scope, and trust breaks down on both sides.",
-      "earlyWarningSigns": [
-        "Scope cut discussions produce agreement but no stakeholder communication.",
-        "Cut items are described as deferred rather than removed.",
-        "Stakeholders do not acknowledge the trade-off publicly."
-      ],
-      "midWarningSigns": [
-        "Cut items reappear in delivery conversations.",
-        "Expectations held by leadership are broader than the formal plan.",
-        "The team cannot point to a written record of what was agreed."
-      ],
-      "lateWarningSigns": [
-        "The team is judged against the original scope despite formal agreement to cut it.",
-        "Trust breaks down because each side believes it behaved correctly.",
-        "The delivery process is blamed rather than the unstated expectations."
-      ],
+      "warningSigns": {
+        "early": [
+          "Scope cut discussions produce agreement but no stakeholder communication.",
+          "Cut items are described as deferred rather than removed.",
+          "Stakeholders do not acknowledge the trade-off publicly."
+        ],
+        "mid": [
+          "Cut items reappear in delivery conversations.",
+          "Expectations held by leadership are broader than the formal plan.",
+          "The team cannot point to a written record of what was agreed."
+        ],
+        "late": [
+          "The team is judged against the original scope despite formal agreement to cut it.",
+          "Trust breaks down because each side believes it behaved correctly.",
+          "The delivery process is blamed rather than the unstated expectations."
+        ]
+      },
       "whyItHappens": [
         "Stakeholders agree to reduce scope formally but cannot accept it emotionally",
         "Cuts are not communicated beyond the immediate negotiation",
@@ -3128,12 +3188,12 @@
       ],
       "aiSpecificNotes": "A plan that reflects agreed scope but not held expectations is not a plan.",
       "oftenLeadsTo": [
-        "the-invisible-deadline",
+        "invisible-deadline",
         "ticket-theater"
       ],
       "oftenCausedBy": [
         "stakeholder-capture",
-        "the-consensus-trap"
+        "consensus-trap"
       ],
       "relatedRedFlags": [
         "cut scope reappears at delivery",
@@ -3152,7 +3212,7 @@
       "patternConfidence": "high"
     },
     {
-      "slug": "the-long-tail-release",
+      "slug": "long-tail-release",
       "title": "The Long Tail Release",
       "alternativeNames": [
         "the 95% done trap",
@@ -3186,21 +3246,23 @@
       "feelsReasonableBecause": "The items are real and fixing them before launch feels responsible.",
       "escalates": "Each fix reveals new issues. The definition of done expands. The release date keeps moving.",
       "ends": "The release either ships significantly late or is forced out in a worse state than if it had shipped at 85% done with a clear fix timeline.",
-      "earlyWarningSigns": [
-        "The remaining work list is not shrinking.",
-        "New items are discovered as fast as existing ones are resolved.",
-        "Launch criteria are not written down."
-      ],
-      "midWarningSigns": [
-        "The release has been 'almost ready' for more than two weeks.",
-        "The team is unsure what done means.",
-        "Stakeholders are asking for a new date weekly."
-      ],
-      "lateWarningSigns": [
-        "The team has lost confidence in its own estimates.",
-        "The release is being extended to include scope that should be post-launch.",
-        "Morale drops as the finish line keeps moving."
-      ],
+      "warningSigns": {
+        "early": [
+          "The remaining work list is not shrinking.",
+          "New items are discovered as fast as existing ones are resolved.",
+          "Launch criteria are not written down."
+        ],
+        "mid": [
+          "The release has been 'almost ready' for more than two weeks.",
+          "The team is unsure what done means.",
+          "Stakeholders are asking for a new date weekly."
+        ],
+        "late": [
+          "The team has lost confidence in its own estimates.",
+          "The release is being extended to include scope that should be post-launch.",
+          "Morale drops as the finish line keeps moving."
+        ]
+      },
       "whyItHappens": [
         "Done criteria were not defined before the release began",
         "Edge cases and polish items are treated as blockers when they are not",
@@ -3230,12 +3292,12 @@
       ],
       "aiSpecificNotes": "More issues found does not mean more issues need to be fixed before launch.",
       "oftenLeadsTo": [
-        "the-invisible-deadline",
+        "invisible-deadline",
         "ticket-theater"
       ],
       "oftenCausedBy": [
         "scope-negotiation-theater",
-        "the-consensus-trap"
+        "consensus-trap"
       ],
       "relatedRedFlags": [
         "the remaining work list is growing",
