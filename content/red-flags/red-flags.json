@@ -132,9 +132,13 @@
         "module owner"
       ],
       "timeHorizon": "medium-term",
-      "aiAmplifies": "AI can generate confident explanations that sound coherent while preserving underlying architectural confusion.",
-      "aiMasks": "AI summaries can make the module sound cleaner than it really is.",
-      "aiSpecificVariant": "Generated documentation creates false confidence in a boundary nobody has actually cleaned up.",
+      "aiAmplifies": [
+        "AI can generate confident explanations that sound coherent while preserving underlying architectural confusion."
+      ],
+      "aiMasks": [
+        "AI summaries can make the module sound cleaner than it really is."
+      ],
+      "aiSpecificNotes": "Generated documentation creates false confidence in a boundary nobody has actually cleaned up.",
       "relatedFailureModes": [
         "abstraction-addiction",
         "dependency-fog",
@@ -231,9 +235,13 @@
         "tech lead"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "AI makes it easy to append more logic into the already-central file because it predicts the local pattern well.",
-      "aiMasks": "Uniform generated style can make a bloated file look orderly.",
-      "aiSpecificVariant": "AI keeps extending the same giant file because it is the highest-context place in the repository.",
+      "aiAmplifies": [
+        "AI makes it easy to append more logic into the already-central file because it predicts the local pattern well."
+      ],
+      "aiMasks": [
+        "Uniform generated style can make a bloated file look orderly."
+      ],
+      "aiSpecificNotes": "AI keeps extending the same giant file because it is the highest-context place in the repository.",
       "relatedFailureModes": [
         "abstraction-addiction",
         "hero-trap"
@@ -327,9 +335,13 @@
         "tech lead"
       ],
       "timeHorizon": "near-to-medium-term",
-      "aiAmplifies": "AI can speed up multi-place edits, reducing friction while preserving the underlying architectural problem.",
-      "aiMasks": "Generated cross-repo changes can make fan-out feel operationally normal.",
-      "aiSpecificVariant": "Teams mistake faster fan-out editing for healthier boundaries.",
+      "aiAmplifies": [
+        "AI can speed up multi-place edits, reducing friction while preserving the underlying architectural problem."
+      ],
+      "aiMasks": [
+        "Generated cross-repo changes can make fan-out feel operationally normal."
+      ],
+      "aiSpecificNotes": "Teams mistake faster fan-out editing for healthier boundaries.",
       "relatedFailureModes": [
         "dependency-fog",
         "ownership-drift"
@@ -421,9 +433,13 @@
         "tech lead"
       ],
       "timeHorizon": "medium-term",
-      "aiAmplifies": "AI tends to generate safe generic names when the model lacks strong domain signals.",
-      "aiMasks": "Consistent generic naming can look orderly and intentional.",
-      "aiSpecificVariant": "Generated code spreads bland naming conventions faster than the team notices conceptual erosion.",
+      "aiAmplifies": [
+        "AI tends to generate safe generic names when the model lacks strong domain signals."
+      ],
+      "aiMasks": [
+        "Consistent generic naming can look orderly and intentional."
+      ],
+      "aiSpecificNotes": "Generated code spreads bland naming conventions faster than the team notices conceptual erosion.",
       "relatedFailureModes": [
         "abstraction-addiction"
       ],
@@ -509,9 +525,13 @@
         "architect"
       ],
       "timeHorizon": "medium-term",
-      "aiAmplifies": "AI often continues the nearest local pattern, spreading copied business rules across layers faster.",
-      "aiMasks": "Generated consistency in syntax hides inconsistency in actual source of truth.",
-      "aiSpecificVariant": "AI-assisted teams copy rules into adapters and UI surfaces because it is locally convenient.",
+      "aiAmplifies": [
+        "AI often continues the nearest local pattern, spreading copied business rules across layers faster."
+      ],
+      "aiMasks": [
+        "Generated consistency in syntax hides inconsistency in actual source of truth."
+      ],
+      "aiSpecificNotes": "AI-assisted teams copy rules into adapters and UI surfaces because it is locally convenient.",
       "relatedFailureModes": [
         "dependency-fog",
         "ownership-drift"
@@ -602,9 +622,13 @@
         "module owner"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "AI can generate tests that compile but do not reduce the real pain of a poorly testable structure.",
-      "aiMasks": "Test count rises while true confidence does not.",
-      "aiSpecificVariant": "Teams use AI to generate brittle tests around bad design instead of improving the design.",
+      "aiAmplifies": [
+        "AI can generate tests that compile but do not reduce the real pain of a poorly testable structure."
+      ],
+      "aiMasks": [
+        "Test count rises while true confidence does not."
+      ],
+      "aiSpecificNotes": "Teams use AI to generate brittle tests around bad design instead of improving the design.",
       "relatedFailureModes": [
         "synthetic-velocity",
         "dependency-fog"
@@ -695,9 +719,13 @@
         "quality lead"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "AI can generate more broad tests quickly, increasing volume without fixing confidence distribution.",
-      "aiMasks": "Large test suites can look like maturity while actually signaling design weakness.",
-      "aiSpecificVariant": "AI-generated end-to-end tests inflate coverage dashboards while lower-level trust remains weak.",
+      "aiAmplifies": [
+        "AI can generate more broad tests quickly, increasing volume without fixing confidence distribution."
+      ],
+      "aiMasks": [
+        "Large test suites can look like maturity while actually signaling design weakness."
+      ],
+      "aiSpecificNotes": "AI-generated end-to-end tests inflate coverage dashboards while lower-level trust remains weak.",
       "relatedFailureModes": [
         "synthetic-velocity"
       ],
@@ -784,9 +812,13 @@
         "tech lead"
       ],
       "timeHorizon": "medium-term",
-      "aiAmplifies": "AI makes packaging reusable-looking helpers cheap, increasing shared-layer sprawl.",
-      "aiMasks": "Generated abstractions look clean and coherent enough to evade skepticism.",
-      "aiSpecificVariant": "AI-assisted teams extract shared helpers before the second real consumer exists.",
+      "aiAmplifies": [
+        "AI makes packaging reusable-looking helpers cheap, increasing shared-layer sprawl."
+      ],
+      "aiMasks": [
+        "Generated abstractions look clean and coherent enough to evade skepticism."
+      ],
+      "aiSpecificNotes": "AI-assisted teams extract shared helpers before the second real consumer exists.",
       "relatedFailureModes": [
         "abstraction-addiction",
         "platform-before-product"
@@ -878,9 +910,13 @@
         "API/event governance owner"
       ],
       "timeHorizon": "near-to-medium-term",
-      "aiAmplifies": "AI can generate consumers quickly against inferred contracts, increasing hidden dependence on unstated behavior.",
-      "aiMasks": "Generated client code makes implicit contracts feel official.",
-      "aiSpecificVariant": "AI-assisted consumers lock onto examples rather than guarantees.",
+      "aiAmplifies": [
+        "AI can generate consumers quickly against inferred contracts, increasing hidden dependence on unstated behavior."
+      ],
+      "aiMasks": [
+        "Generated client code makes implicit contracts feel official."
+      ],
+      "aiSpecificNotes": "AI-assisted consumers lock onto examples rather than guarantees.",
       "relatedFailureModes": [
         "dependency-fog",
         "ownership-drift"
@@ -975,9 +1011,13 @@
         "AI tooling policy owner"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "This is itself an AI-amplified red flag.",
-      "aiMasks": "Uniform style and fluent comments make weakly understood code feel trustworthy.",
-      "aiSpecificVariant": "Review becomes approval-shaped because the generator already did the hard-looking part.",
+      "aiAmplifies": [
+        "This is itself an AI-amplified red flag."
+      ],
+      "aiMasks": [
+        "Uniform style and fluent comments make weakly understood code feel trustworthy."
+      ],
+      "aiSpecificNotes": "Review becomes approval-shaped because the generator already did the hard-looking part.",
       "relatedFailureModes": [
         "synthetic-velocity",
         "autocomplete-architecture"
@@ -1073,9 +1113,13 @@
         "tech lead"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "AI can reduce obvious knowledge bottlenecks in some areas, but can also deepen the dependency if only one person knows how to use the tools safely.",
-      "aiMasks": "AI summaries can make expertise look more distributed than it is.",
-      "aiSpecificVariant": "One person becomes the AI whisperer everyone depends on for prompt, tooling, and policy interpretation.",
+      "aiAmplifies": [
+        "AI can reduce obvious knowledge bottlenecks in some areas, but can also deepen the dependency if only one person knows how to use the tools safely."
+      ],
+      "aiMasks": [
+        "AI summaries can make expertise look more distributed than it is."
+      ],
+      "aiSpecificNotes": "One person becomes the AI whisperer everyone depends on for prompt, tooling, and policy interpretation.",
       "relatedFailureModes": [
         "hero-trap",
         "ownership-drift"
@@ -1168,9 +1212,13 @@
         "engineering manager"
       ],
       "timeHorizon": "medium-term",
-      "aiAmplifies": "AI can summarize chat history, which helps temporarily, but also reduces pressure to create authoritative shared artifacts.",
-      "aiMasks": "Summaries can make fragmented memory look organized without fixing source truth.",
-      "aiSpecificVariant": "Teams ask AI for context instead of repairing the actual knowledge system.",
+      "aiAmplifies": [
+        "AI can summarize chat history, which helps temporarily, but also reduces pressure to create authoritative shared artifacts."
+      ],
+      "aiMasks": [
+        "Summaries can make fragmented memory look organized without fixing source truth."
+      ],
+      "aiSpecificNotes": "Teams ask AI for context instead of repairing the actual knowledge system.",
       "relatedFailureModes": [
         "hero-trap",
         "ownership-drift"
@@ -1264,9 +1312,13 @@
         "engineering manager"
       ],
       "timeHorizon": "medium-term",
-      "aiAmplifies": "AI can make people feel bolder temporarily, but without understanding it can also increase risky edits in feared areas.",
-      "aiMasks": "AI help can hide how weak real ownership still is.",
-      "aiSpecificVariant": "Teams use AI to touch feared code without improving understanding or safety nets.",
+      "aiAmplifies": [
+        "AI can make people feel bolder temporarily, but without understanding it can also increase risky edits in feared areas."
+      ],
+      "aiMasks": [
+        "AI help can hide how weak real ownership still is."
+      ],
+      "aiSpecificNotes": "Teams use AI to touch feared code without improving understanding or safety nets.",
       "relatedFailureModes": [
         "hero-trap",
         "dependency-fog"
@@ -1359,9 +1411,13 @@
         "review culture owners"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "AI expands diff size and apparent fluency, making shallow review even more dangerous.",
-      "aiMasks": "Generated code style reduces visual signals that something is conceptually wrong.",
-      "aiSpecificVariant": "Review becomes approval-shaped because generated code looks orderly and complete.",
+      "aiAmplifies": [
+        "AI expands diff size and apparent fluency, making shallow review even more dangerous."
+      ],
+      "aiMasks": [
+        "Generated code style reduces visual signals that something is conceptually wrong."
+      ],
+      "aiSpecificNotes": "Review becomes approval-shaped because generated code looks orderly and complete.",
       "relatedFailureModes": [
         "synthetic-velocity",
         "autocomplete-architecture"
@@ -1454,9 +1510,13 @@
         "tech lead"
       ],
       "timeHorizon": "medium-term",
-      "aiAmplifies": "AI can make routine maintenance tasks easier, which may temporarily hide weak ownership until higher-stakes decisions are needed.",
-      "aiMasks": "Generated docs and summaries can make stewardship look healthier than it is.",
-      "aiSpecificVariant": "AI-maintained artifacts stay current while real decision ownership remains unclear.",
+      "aiAmplifies": [
+        "AI can make routine maintenance tasks easier, which may temporarily hide weak ownership until higher-stakes decisions are needed."
+      ],
+      "aiMasks": [
+        "Generated docs and summaries can make stewardship look healthier than it is."
+      ],
+      "aiSpecificNotes": "AI-maintained artifacts stay current while real decision ownership remains unclear.",
       "relatedFailureModes": [
         "ownership-drift",
         "hero-trap"
@@ -1547,9 +1607,13 @@
         "tech lead"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "AI meeting summaries can flatten disagreement and make tension appear resolved.",
-      "aiMasks": "Polished summaries can erase nuance and unresolved objections.",
-      "aiSpecificVariant": "Decision records reflect summary consensus while real disagreement remains off-record.",
+      "aiAmplifies": [
+        "AI meeting summaries can flatten disagreement and make tension appear resolved."
+      ],
+      "aiMasks": [
+        "Polished summaries can erase nuance and unresolved objections."
+      ],
+      "aiSpecificNotes": "Decision records reflect summary consensus while real disagreement remains off-record.",
       "relatedFailureModes": [
         "consensus-trap",
         "stakeholder-capture"
@@ -1640,9 +1704,13 @@
         "director"
       ],
       "timeHorizon": "medium-term",
-      "aiAmplifies": "AI-generated decks and summaries can arm dominant voices with polished but weakly grounded arguments.",
-      "aiMasks": "High-quality presentation can make shaky reasoning look rigorous.",
-      "aiSpecificVariant": "The winning argument is the best AI-polished one, not the best evidenced one.",
+      "aiAmplifies": [
+        "AI-generated decks and summaries can arm dominant voices with polished but weakly grounded arguments."
+      ],
+      "aiMasks": [
+        "High-quality presentation can make shaky reasoning look rigorous."
+      ],
+      "aiSpecificNotes": "The winning argument is the best AI-polished one, not the best evidenced one.",
       "relatedFailureModes": [
         "consensus-trap",
         "stakeholder-capture"
@@ -1731,9 +1799,13 @@
         "manager"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "This red flag is itself AI-driven.",
-      "aiMasks": "High output and clean style can make uneven usage quality harder to notice.",
-      "aiSpecificVariant": "Different team members operate under incompatible assumptions about AI disclosure, verification, and acceptable use.",
+      "aiAmplifies": [
+        "This red flag is itself AI-driven."
+      ],
+      "aiMasks": [
+        "High output and clean style can make uneven usage quality harder to notice."
+      ],
+      "aiSpecificNotes": "Different team members operate under incompatible assumptions about AI disclosure, verification, and acceptable use.",
       "relatedFailureModes": [
         "synthetic-velocity",
         "autocomplete-architecture"
@@ -1828,9 +1900,13 @@
         "portfolio owner"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "AI can make work creation easier than work completion, increasing ticket and artifact inflow.",
-      "aiMasks": "Productivity-looking output can hide queue expansion.",
-      "aiSpecificVariant": "AI speeds specification and ticket generation without improving the system’s actual exit rate.",
+      "aiAmplifies": [
+        "AI can make work creation easier than work completion, increasing ticket and artifact inflow."
+      ],
+      "aiMasks": [
+        "Productivity-looking output can hide queue expansion."
+      ],
+      "aiSpecificNotes": "AI speeds specification and ticket generation without improving the system’s actual exit rate.",
       "relatedFailureModes": [
         "invisible-deadline",
         "ticket-theater"
@@ -1921,9 +1997,13 @@
         "engineering manager"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "AI can accelerate escalation artifacts, making it even easier to create apparently urgent work quickly.",
-      "aiMasks": "Fast summaries can make interruption patterns look well-managed rather than pathological.",
-      "aiSpecificVariant": "AI-generated briefs increase the number of polished 'urgent' asks without improving prioritization quality.",
+      "aiAmplifies": [
+        "AI can accelerate escalation artifacts, making it even easier to create apparently urgent work quickly."
+      ],
+      "aiMasks": [
+        "Fast summaries can make interruption patterns look well-managed rather than pathological."
+      ],
+      "aiSpecificNotes": "AI-generated briefs increase the number of polished 'urgent' asks without improving prioritization quality.",
       "relatedFailureModes": [
         "invisible-deadline",
         "ticket-theater"
@@ -2014,9 +2094,13 @@
         "delivery lead"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "AI summaries can compress scope discussions into neat outputs while dropping important trade-off nuance.",
-      "aiMasks": "Generated meeting notes can look complete without capturing real decisions.",
-      "aiSpecificVariant": "AI-generated recap says 'aligned on revised scope' when the actual trade-offs were never made explicit.",
+      "aiAmplifies": [
+        "AI summaries can compress scope discussions into neat outputs while dropping important trade-off nuance."
+      ],
+      "aiMasks": [
+        "Generated meeting notes can look complete without capturing real decisions."
+      ],
+      "aiSpecificNotes": "AI-generated recap says 'aligned on revised scope' when the actual trade-offs were never made explicit.",
       "relatedFailureModes": [
         "invisible-deadline",
         "ticket-theater"
@@ -2107,9 +2191,13 @@
         "leadership sponsor"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "AI can help produce polished status reporting that conceals unresolved trade-offs.",
-      "aiMasks": "Summaries and dashboards can preserve the fiction of certainty longer.",
-      "aiSpecificVariant": "AI-generated plans become more articulate while remaining under-specified on what is actually flexible.",
+      "aiAmplifies": [
+        "AI can help produce polished status reporting that conceals unresolved trade-offs."
+      ],
+      "aiMasks": [
+        "Summaries and dashboards can preserve the fiction of certainty longer."
+      ],
+      "aiSpecificNotes": "AI-generated plans become more articulate while remaining under-specified on what is actually flexible.",
       "relatedFailureModes": [
         "invisible-deadline"
       ],
@@ -2199,9 +2287,13 @@
         "engineering manager"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "AI can generate neat tickets and acceptance criteria rapidly, increasing the illusion of readiness.",
-      "aiMasks": "Polished ticket text makes underthinking harder to notice.",
-      "aiSpecificVariant": "AI-created tickets look complete while hiding that the problem framing is still weak.",
+      "aiAmplifies": [
+        "AI can generate neat tickets and acceptance criteria rapidly, increasing the illusion of readiness."
+      ],
+      "aiMasks": [
+        "Polished ticket text makes underthinking harder to notice."
+      ],
+      "aiSpecificNotes": "AI-created tickets look complete while hiding that the problem framing is still weak.",
       "relatedFailureModes": [
         "ticket-theater",
         "consensus-trap"
@@ -2293,9 +2385,13 @@
         "platform/data owners"
       ],
       "timeHorizon": "medium-term",
-      "aiAmplifies": "AI can make reporting easier to produce, which can increase the volume of low-trust metrics quickly.",
-      "aiMasks": "AI-generated narrative around a dashboard can make weak metrics feel more legitimate.",
-      "aiSpecificVariant": "Evaluation dashboards look rigorous while task-ground truth remains thin.",
+      "aiAmplifies": [
+        "AI can make reporting easier to produce, which can increase the volume of low-trust metrics quickly."
+      ],
+      "aiMasks": [
+        "AI-generated narrative around a dashboard can make weak metrics feel more legitimate."
+      ],
+      "aiSpecificNotes": "Evaluation dashboards look rigorous while task-ground truth remains thin.",
       "relatedFailureModes": [
         "metric-myopia",
         "ticket-theater"
@@ -2384,9 +2480,13 @@
         "director if issue is structural"
       ],
       "timeHorizon": "medium-term",
-      "aiAmplifies": "AI can generate polished retro summaries and action items that create the feeling of progress without changing underlying authority or structure.",
-      "aiMasks": "Well-written retro artifacts can hide repeated non-action.",
-      "aiSpecificVariant": "AI keeps suggesting similar generic actions while the real blocker remains systemic.",
+      "aiAmplifies": [
+        "AI can generate polished retro summaries and action items that create the feeling of progress without changing underlying authority or structure."
+      ],
+      "aiMasks": [
+        "Well-written retro artifacts can hide repeated non-action."
+      ],
+      "aiSpecificNotes": "AI keeps suggesting similar generic actions while the real blocker remains systemic.",
       "relatedFailureModes": [
         "ticket-theater",
         "stakeholder-capture"
@@ -2475,9 +2575,13 @@
         "engineering manager"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "AI can generate release checklists and summaries, but cannot replace weak rollback or observability foundations.",
-      "aiMasks": "Operational polish in release notes can hide unreliable release mechanics.",
-      "aiSpecificVariant": "AI-generated release coordination looks smooth while underlying deployment confidence remains shaky.",
+      "aiAmplifies": [
+        "AI can generate release checklists and summaries, but cannot replace weak rollback or observability foundations."
+      ],
+      "aiMasks": [
+        "Operational polish in release notes can hide unreliable release mechanics."
+      ],
+      "aiSpecificNotes": "AI-generated release coordination looks smooth while underlying deployment confidence remains shaky.",
       "relatedFailureModes": [
         "invisible-deadline",
         "hero-trap"
@@ -2567,9 +2671,13 @@
         "engineering manager"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "AI can speed up plan creation without improving actual dependency discovery.",
-      "aiMasks": "Generated plans may look complete even when dependency mapping is shallow.",
-      "aiSpecificVariant": "AI-generated delivery plans omit hidden team and system dependencies because they are not well represented in the source material.",
+      "aiAmplifies": [
+        "AI can speed up plan creation without improving actual dependency discovery."
+      ],
+      "aiMasks": [
+        "Generated plans may look complete even when dependency mapping is shallow."
+      ],
+      "aiSpecificNotes": "AI-generated delivery plans omit hidden team and system dependencies because they are not well represented in the source material.",
       "relatedFailureModes": [
         "dependency-fog",
         "invisible-deadline"
@@ -2661,9 +2769,13 @@
         "product and engineering leads together"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "AI can write polished acceptance criteria that still avoid the real operational meaning of done.",
-      "aiMasks": "Documentation quality can make incomplete readiness look complete.",
-      "aiSpecificVariant": "AI-generated test or ticket artifacts create the illusion of completeness without operational closure.",
+      "aiAmplifies": [
+        "AI can write polished acceptance criteria that still avoid the real operational meaning of done."
+      ],
+      "aiMasks": [
+        "Documentation quality can make incomplete readiness look complete."
+      ],
+      "aiSpecificNotes": "AI-generated test or ticket artifacts create the illusion of completeness without operational closure.",
       "relatedFailureModes": [
         "invisible-deadline",
         "ticket-theater"
@@ -2754,9 +2866,13 @@
         "program sponsors"
       ],
       "timeHorizon": "medium-term",
-      "aiAmplifies": "AI can polish status summaries and make divergence between narrative and reality harder to notice.",
-      "aiMasks": "Summaries become more articulate even when truth quality falls.",
-      "aiSpecificVariant": "AI-generated executive updates compress uncertainty into optimism-shaped prose.",
+      "aiAmplifies": [
+        "AI can polish status summaries and make divergence between narrative and reality harder to notice."
+      ],
+      "aiMasks": [
+        "Summaries become more articulate even when truth quality falls."
+      ],
+      "aiSpecificNotes": "AI-generated executive updates compress uncertainty into optimism-shaped prose.",
       "relatedFailureModes": [
         "invisible-deadline",
         "stakeholder-capture"
@@ -2843,9 +2959,13 @@
         "directors"
       ],
       "timeHorizon": "medium-to-long-term",
-      "aiAmplifies": "AI makes outputs cheaper to generate, which can worsen output-biased measurement rapidly.",
-      "aiMasks": "High artifact volume can look like progress even when underlying complexity is unsolved.",
-      "aiSpecificVariant": "AI-generated tickets, docs, code, and summaries inflate visible output without equivalent outcome movement.",
+      "aiAmplifies": [
+        "AI makes outputs cheaper to generate, which can worsen output-biased measurement rapidly."
+      ],
+      "aiMasks": [
+        "High artifact volume can look like progress even when underlying complexity is unsolved."
+      ],
+      "aiSpecificNotes": "AI-generated tickets, docs, code, and summaries inflate visible output without equivalent outcome movement.",
       "relatedFailureModes": [
         "synthetic-velocity",
         "platform-before-product"
@@ -2935,9 +3055,13 @@
         "org designers"
       ],
       "timeHorizon": "medium-term",
-      "aiAmplifies": "AI can make teams appear more self-sufficient on paper while approval bottlenecks remain unchanged.",
-      "aiMasks": "Better reporting does not fix missing authority.",
-      "aiSpecificVariant": "Teams are expected to adopt AI quickly but lack authority over tools, policies, or supporting workflows.",
+      "aiAmplifies": [
+        "AI can make teams appear more self-sufficient on paper while approval bottlenecks remain unchanged."
+      ],
+      "aiMasks": [
+        "Better reporting does not fix missing authority."
+      ],
+      "aiSpecificNotes": "Teams are expected to adopt AI quickly but lack authority over tools, policies, or supporting workflows.",
       "relatedFailureModes": [
         "ownership-drift",
         "stakeholder-capture"
@@ -3028,9 +3152,13 @@
         "architect"
       ],
       "timeHorizon": "medium-to-long-term",
-      "aiAmplifies": "AI makes internal tooling and platform surfaces easier to build, which increases the risk of building them before demand is real.",
-      "aiMasks": "AI-generated prototypes look polished enough to attract sponsor excitement without consumer validation.",
-      "aiSpecificVariant": "AI platform initiatives are celebrated before a durable internal use case exists.",
+      "aiAmplifies": [
+        "AI makes internal tooling and platform surfaces easier to build, which increases the risk of building them before demand is real."
+      ],
+      "aiMasks": [
+        "AI-generated prototypes look polished enough to attract sponsor excitement without consumer validation."
+      ],
+      "aiSpecificNotes": "AI platform initiatives are celebrated before a durable internal use case exists.",
       "relatedFailureModes": [
         "platform-before-product",
         "abstraction-addiction"
@@ -3121,9 +3249,13 @@
         "portfolio owner"
       ],
       "timeHorizon": "medium-term",
-      "aiAmplifies": "AI can generate higher-quality risk summaries that still do nothing to force real trade-offs.",
-      "aiMasks": "More articulate risk reporting can create false comfort.",
-      "aiSpecificVariant": "AI-related risks are documented elegantly while rollout pace and controls remain unchanged.",
+      "aiAmplifies": [
+        "AI can generate higher-quality risk summaries that still do nothing to force real trade-offs."
+      ],
+      "aiMasks": [
+        "More articulate risk reporting can create false comfort."
+      ],
+      "aiSpecificNotes": "AI-related risks are documented elegantly while rollout pace and controls remain unchanged.",
       "relatedFailureModes": [
         "invisible-deadline",
         "stakeholder-capture"
@@ -3215,9 +3347,13 @@
         "executive sponsor"
       ],
       "timeHorizon": "medium-term",
-      "aiAmplifies": "AI can make governance artifacts faster to generate, increasing ceremonial throughput without improving substance.",
-      "aiMasks": "Well-formatted AI-generated evidence can make weak governance look rigorous.",
-      "aiSpecificVariant": "AI governance produces many forms and guidelines, but local practice remains unchanged.",
+      "aiAmplifies": [
+        "AI can make governance artifacts faster to generate, increasing ceremonial throughput without improving substance."
+      ],
+      "aiMasks": [
+        "Well-formatted AI-generated evidence can make weak governance look rigorous."
+      ],
+      "aiSpecificNotes": "AI governance produces many forms and guidelines, but local practice remains unchanged.",
       "relatedFailureModes": [
         "ticket-theater",
         "stakeholder-capture"
@@ -3306,9 +3442,13 @@
         "portfolio owners"
       ],
       "timeHorizon": "medium-to-long-term",
-      "aiAmplifies": "AI can make expansion look more manageable by increasing artifact and planning throughput without increasing actual human capacity.",
-      "aiMasks": "Better summaries and plans can hide strategic overcommitment.",
-      "aiSpecificVariant": "AI adoption becomes one more priority layer without retiring anything else.",
+      "aiAmplifies": [
+        "AI can make expansion look more manageable by increasing artifact and planning throughput without increasing actual human capacity."
+      ],
+      "aiMasks": [
+        "Better summaries and plans can hide strategic overcommitment."
+      ],
+      "aiSpecificNotes": "AI adoption becomes one more priority layer without retiring anything else.",
       "relatedFailureModes": [
         "invisible-deadline",
         "stakeholder-capture"
@@ -3398,9 +3538,13 @@
         "AI tooling owner"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "This is the core AI-amplified pattern itself.",
-      "aiMasks": "High polish and volume obscure falling confidence.",
-      "aiSpecificVariant": "AI-generated artifacts create a productivity narrative while shared certainty actually declines.",
+      "aiAmplifies": [
+        "This is the core AI-amplified pattern itself."
+      ],
+      "aiMasks": [
+        "High polish and volume obscure falling confidence."
+      ],
+      "aiSpecificNotes": "AI-generated artifacts create a productivity narrative while shared certainty actually declines.",
       "relatedFailureModes": [
         "synthetic-velocity",
         "autocomplete-architecture"
@@ -3491,9 +3635,13 @@
         "documentation owner"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "This red flag is directly AI-amplified.",
-      "aiMasks": "High-quality prose can make weak synthesis feel authoritative.",
-      "aiSpecificVariant": "AI-generated architecture or incident summaries become the shared memory instead of source-linked interpretation.",
+      "aiAmplifies": [
+        "This red flag is directly AI-amplified."
+      ],
+      "aiMasks": [
+        "High-quality prose can make weak synthesis feel authoritative."
+      ],
+      "aiSpecificNotes": "AI-generated architecture or incident summaries become the shared memory instead of source-linked interpretation.",
       "relatedFailureModes": [
         "benchmark-mirage",
         "prompt-ops-chaos"
@@ -3582,9 +3730,13 @@
         "architect"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "This red flag is AI-native.",
-      "aiMasks": "Prompt tweaks can create enough visible improvement to delay deeper fixes.",
-      "aiSpecificVariant": "Teams grow elaborate system prompts instead of repairing retrieval, tool use, or evaluation design.",
+      "aiAmplifies": [
+        "This red flag is AI-native."
+      ],
+      "aiMasks": [
+        "Prompt tweaks can create enough visible improvement to delay deeper fixes."
+      ],
+      "aiSpecificNotes": "Teams grow elaborate system prompts instead of repairing retrieval, tool use, or evaluation design.",
       "relatedFailureModes": [
         "prompt-ops-chaos"
       ],
@@ -3673,9 +3825,13 @@
         "product lead"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "AI product culture is especially vulnerable to proxy overfocus.",
-      "aiMasks": "Quantitative eval gains can feel more solid than messy real-world evidence.",
-      "aiSpecificVariant": "The team argues about eval deltas while users still fail at the job to be done.",
+      "aiAmplifies": [
+        "AI product culture is especially vulnerable to proxy overfocus."
+      ],
+      "aiMasks": [
+        "Quantitative eval gains can feel more solid than messy real-world evidence."
+      ],
+      "aiSpecificNotes": "The team argues about eval deltas while users still fail at the job to be done.",
       "relatedFailureModes": [
         "benchmark-mirage",
         "silent-model-drift"
@@ -3766,9 +3922,13 @@
         "risk owner"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "AI systems invite this red flag whenever autonomy pressure rises faster than review design quality.",
-      "aiMasks": "Human presence in the workflow reassures stakeholders even when the review is ineffective.",
-      "aiSpecificVariant": "Reviewers become final-click operators for model outputs they do not deeply inspect.",
+      "aiAmplifies": [
+        "AI systems invite this red flag whenever autonomy pressure rises faster than review design quality."
+      ],
+      "aiMasks": [
+        "Human presence in the workflow reassures stakeholders even when the review is ineffective."
+      ],
+      "aiSpecificNotes": "Reviewers become final-click operators for model outputs they do not deeply inspect.",
       "relatedFailureModes": [
         "benchmark-mirage",
         "silent-model-drift"
@@ -3859,9 +4019,13 @@
         "domain owner"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "This is a core AI-specific red flag.",
-      "aiMasks": "Citations make low-trust sources feel authoritative.",
-      "aiSpecificVariant": "The assistant becomes confidently wrong with references.",
+      "aiAmplifies": [
+        "This is a core AI-specific red flag."
+      ],
+      "aiMasks": [
+        "Citations make low-trust sources feel authoritative."
+      ],
+      "aiSpecificNotes": "The assistant becomes confidently wrong with references.",
       "relatedFailureModes": [
         "rag-without-ground-truth",
         "benchmark-mirage"
@@ -3953,9 +4117,13 @@
         "product owner"
       ],
       "timeHorizon": "near-term",
-      "aiAmplifies": "This is an AI-specific operating risk.",
-      "aiMasks": "General system success can hide slice-specific degradation until users complain loudly enough.",
-      "aiSpecificVariant": "Provider or pipeline changes alter behavior while the team lacks a living baseline.",
+      "aiAmplifies": [
+        "This is an AI-specific operating risk."
+      ],
+      "aiMasks": [
+        "General system success can hide slice-specific degradation until users complain loudly enough."
+      ],
+      "aiSpecificNotes": "Provider or pipeline changes alter behavior while the team lacks a living baseline.",
       "relatedFailureModes": [
         "silent-model-drift",
         "benchmark-mirage"

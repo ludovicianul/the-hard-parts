@@ -1,8 +1,8 @@
 import { CATEGORIES, CATEGORY_ORDER } from "./categories";
 import {
-  categoryBlock,
   declaredSubcategories,
   listEntries,
+  loadRedFlags,
   subcategoryOf,
 } from "./load";
 import { indexBySlug } from "./resolve";
@@ -34,6 +34,7 @@ export type ValidationIssue = {
     | "slug-duplicate"
     | "slug-format"
     | "subcategory-invalid"
+    | "signaltype-invalid"
     | "ref-unresolved";
   category?: CategoryCode;
   slug?: string;
@@ -112,6 +113,36 @@ export function runValidation(): ValidationIssue[] {
           category: code,
           slug: entry.slug,
           message: `Entry "${entry.slug}" (${code}) uses subcategory "${sub}" which is not declared in category.${CATEGORIES[code].subcategoryListKey} [${[...declared].join(", ")}]`,
+        });
+      }
+    }
+  }
+
+  // 2b. Red Flags secondary axis (signalType) validity.
+  // RF entries classify on two axes: `layer` (handled above as the primary
+  // subcategory) and `signalType` (validated here against category.signalTypes).
+  {
+    const rfFile = loadRedFlags();
+    const declaredSignalTypes = new Set(rfFile.category.signalTypes);
+    for (const entry of rfFile.entries) {
+      const st = (entry as { signalType?: unknown }).signalType;
+      if (typeof st !== "string" || st.length === 0) {
+        issues.push({
+          severity: "error",
+          kind: "signaltype-invalid",
+          category: "RF",
+          slug: entry.slug,
+          field: "signalType",
+          message: `Entry "${entry.slug}" (RF) has no signalType value`,
+        });
+      } else if (!declaredSignalTypes.has(st)) {
+        issues.push({
+          severity: "error",
+          kind: "signaltype-invalid",
+          category: "RF",
+          slug: entry.slug,
+          field: "signalType",
+          message: `Entry "${entry.slug}" (RF) uses signalType "${st}" which is not declared in category.signalTypes [${[...declaredSignalTypes].join(", ")}]`,
         });
       }
     }

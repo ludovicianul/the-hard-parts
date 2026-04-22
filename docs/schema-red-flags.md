@@ -54,7 +54,7 @@ A Red Flag is about **early recognition**, not full explanation of the whole sys
 
 ## Top-Level JSON Convention
 
-Red Flags should follow the shared top-level structure from `docs/content-schema.md`.
+Red Flags follow the site-wide top-level structure from `docs/content-schema.md`, with **two classification axes** instead of one.
 
 Expected top-level shape:
 
@@ -64,7 +64,8 @@ Expected top-level shape:
     "code": "RF",
     "name": "Red Flags",
     "summary": "Structured early warning signals across code, teams, process, leadership, and AI-enabled workflows.",
-    "categories": []
+    "layers": [],
+    "signalTypes": []
   },
   "template": {
     "fields": []
@@ -81,87 +82,153 @@ Must be:
 "code": "RF"
 ```
 
+### Why two axes
+
+Red Flags classify on two different, independent questions:
+
+* **`layer`** — *where* the signal appears in the organization or system
+* **`signalType`** — *what kind* of signal it is
+
+Both axes are canonical. Neither is collapsed into a single generic `category`. Entries have exactly one `layer` and exactly one `signalType`.
+
 ---
 
-## Category/Subcategory Values
+## Classification Axes
 
-Recommended Red Flag subcategories:
+### `layers` (primary axis — where the signal appears)
+
+Canonical Red Flag layers:
 
 * `code`
-* `architecture`
 * `team`
 * `process`
 * `leadership`
-* `operations`
 * `ai`
 
-These should be listed in:
+These are listed in:
 
 ```json
 "category": {
-  "categories": ["code", "architecture", "team", "process", "leadership", "operations", "ai"]
+  "layers": ["code", "team", "process", "leadership", "ai"]
 }
 ```
 
-Each entry’s `category` value must match one of these.
+Each entry’s `layer` value must match one of these.
+
+These are intentionally fewer than an exhaustive org taxonomy. They reflect where Red Flags actually land in the current content. If we gather enough entries in a new layer (for example `architecture` or `operations`), the layer set can expand — intentionally, not aspirationally.
+
+### `signalTypes` (secondary axis — what kind of signal it is)
+
+Canonical Red Flag signal types:
+
+* `structural`
+* `behavioral`
+* `delivery`
+* `communication`
+* `architectural`
+* `operational`
+* `ai-quality`
+
+These are listed in:
+
+```json
+"category": {
+  "signalTypes": [
+    "structural",
+    "behavioral",
+    "delivery",
+    "communication",
+    "architectural",
+    "operational",
+    "ai-quality"
+  ]
+}
+```
+
+Each entry’s `signalType` value must match one of these.
+
+Meaning:
+
+* `structural` — shape of the system or the organisation
+* `behavioral` — how people, teams, or systems act
+* `delivery` — how work flows to production
+* `communication` — how information flows (or fails to)
+* `architectural` — boundaries, interfaces, coupling
+* `operational` — runtime health, incidents, on-call
+* `ai-quality` — signals specific to AI-assisted or AI-driven workflows
 
 ---
 
 ## Entry Schema Overview
 
-Each Red Flag entry should use this structure:
+Each Red Flag entry uses this structure:
 
 ```json
 {
   "slug": "",
   "title": "",
-  "category": "",
+  "layer": "",
+  "signalType": "",
   "summary": "",
-  "signal": "",
+  "decisionHeuristic": "",
+
+  "whatYouNotice": "",
   "whyItMatters": "",
+  "whatItUsuallyIndicates": [],
+  "notNecessarilyAProblemWhen": [],
+  "commonContexts": [],
+
   "severity": "",
   "frequency": "",
   "detectability": "",
-  "showsUpAs": [],
-  "usuallyIndicates": [],
-  "oftenConfusedWith": [],
-  "whatToInspectNext": [],
-  "ifIgnored": [],
-  "counterSignals": [],
-  "commonBadResponses": [],
-  "examplePhrases": [],
-  "aiCanHelpWith": [],
-  "aiCanMakeWorseBy": [],
+
+  "leadingIndicators": [],
+  "diagnosticQuestions": [],
+  "whatToCheckNext": [],
+  "commonRootCauses": [],
+  "likelyConsequences": [],
+  "antiPatterns": [],
+  "falseFriends": [],
+
+  "ownerMostLikelyToNotice": [],
+  "ownerBestPlacedToAct": [],
+  "timeHorizon": "",
+
+  "aiAmplifies": [],
+  "aiMasks": [],
   "aiSpecificNotes": "",
+
   "relatedFailureModes": [],
-  "relatedRedFlags": [],
   "relatedTechDecisions": [],
   "relatedPlaybooks": [],
+  "relatedRedFlags": [],
+
+  "exampleSignals": [],
   "patternConfidence": "high"
 }
 ```
 
-This is the preferred schema for the live site.
+This is the canonical schema for the live site.
 
 ---
 
 ## Required Fields
 
-These fields should be required for every Red Flag entry:
+These fields are required for every Red Flag entry:
 
 * `slug`
 * `title`
-* `category`
+* `layer`
+* `signalType`
 * `summary`
-* `signal`
+* `whatYouNotice`
 * `whyItMatters`
+* `whatItUsuallyIndicates`
 * `severity`
 * `frequency`
 * `detectability`
-* `showsUpAs`
-* `usuallyIndicates`
-* `whatToInspectNext`
-* `ifIgnored`
+* `whatToCheckNext`
+* `likelyConsequences`
 * `patternConfidence`
 
 ### Why these are required
@@ -169,24 +236,33 @@ These fields should be required for every Red Flag entry:
 Without them, the entry cannot reliably answer:
 
 * what the warning signal is
-* how visible/common it is
+* where and what kind of signal it is
 * why it should be taken seriously
 * what it likely points to
 * what a reader should do next
+* what happens if it is ignored
 
 ---
 
 ## Optional but Strongly Recommended Fields
 
-These fields may be optional technically, but strong entries should usually include them:
+These fields are technically optional but should usually exist in strong entries:
 
-* `oftenConfusedWith`
-* `counterSignals`
-* `commonBadResponses`
-* `examplePhrases`
-* `aiCanHelpWith`
-* `aiCanMakeWorseBy`
+* `decisionHeuristic`
+* `notNecessarilyAProblemWhen`
+* `commonContexts`
+* `leadingIndicators`
+* `diagnosticQuestions`
+* `commonRootCauses`
+* `antiPatterns`
+* `falseFriends`
+* `ownerMostLikelyToNotice`
+* `ownerBestPlacedToAct`
+* `timeHorizon`
+* `aiAmplifies`
+* `aiMasks`
 * `aiSpecificNotes`
+* `exampleSignals`
 * all `related*` fields
 
 These fields make entries much more diagnostic and practically useful.
@@ -211,9 +287,7 @@ Must follow global slug rules.
 
 ### `title`
 
-Human-readable display title.
-
-This should be crisp and signal-like.
+Human-readable display title. Should be crisp and signal-like.
 
 Examples:
 
@@ -227,25 +301,31 @@ Examples:
 
 ---
 
-### `category`
+### `layer`
 
-Red Flag subcategory.
-
-Must match an allowed subcategory value.
+Primary axis — *where* the signal appears. Must be one of the canonical layers (see above).
 
 Example:
 
 ```json
-"category": "team"
+"layer": "team"
+```
+
+### `signalType`
+
+Secondary axis — *what kind* of signal it is. Must be one of the canonical signal types (see above).
+
+Example:
+
+```json
+"signalType": "behavioral"
 ```
 
 ---
 
 ### `summary`
 
-A concise one- to two-sentence editorial summary.
-
-This should quickly explain why the signal matters.
+A concise one- to two-sentence editorial summary. Explains why the signal matters.
 
 Example:
 
@@ -255,31 +335,37 @@ Example:
 
 ---
 
-### `signal`
+### `decisionHeuristic`
 
-A plain-language statement of the actual warning signal.
-
-This is one of the most important fields in the schema.
-It should describe the signal in observable terms.
+A single short directional heuristic: how to think about this signal when it appears. One sentence. Not a rule.
 
 Example:
 
 ```json
-"signal": "People keep asking the same person what to do, even in areas that are supposedly team-owned."
+"decisionHeuristic": "Treat invisible ownership as unowned until something observable says otherwise."
 ```
 
-This field should render prominently near the top of the page.
+---
+
+### `whatYouNotice`
+
+A plain-language statement of the observable warning signal — in real team language.
+
+This is one of the most important fields. It should describe the signal in concrete, recognisable terms.
+
+Example:
+
+```json
+"whatYouNotice": "People keep asking the same person what to do, even in areas that are supposedly team-owned."
+```
+
+This field renders prominently near the top of the page.
 
 ---
 
 ### `whyItMatters`
 
-A short explanation of why this signal deserves attention.
-
-This should answer:
-
-* why is this not just a harmless annoyance?
-* what kind of system weakness does it suggest?
+A short explanation of why this signal deserves attention: what kind of system weakness it implies.
 
 Example:
 
@@ -289,259 +375,243 @@ Example:
 
 ---
 
-### `severity`
+### `whatItUsuallyIndicates`
 
-Editorial severity of the signal.
+Array of likely underlying issues the signal points to. Diagnostic, not deterministic.
 
-Preferred allowed values:
+Example:
 
-* `low`
-* `medium`
-* `high`
-* `critical`
+```json
+"whatItUsuallyIndicates": [
+  "ownership drift",
+  "knowledge concentration",
+  "boundary ambiguity"
+]
+```
 
-### Meaning
+### `notNecessarilyAProblemWhen`
 
-This expresses how dangerous the signal tends to be **if it is real and persistent**, not how dramatic it sounds.
+Array of conditions under which the signal is not cause for concern. Keeps the entry honest and non-absolutist.
+
+Example:
+
+```json
+"notNecessarilyAProblemWhen": [
+  "the expert is temporarily onboarding others and that rotation is visible",
+  "the area is genuinely niche and concentration is explicit"
+]
+```
+
+### `commonContexts`
+
+Array of environments where this signal commonly appears. Helps readers calibrate.
+
+Example:
+
+```json
+"commonContexts": [
+  "fast-growing teams where ownership lagged behind hiring",
+  "platform areas without clear internal customer"
+]
+```
 
 ---
 
+## Severity / Frequency / Detectability
+
+### `severity`
+
+Editorial severity of the signal if it is real and persistent.
+
+Allowed values:
+
+* `low`
+* `medium`
+* `medium-high`
+* `high`
+* `critical`
+
+Meaning:
+
+This expresses how dangerous the signal tends to be **if it is real and persistent**, not how dramatic it sounds.
+
+`medium-high` is a deliberate notch for signals that are clearly more than medium but not yet high. It is not a general-purpose hedge; prefer `medium` or `high` when either genuinely applies.
+
 ### `frequency`
 
-How commonly this signal appears in real software environments.
+How commonly the signal appears in real software environments. Uses the site-wide canonical frequency enum.
 
-Preferred allowed values:
+Allowed values:
 
 * `rare`
 * `uncommon`
+* `occasional`
 * `common`
 * `very common`
 * `universal`
 * `increasing`
 
-### Meaning
-
-This is editorial frequency, not telemetry.
-
----
-
 ### `detectability`
 
 How easy the signal is to notice before the underlying issue becomes serious.
 
-Preferred allowed values:
+Canonical allowed values:
 
-* `easy`
-* `moderate`
-* `hard`
-* `deceptive`
+* `obvious`
+* `visible-if-you-look`
+* `subtle`
+* `easy-to-normalize`
 
-### Meaning
+Meaning:
 
-* `easy` → obvious to many observers
-* `moderate` → visible if someone is paying attention
-* `hard` → subtle until damage accumulates
-* `deceptive` → often looks healthy or normal on the surface
+* `obvious` — noticed by most observers
+* `visible-if-you-look` — visible if someone is paying attention
+* `subtle` — present but easy to miss
+* `easy-to-normalize` — looks normal/healthy on the surface and often gets rationalised away
 
-This field is important because some red flags are visible but misread.
+`easy-to-normalize` is the hardest case and is important to preserve. Many damaging red flags are *seen* but not *registered*.
 
 ---
 
-## `showsUpAs`
+## Diagnostic Progression Fields
 
-A list of concrete ways the signal tends to appear.
+These fields give the entry an investigative shape, not just a warning.
 
-This should be observable and specific.
+### `leadingIndicators`
 
-Examples:
+Array of earlier / weaker signs that often precede the red flag itself.
+
+### `diagnosticQuestions`
+
+Array of questions to ask when the signal is suspected. These should be inspectable, not rhetorical.
+
+### `whatToCheckNext`
+
+**Required.** Array of concrete follow-up inspections. Turns the entry into a usable diagnostic tool.
+
+Example:
 
 ```json
-"showsUpAs": [
-  "The same engineer is pulled into most incidents.",
-  "PRs touching one subsystem wait for a specific reviewer.",
-  "People avoid changing the area unless a certain person is available."
-]
-```
-
-This field should help the reader recognize the flag in the wild.
-
----
-
-## `usuallyIndicates`
-
-A list of likely underlying issues the red flag points to.
-
-This is a diagnostic field, not a certainty field.
-
-Examples:
-
-* ownership ambiguity
-* knowledge concentration
-* weak boundaries
-* poor observability
-* hidden coordination cost
-* brittle release process
-
-This field should use phrases that are meaningful and inspectable.
-
----
-
-## `oftenConfusedWith`
-
-A list of things this signal is commonly mistaken for.
-
-This is one of the most useful fields and should be included often.
-
-Examples:
-
-* healthy collaboration
-* fast-moving startup culture
-* strong engineering standards
-* harmless temporary chaos
-* good initiative
-
-This field helps users avoid normalizing the signal incorrectly.
-
----
-
-## `whatToInspectNext`
-
-A list of concrete follow-up inspections or questions.
-
-This field is required because Red Flags should not just identify problems — they should guide diagnosis.
-
-Examples:
-
-```json
-"whatToInspectNext": [
+"whatToCheckNext": [
   "Who actually owns incidents, roadmap, and docs for this area?",
   "How many people can safely modify this subsystem?",
   "What happens when the usual expert is unavailable?"
 ]
 ```
 
-This should render as a highly actionable section.
+### `commonRootCauses`
 
----
+Array of the structural or organisational causes that tend to sit underneath this signal.
 
-## `ifIgnored`
+### `likelyConsequences`
 
-A list of likely downstream consequences.
+**Required.** Array of downstream consequences if the signal is ignored. Connects the red flag to future failure without fully becoming a Failure Mode entry.
 
-This should answer:
+### `antiPatterns`
 
-* what does this signal tend to lead to if left alone?
+Array of weak / harmful reactions teams tend to have to this red flag (normalising it, adding reporting without structural change, overreacting with blanket rules, etc.).
 
-Examples:
+### `falseFriends`
 
-* delivery slowdown
-* brittle ownership
-* repeated rework
-* false confidence
-* incident amplification
-* quiet trust decay
+Array of things this signal is commonly mistaken for, and signs that could make the situation look less dangerous than it is. Combines *often confused with* + *counter-signals* into one honest field.
 
-This field should connect the signal to future failure without fully becoming a Failure Mode entry.
-
----
-
-## `counterSignals`
-
-A list of signals that can help the reader distinguish healthy situations from unhealthy ones.
-
-This field is very valuable.
-It answers:
-
-* what would make this situation look less dangerous?
-* what evidence would soften the concern?
-
-Examples:
-
-* clear documented ownership exists
-* rotation and backup ownership are visible
-* multiple engineers regularly change the system safely
-* escalation paths are explicit and working
-
-This keeps Red Flags from becoming too absolutist.
-
----
-
-## `commonBadResponses`
-
-A list of weak reactions teams often have to this red flag.
-
-Examples:
-
-* normalize it
-* hide it with process language
-* treat it as temporary forever
-* add more reporting without changing structure
-* overreact with blanket rules instead of diagnosis
-
-This field is strongly recommended.
-
----
-
-## `examplePhrases`
-
-A list of phrases, status language, or recurring statements that often accompany the flag.
-
-This makes entries feel recognizable and memorable.
-
-Examples:
+Example:
 
 ```json
-"examplePhrases": [
-  "Ask Alex, they know that part.",
-  "We just need a bit more alignment.",
-  "It’s owned by the team."
+"falseFriends": [
+  "healthy collaboration",
+  "strong engineering standards",
+  "rotation and backup ownership are visible and working"
 ]
 ```
 
-This is especially useful for team, leadership, process, and AI-related red flags.
+---
+
+## Ownership / Timing Fields
+
+### `ownerMostLikelyToNotice`
+
+Array of roles who usually spot the signal earliest.
+
+Example:
+
+```json
+"ownerMostLikelyToNotice": ["tech lead", "senior engineer", "support lead"]
+```
+
+Always an array — not a string, not a prose paragraph.
+
+### `ownerBestPlacedToAct`
+
+Array of roles best positioned to act on the signal. Distinct from `ownerMostLikelyToNotice` — the noticer is often not the fixer.
+
+Example:
+
+```json
+"ownerBestPlacedToAct": ["engineering manager", "architect"]
+```
+
+Always an array.
+
+### `timeHorizon`
+
+A short string describing how quickly the signal needs attention (e.g. "weeks", "one quarter", "immediate").
 
 ---
 
 ## AI Fields
 
-Red Flags often benefit from strong AI treatment because AI can:
+Red Flags often benefit from AI-specific treatment because AI can:
 
 * amplify warning signals
 * hide warning signals behind polished output
 * make some issues harder to detect
 * make some inspections easier
 
-### `aiCanHelpWith`
+Red Flags keep their stronger, more specific AI effect names — `aiAmplifies` and `aiMasks` — instead of the cross-site `aiCanHelpWith` / `aiCanMakeWorseBy` pair, because the red-flag framing is specifically about **whether AI inflates the signal or hides it**. The synthesis field uses the site-wide canonical name.
 
-Array of ways AI may help surface or inspect the signal.
+### `aiAmplifies`
 
-### `aiCanMakeWorseBy`
+Array of ways AI makes this signal worse, faster, or more common.
 
-Array of ways AI can amplify, hide, or accelerate the signal.
+Example:
+
+```json
+"aiAmplifies": [
+  "generated code increases surface area faster than ownership can follow"
+]
+```
+
+### `aiMasks`
+
+Array of ways AI hides or flattens this signal (polished output, plausible reviews, apparent activity).
+
+Example:
+
+```json
+"aiMasks": [
+  "AI-assisted PRs look reviewed because comments are thorough, even when no human deeply engaged"
+]
+```
 
 ### `aiSpecificNotes`
 
-A short synthesis explaining how AI changes this red flag in practice.
+A short synthesis string explaining how AI changes this red flag in practice.
 
-Examples:
+Both `aiAmplifies` and `aiMasks` are **arrays only** — no scalar / array union. `aiSpecificNotes` is a string (matches the site-wide AI synthesis convention).
 
-* AI makes weak architecture look productive for longer
-* AI can surface duplicated logic or owner concentration faster
-* AI can raise output while lowering review depth, making detection harder
-
-Do not force AI commentary into every entry.
-But include it whenever AI materially changes how the signal behaves.
+Do not force AI commentary into every entry. But include it whenever AI materially changes how the signal behaves.
 
 ---
 
 ## Cross-Reference Fields
 
-Use shared slug-based arrays:
+Red Flags carry four slug-based cross-references:
 
 * `relatedFailureModes`
-* `relatedRedFlags`
 * `relatedTechDecisions`
 * `relatedPlaybooks`
+* `relatedRedFlags`
 
 These should contain slugs wherever possible.
 
@@ -551,49 +621,67 @@ Example:
 "relatedFailureModes": ["hero-trap", "ownership-drift"]
 ```
 
-Cross-links should be meaningful and diagnostic.
+Cross-links should be meaningful and diagnostic, not inflated.
 
 Examples:
 
 * a red flag about weak ownership may link to failure modes about hero dependence or ownership drift
 * a red flag about review quality may link to an AI playbook on code review
-* a red flag about contract ambiguity may link to a decision like REST vs GraphQL or backward compatibility choices
+* a red flag about contract ambiguity may link to a decision like backward compatibility vs faster evolution
+
+---
+
+## `exampleSignals`
+
+Array of phrases, status language, or recurring statements that often accompany the flag.
+
+Example:
+
+```json
+"exampleSignals": [
+  "Ask Alex, they know that part.",
+  "We just need a bit more alignment.",
+  "It’s owned by the team."
+]
+```
+
+Especially useful for team, leadership, process, and AI-related red flags.
 
 ---
 
 ## `patternConfidence`
 
-Use shared allowed values:
+Allowed values:
 
-* `high`
-* `medium`
 * `low`
+* `medium`
+* `medium-high`
+* `high`
 
-Meaning:
-editorial confidence that this signal is recognizable, useful, and stable enough to stand as a structured warning pattern.
+Meaning: editorial confidence that this signal is recognisable, useful, and stable enough to stand as a structured warning pattern.
 
-Most broad and repeated red flags will likely be `high`.
-More emerging AI-specific signals may be `medium`.
+Most broad and repeated red flags will likely be `high`. More emerging AI-specific signals may be `medium` or `medium-high`.
 
 ---
 
 ## Rendering Expectations
 
-The Red Flags UI should emphasize recognition and diagnosis.
+The Red Flags UI emphasises recognition and diagnosis.
 
 ### A good entry page should make these sections obvious:
 
-* title
-* summary
-* signal
-* why it matters
+* title + layer + signal type
+* summary + decision heuristic
+* what you notice + why it matters
 * severity / frequency / detectability
-* how it shows up
-* what it usually indicates
-* what to inspect next
-* what happens if ignored
+* what it usually indicates + not-necessarily-a-problem-when
+* leading indicators + diagnostic questions + what to check next
+* common root causes + likely consequences
+* anti-patterns + false friends
+* ownership (notice vs act) + time horizon
+* AI effects (amplifies / masks / specific notes)
+* example signals
 * related entries
-* AI effects
 
 ### Important rendering principle
 
@@ -629,54 +717,22 @@ This is a **warning system**, not a long-form article format.
 At minimum, validate that:
 
 * every entry has a unique slug
-* `category` uses an allowed subcategory
-* `severity`, `frequency`, and `detectability` use allowed values
-* `showsUpAs`, `usuallyIndicates`, `whatToInspectNext`, and `ifIgnored` are present and non-empty
-* all `related*` slugs resolve correctly
-* `patternConfidence` uses an allowed value
+* `layer` is one of the canonical `category.layers`
+* `signalType` is one of the canonical `category.signalTypes`
+* `severity` is one of `low | medium | medium-high | high | critical`
+* `frequency` is in the canonical FrequencyEnum
+* `whatYouNotice`, `whatItUsuallyIndicates`, `whatToCheckNext`, `likelyConsequences` are present and non-empty
+* `ownerMostLikelyToNotice` and `ownerBestPlacedToAct`, when present, are arrays
+* `aiAmplifies` and `aiMasks`, when present, are arrays
+* `aiSpecificNotes`, when present, is a string (legacy `aiSpecificVariant` is an error)
+* `patternConfidence` is one of `low | medium | medium-high | high`
+* all `related*` slugs resolve where slug-based references are used
 
 Recommended additional validation:
 
-* `signal` must be non-empty
+* `whatYouNotice` must be non-empty
 * `summary` should be concise, not essay-length
-* `whatToInspectNext` should contain actionable items, not vague principles
-
----
-
-## Example Minimal Valid Entry
-
-```json
-{
-  "slug": "ownership-is-claimed-but-not-visible",
-  "title": "Ownership is claimed but not visible",
-  "category": "team",
-  "summary": "A system is said to be owned, but responsibility is not visible in routing, maintenance, or decisions.",
-  "signal": "People keep asking the same person or guessing who owns the area.",
-  "whyItMatters": "Because hidden or fuzzy ownership slows response, weakens accountability, and increases fragility.",
-  "severity": "high",
-  "frequency": "common",
-  "detectability": "moderate",
-  "showsUpAs": [
-    "Incidents bounce between teams before action starts.",
-    "PRs wait for informal approval from one familiar person."
-  ],
-  "usuallyIndicates": [
-    "ownership drift",
-    "knowledge concentration",
-    "boundary ambiguity"
-  ],
-  "whatToInspectNext": [
-    "Who owns incidents, roadmap, and docs for this area?",
-    "What happens when the informal owner is unavailable?"
-  ],
-  "ifIgnored": [
-    "slower delivery",
-    "more brittle response",
-    "quiet accountability decay"
-  ],
-  "patternConfidence": "high"
-}
-```
+* `whatToCheckNext` should contain actionable items, not vague principles
 
 ---
 
@@ -692,4 +748,3 @@ A strong Red Flag entry should make the user feel:
 ## One-Sentence Rule
 
 **A Red Flag entry should make a weak signal legible early enough that a team can investigate before it hardens into a failure mode.**
-

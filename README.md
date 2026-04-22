@@ -186,12 +186,26 @@ host (Netlify, GitHub Pages, etc.) without changes.
   (`aiCanHelpWith` / `aiCanMakeWorseBy` / `aiSpecificNotes`); option objects
   use plural `failureModesWhenMisused`; `patternConfidence` allows
   `low | medium | medium-high | high`. No compatibility layer.
-- **Red Flags** — schema reflects the actual JSON shape (`layer`/`signalType`
-  vs docs' `category`; renamed AI fields; etc.). Reconciliation deferred.
+- **Red Flags** — **aligned**. Content, docs, and types agree. Two-axis
+  classification (`layer` + `signalType`) canonical; canonical layers
+  (`code | team | process | leadership | ai`) and signal types
+  (`structural | behavioral | delivery | communication | architectural |
+  operational | ai-quality`) match the actual content; richer RF-specific
+  field names preserved (`whatYouNotice`, `whatItUsuallyIndicates`,
+  `whatToCheckNext`, `likelyConsequences`, `exampleSignals`, `falseFriends`);
+  diagnostic fields retained (`decisionHeuristic`, `commonContexts`,
+  `leadingIndicators`, `diagnosticQuestions`, `commonRootCauses`,
+  `antiPatterns`, `ownerMostLikelyToNotice`, `ownerBestPlacedToAct`,
+  `timeHorizon`, `notNecessarilyAProblemWhen`); owner and AI effect fields
+  are arrays only; `aiSpecificVariant` renamed to site-wide
+  `aiSpecificNotes`; `severity` allows
+  `low | medium | medium-high | high | critical`; `frequency` uses shared
+  FrequencyEnum. Secondary-axis `signalType` validated at build time. No
+  compatibility layer.
 - **Engineering Playbook** — matches docs closely, no major drift.
 
-See the docstring at the top of each schema file under
-`src/content/schemas/` for the specific mismatches still open in RF.
+All four categories now have aligned content / docs / types / validation.
+There is no known schema-drift debt.
 
 ## License
 

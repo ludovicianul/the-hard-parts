@@ -57,23 +57,18 @@ export const FrequencyEnum = z.enum([
 ]);
 
 /**
- * Severity enum.
- * Docs: `low | medium | high | critical`.
- * MISMATCH: Red Flags and Tech Decisions content also use `medium-high`.
- * We widen to the union of docs + observed values.
+ * Canonical severity enum (low -> critical).
+ *
+ * `medium-high` is a deliberate notch for signals/decisions that are clearly
+ * more than medium but not yet full high. It is not a general-purpose hedge;
+ * prefer `medium` or `high` when either genuinely applies.
  */
 export const SeverityEnum = z.enum([
   "low",
   "medium",
+  "medium-high",
   "high",
   "critical",
-  "medium-high",
-]);
-
-/** A common permissive shape: string OR array of strings. */
-export const StringOrStringArray = z.union([
-  z.string(),
-  z.array(z.string()),
 ]);
 
 /** Cross-reference arrays are always arrays of slugs (possibly empty). */
