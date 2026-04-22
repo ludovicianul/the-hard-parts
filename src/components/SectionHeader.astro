@@ -1,0 +1,119 @@
+---
+/**
+ * SectionHeader — editorial / bulletin section marker used inside detail and
+ * landing pages. Renders:
+ *   · a thick accent rule (bulletin variant, default) or a thin soft rule (dense)
+ *   · an optional large mono step number (e.g. "01") in accent color
+ *   · small mono eyebrow (code or short label)
+ *   · sans-serif title
+ *   · optional note / hint line
+ *
+ * Keeps structural rhythm consistent across categories per
+ * docs/design-direction.md ("section markers", "divider systems") and adds a
+ * controlled tabloid/bulletin edge via the step number + accent rule.
+ */
+
+export interface Props {
+  /** Large mono step code ("01", "02", …). Renders as a bulletin marker. */
+  step?: string;
+  eyebrow?: string;
+  title: string;
+  note?: string;
+  /** Smaller spacing and no step — for tight subsection runs. */
+  dense?: boolean;
+  /** Semantic heading level. Defaults to h2. */
+  as?: "h2" | "h3";
+  /** Optional HTML id used by the section-index navigation. */
+  id?: string;
+}
+
+const { step, eyebrow, title, note, dense = false, as = "h2", id } = Astro.props;
+const Heading = as;
+const showStep = Boolean(step) && !dense;
+---
+<header
+  class:list={["nsb-section-header", { "nsb-section-header--dense": dense, "nsb-section-header--bulletin": showStep }]}
+  id={id}
+>
+  {!dense && <hr class="nsb-section-header__rule" aria-hidden="true" />}
+
+  <div class="nsb-section-header__row">
+    {showStep && (
+      <p class="nsb-section-header__step" aria-hidden="true">{step}</p>
+    )}
+    <div class="nsb-section-header__block">
+      {eyebrow && (
+        <p class:list={["nsb-eyebrow", "nsb-section-header__eyebrow", { "nsb-eyebrow--bulletin": showStep }]}>
+          {eyebrow}
+        </p>
+      )}
+      <Heading class="nsb-section-header__title">{title}</Heading>
+      {note && <p class="nsb-section-header__note">{note}</p>}
+    </div>
+  </div>
+</header>
+
+<style>
+  .nsb-section-header {
+    margin-top: var(--space-8);
+    padding-bottom: var(--space-4);
+  }
+  .nsb-section-header--dense {
+    margin-top: var(--space-6);
+    padding-bottom: var(--space-3);
+    border-bottom: var(--rule-soft);
+  }
+  .nsb-section-header__rule {
+    border: 0;
+    border-top: 3px solid var(--accent-current);
+    margin: 0 0 var(--space-4) 0;
+    width: 100%;
+  }
+
+  .nsb-section-header__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+  .nsb-section-header--bulletin .nsb-section-header__row {
+    grid-template-columns: minmax(3.5rem, auto) 1fr;
+    gap: var(--space-5);
+    align-items: baseline;
+  }
+  .nsb-section-header__step {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-3xl);
+    letter-spacing: var(--tracking-tight);
+    line-height: 1;
+    color: var(--accent-current);
+    font-weight: 700;
+    font-feature-settings: "tnum";
+  }
+  .nsb-section-header__block { min-width: 0; }
+  .nsb-section-header__eyebrow {
+    margin: 0 0 var(--space-2) 0;
+  }
+  .nsb-section-header__title {
+    font-size: var(--text-2xl);
+    letter-spacing: var(--tracking-tight);
+    margin: 0;
+  }
+  .nsb-section-header--dense .nsb-section-header__title {
+    font-size: var(--text-lg);
+  }
+  .nsb-section-header__note {
+    margin: var(--space-2) 0 0 0;
+    color: var(--color-ink-soft);
+    font-size: var(--text-sm);
+    max-width: var(--reading-max);
+  }
+
+  @media (max-width: 520px) {
+    .nsb-section-header--bulletin .nsb-section-header__row {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+    }
+    .nsb-section-header__step { font-size: var(--text-2xl); }
+  }
+</style>

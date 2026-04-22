@@ -78,7 +78,26 @@ code, pre, .mono {
   font-size: var(--text-xs);
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  color: var(--color-ink-faint);
+  color: var(--color-label);
+  font-weight: 500;
+}
+
+/* Bulletin-strength eyebrow — for section markers and reference headers.
+   Slightly heavier, tracks wider, accent-colored. Controlled, not loud. */
+.nsb-eyebrow--bulletin {
+  color: var(--accent-current);
+  font-weight: 600;
+}
+
+/* Small reference-code treatment — library call number feel.
+   `FM · 024` or `RF · 007`. Used in detail headers and related-entry rails. */
+.nsb-ref-code {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--accent-current);
+  font-weight: 600;
 }
 
 .nsb-accent-rule {
@@ -87,6 +106,41 @@ code, pre, .mono {
   width: 3rem;
   margin: 0 0 var(--space-5) 0;
 }
+
+/* Thicker bulletin rule for section markers. */
+.nsb-accent-rule--thick {
+  border-top-width: 3px;
+  width: 100%;
+}
+
+/*
+ * Dark editorial plate — a theme-swap utility applied to masthead bands,
+ * voice panels, or other deliberate dark zones.
+ *
+ * Remaps the shared text/label tokens so any descendant that uses
+ * `var(--color-ink)`, `var(--color-label)`, `var(--accent-current-deep)`, etc.
+ * automatically adapts to the dark background. No per-component overrides
+ * needed — the same component reads correctly on paper AND on plate.
+ */
+.nsb-plate {
+  background: var(--color-ink-plate);
+  color: var(--color-on-plate);
+  /* text + label token remapping */
+  --color-ink:          var(--color-on-plate);
+  --color-ink-dim:      var(--color-on-plate);
+  --color-ink-soft:     var(--color-on-plate-dim);
+  --color-ink-faint:    var(--color-on-plate-faint);
+  --color-label:        var(--color-on-plate-dim);
+  /* rules on dark: very subtle */
+  --color-rule:         var(--color-on-plate-faint);
+  --color-rule-soft:    #2f2f34;
+  --color-rule-strong:  var(--color-on-plate-dim);
+  /* accent remapping: the deep variant was meant for amber-on-cream; on a
+     dark plate we want the bright variant instead. */
+  --accent-current-deep: var(--accent-current-bright);
+}
+.nsb-plate a { color: inherit; text-decoration-color: var(--color-on-plate-faint); }
+.nsb-plate a:hover { text-decoration-color: var(--accent-current-bright); }
 
 .nsb-placeholder {
   border: var(--rule);

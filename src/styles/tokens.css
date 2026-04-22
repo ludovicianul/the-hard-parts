@@ -16,21 +16,44 @@
   --color-ink:        #0f0f10;
   --color-ink-dim:    #2a2a2c;
   --color-ink-soft:   #54545a;
-  --color-ink-faint:  #8a8a92;
-  --color-rule:       #d5d5d9;
-  --color-rule-soft:  #eaeaee;
-  --color-paper:      #f6f5f1;  /* warm editorial off-white */
-  --color-paper-alt:  #ecebe4;
+  /* Readable small-label color; used by eyebrows and meta labels.
+     Previously `--color-ink-faint` (~#8a8a92) doubled for both decorative and
+     readable roles; that was too pale for bulletin eyebrows on warm paper. */
+  --color-label:      #4a4a52;
+  --color-ink-faint:  #8a8a92;  /* decorative-only: micro rules, separators */
+  --color-rule:       #c8c8cc;
+  --color-rule-soft:  #e4e4e8;
+  /* Slightly stronger ruled lines for bulletin/dossier emphasis. */
+  --color-rule-strong: #a8a8ad;
+  --color-paper:      #f4f2ec;  /* warm editorial off-white, slightly crisper */
+  --color-paper-alt:  #e8e6dd;
   --color-surface:    #ffffff;
 
+  /* Dark "plate" surfaces for editorial zones — masthead bands, voice panels,
+     bulletin plates. Cream text on near-black with accent color as highlight.
+     Used deliberately and sparingly per docs' "controlled tabloid energy". */
+  --color-ink-plate:  #17171a;
+  --color-ink-plate-soft: #24242a;
+  --color-on-plate:       #f5efe0;   /* warm cream for body text on dark */
+  --color-on-plate-dim:   #c4bfae;   /* dimmer cream for meta on dark */
+  --color-on-plate-faint: #8a8578;   /* faint cream for separators on dark */
+
   /* --- Category accents (see docs/design-direction.md §Category Identity) */
-  --accent-fm: #b4630c;   /* Failure Modes  — amber/ochre warning */
-  --accent-td: #2e4d73;   /* Tech Decisions — cool steel analytic */
-  --accent-rf: #a6322b;   /* Red Flags      — coral/rust alert    */
-  --accent-ep: #1f6054;   /* Playbook       — operational teal    */
+  --accent-fm:        #b85f06;   /* Failure Modes  — amber/ochre warning (richer, AA on labels) */
+  --accent-fm-deep:   #7a3d04;   /* darker amber for text on tint */
+  --accent-fm-bright: #e08420;   /* brighter amber for text on dark plate */
+  --accent-fm-tint:   #f2d9a8;   /* warm amber surface for bulletin panels */
+  --accent-fm-wash:   #f9ebc9;   /* softer amber wash for subtle emphasis */
+  --accent-td:        #2e4d73;   /* Tech Decisions — cool steel analytic */
+  --accent-rf:        #a6322b;   /* Red Flags      — coral/rust alert    */
+  --accent-ep:        #1f6054;   /* Playbook       — operational teal    */
 
   /* The live accent on the current page; layouts set this. */
-  --accent-current: var(--color-ink);
+  --accent-current:        var(--color-ink);
+  --accent-current-deep:   var(--color-ink);
+  --accent-current-bright: var(--color-ink);
+  --accent-current-tint:   var(--color-paper-alt);
+  --accent-current-wash:   var(--color-paper-alt);
 
   /* --- Typography scale (modular, slightly editorial) ------------------- */
   --font-serif: "Source Serif 4", "Iowan Old Style", "Apple Garamond",
@@ -85,8 +108,17 @@
   --ease:     cubic-bezier(0.2, 0.6, 0.2, 1);
 }
 
-/* Accent-setters. Apply one of these to <body> or a page root wrapper. */
-[data-accent="fm"] { --accent-current: var(--accent-fm); }
+/* Accent-setters. Apply one of these to <body> or a page root wrapper.
+   The extended accent palette is intentionally only defined for FM for now —
+   the Failure Modes vertical slice uses it deliberately, and other categories
+   will gain matching tints as they come online. */
+[data-accent="fm"] {
+  --accent-current:        var(--accent-fm);
+  --accent-current-deep:   var(--accent-fm-deep);
+  --accent-current-bright: var(--accent-fm-bright);
+  --accent-current-tint:   var(--accent-fm-tint);
+  --accent-current-wash:   var(--accent-fm-wash);
+}
 [data-accent="td"] { --accent-current: var(--accent-td); }
 [data-accent="rf"] { --accent-current: var(--accent-rf); }
 [data-accent="ep"] { --accent-current: var(--accent-ep); }

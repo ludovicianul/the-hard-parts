@@ -1,45 +1,220 @@
 ---
 import CategoryLayout from "@/layouts/CategoryLayout.astro";
-import { listEntries } from "@/lib/load";
+import EntryCard from "@/components/EntryCard.astro";
+import { loadFailureModes } from "@/lib/load";
 import { ensureValidated } from "@/lib/validate";
-import { hrefForEntry } from "@/lib/categories";
 
 ensureValidated();
-const entries = listEntries("FM");
+
+const file = loadFailureModes();
+const entries = file.entries;
+const declaredSubcategories = file.category.categories;
+
+// Group entries by subcategory, preserving the declared order from the
+// category block. Entries whose category is (unexpectedly) not in the
+// declared list fall into an "other" bucket, surfaced visibly — the
+// validator already blocks any real drift, so in practice this is empty.
+type Group = { key: string; label: string; entries: typeof entries };
+const groups: Group[] = declaredSubcategories.map((key) => ({
+  key,
+  label: key,
+  entries: entries.filter((e) => e.category === key),
+}));
+const orphaned = entries.filter((e) => !declaredSubcategories.includes(e.category));
+if (orphaned.length > 0) {
+  groups.push({ key: "other", label: "other", entries: orphaned });
+}
+
+const titleCase = (s: string): string =>
+  s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+
+// Build a stable 3-digit reference number per entry, in the original file
+// order. Used on cards as a catalog call-number.
+const refByIndex = new Map<string, string>();
+entries.forEach((e, i) => {
+  refByIndex.set(e.slug, String(i + 1).padStart(3, "0"));
+});
+
+// Severity legend — shown under the intro as a tiny visual key for the bars.
+const severityLevels = ["low", "medium", "medium-high", "high", "critical"] as const;
 ---
-<CategoryLayout code="FM">
-  <div class="nsb-placeholder">
-    Phase 1 placeholder · /failure-modes landing page.
-    Real card grid, filter bar, and category-specific components arrive in
-    Phase 2. Below is a raw link list proving loader + routing work.
-  </div>
 
-  <ul class="nsb-index-list">
-    {entries.map((e) => (
-      <li>
-        <a href={hrefForEntry("FM", e.slug)}>{e.title}</a>
-        <span class="nsb-index-sub"> · {e.category}</span>
-      </li>
-    ))}
-  </ul>
+<CategoryLayout
+  code="FM"
+  tagline="Named failure patterns that recur in software engineering — how they start, how they escalate, what they look like at each stage, and what good responses look like."
+>
+  <header class="fm-landing__intro-block">
+    <p class="fm-landing__intro">
+      The catalog is grouped by where the pattern lives: planning, people,
+      technical, process, leadership, and AI-specific. Each entry carries a
+      severity indicator on its left edge — from soft grey (low) to deep
+      amber (critical) — so you can scan the catalog for weight before you
+      read the names.
+    </p>
 
-  <style is:global>
-    .nsb-index-list {
-      margin-top: var(--space-6);
-      list-style: none;
-      padding: 0;
-      font-family: var(--font-sans);
-    }
-    .nsb-index-list li {
-      padding-block: var(--space-3);
-      border-bottom: var(--rule-soft);
-    }
-    .nsb-index-sub {
-      color: var(--color-ink-faint);
-      font-family: var(--font-mono);
-      font-size: var(--text-xs);
-      letter-spacing: var(--tracking-label);
-      text-transform: uppercase;
-    }
-  </style>
+    <div class="fm-landing__legend" aria-label="Severity legend">
+      <p class="nsb-eyebrow nsb-eyebrow--bulletin fm-landing__legend-head">
+        Severity · at a glance
+      </p>
+      <ul class="fm-landing__legend-list">
+        {severityLevels.map((s) => (
+          <li class={`fm-landing__legend-item fm-landing__legend-item--${s.replace(/\s+/g, "-")}`}>
+            <span class="fm-landing__legend-swatch" aria-hidden="true" />
+            <span class="fm-landing__legend-label">{s}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </header>
+
+  {groups.map((group) => group.entries.length > 0 && (
+    <section class="fm-landing__group" aria-label={`Failure modes · ${group.label}`}>
+      <header class="fm-landing__group-head">
+        <p class="nsb-eyebrow nsb-eyebrow--bulletin fm-landing__group-eyebrow">
+          [ Subcategory ]
+        </p>
+        <div class="fm-landing__group-title-row">
+          <h2 class="fm-landing__group-title">{titleCase(group.label)}</h2>
+          <span class="fm-landing__group-count">
+            {String(group.entries.length).padStart(2, "0")} {group.entries.length === 1 ? "entry" : "entries"}
+          </span>
+        </div>
+      </header>
+
+      <div class="fm-landing__grid">
+        {group.entries.map((e) => (
+          <EntryCard
+            code="FM"
+            slug={e.slug}
+            title={e.title}
+            summary={e.summary}
+            subcategory={e.category}
+            severity={e.severity as "low" | "medium" | "medium-high" | "high" | "critical"}
+            refNum={refByIndex.get(e.slug)}
+            metaBits={[
+              `severity · ${e.severity}`,
+              `frequency · ${e.frequency}`,
+            ]}
+          />
+        ))}
+      </div>
+    </section>
+  ))}
 </CategoryLayout>
+
+<style>
+  /* ---- intro + legend -------------------------------------------- */
+  .fm-landing__intro-block {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--color-rule-strong);
+  }
+  @media (min-width: 900px) {
+    .fm-landing__intro-block {
+      grid-template-columns: minmax(0, 2fr) minmax(14rem, 1fr);
+      gap: var(--space-8);
+      align-items: start;
+    }
+  }
+  .fm-landing__intro {
+    font-family: var(--font-serif);
+    font-size: var(--text-md);
+    line-height: var(--leading-relaxed);
+    color: var(--color-ink);
+    max-width: var(--reading-max);
+    margin: 0;
+  }
+
+  .fm-landing__legend {
+    padding: var(--space-4);
+    background: var(--color-surface);
+    border-top: 2px solid var(--accent-current);
+    border-left: var(--rule);
+    border-right: var(--rule);
+    border-bottom: var(--rule);
+  }
+  .fm-landing__legend-head {
+    margin: 0 0 var(--space-3) 0;
+  }
+  .fm-landing__legend-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .fm-landing__legend-item {
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    gap: var(--space-3);
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+  .fm-landing__legend-swatch {
+    width: 16px;
+    height: 10px;
+    background: var(--color-rule);
+    display: inline-block;
+  }
+  .fm-landing__legend-item--low        .fm-landing__legend-swatch { background: var(--color-rule-strong); }
+  .fm-landing__legend-item--medium     .fm-landing__legend-swatch { background: var(--accent-current-tint); }
+  .fm-landing__legend-item--medium-high .fm-landing__legend-swatch { background: var(--accent-current); opacity: 0.65; }
+  .fm-landing__legend-item--high       .fm-landing__legend-swatch { background: var(--accent-current); }
+  .fm-landing__legend-item--critical   .fm-landing__legend-swatch { background: var(--accent-current-deep, var(--accent-current)); }
+
+  /* ---- subcategory group header ---------------------------------- */
+  .fm-landing__group {
+    margin-top: var(--space-8);
+  }
+  .fm-landing__group-head {
+    margin-bottom: var(--space-5);
+    padding-top: var(--space-3);
+    border-top: 3px solid var(--accent-current);
+  }
+  .fm-landing__group-eyebrow {
+    margin: var(--space-3) 0 var(--space-2) 0;
+    color: var(--accent-current-deep, var(--accent-current));
+    font-weight: 700;
+  }
+  .fm-landing__group-title-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+  .fm-landing__group-title {
+    font-family: var(--font-sans);
+    font-size: clamp(var(--text-2xl), 3vw, var(--text-3xl));
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin: 0;
+    color: var(--color-ink);
+    text-transform: capitalize;
+  }
+  .fm-landing__group-count {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+    font-feature-settings: "tnum";
+  }
+
+  .fm-landing__grid {
+    margin-top: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: 0;
+    border-top: 1px solid var(--color-rule);
+    border-left: 1px solid var(--color-rule);
+  }
+</style>

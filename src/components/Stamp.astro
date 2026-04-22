@@ -1,0 +1,73 @@
+---
+/**
+ * Stamp — a small bulletin-style reference cue. Modeled after a field-manual
+ * stamp or library classification mark, NOT a chip or pill. Renders two lines
+ * in mono: a small label on top and a stronger value underneath, bordered
+ * with the current accent color.
+ *
+ * Used sparingly — typically one at the top of a detail page to signal the
+ * entry's weight at a glance (severity, confidence, etc.), per docs'
+ * "controlled tabloid energy".
+ */
+
+export interface Props {
+  /** Top-line label, e.g. "SEVERITY". */
+  label: string;
+  /** Bottom-line value, e.g. "CRITICAL". */
+  value: string;
+  /** Variant intensity:
+   *    outline (default) — thin accent border, paper background
+   *    filled           — tinted accent background
+   *    alert            — thicker accent border and deep accent value
+   */
+  variant?: "outline" | "filled" | "alert";
+}
+
+const { label, value, variant = "outline" } = Astro.props;
+---
+<span class:list={["nsb-stamp", `nsb-stamp--${variant}`]} role="img" aria-label={`${label} ${value}`}>
+  <span class="nsb-stamp__label">{label}</span>
+  <span class="nsb-stamp__value">{value}</span>
+</span>
+
+<style>
+  .nsb-stamp {
+    display: inline-grid;
+    grid-auto-flow: row;
+    gap: 2px;
+    padding: var(--space-2) var(--space-3);
+    border: 1.5px solid var(--accent-current);
+    line-height: 1;
+    /* avoids rounding per design direction */
+    border-radius: 0;
+    background: transparent;
+    /* slight rotation is too playful; keep it dead straight. */
+  }
+  .nsb-stamp--filled {
+    background: var(--accent-current-tint);
+    border-color: var(--accent-current);
+  }
+  .nsb-stamp--alert {
+    border-width: 2.5px;
+  }
+  .nsb-stamp__label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--accent-current-deep, var(--accent-current));
+    font-weight: 500;
+  }
+  .nsb-stamp__value {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--accent-current-deep, var(--accent-current));
+    font-weight: 700;
+  }
+  .nsb-stamp--filled .nsb-stamp__label,
+  .nsb-stamp--filled .nsb-stamp__value {
+    color: var(--accent-fm-deep, var(--color-ink));
+  }
+</style>

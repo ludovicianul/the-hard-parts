@@ -1,0 +1,320 @@
+---
+/**
+ * RelatedEntries — reference-catalog cross-reference block.
+ *
+ * Renders a single relationship field (e.g. `oftenLeadsTo`, `relatedRedFlags`)
+ * as a unified reference list with two clearly distinguished tiers:
+ *
+ *   · Resolved  — real linked entries with a mono call-number prefix
+ *                 (`FM · 007 · friendly-rewrite`) and a sans title.
+ *
+ *   · Pending   — editorial-backlog references the guide names but has not yet
+ *                 authored. Shown in the same list structure, prefixed by a
+ *                 `PENDING` marker in accent, in plain (non-italic) serif so
+ *                 they read like legitimate catalog entries still awaiting a
+ *                 page — honest, not muted.
+ *
+ * No pills, no chips, no paper-alt box. The whole block is framed by a thin
+ * accent rule and a bulletin eyebrow so it reads as part of a reference
+ * system, not a soft aside.
+ */
+
+import { partitionRefs } from "@/lib/resolve";
+import { CATEGORIES } from "@/lib/categories";
+import type { CategoryCode } from "@/content/schemas/shared";
+
+export interface Props {
+  /** Small mono label, e.g. "OFTEN LEADS TO" or "RELATED RED FLAGS". */
+  eyebrow: string;
+  /** Section title, e.g. "Often leads to". */
+  title: string;
+  /** Raw reference array from content. Mixed slugs / phrases allowed. */
+  refs: readonly string[] | undefined;
+  /**
+   * If provided, constrain the linked group to this category only.
+   * Resolved refs outside this code still render (they are valid links) but
+   * are visually grouped under a "cross-category" subhead.
+   */
+  expectCategory?: CategoryCode;
+  /** Smaller treatment for tight clusters of related blocks. */
+  dense?: boolean;
+}
+
+const { eyebrow, title, refs, expectCategory, dense = false } = Astro.props;
+const { resolved, unresolved } = partitionRefs(refs);
+
+// Nothing to show — render nothing (rather than an empty section).
+const hasAny = resolved.length + unresolved.length > 0;
+
+// Partition resolved entries into expected-category vs cross-category for
+// subtle visual grouping.
+const inExpected = expectCategory
+  ? resolved.filter((r) => r.code === expectCategory)
+  : resolved;
+const crossCategory = expectCategory
+  ? resolved.filter((r) => r.code !== expectCategory)
+  : [];
+
+// Stable 3-digit reference number per resolved entry within this block.
+// Purely decorative — gives the list a catalog-index feel without pretending
+// to be a real identifier. Numbering resets per block so it stays legible.
+const pad = (n: number) => String(n).padStart(3, "0");
+---
+{hasAny && (
+  <section
+    class:list={[
+      "nsb-related",
+      { "nsb-related--dense": dense },
+    ]}
+    aria-label={title}
+  >
+    <header class="nsb-related__head">
+      <p class="nsb-eyebrow nsb-eyebrow--bulletin nsb-related__eyebrow">{eyebrow}</p>
+      <div class="nsb-related__head-row">
+        <h3 class="nsb-related__title">{title}</h3>
+        <span class="nsb-related__counts" aria-hidden="true">
+          {resolved.length > 0 && (
+            <span class="nsb-related__count nsb-related__count--resolved">
+              {resolved.length} linked
+            </span>
+          )}
+          {unresolved.length > 0 && (
+            <span class="nsb-related__count nsb-related__count--pending">
+              {unresolved.length} pending
+            </span>
+          )}
+        </span>
+      </div>
+    </header>
+
+    {inExpected.length > 0 && (
+      <ol class="nsb-related__list">
+        {inExpected.map((r, i) => (
+          <li class="nsb-related__item">
+            <a class="nsb-related__link" href={r.href} data-accent={r.code.toLowerCase()}>
+              <span class="nsb-related__code">
+                <span class="nsb-related__code-cat">{CATEGORIES[r.code].shortLabel}</span>
+                <span class="nsb-related__code-num">{pad(i + 1)}</span>
+              </span>
+              <span class="nsb-related__item-title">{r.title}</span>
+              <span class="nsb-related__arrow" aria-hidden="true">→</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    )}
+
+    {crossCategory.length > 0 && (
+      <div class="nsb-related__cross">
+        <p class="nsb-eyebrow nsb-related__cross-label">Also relevant</p>
+        <ol class="nsb-related__list">
+          {crossCategory.map((r, i) => (
+            <li class="nsb-related__item">
+              <a class="nsb-related__link" href={r.href} data-accent={r.code.toLowerCase()}>
+                <span class="nsb-related__code">
+                  <span class="nsb-related__code-cat">{CATEGORIES[r.code].shortLabel}</span>
+                  <span class="nsb-related__code-num">{pad(i + 1)}</span>
+                </span>
+                <span class="nsb-related__item-title">{r.title}</span>
+                <span class="nsb-related__arrow" aria-hidden="true">→</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </div>
+    )}
+
+    {unresolved.length > 0 && (
+      <div class="nsb-related__pending" aria-label="Pending entries">
+        <p class="nsb-eyebrow nsb-related__pending-label">
+          Pending entries · referenced, not yet authored
+        </p>
+        <ul class="nsb-related__list nsb-related__list--pending">
+          {unresolved.map((u) => (
+            <li class="nsb-related__item nsb-related__item--pending">
+              <span class="nsb-related__code">
+                <span class="nsb-related__code-cat nsb-related__code-cat--pending">— —</span>
+                <span class="nsb-related__pending-tag">PEND</span>
+              </span>
+              <span class="nsb-related__pending-title">{u}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </section>
+)}
+
+<style>
+  /* Block frame: a bulletin-style reference panel. */
+  .nsb-related {
+    margin-top: var(--space-6);
+    padding: var(--space-5) var(--space-5) var(--space-4);
+    background: var(--color-surface);
+    border-top: 2px solid var(--accent-current);
+    border-left: var(--rule);
+    border-right: var(--rule);
+    border-bottom: var(--rule);
+  }
+  .nsb-related--dense {
+    margin-top: var(--space-5);
+    padding: var(--space-4);
+  }
+
+  .nsb-related__head {
+    margin-bottom: var(--space-3);
+  }
+  .nsb-related__eyebrow { margin: 0 0 var(--space-2) 0; }
+  .nsb-related__head-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+  .nsb-related__title {
+    font-family: var(--font-sans);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: var(--tracking-tight);
+  }
+  .nsb-related__counts {
+    display: inline-flex;
+    gap: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+  .nsb-related__count--resolved { color: var(--accent-current-deep, var(--accent-current)); }
+  .nsb-related__count--pending { color: var(--color-ink-soft); }
+
+  /* Resolved list — catalog-index feel. */
+  .nsb-related__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: ref;
+  }
+  .nsb-related__item {
+    border-top: var(--rule-soft);
+  }
+  .nsb-related__item:last-child {
+    border-bottom: 0;
+  }
+  .nsb-related__link {
+    display: grid;
+    grid-template-columns: 5rem 1fr auto;
+    gap: var(--space-4);
+    align-items: baseline;
+    padding: var(--space-3) 0;
+    text-decoration: none;
+    color: inherit;
+    transition: background var(--dur-fast) var(--ease);
+  }
+  .nsb-related__link:hover {
+    background: var(--accent-current-wash, var(--color-paper-alt));
+  }
+  .nsb-related__link:hover .nsb-related__arrow {
+    transform: translateX(2px);
+    color: var(--accent-current);
+  }
+
+  .nsb-related__code {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    font-feature-settings: "tnum";
+  }
+  .nsb-related__code-cat {
+    color: var(--accent-current);
+    font-weight: 700;
+  }
+  .nsb-related__code-num {
+    color: var(--color-label);
+  }
+  .nsb-related__item-title {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    color: var(--color-ink);
+    line-height: var(--leading-snug);
+  }
+  .nsb-related__arrow {
+    font-family: var(--font-mono);
+    color: var(--color-ink-faint);
+    transition: transform var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+    padding-right: var(--space-2);
+  }
+
+  /* Cross-category subgroup. */
+  .nsb-related__cross {
+    margin-top: var(--space-4);
+    padding-top: var(--space-3);
+    border-top: var(--rule);
+  }
+  .nsb-related__cross-label {
+    margin: 0 0 var(--space-2) 0;
+    color: var(--color-label);
+  }
+
+  /* Pending subgroup — honest, reference-catalog "awaiting entry" row. */
+  .nsb-related__pending {
+    margin-top: var(--space-4);
+    padding-top: var(--space-3);
+    border-top: 1px dashed var(--color-rule-strong, var(--color-rule));
+  }
+  .nsb-related__pending-label {
+    margin: 0 0 var(--space-2) 0;
+    color: var(--color-label);
+  }
+  .nsb-related__list--pending {
+    counter-reset: none;
+  }
+  .nsb-related__item--pending {
+    display: grid;
+    grid-template-columns: 5rem 1fr;
+    gap: var(--space-4);
+    align-items: baseline;
+    padding: var(--space-2) 0;
+    border-top: var(--rule-soft);
+  }
+  .nsb-related__item--pending:first-child { border-top: 0; }
+  .nsb-related__code-cat--pending {
+    color: var(--color-ink-faint);
+    font-weight: 500;
+  }
+  .nsb-related__pending-tag {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: var(--tracking-label);
+    color: var(--accent-current-deep, var(--accent-current));
+    border: 1px solid var(--accent-current);
+    padding: 0 0.35rem;
+    line-height: 1.4;
+    font-weight: 600;
+  }
+  .nsb-related__pending-title {
+    font-family: var(--font-serif);
+    font-size: var(--text-base);
+    color: var(--color-ink-dim);
+    line-height: var(--leading-snug);
+  }
+
+  @media (max-width: 520px) {
+    .nsb-related__link {
+      grid-template-columns: 1fr auto;
+    }
+    .nsb-related__code {
+      grid-column: 1 / -1;
+    }
+    .nsb-related__item--pending {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

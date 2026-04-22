@@ -1,0 +1,161 @@
+---
+/**
+ * EntryCard — reference-record card used on landing pages and the homepage
+ * preview strip. Category-agnostic by design; the caller supplies the code,
+ * href, title, summary, and a small set of meta bits.
+ *
+ * Styling follows docs/design-direction.md:
+ *   · cards read as "reference records", not product tiles
+ *   · no rounded corners, no soft shadow, no gradient
+ *   · code/identifier eyebrow at the top (e.g. "FM · planning")
+ *   · serif title, dim summary, mono meta line
+ *   · hover shifts background; accent underline on title
+ */
+
+import { CATEGORIES } from "@/lib/categories";
+import type { CategoryCode } from "@/content/schemas/shared";
+
+export interface Props {
+  code: CategoryCode;
+  slug: string;
+  title: string;
+  summary: string;
+  /** Optional subcategory / layer shown next to the code in the eyebrow. */
+  subcategory?: string;
+  /** Short mono meta bits shown at the bottom: "severity: high", etc. */
+  metaBits?: readonly string[];
+  /** Override the href (default: canonical detail route for the entry). */
+  href?: string;
+  /** Visual accent for hover + title underline. Defaults to entry category. */
+  accent?: "fm" | "td" | "rf" | "ep";
+  /**
+   * Optional severity (FM-specific). When provided, renders a left-edge bar
+   * whose intensity scales with severity — color-as-information per
+   * docs/design-direction.md.
+   */
+  severity?: "low" | "medium" | "medium-high" | "high" | "critical";
+  /** Optional decorative catalog reference number, e.g. "007". */
+  refNum?: string;
+}
+
+const {
+  code,
+  slug,
+  title,
+  summary,
+  subcategory,
+  metaBits = [],
+  href,
+  accent,
+  severity,
+  refNum,
+} = Astro.props;
+
+const desc = CATEGORIES[code];
+const resolvedHref = href ?? `/${desc.route}/${slug}`;
+const resolvedAccent = accent ?? (code.toLowerCase() as "fm" | "td" | "rf" | "ep");
+---
+<a
+  class:list={["nsb-entry-card", severity && `nsb-entry-card--sev-${severity.replace(/\s+/g, "-")}`]}
+  href={resolvedHref}
+  data-accent={resolvedAccent}
+>
+  {severity && <span class="nsb-entry-card__sev-bar" aria-hidden="true" />}
+  <div class="nsb-entry-card__body">
+    <p class="nsb-eyebrow nsb-entry-card__eyebrow">
+      <span class="nsb-entry-card__code">{desc.shortLabel}</span>
+      {refNum && <span class="nsb-entry-card__refnum">· {refNum}</span>}
+      {subcategory && <span class="nsb-entry-card__sub"> · {subcategory}</span>}
+    </p>
+    <h3 class="nsb-entry-card__title">{title}</h3>
+    <p class="nsb-entry-card__summary">{summary}</p>
+    {metaBits.length > 0 && (
+      <p class="nsb-entry-card__meta">
+        {metaBits.filter(Boolean).join("   ·   ")}
+      </p>
+    )}
+  </div>
+</a>
+
+<style>
+  .nsb-entry-card {
+    display: grid;
+    grid-template-columns: 6px 1fr;
+    background: var(--color-surface);
+    border-right: var(--rule);
+    border-bottom: var(--rule);
+    text-decoration: none;
+    color: inherit;
+    transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+    min-height: 12rem;
+    position: relative;
+  }
+  .nsb-entry-card:hover { background: var(--accent-current-wash, var(--color-paper-alt)); }
+  .nsb-entry-card:focus-visible { outline-offset: -2px; }
+
+  /* Severity bar on the left edge — color-as-information.
+     Width fixed; intensity varies. Always amber, stepped saturation. */
+  .nsb-entry-card__sev-bar {
+    background: var(--color-rule);
+    transition: background var(--dur-fast) var(--ease);
+  }
+  .nsb-entry-card--sev-low        .nsb-entry-card__sev-bar { background: var(--color-rule-strong); }
+  .nsb-entry-card--sev-medium     .nsb-entry-card__sev-bar { background: var(--accent-current-tint); }
+  .nsb-entry-card--sev-medium-high .nsb-entry-card__sev-bar { background: var(--accent-current); opacity: 0.65; }
+  .nsb-entry-card--sev-high       .nsb-entry-card__sev-bar { background: var(--accent-current); }
+  .nsb-entry-card--sev-critical   .nsb-entry-card__sev-bar { background: var(--accent-current-deep, var(--accent-current)); }
+  /* Entries without a severity bar still reserve the 6px column but keep it
+     invisible — aligns grid of mixed cards. */
+  .nsb-entry-card:not([class*="--sev-"]) .nsb-entry-card__sev-bar { background: transparent; }
+
+  .nsb-entry-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5) var(--space-5) var(--space-4);
+  }
+
+  .nsb-entry-card__eyebrow { margin: 0; display: flex; gap: var(--space-1); flex-wrap: wrap; }
+  .nsb-entry-card__code { color: var(--accent-current); font-weight: 700; }
+  .nsb-entry-card__refnum { color: var(--color-label); font-feature-settings: "tnum"; }
+  .nsb-entry-card__sub { color: var(--color-label); }
+
+  .nsb-entry-card__title {
+    font-family: var(--font-sans);
+    font-size: var(--text-lg);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: var(--leading-snug);
+    margin: 0;
+    color: var(--color-ink);
+    /* Accent underline on hover only — not a default rule, per design direction
+       ("avoid decoration masking as structure"). */
+    background-image: linear-gradient(var(--accent-current), var(--accent-current));
+    background-repeat: no-repeat;
+    background-size: 0 2px;
+    background-position: 0 100%;
+    transition: background-size var(--dur-med) var(--ease);
+  }
+  .nsb-entry-card:hover .nsb-entry-card__title {
+    background-size: 3rem 2px;
+  }
+
+  .nsb-entry-card__summary {
+    font-family: var(--font-serif);
+    color: var(--color-ink-dim);
+    font-size: var(--text-base);
+    line-height: var(--leading-snug);
+    margin: 0;
+    flex: 1 1 auto;
+  }
+  .nsb-entry-card__meta {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: lowercase;
+    color: var(--color-label);
+    margin: 0;
+    padding-top: var(--space-2);
+    border-top: var(--rule-soft);
+  }
+</style>

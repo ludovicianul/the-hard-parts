@@ -98,6 +98,31 @@ It should not feel driven by:
 
 ---
 
+## Controlled tabloid energy
+
+The product may borrow a small amount of tabloid / bulletin / newsroom energy where it strengthens recognition and memorability.
+
+This can include:
+- stronger section markers
+- more assertive accent color use
+- bulletin-like labels, rails, stamps, or reference cues
+- sharper contrast between metadata and narrative areas
+- slightly more visual punch in category identity
+
+This should remain controlled.
+
+Avoid:
+- sensationalism
+- noisy layouts
+- aggressive newspaper parody
+- high-saturation chaos
+- visual treatment that undermines readability or seriousness
+
+The goal is:
+**technical field guide with a hint of print-era urgency, not a loud media brand.**
+
+---
+
 ## Strong Reference Directions
 
 The product can borrow energy from these design families:

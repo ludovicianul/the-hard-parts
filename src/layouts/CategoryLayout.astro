@@ -2,32 +2,59 @@
 import BaseLayout from "./BaseLayout.astro";
 import type { CategoryCode } from "@/content/schemas/shared";
 import { categoryByCode } from "@/lib/categories";
-import { categoryBlock } from "@/lib/load";
+import { categoryBlock, listEntries } from "@/lib/load";
 
 export interface Props {
   code: CategoryCode;
+  /**
+   * Optional editorial tagline rendered under the category title.
+   * If omitted, `meta.summary` is used.
+   */
+  tagline?: string;
+  /**
+   * Optional compact data strip rendered at the bottom of the hero plate.
+   * Each item is a label + value rendered as mono key-value pairs.
+   * If omitted, a default strip shows: entries total and subcategories.
+   */
+  dataStrip?: ReadonlyArray<{ label: string; value: string }>;
 }
 
-const { code } = Astro.props;
+const { code, tagline, dataStrip } = Astro.props;
 const desc = categoryByCode(code);
 const meta = categoryBlock(code);
 const accent = code.toLowerCase() as "fm" | "td" | "rf" | "ep";
+
+const defaultStrip: ReadonlyArray<{ label: string; value: string }> = [
+  { label: "Entries", value: String(listEntries(code).length) },
+  { label: "Subcategories", value: String(meta.subcategories.length) },
+  { label: "Edition", value: "01 · draft" },
+];
+const strip = dataStrip ?? defaultStrip;
 ---
 <BaseLayout title={desc.name} description={meta.summary} accent={accent}>
-  <div class="nsb-container">
-    <header class="nsb-cat-hero">
-      <p class="nsb-eyebrow">Category · {desc.shortLabel}</p>
-      <hr class="nsb-accent-rule" />
+  <div class="nsb-cat-hero nsb-plate">
+    <div class="nsb-cat-hero__inner">
+      <p class="nsb-eyebrow nsb-eyebrow--bulletin">Category · {desc.shortLabel}</p>
+      <hr class="nsb-accent-rule nsb-accent-rule--thick" />
       <h1 class="nsb-cat-hero__title">{meta.name}</h1>
-      <p class="nsb-cat-hero__summary">{meta.summary}</p>
-      <dl class="nsb-cat-hero__meta">
-        <div>
+      <p class="nsb-cat-hero__summary">{tagline ?? meta.summary}</p>
+
+      <dl class="nsb-cat-hero__strip" aria-label="Catalog data">
+        {strip.map((item) => (
+          <div class="nsb-cat-hero__strip-item">
+            <dt>{item.label}</dt>
+            <dd>{item.value}</dd>
+          </div>
+        ))}
+        <div class="nsb-cat-hero__strip-item nsb-cat-hero__strip-item--wide">
           <dt>Subcategories</dt>
           <dd>{meta.subcategories.join(" · ")}</dd>
         </div>
       </dl>
-    </header>
+    </div>
+  </div>
 
+  <div class="nsb-container">
     <section class="nsb-cat-body">
       <slot />
     </section>
@@ -35,36 +62,61 @@ const accent = code.toLowerCase() as "fm" | "td" | "rf" | "ep";
 
   <style is:global>
     .nsb-cat-hero {
-      padding-block: var(--space-6) var(--space-7);
-      border-bottom: var(--rule);
+      width: 100%;
+      padding-block: var(--space-7);
+      padding-inline: var(--gutter);
       margin-bottom: var(--space-7);
+      border-bottom: 1px solid var(--color-ink-plate-soft);
+    }
+    .nsb-cat-hero__inner {
+      max-width: var(--content-max);
+      margin-inline: auto;
+      width: 100%;
     }
     .nsb-cat-hero__title {
-      font-size: var(--text-4xl);
-      margin: 0 0 var(--space-3) 0;
-      letter-spacing: var(--tracking-tight);
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: clamp(var(--text-3xl), 5vw, var(--text-4xl));
+      letter-spacing: -0.015em;
+      line-height: var(--leading-tight);
+      color: var(--color-on-plate);
+      margin: 0 0 var(--space-4) 0;
     }
     .nsb-cat-hero__summary {
+      font-family: var(--font-serif);
       font-size: var(--text-lg);
-      color: var(--color-ink-dim);
+      line-height: var(--leading-snug);
+      color: var(--color-on-plate-dim);
       max-width: var(--reading-max);
-      margin: 0 0 var(--space-5) 0;
+      margin: 0 0 var(--space-6) 0;
     }
-    .nsb-cat-hero__meta {
-      display: flex;
-      gap: var(--space-6);
+    /* Catalog data strip — a print-era reference marker. */
+    .nsb-cat-hero__strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(9rem, max-content));
+      gap: var(--space-5) var(--space-7);
       margin: 0;
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--color-on-plate-faint);
       font-family: var(--font-sans);
       font-size: var(--text-sm);
     }
-    .nsb-cat-hero__meta dt {
+    .nsb-cat-hero__strip-item--wide {
+      grid-column: 1 / -1;
+    }
+    .nsb-cat-hero__strip dt {
       font-family: var(--font-mono);
       font-size: var(--text-xs);
       letter-spacing: var(--tracking-label);
       text-transform: uppercase;
-      color: var(--color-ink-faint);
+      color: var(--accent-current-bright);
+      font-weight: 600;
       margin-bottom: var(--space-1);
     }
-    .nsb-cat-hero__meta dd { margin: 0; color: var(--color-ink-dim); }
+    .nsb-cat-hero__strip dd {
+      margin: 0;
+      color: var(--color-on-plate);
+      font-feature-settings: "tnum";
+    }
   </style>
 </BaseLayout>

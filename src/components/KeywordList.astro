@@ -1,0 +1,69 @@
+---
+/**
+ * KeywordList — inline list of short terms rendered editorially, without
+ * pills, chips, or boxes. Values are separated by a middle-dot by default,
+ * keeping the reference-manual feel per docs/design-direction.md
+ * ("avoid chip / pill overload").
+ *
+ * Used for:
+ *   · alternativeNames
+ *   · blastRadius
+ *   · lifecycleStages
+ *   · whoNoticesFirst
+ *   · any short, flat string array where items are equal-weight tags
+ */
+
+export interface Props {
+  items: readonly string[];
+  /** Character used between items. Defaults to middle dot. */
+  separator?: string;
+  /** Render items in mono (code-ish) or sans (prose-ish). */
+  mono?: boolean;
+  /** Slightly dimmed treatment for secondary metadata. */
+  dim?: boolean;
+}
+
+const {
+  items,
+  separator = " · ",
+  mono = false,
+  dim = false,
+} = Astro.props;
+
+const clean = items.filter((s) => typeof s === "string" && s.length > 0);
+---
+{clean.length > 0 && (
+  <p
+    class:list={[
+      "nsb-keyword-list",
+      { "nsb-keyword-list--mono": mono, "nsb-keyword-list--dim": dim },
+    ]}
+  >
+    {clean.map((item, i) => (
+      <>
+        <span class="nsb-keyword-list__item">{item}</span>
+        {i < clean.length - 1 && (
+          <span class="nsb-keyword-list__sep" aria-hidden="true">{separator}</span>
+        )}
+      </>
+    ))}
+  </p>
+)}
+
+<style>
+  .nsb-keyword-list {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    line-height: var(--leading-snug);
+    max-width: none;
+  }
+  .nsb-keyword-list--mono {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: lowercase;
+  }
+  .nsb-keyword-list--dim { color: var(--color-ink-soft); }
+  .nsb-keyword-list__sep { color: var(--color-ink-faint); }
+</style>

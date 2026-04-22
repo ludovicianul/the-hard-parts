@@ -22,64 +22,150 @@ const accent = code.toLowerCase() as "fm" | "td" | "rf" | "ep";
   description={description ?? summary}
   accent={accent}
 >
-  <article class="nsb-container nsb-detail">
-    <nav class="nsb-breadcrumbs" aria-label="Breadcrumb">
-      <ol>
-        <li><a href="/">Home</a></li>
-        <li><a href={`/${desc.route}`}>{desc.name}</a></li>
-        <li aria-current="page">{title}</li>
-      </ol>
-    </nav>
+  <article class="nsb-detail-shell">
+    <div class="nsb-detail-shell__plate nsb-plate">
+      <div class="nsb-detail-shell__plate-inner">
+        <nav class="nsb-breadcrumbs" aria-label="Breadcrumb">
+          <ol>
+            <li><a href="/">Home</a></li>
+            <li><a href={`/${desc.route}`}>{desc.name}</a></li>
+            <li aria-current="page">{title}</li>
+          </ol>
+        </nav>
 
-    <header class="nsb-detail__header">
-      <p class="nsb-eyebrow">{desc.shortLabel} · {desc.name}</p>
-      <hr class="nsb-accent-rule" />
-      <h1 class="nsb-detail__title">{title}</h1>
-      {summary && <p class="nsb-detail__summary">{summary}</p>}
-      {subcategory && (
-        <p class="nsb-detail__sub">
-          <span class="nsb-eyebrow">Subcategory</span>
-          <span class="nsb-detail__sub-value">{subcategory}</span>
-        </p>
-      )}
-    </header>
+        <header class="nsb-detail__header">
+          <div class="nsb-detail__masthead">
+            <p class="nsb-eyebrow nsb-eyebrow--bulletin">{desc.shortLabel} · {desc.name}</p>
+            <slot name="header-stamp" />
+          </div>
+          <hr class="nsb-accent-rule nsb-accent-rule--thick" />
+          <h1 class="nsb-detail__title">{title}</h1>
+          {summary && <p class="nsb-detail__summary">{summary}</p>}
+          {subcategory && (
+            <p class="nsb-detail__sub">
+              <span class="nsb-eyebrow">Subcategory</span>
+              <span class="nsb-detail__sub-value">{subcategory}</span>
+            </p>
+          )}
+        </header>
+      </div>
+    </div>
 
-    <section class="nsb-detail__body">
-      <slot />
-    </section>
+    <div class="nsb-detail-shell__grid">
+      <div class="nsb-detail-shell__rail">
+        <slot name="nav-rail" />
+      </div>
+      <section class="nsb-detail__body">
+        <slot />
+      </section>
+    </div>
   </article>
 
   <style is:global>
-    .nsb-detail { padding-block: var(--space-4) var(--space-8); }
+    .nsb-detail-shell {
+      width: 100%;
+      /* No outer padding — the plate is full-bleed within the main column.
+         The plate itself and the body grid apply their own inline padding. */
+    }
+
+    /* --- Dark plate: full-bleed band at the top of the page ---------- */
+    .nsb-detail-shell__plate {
+      width: 100%;
+      padding-block: var(--space-6) var(--space-6);
+      padding-inline: var(--gutter);
+      border-bottom: 1px solid var(--color-ink-plate-soft);
+    }
+    .nsb-detail-shell__plate-inner {
+      width: 100%;
+      max-width: var(--content-max);
+      margin-inline: auto;
+    }
+
+    /* --- Body grid: light-paper reading zone ------------------------- */
+    .nsb-detail-shell__grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+      max-width: var(--content-max);
+      margin-inline: auto;
+      width: 100%;
+      padding-inline: var(--gutter);
+      padding-block: var(--space-7) var(--space-8);
+    }
+    @media (min-width: 1080px) {
+      .nsb-detail-shell__plate,
+      .nsb-detail-shell__grid {
+        padding-inline: var(--gutter);
+      }
+      .nsb-detail-shell__plate-inner {
+        max-width: 88rem;
+      }
+      .nsb-detail-shell__grid {
+        max-width: 88rem;
+        grid-template-columns: 15rem minmax(0, 1fr);
+        gap: var(--space-8);
+      }
+    }
+    .nsb-detail-shell__rail { min-width: 0; }
+    .nsb-detail__body { min-width: 0; }
+
+    /* --- Breadcrumbs on dark ----------------------------------------- */
     .nsb-breadcrumbs ol {
       list-style: none;
       display: flex;
       flex-wrap: wrap;
       gap: var(--space-2);
-      margin: 0 0 var(--space-6) 0;
+      margin: 0 0 var(--space-5) 0;
       padding: 0;
-      font-family: var(--font-sans);
-      font-size: var(--text-sm);
-      color: var(--color-ink-soft);
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-on-plate-dim);
+    }
+    .nsb-breadcrumbs a { color: var(--color-on-plate); }
+    .nsb-breadcrumbs a:hover {
+      color: var(--accent-current-bright);
+      text-decoration-color: var(--accent-current-bright);
     }
     .nsb-breadcrumbs li + li::before {
       content: "/";
-      color: var(--color-ink-faint);
+      color: var(--color-on-plate-faint);
       margin-right: var(--space-2);
     }
+
+    /* --- Masthead body (still on plate) ------------------------------ */
     .nsb-detail__header {
-      padding-bottom: var(--space-6);
-      border-bottom: var(--rule);
-      margin-bottom: var(--space-7);
+      padding-bottom: var(--space-2);
+    }
+    .nsb-detail__masthead {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-3);
+    }
+    /* Override .nsb-accent-rule default margin for plate usage. */
+    .nsb-detail__header .nsb-accent-rule {
+      margin-bottom: var(--space-5);
     }
     .nsb-detail__title {
-      font-size: var(--text-4xl);
+      font-family: var(--font-sans);
+      font-size: clamp(var(--text-3xl), 4.5vw, var(--text-4xl));
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      line-height: var(--leading-tight);
+      color: var(--color-on-plate);
       margin: 0 0 var(--space-4) 0;
     }
     .nsb-detail__summary {
+      font-family: var(--font-serif);
       font-size: var(--text-lg);
-      color: var(--color-ink-dim);
+      line-height: var(--leading-snug);
+      color: var(--color-on-plate-dim);
       max-width: var(--reading-max);
+      margin: 0;
     }
     .nsb-detail__sub {
       font-family: var(--font-sans);
@@ -87,8 +173,11 @@ const accent = code.toLowerCase() as "fm" | "td" | "rf" | "ep";
       display: flex;
       gap: var(--space-3);
       align-items: baseline;
-      margin-top: var(--space-4);
+      margin: var(--space-5) 0 0 0;
     }
-    .nsb-detail__sub-value { color: var(--color-ink-dim); }
+    .nsb-detail__sub-value {
+      color: var(--color-on-plate);
+      font-weight: 500;
+    }
   </style>
 </BaseLayout>

@@ -1,0 +1,116 @@
+---
+/**
+ * OperatorNotes — FM practical-annotation panel.
+ *
+ * Hosts the field-manual "things an operator learns after the third
+ * incident" content: `bestMomentToIntervene`, `counterMove`, `falsePositive`.
+ *
+ * Presented as a typed register of hard-won annotations, not as a grid of
+ * asides. Each item is a mono label (left column) + serif body (right),
+ * separated by hairline rules — the page of a technical notebook.
+ *
+ * Only renders items that have non-empty bodies. Renders nothing if empty.
+ */
+
+export interface OperatorNote {
+  /** Mono label, e.g. "BEST MOMENT" or "COUNTER MOVE". Shown in accent. */
+  label: string;
+  /** The body text. Omit to skip this note. */
+  body: string | undefined | null;
+}
+
+export interface Props {
+  items: readonly OperatorNote[];
+}
+
+const { items } = Astro.props;
+const visible = items.filter(
+  (i): i is OperatorNote & { body: string } =>
+    typeof i.body === "string" && i.body.trim().length > 0,
+);
+---
+{visible.length > 0 && (
+  <section class="fm-ops" aria-label="Operator notes">
+    <dl class="fm-ops__list">
+      {visible.map((item, i) => (
+        <div class="fm-ops__item">
+          <dt class="fm-ops__label">
+            <span class="fm-ops__num" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+            <span class="fm-ops__label-text">{item.label}</span>
+          </dt>
+          <dd class="fm-ops__body">{item.body}</dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+)}
+
+<style>
+  .fm-ops {
+    margin-top: var(--space-5);
+    padding: var(--space-6) var(--space-6);
+    background: var(--color-surface);
+    border-top: 3px solid var(--accent-current);
+    border-left: var(--rule);
+    border-right: var(--rule);
+    border-bottom: var(--rule);
+  }
+  .fm-ops__list {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .fm-ops__item {
+    display: grid;
+    grid-template-columns: 12rem 1fr;
+    gap: var(--space-6);
+    padding: var(--space-4) 0;
+    border-top: var(--rule-soft);
+    align-items: baseline;
+  }
+  .fm-ops__item:first-child {
+    border-top: 0;
+    padding-top: var(--space-2);
+  }
+  .fm-ops__item:last-child {
+    padding-bottom: var(--space-2);
+  }
+  .fm-ops__label {
+    display: flex;
+    gap: var(--space-2);
+    align-items: baseline;
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+  .fm-ops__num {
+    color: var(--color-label);
+    font-feature-settings: "tnum";
+    font-weight: 500;
+  }
+  .fm-ops__label-text {
+    color: var(--accent-current-deep, var(--accent-current));
+    font-weight: 700;
+  }
+  .fm-ops__body {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: var(--text-base);
+    line-height: var(--leading-snug);
+    color: var(--color-ink);
+    max-width: var(--reading-max);
+  }
+
+  @media (max-width: 680px) {
+    .fm-ops { padding: var(--space-5) var(--space-4); }
+    .fm-ops__item {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+      padding: var(--space-3) 0;
+    }
+  }
+</style>

@@ -1,18 +1,83 @@
 ---
 import DetailLayout from "@/layouts/DetailLayout.astro";
-import { findEntry, listEntries } from "@/lib/load";
+import HeardInTheWild from "@/components/HeardInTheWild.astro";
+import KeywordList from "@/components/KeywordList.astro";
+import MetaRail from "@/components/MetaRail.astro";
+import OperatorNotes from "@/components/OperatorNotes.astro";
+import RelatedEntries from "@/components/RelatedEntries.astro";
+import SectionHeader from "@/components/SectionHeader.astro";
+import SectionIndex from "@/components/SectionIndex.astro";
+import Stamp from "@/components/Stamp.astro";
+import WarningSignsByStage from "@/components/WarningSignsByStage.astro";
+import { loadFailureModes } from "@/lib/load";
 import { ensureValidated } from "@/lib/validate";
+import type { FailureModeEntry } from "@/content/schemas/failure-mode";
 
 export async function getStaticPaths() {
   ensureValidated();
-  return listEntries("FM").map((e) => ({ params: { slug: e.slug } }));
+  return loadFailureModes().entries.map((e) => ({ params: { slug: e.slug } }));
 }
 
 const { slug } = Astro.params;
-const entry = slug ? findEntry("FM", slug) : undefined;
+const entry: FailureModeEntry | undefined = loadFailureModes().entries.find(
+  (e) => e.slug === slug,
+);
 if (!entry) {
   throw new Error(`Failure Mode not found for slug "${slug}"`);
 }
+
+// Section visibility — each of these resolves independently so the page
+// never renders an empty section or an orphaned anchor.
+const hasAiBlock = Boolean(
+  (entry.aiCanHelpWith && entry.aiCanHelpWith.length > 0) ||
+    (entry.aiCanMakeWorseBy && entry.aiCanMakeWorseBy.length > 0) ||
+    entry.aiSpecificNotes,
+);
+
+const hasVoice = Boolean(entry.commonQuote && entry.commonQuote.trim().length > 0);
+
+const hasOperatorNotes = Boolean(
+  entry.bestMomentToIntervene ||
+    entry.counterMove ||
+    entry.falsePositive,
+);
+
+// Reference code — 3-digit index of this FM within the canonical file order.
+// Decorative catalog identifier, not a stable permalink.
+const allFm = loadFailureModes().entries;
+const indexInFile = allFm.findIndex((e) => e.slug === entry.slug);
+const refCode = `FM · ${String(indexInFile + 1).padStart(3, "0")}`;
+
+// Section index — only include sections that will actually render.
+// Step numbers are computed positionally so removing/adding a conditional
+// section keeps the remaining steps correctly sequenced.
+const sectionSpecs: Array<{ id: string; label: string; shown: boolean }> = [
+  { id: "sec-definition",      label: "Definition",        shown: true },
+  { id: "sec-arc",             label: "How it unfolds",    shown: true },
+  { id: "sec-recognition",     label: "Warning signs",     shown: true },
+  { id: "sec-causes",          label: "Why it happens",    shown: true },
+  { id: "sec-response",        label: "Response",          shown: true },
+  { id: "sec-ai",              label: "AI impact",         shown: hasAiBlock },
+  { id: "sec-relationships",   label: "Relationships",     shown: true },
+  { id: "sec-voice",           label: "Heard in the wild", shown: hasVoice },
+  { id: "sec-operator-notes",  label: "Operator notes",    shown: hasOperatorNotes },
+];
+const sections = sectionSpecs
+  .filter((s) => s.shown)
+  .map((s, i) => ({
+    step: String(i + 1).padStart(2, "0"),
+    id: s.id,
+    label: s.label,
+  }));
+
+// Map step codes into the actual section headers.
+const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
+
+// Treat severity ≥ high as bulletin-worthy for the header stamp.
+const stampLevel =
+  entry.severity === "critical" ? "alert" :
+  entry.severity === "high"     ? "filled" :
+  "outline";
 ---
 <DetailLayout
   code="FM"
@@ -20,11 +85,493 @@ if (!entry) {
   summary={entry.summary}
   subcategory={entry.category}
 >
-  <div class="nsb-placeholder">
-    Phase 1 placeholder · Failure Mode detail page for "{entry.slug}".
-    The real body — FailureModeSnapshot / FailureModeStoryArc /
-    WarningSignsByStage / FailureModeCauses / FailureModeResponse /
-    RelatedEntriesBlock / AiImpactBlock / FailureModeFieldNotes — lands in
-    Phase 2.
+  {/* Bulletin stamp in the masthead — at-a-glance severity signal */}
+  <Fragment slot="header-stamp">
+    <div class="fm-header-stamps">
+      <span class="nsb-ref-code">{refCode}</span>
+      <Stamp
+        label="Severity"
+        value={entry.severity}
+        variant={stampLevel as "outline" | "filled" | "alert"}
+      />
+    </div>
+  </Fragment>
+
+  {/* Local navigation rail (sticky on desktop, collapsible on mobile) */}
+  <Fragment slot="nav-rail">
+    <SectionIndex items={sections} eyebrow="In this entry" />
+  </Fragment>
+
+  {/* 1. Snapshot metadata rail — always emphasize severity in accent so the
+         meta row carries a consistent accent beat. */}
+  <MetaRail
+    items={[
+      { label: "Severity", value: entry.severity, emphasis: true },
+      { label: "Frequency", value: entry.frequency },
+      { label: "Lifecycle", value: entry.lifecycleStages },
+      { label: "Recovery", value: entry.recoveryDifficulty },
+      { label: "Confidence", value: entry.patternConfidence },
+    ]}
+  />
+
+  {/* 2. Identity: alternative names + who notices first + mistaken for */}
+  {(entry.alternativeNames?.length || entry.mistakenFor || entry.oftenMistakenAs || entry.whoNoticesFirst?.length) && (
+    <section class="fm-identity">
+      {entry.alternativeNames && entry.alternativeNames.length > 0 && (
+        <div class="fm-identity__row">
+          <p class="nsb-eyebrow">Also known as</p>
+          <KeywordList items={entry.alternativeNames} />
+        </div>
+      )}
+      {entry.whoNoticesFirst && entry.whoNoticesFirst.length > 0 && (
+        <div class="fm-identity__row">
+          <p class="nsb-eyebrow">First noticed by</p>
+          <KeywordList items={entry.whoNoticesFirst} />
+        </div>
+      )}
+      {entry.mistakenFor && (
+        <div class="fm-identity__row">
+          <p class="nsb-eyebrow">Mistaken for</p>
+          <p class="fm-identity__prose">{entry.mistakenFor}</p>
+        </div>
+      )}
+      {entry.oftenMistakenAs && (
+        <div class="fm-identity__row">
+          <p class="nsb-eyebrow">Often mistaken as</p>
+          <p class="fm-identity__prose">{entry.oftenMistakenAs}</p>
+        </div>
+      )}
+    </section>
+  )}
+
+  {/* 3. What it is — definition */}
+  <SectionHeader
+    id="sec-definition"
+    step={stepFor("sec-definition")}
+    eyebrow="Definition"
+    title="What it is"
+    note={entry.blastRadius && entry.blastRadius.length > 0 ? `Blast radius: ${entry.blastRadius.join(" · ")}` : undefined}
+  />
+  <p class="fm-prose">{entry.whatItIs}</p>
+
+  {/* 4. Story arc — the canonical four-beat narrative */}
+  <SectionHeader
+    id="sec-arc"
+    step={stepFor("sec-arc")}
+    eyebrow="How it unfolds"
+    title="The arc of the pattern"
+  />
+  <ol class="fm-arc">
+    <li class="fm-arc__beat">
+      <div class="fm-arc__marker">
+        <span class="fm-arc__num" aria-hidden="true">i</span>
+        <p class="nsb-eyebrow fm-arc__code">Starts</p>
+      </div>
+      <p class="fm-prose">{entry.starts}</p>
+    </li>
+    <li class="fm-arc__beat">
+      <div class="fm-arc__marker">
+        <span class="fm-arc__num" aria-hidden="true">ii</span>
+        <p class="nsb-eyebrow fm-arc__code">Feels reasonable because</p>
+      </div>
+      <p class="fm-prose">{entry.feelsReasonableBecause}</p>
+    </li>
+    <li class="fm-arc__beat">
+      <div class="fm-arc__marker">
+        <span class="fm-arc__num" aria-hidden="true">iii</span>
+        <p class="nsb-eyebrow fm-arc__code">Escalates</p>
+      </div>
+      <p class="fm-prose">{entry.escalates}</p>
+    </li>
+    <li class="fm-arc__beat">
+      <div class="fm-arc__marker">
+        <span class="fm-arc__num" aria-hidden="true">iv</span>
+        <p class="nsb-eyebrow fm-arc__code">Ends</p>
+      </div>
+      <p class="fm-prose">{entry.ends}</p>
+    </li>
+  </ol>
+
+  {/* 5. Warning signs by stage */}
+  <SectionHeader
+    id="sec-recognition"
+    step={stepFor("sec-recognition")}
+    eyebrow="Recognition"
+    title="Warning signs by stage"
+    note="Observable signals as the pattern progresses."
+  />
+  <WarningSignsByStage warningSigns={entry.warningSigns} />
+
+  {/* 6. Why it happens */}
+  <SectionHeader
+    id="sec-causes"
+    step={stepFor("sec-causes")}
+    eyebrow="Root causes"
+    title="Why it happens"
+  />
+  <ul class="fm-list">
+    {entry.whyItHappens.map((item) => <li>{item}</li>)}
+  </ul>
+
+  {/* 7. Response — immediate + structural + what not to do */}
+  <SectionHeader
+    id="sec-response"
+    step={stepFor("sec-response")}
+    eyebrow="Response"
+    title="What to do"
+    note="Immediate triage first, then structural fixes."
+  />
+  <div class="fm-response">
+    <div class="fm-response__col">
+      <p class="nsb-eyebrow">Immediate actions</p>
+      <ul class="fm-list">
+        {entry.immediateActions.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+    <div class="fm-response__col">
+      <p class="nsb-eyebrow">Structural fixes</p>
+      <ul class="fm-list">
+        {entry.structuralFixes.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+    {entry.whatNotToDo && entry.whatNotToDo.length > 0 && (
+      <div class="fm-response__col fm-response__col--warn">
+        <p class="nsb-eyebrow">What not to do</p>
+        <ul class="fm-list fm-list--strike">
+          {entry.whatNotToDo.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+    )}
   </div>
+
+  {/* 8. AI impact */}
+  {hasAiBlock && (
+    <>
+      <SectionHeader
+        id="sec-ai"
+        step={stepFor("sec-ai")}
+        eyebrow="AI impact"
+        title="How AI distorts this pattern"
+        note="Where AI-assisted workflows accelerate, hide, or help with this failure mode."
+      />
+      <div class="fm-ai">
+        {entry.aiCanHelpWith && entry.aiCanHelpWith.length > 0 && (
+          <div class="fm-ai__col">
+            <p class="nsb-eyebrow">AI can help with</p>
+            <ul class="fm-list">
+              {entry.aiCanHelpWith.map((item) => <li>{item}</li>)}
+            </ul>
+          </div>
+        )}
+        {entry.aiCanMakeWorseBy && entry.aiCanMakeWorseBy.length > 0 && (
+          <div class="fm-ai__col">
+            <p class="nsb-eyebrow">AI can make worse by</p>
+            <ul class="fm-list">
+              {entry.aiCanMakeWorseBy.map((item) => <li>{item}</li>)}
+            </ul>
+          </div>
+        )}
+      </div>
+      {entry.aiSpecificNotes && (
+        <div class="fm-ai__notes">
+          <p class="nsb-eyebrow">Note</p>
+          <p class="fm-prose">{entry.aiSpecificNotes}</p>
+        </div>
+      )}
+    </>
+  )}
+
+  {/* 9. Relationships — causal (FM internal) and related (cross-category) */}
+  <SectionHeader
+    id="sec-relationships"
+    step={stepFor("sec-relationships")}
+    eyebrow="Relationships"
+    title="Connected patterns"
+    note="Causal flows inside Failure Modes, and related entries across the site."
+  />
+  <div class="fm-rel-grid">
+    <RelatedEntries
+      eyebrow="Often leads to"
+      title="Often leads to"
+      refs={entry.oftenLeadsTo}
+      expectCategory="FM"
+      dense
+    />
+    <RelatedEntries
+      eyebrow="Often caused by"
+      title="Often caused by"
+      refs={entry.oftenCausedBy}
+      expectCategory="FM"
+      dense
+    />
+    <RelatedEntries
+      eyebrow="Related red flags"
+      title="Related red flags"
+      refs={entry.relatedRedFlags}
+      expectCategory="RF"
+      dense
+    />
+    <RelatedEntries
+      eyebrow="Related tech decisions"
+      title="Related tech decisions"
+      refs={entry.relatedTechDecisions}
+      expectCategory="TD"
+      dense
+    />
+    <RelatedEntries
+      eyebrow="Related playbooks"
+      title="Related playbooks"
+      refs={entry.relatedPlaybooks}
+      expectCategory="EP"
+      dense
+    />
+    {entry.relatedFailureModes && entry.relatedFailureModes.length > 0 && (
+      <RelatedEntries
+        eyebrow="Also see"
+        title="Also see"
+        refs={entry.relatedFailureModes}
+        expectCategory="FM"
+        dense
+      />
+    )}
+  </div>
+
+  {/* Heard in the wild — the entry's voice / recognition moment.
+      Holds commonQuote + whoSaysThis. One deliberate editorial beat on the
+      page; tabloid-adjacent but still serious. */}
+  {hasVoice && (
+    <>
+      <SectionHeader
+        id="sec-voice"
+        step={stepFor("sec-voice")}
+        eyebrow="Heard in the wild"
+        title="What it sounds like"
+        note="The phrase that signals the pattern is about to start — and who tends to say it."
+      />
+      <HeardInTheWild
+        quote={entry.commonQuote}
+        attribution={entry.whoSaysThis}
+      />
+    </>
+  )}
+
+  {/* Operator notes — hard-won practical annotations.
+      Holds bestMomentToIntervene + counterMove + falsePositive. Typed field-
+      manual register, not quote content. */}
+  {hasOperatorNotes && (
+    <>
+      <SectionHeader
+        id="sec-operator-notes"
+        step={stepFor("sec-operator-notes")}
+        eyebrow="Operator notes"
+        title="From someone who's been in the room"
+        note="Annotations from engineers who have worked this pattern before."
+      />
+      <OperatorNotes
+        items={[
+          { label: "Best moment", body: entry.bestMomentToIntervene },
+          { label: "Counter move", body: entry.counterMove },
+          { label: "False positive", body: entry.falsePositive },
+        ]}
+      />
+    </>
+  )}
 </DetailLayout>
+
+<style>
+  /* ---- identity row ---- */
+  .fm-identity {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: var(--space-5) var(--space-7);
+    margin-bottom: var(--space-7);
+  }
+  .fm-identity__row > .nsb-eyebrow {
+    margin: 0 0 var(--space-2) 0;
+  }
+  .fm-identity__prose {
+    font-family: var(--font-serif);
+    font-size: var(--text-base);
+    color: var(--color-ink-dim);
+    margin: 0;
+  }
+
+  /* ---- prose body text in sections ---- */
+  .fm-prose {
+    font-family: var(--font-serif);
+    font-size: var(--text-md);
+    line-height: var(--leading-relaxed);
+    color: var(--color-ink);
+    max-width: var(--reading-max);
+    margin: var(--space-4) 0 0 0;
+  }
+
+  /* ---- story arc ----
+     Four-beat narrative rendered as a numbered print-chapter sequence.
+     Left marker column: roman numeral + beat code. Right: the prose beat. */
+  .fm-arc {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-5) 0 0 0;
+    display: grid;
+    gap: 0;
+    border-top: 2px solid var(--accent-current);
+    border-bottom: 1px solid var(--color-rule-strong);
+  }
+  .fm-arc__beat {
+    display: grid;
+    grid-template-columns: minmax(10rem, 14rem) 1fr;
+    gap: var(--space-5);
+    padding: var(--space-5) 0;
+    border-bottom: var(--rule-soft);
+  }
+  .fm-arc__beat:last-child { border-bottom: 0; }
+  .fm-arc__marker {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .fm-arc__num {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: var(--text-2xl);
+    line-height: 1;
+    color: var(--accent-current);
+    font-weight: 700;
+    font-feature-settings: "tnum";
+  }
+  .fm-arc__code {
+    margin: 0;
+    color: var(--accent-current-deep, var(--accent-current));
+    font-weight: 700;
+  }
+  .fm-arc__beat .fm-prose { margin: 0; }
+  @media (max-width: 720px) {
+    .fm-arc__beat { grid-template-columns: 1fr; gap: var(--space-3); }
+    .fm-arc__marker { flex-direction: row; align-items: baseline; gap: var(--space-3); }
+  }
+
+  /* ---- plain bulleted lists (structural fixes, root causes, etc.) ---- */
+  .fm-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-3) 0 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .fm-list li {
+    font-family: var(--font-serif);
+    font-size: var(--text-base);
+    line-height: var(--leading-snug);
+    padding-left: var(--space-4);
+    position: relative;
+  }
+  .fm-list li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    color: var(--color-ink-faint);
+  }
+  .fm-list--strike li {
+    color: var(--color-ink-soft);
+  }
+  .fm-list--strike li::before {
+    content: "×";
+    color: var(--accent-current);
+  }
+
+  /* ---- response columns ----
+     Three columns with distinct visual zones:
+       · Immediate actions  — white surface, standard
+       · Structural fixes   — white surface, standard
+       · What NOT to do     — amber wash surface, amber left rule, stronger
+                              label. Distinct register so the warning register
+                              is unmistakable without being loud. */
+  .fm-response {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 0;
+    margin-top: var(--space-5);
+    border-top: 2px solid var(--accent-current);
+    border-left: var(--rule);
+  }
+  .fm-response__col {
+    padding: var(--space-5);
+    background: var(--color-surface);
+    border-right: var(--rule);
+    border-bottom: var(--rule);
+  }
+  .fm-response__col > .nsb-eyebrow {
+    margin: 0 0 var(--space-3) 0;
+  }
+  .fm-response__col--warn {
+    background: var(--accent-current-wash);
+    border-left: 4px solid var(--accent-current);
+    /* collapse the 1px border-right of the previous neighbor */
+    margin-left: -1px;
+  }
+  .fm-response__col--warn > .nsb-eyebrow {
+    color: var(--accent-current-deep, var(--accent-current));
+    font-weight: 700;
+  }
+
+  /* ---- AI block — distinct zone, not just a tinted box ----
+     Bulletin-frame panel with dark masthead strip + body on paper-alt.
+     Keeps the AI section visually separate from the main reference flow. */
+  .fm-ai {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+    gap: var(--space-6);
+    margin-top: var(--space-5);
+    padding: var(--space-6);
+    background: var(--color-paper-alt);
+    border-top: 3px solid var(--accent-current);
+    border-left: var(--rule);
+    border-right: var(--rule);
+    border-bottom: var(--rule);
+  }
+  .fm-ai__col > .nsb-eyebrow {
+    margin: 0 0 var(--space-2) 0;
+    color: var(--accent-current-deep, var(--accent-current));
+    font-weight: 700;
+  }
+  .fm-ai__notes {
+    margin-top: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-surface);
+    border-left: 3px solid var(--accent-current);
+  }
+  .fm-ai__notes > .nsb-eyebrow {
+    margin: 0;
+    color: var(--accent-current-deep, var(--accent-current));
+    font-weight: 700;
+  }
+  .fm-ai__notes .fm-prose { margin-top: var(--space-1); }
+
+  /* ---- relationships ----
+     Single column: each RelatedEntries is now a full reference panel with
+     its own frame and catalog-index treatment, so stacking them reads as a
+     set of bulletin panels rather than a loose grid of cards. */
+  .fm-rel-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    margin-top: var(--space-5);
+  }
+
+  /* ---- bulletin stamps in the masthead ---- */
+  .fm-header-stamps {
+    display: inline-flex;
+    gap: var(--space-3);
+    align-items: center;
+  }
+
+  /* ---- anchored section scroll offset, so the sticky header on BaseLayout
+     doesn't clip a jumped-to section. Applied via scroll-margin rather than
+     padding to keep visual rhythm intact. */
+  :global(.nsb-section-header) {
+    scroll-margin-top: var(--space-6);
+  }
+
+</style>

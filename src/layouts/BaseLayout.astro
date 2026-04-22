@@ -111,7 +111,14 @@ const fullTitle =
       }
       .nsb-main {
         flex: 1 0 auto;
-        padding-block: var(--space-7) var(--space-9);
+        padding-block: 0 var(--space-9);
+      }
+      /* The dark editorial plate (masthead / hero) should sit flush with the
+         site header, reading as a continuous masthead band. Any non-plate
+         page still starts with content spacing via its own layout. */
+      .nsb-main > :first-child:not(.nsb-plate):not(.nsb-detail-shell):not(.nsb-container),
+      .nsb-main > .nsb-container:first-child {
+        padding-top: var(--space-7);
       }
       .nsb-footer {
         border-top: var(--rule);

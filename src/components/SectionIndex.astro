@@ -1,0 +1,227 @@
+---
+/**
+ * SectionIndex — local navigation for long detail pages.
+ *
+ * Renders a numbered, reference-catalog-style list of sections as:
+ *   · a sticky side rail on wide viewports (≥ 1080px)
+ *   · a compact <details> jump menu at the top of the body on narrow viewports
+ *
+ * Static-first: works fully without JavaScript. A small optional script
+ * progressively highlights the currently visible section using
+ * IntersectionObserver — no framework, no hydration.
+ *
+ * Design direction: "bulletin-like labels, rails, stamps, or reference cues"
+ * — the rail feels like a field-manual tab column, not app navigation.
+ */
+
+export interface SectionItem {
+  /** "01", "02", …; shown as a mono code on the left. */
+  step: string;
+  /** Title shown next to the step. */
+  label: string;
+  /** The id of the <section> / <header> to jump to. Do not include the '#'. */
+  id: string;
+}
+
+export interface Props {
+  items: readonly SectionItem[];
+  /** Small eyebrow shown above the list. */
+  eyebrow?: string;
+}
+
+const { items, eyebrow = "In this entry" } = Astro.props;
+---
+<nav class="nsb-section-index" aria-label="Sections in this entry">
+  {/* Mobile / narrow: collapsible jump menu */}
+  <details class="nsb-section-index__mobile" open={false}>
+    <summary class="nsb-section-index__summary">
+      <span class="nsb-eyebrow nsb-eyebrow--bulletin">{eyebrow}</span>
+      <span class="nsb-section-index__summary-count">{items.length} sections</span>
+    </summary>
+    <ol class="nsb-section-index__list">
+      {items.map((i) => (
+        <li class="nsb-section-index__item">
+          <a class="nsb-section-index__link" href={`#${i.id}`} data-target={i.id}>
+            <span class="nsb-section-index__step">{i.step}</span>
+            <span class="nsb-section-index__label">{i.label}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </details>
+
+  {/* Desktop / wide: sticky rail */}
+  <aside class="nsb-section-index__rail" aria-hidden="false">
+    <p class="nsb-eyebrow nsb-eyebrow--bulletin nsb-section-index__rail-head">{eyebrow}</p>
+    <ol class="nsb-section-index__list nsb-section-index__list--rail">
+      {items.map((i) => (
+        <li class="nsb-section-index__item">
+          <a class="nsb-section-index__link" href={`#${i.id}`} data-target={i.id}>
+            <span class="nsb-section-index__step">{i.step}</span>
+            <span class="nsb-section-index__label">{i.label}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </aside>
+</nav>
+
+{/* Progressive enhancement: highlight the active section while scrolling.
+    Harmless if disabled. Does not affect static rendering. */}
+<script>
+  (() => {
+    const nav = document.currentScript?.previousElementSibling as HTMLElement | null;
+    if (!nav) return;
+    const links = Array.from(nav.querySelectorAll<HTMLAnchorElement>("a[data-target]"));
+    if (links.length === 0) return;
+    const byId = new Map<string, HTMLAnchorElement[]>();
+    for (const a of links) {
+      const id = a.dataset.target!;
+      const list = byId.get(id) ?? [];
+      list.push(a);
+      byId.set(id, list);
+    }
+    const sections = links
+      .map((a) => document.getElementById(a.dataset.target!))
+      .filter((el): el is HTMLElement => el !== null);
+    const unique = Array.from(new Set(sections));
+    let activeId: string | null = null;
+    const setActive = (id: string | null) => {
+      if (id === activeId) return;
+      activeId = id;
+      for (const [key, anchors] of byId) {
+        const on = key === id;
+        for (const a of anchors) {
+          a.classList.toggle("is-active", on);
+          if (on) a.setAttribute("aria-current", "location");
+          else a.removeAttribute("aria-current");
+        }
+      }
+    };
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible.length > 0) setActive(visible[0]!.target.id);
+      },
+      { rootMargin: "-30% 0px -60% 0px", threshold: [0, 1] },
+    );
+    for (const s of unique) io.observe(s);
+  })();
+</script>
+
+<style>
+  .nsb-section-index { display: contents; }
+
+  /* --- Mobile collapsible jump menu --------------------------------- */
+  .nsb-section-index__mobile {
+    display: block;
+    margin-bottom: var(--space-6);
+    border-top: 2px solid var(--accent-current);
+    border-bottom: var(--rule);
+    padding: var(--space-3) 0;
+    background: var(--color-surface);
+  }
+  .nsb-section-index__summary {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+    list-style: none;
+    cursor: pointer;
+    padding: var(--space-1) 0;
+  }
+  .nsb-section-index__summary::-webkit-details-marker { display: none; }
+  .nsb-section-index__summary::after {
+    content: "▾";
+    margin-left: auto;
+    color: var(--accent-current);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    transition: transform var(--dur-fast) var(--ease);
+  }
+  .nsb-section-index__mobile[open] .nsb-section-index__summary::after {
+    transform: rotate(180deg);
+  }
+  .nsb-section-index__summary-count {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+
+  /* --- Desktop sticky rail ------------------------------------------ */
+  .nsb-section-index__rail {
+    display: none;
+  }
+
+  /* The rail is consumed by DetailLayout's grid on wide screens. */
+  @media (min-width: 1080px) {
+    .nsb-section-index__mobile { display: none; }
+    .nsb-section-index__rail {
+      display: block;
+      position: sticky;
+      top: var(--space-6);
+      max-height: calc(100vh - var(--space-8));
+      overflow: auto;
+      padding-right: var(--space-3);
+      border-left: 3px solid var(--accent-current);
+      padding-left: var(--space-5);
+    }
+    .nsb-section-index__rail-head {
+      margin: 0 0 var(--space-3) 0;
+    }
+  }
+
+  /* --- Shared list styles ------------------------------------------- */
+  .nsb-section-index__list {
+    list-style: none;
+    margin: var(--space-3) 0 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .nsb-section-index__item {
+    border-bottom: var(--rule-soft);
+  }
+  .nsb-section-index__list--rail .nsb-section-index__item:last-child {
+    border-bottom: 0;
+  }
+  .nsb-section-index__link {
+    display: grid;
+    grid-template-columns: 2.25rem 1fr;
+    gap: var(--space-3);
+    align-items: baseline;
+    padding: var(--space-2) 0;
+    text-decoration: none;
+    color: inherit;
+    transition: color var(--dur-fast) var(--ease);
+  }
+  .nsb-section-index__link:hover .nsb-section-index__label {
+    color: var(--accent-current-deep, var(--accent-current));
+  }
+  .nsb-section-index__link.is-active .nsb-section-index__label {
+    color: var(--accent-current-deep, var(--accent-current));
+    font-weight: 600;
+  }
+  .nsb-section-index__link.is-active .nsb-section-index__step {
+    color: var(--accent-current);
+    font-weight: 700;
+  }
+  .nsb-section-index__step {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    color: var(--color-label);
+    font-feature-settings: "tnum";
+  }
+  .nsb-section-index__label {
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    color: var(--color-ink-dim);
+    line-height: var(--leading-snug);
+  }
+</style>

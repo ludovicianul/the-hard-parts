@@ -65,6 +65,34 @@ export function resolveMany(slugs: readonly string[] | undefined): ResolvedRef[]
   return out;
 }
 
+/**
+ * Resolve an array of references, keeping BOTH resolved and unresolved values.
+ *
+ * Returned shape:
+ *   resolved   — every input slug that maps to a real entry, in original order
+ *   unresolved — every input string that did NOT resolve, in original order
+ *
+ * Unresolved values are editorial backlog (either slug-shaped references to
+ * entries not yet authored, or free phrases). The UI renders them in a muted
+ * non-linked fallback so the reader still sees the intent without following a
+ * broken link. Content itself is never mutated here.
+ */
+export function partitionRefs(
+  refs: readonly string[] | undefined,
+): { resolved: ResolvedRef[]; unresolved: string[] } {
+  if (!refs || refs.length === 0) return { resolved: [], unresolved: [] };
+  const idx = indexBySlug();
+  const resolved: ResolvedRef[] = [];
+  const unresolved: string[] = [];
+  for (const value of refs) {
+    if (typeof value !== "string" || value.length === 0) continue;
+    const hit = idx.get(value);
+    if (hit) resolved.push(hit);
+    else unresolved.push(value);
+  }
+  return { resolved, unresolved };
+}
+
 /** Group resolved refs by category code for display ordering. */
 export function groupByCategory(
   refs: readonly ResolvedRef[],

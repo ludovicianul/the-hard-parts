@@ -1,0 +1,109 @@
+---
+/**
+ * MetaRail — horizontal (wrapping) metadata strip used at the top of a detail
+ * page to surface high-signal orientation fields: severity, frequency,
+ * lifecycle, pattern confidence, etc.
+ *
+ * Per docs/design-direction.md, metadata should "clarify, not clutter".
+ * Each item is rendered as a small mono label above a serif value. Items are
+ * separated by vertical rules, not by pills.
+ *
+ * Items with value `null`, `undefined`, `""`, or `[]` are skipped silently —
+ * detail pages pass a superset of fields and we don't want empty slots.
+ */
+
+export interface MetaItem {
+  label: string;
+  /** String, number, or array of strings. Arrays render joined by middle-dot. */
+  value: string | number | readonly string[] | undefined | null;
+  /** Optional emphasis — renders value with accent color (e.g. severity: critical). */
+  emphasis?: boolean;
+}
+
+export interface Props {
+  items: readonly MetaItem[];
+}
+
+const { items } = Astro.props;
+
+function render(value: MetaItem["value"]): string | null {
+  if (value === null || value === undefined) return null;
+  if (Array.isArray(value)) {
+    const clean = (value as readonly string[]).filter(
+      (s) => typeof s === "string" && s.length > 0,
+    );
+    return clean.length > 0 ? clean.join(" · ") : null;
+  }
+  const s = String(value).trim();
+  return s.length > 0 ? s : null;
+}
+
+const visible = items
+  .map((i) => ({ ...i, rendered: render(i.value) }))
+  .filter((i): i is MetaItem & { rendered: string } => i.rendered !== null);
+---
+{visible.length > 0 && (
+  <dl class="nsb-meta-rail" aria-label="Entry metadata">
+    {visible.map((i) => (
+      <div class="nsb-meta-rail__item">
+        <dt class="nsb-meta-rail__label nsb-eyebrow">{i.label}</dt>
+        <dd
+          class:list={[
+            "nsb-meta-rail__value",
+            { "nsb-meta-rail__value--emphasis": i.emphasis },
+          ]}
+        >
+          {i.rendered}
+        </dd>
+      </div>
+    ))}
+  </dl>
+)}
+
+<style>
+  .nsb-meta-rail {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 0;
+    margin: 0 0 var(--space-7) 0;
+    padding: var(--space-4) 0 var(--space-4) 0;
+    /* Ties visually to the dark masthead plate above via a 3px amber rule. */
+    border-top: 3px solid var(--accent-current);
+    border-bottom: 1px solid var(--color-rule-strong);
+    background: var(--color-surface);
+  }
+  .nsb-meta-rail__item {
+    padding: var(--space-2) var(--space-5);
+    border-right: 1px solid var(--color-rule);
+  }
+  .nsb-meta-rail__item:last-child { border-right: 0; }
+  .nsb-meta-rail__label {
+    margin: 0 0 var(--space-1) 0;
+  }
+  .nsb-meta-rail__value {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    color: var(--color-ink);
+    line-height: var(--leading-snug);
+    font-weight: 500;
+    text-transform: lowercase;
+  }
+  .nsb-meta-rail__value--emphasis {
+    color: var(--accent-current-deep, var(--accent-current));
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+  @media (max-width: 640px) {
+    .nsb-meta-rail { padding: var(--space-3) 0; }
+    .nsb-meta-rail__item {
+      border-right: 0;
+      border-bottom: var(--rule-soft);
+      padding-block: var(--space-3);
+    }
+    .nsb-meta-rail__item:last-child { border-bottom: 0; }
+  }
+</style>

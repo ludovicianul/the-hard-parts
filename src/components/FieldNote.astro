@@ -1,0 +1,65 @@
+---
+/**
+ * FieldNote — small editorial aside with a left accent rule. Used for
+ * field-guide-style notes on a detail page: common quote, counter move,
+ * false positive. Several of these typically appear clustered at the end of
+ * an entry.
+ *
+ * Keeps the "annotated engineering notebook" motif from docs/design-direction.md
+ * without resorting to a generic alert/callout box.
+ */
+
+export interface Props {
+  /** Small mono label above the content (e.g. "COMMON QUOTE"). */
+  eyebrow: string;
+  /** Optional attribution suffix (e.g. "— tech lead or architect"). */
+  attribution?: string;
+  /** Render content as a block quote (italic serif, larger). */
+  quote?: boolean;
+}
+
+const { eyebrow, attribution, quote = false } = Astro.props;
+---
+<aside class:list={["nsb-field-note", { "nsb-field-note--quote": quote }]}>
+  <p class="nsb-eyebrow nsb-field-note__eyebrow">{eyebrow}</p>
+  <div class="nsb-field-note__body">
+    <slot />
+  </div>
+  {attribution && (
+    <p class="nsb-field-note__attribution">— {attribution}</p>
+  )}
+</aside>
+
+<style>
+  .nsb-field-note {
+    border-left: 2px solid var(--accent-current);
+    padding: var(--space-2) 0 var(--space-2) var(--space-4);
+    margin: 0;
+  }
+  .nsb-field-note__eyebrow {
+    margin: 0 0 var(--space-2) 0;
+  }
+  .nsb-field-note__body {
+    font-family: var(--font-serif);
+    color: var(--color-ink-dim);
+    font-size: var(--text-base);
+    line-height: var(--leading-snug);
+  }
+  .nsb-field-note__body :global(p) {
+    margin: 0;
+    max-width: var(--reading-max);
+  }
+  .nsb-field-note--quote .nsb-field-note__body {
+    font-style: italic;
+    font-size: var(--text-lg);
+    color: var(--color-ink);
+  }
+  .nsb-field-note__attribution {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: lowercase;
+    color: var(--color-ink-faint);
+    margin: var(--space-3) 0 0 0;
+  }
+</style>
