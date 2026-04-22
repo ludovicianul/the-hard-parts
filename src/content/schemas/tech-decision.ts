@@ -1,7 +1,9 @@
 import { z } from "zod";
 import {
+  FrequencyEnum,
   PatternConfidenceSchema,
   RefArray,
+  SeverityEnum,
   SlugSchema,
   TemplateBlock,
 } from "./shared";
@@ -32,6 +34,11 @@ import {
  *  - AI fields use the site-wide canonical names: `aiCanHelpWith` (array),
  *    `aiCanMakeWorseBy` (array), `aiSpecificNotes` (string).
  *  - `patternConfidence` allows: low | medium | medium-high | high.
+ *  - Meta enums are intentionally strict:
+ *      `frequency`        uses the site-wide FrequencyEnum.
+ *      `severityIfWrong`  uses the site-wide SeverityEnum.
+ *    Do not widen these to `z.string()`; if content needs a new value,
+ *    promote it in `shared.ts` deliberately and update all four categories.
  */
 
 export const TechDecisionOptionSchema = z
@@ -114,9 +121,9 @@ export const TechDecisionEntrySchema = z
     relatedRedFlags: RefArray.optional(),
     relatedPlaybooks: RefArray.optional(),
 
-    // Meta
-    frequency: z.string().optional(),
-    severityIfWrong: z.string().optional(),
+    // Meta (strict enums — see docstring)
+    frequency: FrequencyEnum.optional(),
+    severityIfWrong: SeverityEnum.optional(),
     audiences: z.array(z.string()).optional(),
 
     patternConfidence: PatternConfidenceSchema,

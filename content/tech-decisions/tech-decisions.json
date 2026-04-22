@@ -1478,7 +1478,7 @@
       "relatedPlaybooks": [
         "map-runtime-logic-placement"
       ],
-      "frequency": "occasional-common",
+      "frequency": "occasional",
       "severityIfWrong": "medium-high",
       "audiences": [
         "architects",
