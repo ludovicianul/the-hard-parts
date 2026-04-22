@@ -1,0 +1,3257 @@
+{
+  "category": {
+    "code": "FM",
+    "name": "Failure Modes",
+    "summary": "Named software-engineering failure patterns with warning signs, escalation paths, recovery moves, and AI-era distortions.",
+    "categories": [
+      "planning",
+      "people",
+      "technical",
+      "process",
+      "leadership",
+      "ai"
+    ]
+  },
+  "template": {
+    "fields": [
+      "slug",
+      "title",
+      "alternativeNames",
+      "category",
+      "summary",
+      "whoNoticesFirst",
+      "mistakenFor",
+      "severity",
+      "frequency",
+      "lifecycleStages",
+      "whatItIs",
+      "bestMomentToIntervene",
+      "blastRadius",
+      "oftenMistakenAs",
+      "starts",
+      "feelsReasonableBecause",
+      "escalates",
+      "ends",
+      "earlyWarningSigns",
+      "midWarningSigns",
+      "lateWarningSigns",
+      "whyItHappens",
+      "immediateActions",
+      "structuralFixes",
+      "whatNotToDo",
+      "recoveryDifficulty",
+      "aiCanHelpWith",
+      "aiCanMakeWorseBy",
+      "aiSpecificNotes",
+      "oftenLeadsTo",
+      "oftenCausedBy",
+      "relatedRedFlags",
+      "relatedTechDecisions",
+      "relatedPlaybooks",
+      "commonQuote",
+      "whoSaysThis",
+      "counterMove",
+      "falsePositive",
+      "patternConfidence"
+    ]
+  },
+  "entries": [
+    {
+      "slug": "the-friendly-rewrite",
+      "title": "The Friendly Rewrite",
+      "alternativeNames": [
+        "the big bang rewrite",
+        "the clean slate trap",
+        "v2 syndrome",
+        "the eternal rewrite"
+      ],
+      "category": "planning",
+      "summary": "A rewrite framed as cleanup becomes a long-running replacement with no stable landing zone.",
+      "whoNoticesFirst": [
+        "tech lead",
+        "architect",
+        "senior engineer"
+      ],
+      "mistakenFor": "good engineering hygiene",
+      "severity": "high",
+      "frequency": "very common",
+      "lifecycleStages": [
+        "planning",
+        "build"
+      ],
+      "whatItIs": "A full or near-full rewrite justified by pain in the current system, but without a disciplined migration strategy.",
+      "bestMomentToIntervene": "before the rewrite becomes the default answer",
+      "blastRadius": [
+        "code",
+        "delivery",
+        "team",
+        "business"
+      ],
+      "oftenMistakenAs": "responsible modernization",
+      "starts": "The current system is painful. Everyone agrees. A clean slate feels rational, overdue, even virtuous.",
+      "feelsReasonableBecause": "The existing mess is real, and a rewrite promises clarity, speed, and fewer compromises.",
+      "escalates": "Parallel systems appear. Scope expands. The new system is always almost ready while the old one remains mission-critical.",
+      "ends": "The team maintains two worlds, trust declines, and leadership eventually asks why nothing meaningful shipped.",
+      "earlyWarningSigns": [
+        "We should rebuild this properly.",
+        "The old system is too messy to change safely.",
+        "No one can describe what will be migrated first."
+      ],
+      "midWarningSigns": [
+        "Two systems run in parallel for months.",
+        "Net-new scope gets added before parity is reached.",
+        "Delivery dates keep moving but optimism stays strangely intact."
+      ],
+      "lateWarningSigns": [
+        "The old system still receives urgent fixes.",
+        "Nobody can define done in plain language.",
+        "The team has lost confidence in both systems."
+      ],
+      "whyItHappens": [
+        "Pain in the current system is real",
+        "Migration strategy is weak or absent",
+        "Teams underestimate hidden behavior in existing systems",
+        "Ambition grows faster than discipline",
+        "Leadership likes the symbolism of a fresh start"
+      ],
+      "immediateActions": [
+        "Freeze net-new scope until migration strategy is explicit",
+        "Define smallest valuable slice to replace first",
+        "Write down exit criteria for each migrated area"
+      ],
+      "structuralFixes": [
+        "Use strangler migration patterns",
+        "Make cutover milestones concrete and testable",
+        "Track parity, usage, and retirement explicitly"
+      ],
+      "whatNotToDo": [
+        "Do not let the rewrite absorb unrelated improvements",
+        "Do not treat morale as evidence of viability"
+      ],
+      "recoveryDifficulty": "hard",
+      "aiCanHelpWith": [
+        "AI can help inventory legacy behavior, map dependencies, generate migration checklists, and summarize hidden code paths."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can accelerate the wrong rewrite by generating scaffolding and broad rewrites faster than the team can validate architecture and migration risk."
+      ],
+      "aiSpecificNotes": "Do not confuse generated replacement code with validated replacement behavior.",
+      "oftenLeadsTo": [
+        "the-dependency-fog",
+        "ownership-drift",
+        "the-invisible-deadline"
+      ],
+      "oftenCausedBy": [
+        "metric-myopia",
+        "stakeholder-capture"
+      ],
+      "relatedRedFlags": [
+        "nobody can explain what done means",
+        "old and new systems both receive urgent fixes"
+      ],
+      "relatedTechDecisions": [
+        "monolith-vs-microservices",
+        "rewrite-vs-refactor"
+      ],
+      "relatedPlaybooks": [
+        "run-a-phased-migration"
+      ],
+      "commonQuote": "We'll rewrite it properly this time.",
+      "whoSaysThis": "tech lead or architect",
+      "counterMove": "Replace one slice, prove one cutover, retire one dependency.",
+      "falsePositive": "Some rewrites are justified; the failure mode is not rewriting, but rewriting without disciplined displacement.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "the-hero-trap",
+      "title": "The Hero Trap",
+      "alternativeNames": [
+        "bus factor of one",
+        "key person risk",
+        "the indispensable engineer",
+        "single point of failure — human"
+      ],
+      "category": "people",
+      "summary": "One person becomes the informal system of record for critical knowledge, decisions, and rescue work.",
+      "whoNoticesFirst": [
+        "engineering manager",
+        "support lead",
+        "senior engineer"
+      ],
+      "mistakenFor": "strong ownership",
+      "severity": "critical",
+      "frequency": "universal",
+      "lifecycleStages": [
+        "build",
+        "operate"
+      ],
+      "whatItIs": "A team relies on one trusted person to keep delivery, systems, or decisions moving.",
+      "bestMomentToIntervene": "when dependence is admired but before it becomes normalized",
+      "blastRadius": [
+        "team",
+        "delivery",
+        "operations",
+        "business"
+      ],
+      "oftenMistakenAs": "leadership by example",
+      "starts": "Someone capable, generous, and fast becomes the default path for hard work.",
+      "feelsReasonableBecause": "The team gets quick answers, fast fixes, and a comforting sense that someone truly understands the system.",
+      "escalates": "Escalations route through one person. Others stop learning certain areas. Documentation falls behind reality.",
+      "ends": "Burnout, bottlenecks, fragile delivery, and organizational panic when the hero is absent.",
+      "earlyWarningSigns": [
+        "Ask Alex, they know.",
+        "The same person joins every critical call.",
+        "Some system areas have one real maintainer."
+      ],
+      "midWarningSigns": [
+        "Work queues form behind one person.",
+        "People avoid risky changes without their sign-off.",
+        "Key knowledge exists mostly in chats and memory."
+      ],
+      "lateWarningSigns": [
+        "Vacations become operational risk.",
+        "Progress stalls when one person is overloaded.",
+        "The team has strong output but weak resilience."
+      ],
+      "whyItHappens": [
+        "Capability and trust concentrate naturally",
+        "Organizations reward rescue more than resilience",
+        "Knowledge sharing is treated as optional overhead",
+        "Managers tolerate or celebrate single-threaded expertise"
+      ],
+      "immediateActions": [
+        "Map critical areas with single-person dependency",
+        "Pair on risky domains immediately",
+        "Redirect urgent requests away from the same person by design"
+      ],
+      "structuralFixes": [
+        "Rotate ownership",
+        "Publish service ownership and backup ownership",
+        "Require decision summaries and runbooks for critical areas"
+      ],
+      "whatNotToDo": [
+        "Do not shame the hero for organizational dependency",
+        "Do not call it solved because some docs were written once"
+      ],
+      "recoveryDifficulty": "medium-hard",
+      "aiCanHelpWith": [
+        "AI can help externalize tacit knowledge into diagrams, docs, FAQs, runbooks, and onboarding material."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can deepen the trap if one senior person becomes the only person trusted to validate generated code or AI-produced recommendations."
+      ],
+      "aiSpecificNotes": "AI-generated explanations based on stale or partial context can create the illusion that knowledge has been transferred when it has not.",
+      "oftenLeadsTo": [
+        "ownership-drift",
+        "ticket-theater",
+        "silent-model-drift"
+      ],
+      "oftenCausedBy": [
+        "the-dependency-fog",
+        "local-optimization"
+      ],
+      "relatedRedFlags": [
+        "every incident routes to the same person",
+        "backup owners exist only on paper"
+      ],
+      "relatedTechDecisions": [
+        "team-topologies",
+        "service-ownership-model"
+      ],
+      "relatedPlaybooks": [
+        "reduce-key-person-risk"
+      ],
+      "commonQuote": "It's faster if Sam just does it.",
+      "whoSaysThis": "engineering manager or team lead",
+      "counterMove": "Turn rescue knowledge into team knowledge while delivery still works.",
+      "falsePositive": "Experts are not the problem. Unshared criticality is.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "abstraction-addiction",
+      "title": "Abstraction Addiction",
+      "alternativeNames": [
+        "over-engineering",
+        "yak shaving at scale",
+        "premature generalization",
+        "framework fever",
+        "architecture astronautics"
+      ],
+      "category": "technical",
+      "summary": "The system grows more layers, indirection, and generic structure than current reality actually demands.",
+      "whoNoticesFirst": [
+        "staff engineer",
+        "new joiner",
+        "architect"
+      ],
+      "mistakenFor": "future-proofing",
+      "severity": "medium",
+      "frequency": "common",
+      "lifecycleStages": [
+        "build"
+      ],
+      "whatItIs": "A codebase accumulates abstractions to solve anticipated future problems rather than repeated present ones.",
+      "bestMomentToIntervene": "when the abstraction is proposed, not after it spreads",
+      "blastRadius": [
+        "code",
+        "team",
+        "delivery"
+      ],
+      "oftenMistakenAs": "good architecture",
+      "starts": "A team wants flexibility, consistency, and elegance.",
+      "feelsReasonableBecause": "Generalization sounds cheaper than revisiting design later, and abstraction often signals sophistication.",
+      "escalates": "Interfaces multiply, wrappers appear, patterns spread, and the code becomes harder to reason about than the original problem.",
+      "ends": "Simple changes take too long, onboarding slows, and engineers stop trusting the architecture.",
+      "earlyWarningSigns": [
+        "We might need this pattern later.",
+        "A simple feature requires several layers from day one.",
+        "Names become increasingly generic."
+      ],
+      "midWarningSigns": [
+        "Simple changes touch too many files.",
+        "The abstraction has more exceptions than the concrete implementation it replaced.",
+        "Developers ask why the code is so indirect."
+      ],
+      "lateWarningSigns": [
+        "Nobody can explain which layer owns the real behavior.",
+        "Refactors are feared because the architecture feels ceremonial.",
+        "Reuse is promised more often than observed."
+      ],
+      "whyItHappens": [
+        "Teams optimize for elegance over clarity",
+        "Architecture is used to manage uncertainty symbolically",
+        "Past pain makes teams overcompensate",
+        "Patterns spread socially faster than evidence accumulates"
+      ],
+      "immediateActions": [
+        "Identify layers that do not carry distinct business or operational value",
+        "Trace one simple feature end to end and count unnecessary hops",
+        "Demand concrete use cases for proposed abstractions"
+      ],
+      "structuralFixes": [
+        "Prefer duplication over premature indirection",
+        "Require repeated evidence before generalizing",
+        "Run architecture reviews focused on clarity, not cleverness"
+      ],
+      "whatNotToDo": [
+        "Do not declare war on abstraction itself",
+        "Do not replace one grand framework with another grand framework"
+      ],
+      "recoveryDifficulty": "medium",
+      "aiCanHelpWith": [
+        "AI can help identify duplication patterns worth abstracting and map dead or redundant layers for simplification."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can mass-produce interfaces, helper layers, patterns, and generic architecture that look polished but add no real leverage."
+      ],
+      "aiSpecificNotes": "Generated elegance is still cost. If no one can explain why a layer exists, it is already too expensive.",
+      "oftenLeadsTo": [
+        "the-dependency-fog",
+        "synthetic-velocity"
+      ],
+      "oftenCausedBy": [
+        "platform-before-product"
+      ],
+      "relatedRedFlags": [
+        "simple work requires a guided tour",
+        "architecture diagrams are cleaner than the code experience"
+      ],
+      "relatedTechDecisions": [
+        "framework-vs-library",
+        "monolith-vs-microservices"
+      ],
+      "relatedPlaybooks": [
+        "simplify-before-scaling"
+      ],
+      "commonQuote": "We'll need this flexibility later.",
+      "whoSaysThis": "architect or staff engineer",
+      "counterMove": "Make the simple path simple again.",
+      "falsePositive": "Some abstractions are essential. The failure mode begins when abstraction outruns evidence.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "ticket-theater",
+      "title": "Ticket Theater",
+      "alternativeNames": [
+        "jira theater",
+        "process performance",
+        "status kabuki",
+        "agile theater"
+      ],
+      "category": "process",
+      "summary": "Work tracking becomes performance for stakeholders instead of coordination for delivery.",
+      "whoNoticesFirst": [
+        "delivery lead",
+        "engineering manager",
+        "senior pm"
+      ],
+      "mistakenFor": "strong process discipline",
+      "severity": "high",
+      "frequency": "very common",
+      "lifecycleStages": [
+        "planning",
+        "delivery"
+      ],
+      "whatItIs": "Boards, statuses, and progress rituals become more important than real flow, learning, or shipping.",
+      "bestMomentToIntervene": "when process starts producing confidence without improving outcomes",
+      "blastRadius": [
+        "team",
+        "delivery",
+        "leadership"
+      ],
+      "oftenMistakenAs": "operational maturity",
+      "starts": "A team wants visibility and control.",
+      "feelsReasonableBecause": "Tickets, statuses, and dashboards create an immediate sense of order.",
+      "escalates": "The system of reporting becomes heavier, and teams learn which motions look like progress.",
+      "ends": "Leadership sees movement, teams feel burden, and delivery quietly deteriorates.",
+      "earlyWarningSigns": [
+        "Status hygiene gets more attention than blocker removal.",
+        "Tickets are split for optics rather than flow.",
+        "People speak in board language more than delivery language."
+      ],
+      "midWarningSigns": [
+        "A lot changes state, but little reaches users.",
+        "The team spends significant time curating work representation.",
+        "Metrics improve while real predictability does not."
+      ],
+      "lateWarningSigns": [
+        "Teams optimize for appearances under review.",
+        "Stakeholders are surprised despite heavy reporting.",
+        "Nobody trusts the board, but everyone feeds it."
+      ],
+      "whyItHappens": [
+        "Visibility is substituted for control",
+        "Low trust drives reporting inflation",
+        "Proxy metrics become performance targets",
+        "Leaders want certainty from inherently uncertain work"
+      ],
+      "immediateActions": [
+        "Remove statuses that do not change decisions",
+        "Review actual cycle time and blocked time",
+        "Ask which meetings and fields nobody would miss"
+      ],
+      "structuralFixes": [
+        "Measure outcomes and flow, not just artifact movement",
+        "Shorten feedback loops to real usage or acceptance",
+        "Use the board to coordinate, not to perform"
+      ],
+      "whatNotToDo": [
+        "Do not abolish process without replacing it with better operating habits",
+        "Do not add another dashboard to fix dashboard distortion"
+      ],
+      "recoveryDifficulty": "medium",
+      "aiCanHelpWith": [
+        "AI can summarize real blockers, cluster delivery risks, and reduce administrative overhead when used against noise rather than for more noise."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can generate persuasive updates, summaries, and ticket churn at scale, making synthetic clarity feel like real control."
+      ],
+      "aiSpecificNotes": "If AI makes reporting cheaper, organizations may consume more reporting instead of demanding better signal.",
+      "oftenLeadsTo": [
+        "metric-myopia",
+        "synthetic-velocity",
+        "the-invisible-deadline"
+      ],
+      "oftenCausedBy": [
+        "stakeholder-capture"
+      ],
+      "relatedRedFlags": [
+        "board looks healthy while release reality does not",
+        "teams fear status reviews more than user impact"
+      ],
+      "relatedTechDecisions": [
+        "kanban-vs-scrum",
+        "centralized-vs-team-owned-reporting"
+      ],
+      "relatedPlaybooks": [
+        "run-an-honest-delivery-review"
+      ],
+      "commonQuote": "Can we just make sure the board reflects reality?",
+      "whoSaysThis": "engineering manager or delivery lead",
+      "counterMove": "Use reality to simplify the board, not the board to redefine reality.",
+      "falsePositive": "Well-run ticket systems are useful. The failure mode begins when representation outranks delivery.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "the-invisible-deadline",
+      "title": "The Invisible Deadline",
+      "alternativeNames": [
+        "the phantom commitment",
+        "implied urgency",
+        "the undeclared date",
+        "soft deadline syndrome"
+      ],
+      "category": "leadership",
+      "summary": "A date exists socially or politically, but not explicitly enough for the team to manage the trade-offs honestly.",
+      "whoNoticesFirst": [
+        "product manager",
+        "engineering manager",
+        "delivery lead"
+      ],
+      "mistakenFor": "healthy urgency",
+      "severity": "high",
+      "frequency": "common",
+      "lifecycleStages": [
+        "strategy",
+        "planning"
+      ],
+      "whatItIs": "A commitment is understood by powerful people, but scope, quality, and dependencies were never aligned around it explicitly.",
+      "bestMomentToIntervene": "when urgency is felt but still vaguely framed",
+      "blastRadius": [
+        "delivery",
+        "team",
+        "product",
+        "business"
+      ],
+      "oftenMistakenAs": "motivation",
+      "starts": "A launch window, stakeholder expectation, or executive assumption emerges without precise negotiation.",
+      "feelsReasonableBecause": "No one wants to be the person who slows momentum by forcing hard trade-off conversations.",
+      "escalates": "The team senses urgency but lacks clear constraints. Local optimism fills the gap.",
+      "ends": "The deadline becomes suddenly visible only when panic arrives.",
+      "earlyWarningSigns": [
+        "We should aim for around then.",
+        "People talk about timing without scope conversations.",
+        "Urgency is implied, not owned."
+      ],
+      "midWarningSigns": [
+        "Roadmaps sound precise but delivery plans stay vague.",
+        "Trade-offs are made informally and unevenly.",
+        "People are surprised by the seriousness of the date."
+      ],
+      "lateWarningSigns": [
+        "Escalation tone changes abruptly.",
+        "Quality is cut in a rush.",
+        "Teams discover they have been committed without knowing it."
+      ],
+      "whyItHappens": [
+        "Conflict avoidance",
+        "Leadership signaling without operational translation",
+        "Wishful alignment",
+        "Unclear decision rights around commitments"
+      ],
+      "immediateActions": [
+        "Name the date explicitly",
+        "Tie it to scope, quality, and dependency assumptions",
+        "Ask what will be cut, deferred, or protected"
+      ],
+      "structuralFixes": [
+        "Use explicit commitment rituals",
+        "Record decision owners and trade-offs",
+        "Review deadline assumptions early and often"
+      ],
+      "whatNotToDo": [
+        "Do not respond with heroic optimism",
+        "Do not pretend ambiguity is flexibility"
+      ],
+      "recoveryDifficulty": "medium",
+      "aiCanHelpWith": [
+        "AI can detect vague commitments across notes, plans, and status updates and surface mismatched assumptions."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can make progress reports sound calm and coherent, delaying the moment when underlying ambiguity is confronted."
+      ],
+      "aiSpecificNotes": "A polished summary is not a clarified commitment.",
+      "oftenLeadsTo": [
+        "ticket-theater",
+        "local-optimization",
+        "the-friendly-rewrite"
+      ],
+      "oftenCausedBy": [
+        "stakeholder-capture",
+        "the-consensus-trap"
+      ],
+      "relatedRedFlags": [
+        "nobody can say what is fixed vs flexible",
+        "urgency appears without named trade-offs"
+      ],
+      "relatedTechDecisions": [
+        "date-driven-vs-scope-driven-delivery"
+      ],
+      "relatedPlaybooks": [
+        "frame-scope-time-quality-explicitly"
+      ],
+      "commonQuote": "We're not committing yet, but it would be good to have it by Q3.",
+      "whoSaysThis": "executive or senior product leader",
+      "counterMove": "Say the date out loud, then make the cost visible.",
+      "falsePositive": "Not every target date is unhealthy. The issue is hidden commitment, not commitment itself.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "stakeholder-capture",
+      "title": "Stakeholder Capture",
+      "alternativeNames": [
+        "HiPPO effect",
+        "loudest voice wins",
+        "executive override pattern",
+        "squeaky wheel prioritization"
+      ],
+      "category": "leadership",
+      "summary": "A team's direction gets distorted by one loud stakeholder's agenda at the expense of broader product coherence.",
+      "whoNoticesFirst": [
+        "product manager",
+        "engineering manager",
+        "architect"
+      ],
+      "mistakenFor": "being responsive",
+      "severity": "high",
+      "frequency": "common",
+      "lifecycleStages": [
+        "strategy",
+        "planning"
+      ],
+      "whatItIs": "A single stakeholder's preferences or urgency persistently reshapes roadmap, scope, or architecture beyond their legitimate influence.",
+      "bestMomentToIntervene": "when priorities shift rapidly in response to one voice rather than user or business evidence",
+      "blastRadius": [
+        "product",
+        "team",
+        "delivery",
+        "business"
+      ],
+      "oftenMistakenAs": "executive alignment",
+      "starts": "A powerful stakeholder has a strong opinion and the team accommodates it.",
+      "feelsReasonableBecause": "Responsiveness to leadership feels like good organizational citizenship.",
+      "escalates": "The team learns that one voice moves priorities faster than any process. Others exploit the same channel.",
+      "ends": "Roadmaps become incoherent, teams are demoralized by churn, and actual users are underserved.",
+      "earlyWarningSigns": [
+        "Roadmaps swing fast after one meeting.",
+        "Priorities keep reinterpreting without documented rationale.",
+        "One person's requests bypass normal intake."
+      ],
+      "midWarningSigns": [
+        "The team cannot explain current priorities in terms of user or business need.",
+        "Previous commitments are quietly dropped.",
+        "Team energy drops around planning cycles."
+      ],
+      "lateWarningSigns": [
+        "Churn is constant and expected.",
+        "The team stops believing roadmaps are real.",
+        "Key people start leaving."
+      ],
+      "whyItHappens": [
+        "Power imbalance",
+        "Unclear decision rights",
+        "Fear-driven prioritization",
+        "Absence of a product strategy that can absorb pressure"
+      ],
+      "immediateActions": [
+        "Document the request and its impact on existing commitments",
+        "Make the displaced work visible before accepting new work",
+        "Escalate trade-offs explicitly rather than absorbing them silently"
+      ],
+      "structuralFixes": [
+        "Define decision rights and prioritization criteria",
+        "Record trade-offs with named owners",
+        "Use a product strategy document as a stable reference point"
+      ],
+      "whatNotToDo": [
+        "Do not absorb new scope without naming what it displaces",
+        "Do not rely on the stakeholder to self-limit"
+      ],
+      "recoveryDifficulty": "hard",
+      "aiCanHelpWith": [
+        "AI can summarize trade-offs and show impact of changes more objectively, providing a neutral view of what changes across scenarios."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can produce persuasive but shallow artifacts that reinforce the loudest voice by generating fast, polished justifications for whatever direction was most recently requested."
+      ],
+      "aiSpecificNotes": "Speed of justification is not quality of reasoning.",
+      "oftenLeadsTo": [
+        "invisible-deadline",
+        "ticket-theater",
+        "metric-myopia"
+      ],
+      "oftenCausedBy": [
+        "the-consensus-trap"
+      ],
+      "relatedRedFlags": [
+        "roadmap changes without explanation",
+        "teams cannot defend current priorities"
+      ],
+      "relatedTechDecisions": [
+        "centralized-vs-distributed-product-ownership"
+      ],
+      "relatedPlaybooks": [
+        "run-decision-records-with-trade-offs"
+      ],
+      "commonQuote": "Leadership really wants this done first.",
+      "whoSaysThis": "product manager or delivery lead",
+      "counterMove": "Show what gets displaced before agreeing to what gets added.",
+      "falsePositive": "Not all executive input is capture. The failure mode is persistent distortion, not occasional override.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "the-dependency-fog",
+      "title": "The Dependency Fog",
+      "alternativeNames": [
+        "integration surprise",
+        "the hidden critical path",
+        "assumed handoff",
+        "coordination debt"
+      ],
+      "category": "process",
+      "summary": "Critical upstream and downstream dependencies exist, but are discovered too late and managed too weakly.",
+      "whoNoticesFirst": [
+        "delivery lead",
+        "architect",
+        "program lead"
+      ],
+      "mistakenFor": "normal coordination complexity",
+      "severity": "high",
+      "frequency": "very common",
+      "lifecycleStages": [
+        "planning",
+        "build",
+        "release"
+      ],
+      "whatItIs": "A team believes it understands the path to delivery, but hidden dependencies keep changing that path after work has started.",
+      "bestMomentToIntervene": "before sequencing work based on assumptions",
+      "blastRadius": [
+        "delivery",
+        "team",
+        "systems",
+        "business"
+      ],
+      "oftenMistakenAs": "bad luck",
+      "starts": "The plan looks achievable from the perspective of each individual team.",
+      "feelsReasonableBecause": "Dependencies are often socially known but not operationally managed.",
+      "escalates": "Integration assumptions fail, handoffs slip, and blockers appear serially instead of visibly.",
+      "ends": "Schedules slide, blame circulates, and teams discover they never had a shared delivery map.",
+      "earlyWarningSigns": [
+        "We'll need something from that team later.",
+        "Dependencies live mostly in conversations.",
+        "Integration points are assumed rather than tested."
+      ],
+      "midWarningSigns": [
+        "Blockers keep appearing after planning.",
+        "Teams report progress locally but not systemically.",
+        "Release plans depend on unowned external promises."
+      ],
+      "lateWarningSigns": [
+        "Everyone says they are waiting on everyone else.",
+        "Cross-team integration becomes a fire drill.",
+        "Dates move because unknowns arrive as surprises."
+      ],
+      "whyItHappens": [
+        "Local planning dominates system planning",
+        "Ownership boundaries are unclear",
+        "Interfaces are socially assumed, not technically or operationally validated",
+        "Cross-team coordination is underinvested"
+      ],
+      "immediateActions": [
+        "Map dependencies explicitly",
+        "Name owners, dates, and integration proof points",
+        "Surface assumptions in writing"
+      ],
+      "structuralFixes": [
+        "Track critical path dependencies separately",
+        "Add early integration milestones",
+        "Use program-level visibility only where it changes action"
+      ],
+      "whatNotToDo": [
+        "Do not treat every dependency as equal",
+        "Do not wait for full certainty before testing interfaces"
+      ],
+      "recoveryDifficulty": "medium-hard",
+      "aiCanHelpWith": [
+        "AI can extract dependency graphs from tickets, docs, code, and meeting notes and make critical paths more visible."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can make local work appear faster and cleaner while hiding the fact that system-wide dependency uncertainty remains unresolved."
+      ],
+      "aiSpecificNotes": "Dependency maps are only useful if they are acted on, not just generated.",
+      "oftenLeadsTo": [
+        "the-hero-trap",
+        "ownership-drift",
+        "the-invisible-deadline"
+      ],
+      "oftenCausedBy": [
+        "abstraction-addiction",
+        "platform-before-product"
+      ],
+      "relatedRedFlags": [
+        "integration is always later",
+        "nobody owns the interface between teams"
+      ],
+      "relatedTechDecisions": [
+        "shared-platform-vs-team-owned-components"
+      ],
+      "relatedPlaybooks": [
+        "run-cross-team-dependency-mapping"
+      ],
+      "commonQuote": "We should be unblocked once the other team lands their part.",
+      "whoSaysThis": "delivery lead or engineering manager",
+      "counterMove": "Turn vague dependencies into owned, testable commitments.",
+      "falsePositive": "Complex work really does have dependencies. The failure mode is unmanaged dependency, not dependency itself.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "local-optimization",
+      "title": "Local Optimization",
+      "alternativeNames": [
+        "silo efficiency",
+        "team-level goodhart",
+        "the throughput illusion",
+        "sub-system maximization"
+      ],
+      "category": "leadership",
+      "summary": "One team improves its own metric while creating or worsening bottlenecks in the wider system.",
+      "whoNoticesFirst": [
+        "architect",
+        "director",
+        "engineering manager"
+      ],
+      "mistakenFor": "efficiency",
+      "severity": "high",
+      "frequency": "common",
+      "lifecycleStages": [
+        "operate",
+        "delivery"
+      ],
+      "whatItIs": "A team's performance on its own metrics improves, but the changes harm or ignore system-wide flow and outcomes.",
+      "bestMomentToIntervene": "when team metrics are celebrated without checking downstream impact",
+      "blastRadius": [
+        "delivery",
+        "operations",
+        "team",
+        "business"
+      ],
+      "oftenMistakenAs": "strong team performance",
+      "starts": "A team is given a metric and improves it.",
+      "feelsReasonableBecause": "Teams are meant to own their numbers and improve them.",
+      "escalates": "Downstream teams absorb the cost invisibly. The handoff gets worse. Queue lengths grow elsewhere.",
+      "ends": "The system slows while each team reports improvement.",
+      "earlyWarningSigns": [
+        "Team celebrates throughput while downstream pain rises.",
+        "Metrics are team-level, not end-to-end.",
+        "Handoffs are not tracked."
+      ],
+      "midWarningSigns": [
+        "Queue length or wait time grows in adjacent teams.",
+        "Downstream teams describe getting too much, too fast, or in the wrong shape.",
+        "System-level lead time is not improving despite local gains."
+      ],
+      "lateWarningSigns": [
+        "Incidents arise at team boundaries.",
+        "No one owns the full flow.",
+        "Each team defends its numbers while the product suffers."
+      ],
+      "whyItHappens": [
+        "Silo incentives",
+        "Poor system-level metrics",
+        "Local autonomy without coordination",
+        "Goodhart's Law applied at team level"
+      ],
+      "immediateActions": [
+        "Map end-to-end flow from request to user value",
+        "Identify where work queues between teams",
+        "Add a cross-team outcome metric alongside local metrics"
+      ],
+      "structuralFixes": [
+        "Align incentives to end-to-end outcomes",
+        "Make handoff quality a first-class metric",
+        "Review system flow in addition to team velocity"
+      ],
+      "whatNotToDo": [
+        "Do not remove local metrics entirely",
+        "Do not assume good local numbers mean a healthy system"
+      ],
+      "recoveryDifficulty": "medium-hard",
+      "aiCanHelpWith": [
+        "AI can reveal system-wide flow bottlenecks if connected to data across team boundaries."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can hyper-optimize local workflows and make teams look even more efficient in isolation, deepening fragmentation."
+      ],
+      "aiSpecificNotes": "Optimizing parts independently does not optimize the whole.",
+      "oftenLeadsTo": [
+        "ticket-theater",
+        "metric-myopia"
+      ],
+      "oftenCausedBy": [
+        "stakeholder-capture"
+      ],
+      "relatedRedFlags": [
+        "each team is green but delivery is late",
+        "no one owns the end-to-end flow"
+      ],
+      "relatedTechDecisions": [
+        "team-topologies",
+        "platform-vs-stream-aligned-teams"
+      ],
+      "relatedPlaybooks": [
+        "optimize-for-flow-not-islands"
+      ],
+      "commonQuote": "Our team's velocity is up 20% this quarter.",
+      "whoSaysThis": "engineering manager in a planning review",
+      "counterMove": "Measure the handoff, not just the output.",
+      "falsePositive": "Strong team metrics are not the problem. Metrics that ignore system impact are.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "the-consensus-trap",
+      "title": "The Consensus Trap",
+      "alternativeNames": [
+        "decision by committee",
+        "the endless alignment",
+        "nobody owns the decision",
+        "analysis paralysis"
+      ],
+      "category": "people",
+      "summary": "Decision-making slows or stalls as the team seeks broad agreement that never fully arrives.",
+      "whoNoticesFirst": [
+        "engineering manager",
+        "product manager",
+        "architect"
+      ],
+      "mistakenFor": "inclusive culture",
+      "severity": "medium",
+      "frequency": "common",
+      "lifecycleStages": [
+        "strategy",
+        "planning"
+      ],
+      "whatItIs": "Important decisions circulate through too many people with no clear owner, producing delay or uncommitted half-decisions.",
+      "bestMomentToIntervene": "when a decision has been discussed more than twice without a named owner",
+      "blastRadius": [
+        "delivery",
+        "team",
+        "product"
+      ],
+      "oftenMistakenAs": "thorough process",
+      "starts": "A team wants buy-in and avoids making decisions that others might contest.",
+      "feelsReasonableBecause": "Involving people feels respectful and reduces the risk of pushback later.",
+      "escalates": "Every decision needs more input. Proposals get softened. Ownership stays fuzzy.",
+      "ends": "Stale proposals, missed windows, and quiet disengagement from the people who most wanted to move.",
+      "earlyWarningSigns": [
+        "Endless reviews with no clear decider.",
+        "Proposals get progressively softer.",
+        "People say we need to align more before proceeding."
+      ],
+      "midWarningSigns": [
+        "Decisions made in one meeting get reopened in the next.",
+        "No one can name who owns a key choice.",
+        "Work waits on clarity that never comes."
+      ],
+      "lateWarningSigns": [
+        "Decisions are made by attrition or accident.",
+        "The team executes on the least-contested option, not the best one.",
+        "Strong contributors disengage from the decision process."
+      ],
+      "whyItHappens": [
+        "Unclear decision rights",
+        "Conflict avoidance",
+        "Over-collaboration norms",
+        "Fear of being wrong publicly"
+      ],
+      "immediateActions": [
+        "Name a decision owner before the next discussion",
+        "Time-box input: a fixed period for consultation, then a decision",
+        "Separate consultation from approval explicitly"
+      ],
+      "structuralFixes": [
+        "Use a DRI (directly responsible individual) model",
+        "Make decision records part of normal delivery hygiene",
+        "Distinguish decisions that need consensus from decisions that need awareness"
+      ],
+      "whatNotToDo": [
+        "Do not confuse consultation with consent",
+        "Do not make every decision a group decision"
+      ],
+      "recoveryDifficulty": "medium",
+      "aiCanHelpWith": [
+        "AI can summarize positions and surface genuine disagreement crisply, reducing the surface area of the decision."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can multiply plausible arguments for every position, making consensus feel even further away."
+      ],
+      "aiSpecificNotes": "More arguments do not mean better decisions.",
+      "oftenLeadsTo": [
+        "the-invisible-deadline",
+        "stakeholder-capture"
+      ],
+      "oftenCausedBy": [
+        "weak governance structures"
+      ],
+      "relatedRedFlags": [
+        "nobody can name who owns a key decision",
+        "proposals get softer over time"
+      ],
+      "relatedTechDecisions": [
+        "rfc-vs-dri-model",
+        "team-autonomy-boundaries"
+      ],
+      "relatedPlaybooks": [
+        "make-decisions-with-a-dri"
+      ],
+      "commonQuote": "We just need a bit more alignment before we move forward.",
+      "whoSaysThis": "product manager or engineering manager",
+      "counterMove": "Assign an owner before scheduling another discussion.",
+      "falsePositive": "Some decisions genuinely require consensus. The failure mode is treating all decisions this way.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "metric-myopia",
+      "title": "Metric Myopia",
+      "alternativeNames": [
+        "Goodhart's trap",
+        "dashboard disease",
+        "proxy metric poisoning",
+        "measurement displacement"
+      ],
+      "category": "leadership",
+      "summary": "Teams overvalue what is measurable and systematically underweight what actually matters.",
+      "whoNoticesFirst": [
+        "engineering manager",
+        "delivery lead",
+        "data-savvy engineer"
+      ],
+      "mistakenFor": "data-driven management",
+      "severity": "high",
+      "frequency": "very common",
+      "lifecycleStages": [
+        "planning",
+        "operate"
+      ],
+      "whatItIs": "Proxy metrics displace real outcomes as the primary signal for team and organizational health.",
+      "bestMomentToIntervene": "when improving a metric stops correlating with improving the actual outcome",
+      "blastRadius": [
+        "team",
+        "delivery",
+        "product",
+        "leadership"
+      ],
+      "oftenMistakenAs": "rigorous management",
+      "starts": "The organization wants measurable accountability and installs dashboards.",
+      "feelsReasonableBecause": "Quantified goals feel objective and fair.",
+      "escalates": "Teams learn that the metric moves independently of the outcome. Gaming begins, usually unconsciously at first.",
+      "ends": "Metrics improve, real performance does not, and management is the last to see it.",
+      "earlyWarningSigns": [
+        "Dashboards dominate planning conversations.",
+        "Nuanced concerns get dismissed if they are not in the numbers.",
+        "Teams talk about the metric more than the user."
+      ],
+      "midWarningSigns": [
+        "Metric is improving but incidents, complaints, or churn are not falling.",
+        "People work around measurement rather than around delivery.",
+        "Counter-metrics go unmeasured."
+      ],
+      "lateWarningSigns": [
+        "The metric has been gamed sufficiently that it no longer signals anything.",
+        "Real problems are visible to frontline teams but invisible to leadership.",
+        "Morale drops even as numbers look good."
+      ],
+      "whyItHappens": [
+        "Proxy metrics become targets per Goodhart's Law",
+        "Measurement is detached from reality",
+        "Leadership prefers legible data to ambiguous truth",
+        "Counter-metrics are not tracked alongside primary metrics"
+      ],
+      "immediateActions": [
+        "Pair each primary metric with a counter-metric",
+        "Add qualitative signal alongside quantitative dashboards",
+        "Ask what the metric would miss if it were being gamed"
+      ],
+      "structuralFixes": [
+        "Tie metrics to user or business outcomes, not internal activity",
+        "Review metrics against real incidents and outcomes quarterly",
+        "Rotate which metrics receive executive attention"
+      ],
+      "whatNotToDo": [
+        "Do not abolish measurement",
+        "Do not add more metrics to fix metric distortion"
+      ],
+      "recoveryDifficulty": "medium-hard",
+      "aiCanHelpWith": [
+        "AI can help correlate metrics with real incidents and outcomes, surfacing disconnects between measures and reality."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can turbocharge metric performance with endless analytics and polished dashboards that make proxy measures look authoritative."
+      ],
+      "aiSpecificNotes": "A confident-looking dashboard is not an honest one.",
+      "oftenLeadsTo": [
+        "ticket-theater",
+        "local-optimization",
+        "synthetic-velocity"
+      ],
+      "oftenCausedBy": [
+        "stakeholder-capture"
+      ],
+      "relatedRedFlags": [
+        "metric improves while user complaints grow",
+        "teams optimize for the review not the outcome"
+      ],
+      "relatedTechDecisions": [
+        "okrs-vs-kpis",
+        "team-health-vs-output-metrics"
+      ],
+      "relatedPlaybooks": [
+        "review-metrics-against-outcomes"
+      ],
+      "commonQuote": "The numbers look great this quarter.",
+      "whoSaysThis": "senior leader in a business review",
+      "counterMove": "Add a counter-metric before celebrating the primary one.",
+      "falsePositive": "Some metrics are genuinely useful. Myopia begins when the metric displaces the outcome it was meant to represent.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "platform-before-product",
+      "title": "Platform Before Product",
+      "alternativeNames": [
+        "infrastructure first trap",
+        "the internal tooling spiral",
+        "foundation without demand",
+        "build-for-scale-first"
+      ],
+      "category": "technical",
+      "summary": "Internal platform investment grows significantly beyond proven user or product need.",
+      "whoNoticesFirst": [
+        "architect",
+        "product lead",
+        "engineering manager"
+      ],
+      "mistakenFor": "strategic investment",
+      "severity": "high",
+      "frequency": "common",
+      "lifecycleStages": [
+        "strategy",
+        "build"
+      ],
+      "whatItIs": "A team or organization builds a platform, framework, or internal tool before demonstrating repeatable demand from multiple real users.",
+      "bestMomentToIntervene": "before platform work becomes a multi-team or multi-quarter investment",
+      "blastRadius": [
+        "delivery",
+        "team",
+        "business",
+        "product"
+      ],
+      "oftenMistakenAs": "responsible engineering investment",
+      "starts": "A team spots a repeated pattern and decides to build a shared solution.",
+      "feelsReasonableBecause": "Internal platforms promise leverage and consistency across teams.",
+      "escalates": "The platform grows features its users did not request. Adoption is weaker than expected. Teams build workarounds.",
+      "ends": "The platform absorbs significant engineering time, has thin adoption, and becomes a maintenance liability.",
+      "earlyWarningSigns": [
+        "Platform language appears before usage evidence.",
+        "The team is designing for teams that have not yet asked for help.",
+        "The roadmap describes future capabilities, not solved present problems."
+      ],
+      "midWarningSigns": [
+        "Adoption is being pushed rather than pulled.",
+        "Users request features the platform cannot support without rework.",
+        "The platform team cannot describe which teams depend on them for what."
+      ],
+      "lateWarningSigns": [
+        "The platform team is large but its impact is unclear.",
+        "Consumer teams build around the platform, not on it.",
+        "The platform is defended by its creators but not loved by its users."
+      ],
+      "whyItHappens": [
+        "Solutionism",
+        "Architecture prestige",
+        "Weak user feedback loops",
+        "Desire to eliminate duplication before proving the pattern"
+      ],
+      "immediateActions": [
+        "Identify which teams use the platform for what, with evidence",
+        "Stop building features with fewer than two confirmed use cases",
+        "Define adoption thresholds for continued investment"
+      ],
+      "structuralFixes": [
+        "Prove repeating need before platforming",
+        "Treat internal users with the same rigor as external users",
+        "Set explicit criteria for platform graduation from prototype"
+      ],
+      "whatNotToDo": [
+        "Do not expand platform scope to justify existing investment",
+        "Do not treat low adoption as a marketing problem"
+      ],
+      "recoveryDifficulty": "hard",
+      "aiCanHelpWith": [
+        "AI can accelerate thin-slice prototypes to validate actual demand before full platform investment."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can generate internal tooling and frameworks too cheaply, encouraging overbuilding before demand is proven."
+      ],
+      "aiSpecificNotes": "Speed of construction is not evidence of need.",
+      "oftenLeadsTo": [
+        "abstraction-addiction",
+        "the-dependency-fog"
+      ],
+      "oftenCausedBy": [
+        "the-friendly-rewrite"
+      ],
+      "relatedRedFlags": [
+        "platform has more features than active users",
+        "consumer teams route around the platform"
+      ],
+      "relatedTechDecisions": [
+        "build-vs-buy",
+        "shared-platform-vs-team-owned-components"
+      ],
+      "relatedPlaybooks": [
+        "validate-demand-before-platforming"
+      ],
+      "commonQuote": "Once teams adopt it, they'll see the value.",
+      "whoSaysThis": "platform team lead or architect",
+      "counterMove": "Find three teams who need it today before building for everyone tomorrow.",
+      "falsePositive": "Some platforms are justified by real repeated need. The failure mode is building before that need is demonstrated.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "ownership-drift",
+      "title": "Ownership Drift",
+      "alternativeNames": [
+        "shared responsibility vacuum",
+        "the orphaned service",
+        "stewardship decay",
+        "reorg residue"
+      ],
+      "category": "people",
+      "summary": "Responsibility for systems, services, or decisions becomes unclear over time as teams and structures evolve.",
+      "whoNoticesFirst": [
+        "engineering manager",
+        "support lead",
+        "operations",
+        "senior IC"
+      ],
+      "mistakenFor": "shared ownership",
+      "severity": "high",
+      "frequency": "very common",
+      "lifecycleStages": [
+        "operate"
+      ],
+      "whatItIs": "Services, systems, or decisions that once had clear owners lose that clarity through reorgs, growth, or neglect.",
+      "bestMomentToIntervene": "when on-call routing or incident response becomes unclear",
+      "blastRadius": [
+        "operations",
+        "delivery",
+        "team",
+        "reliability"
+      ],
+      "oftenMistakenAs": "growing pains",
+      "starts": "A service or responsibility was clearly owned at creation.",
+      "feelsReasonableBecause": "Teams grow, reorg, and focus shifts. Ownership transfer is assumed but rarely formalized.",
+      "escalates": "Documentation goes stale. On-call rotations become unclear. Incidents bounce between teams.",
+      "ends": "Something breaks, nobody knows who owns it, and the same people always end up holding the bag.",
+      "earlyWarningSigns": [
+        "Unclear on-call ownership for some services.",
+        "Documentation is stale or absent.",
+        "Backlog items for certain systems go untouched."
+      ],
+      "midWarningSigns": [
+        "Incidents require escalation to find the right owner.",
+        "Fixes stall because no one feels accountable.",
+        "Teams describe services as belonging to a team that no longer exists."
+      ],
+      "lateWarningSigns": [
+        "Nobody defends quality or roadmap for the service.",
+        "The same unowned incidents recur.",
+        "The service becomes dangerous to touch and dangerous to ignore."
+      ],
+      "whyItHappens": [
+        "Reorgs reassign people but not services",
+        "System sprawl outpaces stewardship",
+        "Ownership transfer is verbal not formal",
+        "Unclear accountability structures"
+      ],
+      "immediateActions": [
+        "Audit service ownership across all critical systems",
+        "Assign a named owner and backup for each service",
+        "Identify services with no recent commits, no owner, and active users"
+      ],
+      "structuralFixes": [
+        "Publish service ownership and keep it current",
+        "Make ownership a condition of service operation",
+        "Include ownership review in reorg planning"
+      ],
+      "whatNotToDo": [
+        "Do not accept everyone owns it as an answer",
+        "Do not wait for an incident to force the ownership conversation"
+      ],
+      "recoveryDifficulty": "medium",
+      "aiCanHelpWith": [
+        "AI can help detect orphan services, stale owners, and outdated documentation across large codebases."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can mask drift by auto-answering questions from stale docs, creating an illusion of knowledge where none currently exists."
+      ],
+      "aiSpecificNotes": "Accurate answers from stale sources are still wrong.",
+      "oftenLeadsTo": [
+        "the-hero-trap",
+        "silent-model-drift"
+      ],
+      "oftenCausedBy": [
+        "the-dependency-fog"
+      ],
+      "relatedRedFlags": [
+        "incidents bounce without resolution",
+        "no one can name the owner of a live service"
+      ],
+      "relatedTechDecisions": [
+        "service-ownership-model",
+        "team-topologies"
+      ],
+      "relatedPlaybooks": [
+        "re-establish-service-ownership"
+      ],
+      "commonQuote": "I think the platform team owns that, but you might want to check with infrastructure.",
+      "whoSaysThis": "any engineer during an incident",
+      "counterMove": "Every service has a name on it or it does not run.",
+      "falsePositive": "Collaborative ownership works in small, stable teams. Drift begins when teams change and ownership does not.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "synthetic-velocity",
+      "title": "Synthetic Velocity",
+      "alternativeNames": [
+        "output theater",
+        "activity inflation",
+        "busy but not moving",
+        "throughput without progress"
+      ],
+      "category": "ai",
+      "summary": "Output volume rises sharply while true understanding, maintainability, and durable progress do not.",
+      "whoNoticesFirst": [
+        "staff engineer",
+        "engineering manager",
+        "ai engineer"
+      ],
+      "mistakenFor": "10x productivity",
+      "severity": "high",
+      "frequency": "increasing",
+      "lifecycleStages": [
+        "build",
+        "delivery"
+      ],
+      "whatItIs": "Teams produce more code, tickets, documents, and visible activity — often assisted by AI — without the expected improvement in outcomes.",
+      "bestMomentToIntervene": "when output accelerates before quality controls mature",
+      "blastRadius": [
+        "code",
+        "team",
+        "delivery",
+        "operations"
+      ],
+      "oftenMistakenAs": "modern engineering leverage",
+      "starts": "New tooling makes many kinds of work faster to produce.",
+      "feelsReasonableBecause": "The increase in visible activity is real, and some of it is genuinely useful.",
+      "escalates": "Review becomes shallower than generation. Ownership weakens. Rework and confusion rise slowly rather than dramatically.",
+      "ends": "The organization confuses artifact volume with actual capability and pays later in defects, drift, and cognitive load.",
+      "earlyWarningSigns": [
+        "PR volume spikes faster than review capacity.",
+        "Generated docs and code proliferate quickly.",
+        "People cite speed more often than understanding."
+      ],
+      "midWarningSigns": [
+        "Rework rises quietly.",
+        "Code authorship becomes blurry.",
+        "The team closes more work while feeling less certain."
+      ],
+      "lateWarningSigns": [
+        "Incident rate, regression rate, or maintenance burden climbs.",
+        "Nobody fully owns some generated areas.",
+        "The system looks productive but feels brittle."
+      ],
+      "whyItHappens": [
+        "Organizations overvalue visible output",
+        "Review and validation do not scale with generation",
+        "Productivity claims arrive before operational evidence",
+        "AI lowers production cost faster than decision cost"
+      ],
+      "immediateActions": [
+        "Measure rework, incidents, rollback rate, and review burden",
+        "Require clear ownership for generated artifacts",
+        "Slow down in high-risk areas"
+      ],
+      "structuralFixes": [
+        "Treat AI-assisted generation as input, not completion",
+        "Upgrade review practices for generated code and docs",
+        "Measure durable outcomes instead of raw output"
+      ],
+      "whatNotToDo": [
+        "Do not ban useful tools reactively",
+        "Do not keep celebrating volume while ignoring maintenance cost"
+      ],
+      "recoveryDifficulty": "medium",
+      "aiCanHelpWith": [
+        "AI can still reduce toil and accelerate well-bounded implementation if paired with strong review, ownership, and testing."
+      ],
+      "aiCanMakeWorseBy": [
+        "This failure mode is itself AI-amplified: generation becomes cheap, so weak ideas and half-understood changes travel further and faster."
+      ],
+      "aiSpecificNotes": "Cheap output is not cheap system behavior.",
+      "oftenLeadsTo": [
+        "autocomplete-architecture",
+        "ticket-theater",
+        "ownership-drift"
+      ],
+      "oftenCausedBy": [
+        "metric-myopia"
+      ],
+      "relatedRedFlags": [
+        "more artifacts, less clarity",
+        "review becomes approval-shaped instead of understanding-shaped"
+      ],
+      "relatedTechDecisions": [
+        "where-to-allow-ai-assisted-development"
+      ],
+      "relatedPlaybooks": [
+        "measure-durable-outcomes-not-artifact-volume"
+      ],
+      "commonQuote": "We're shipping way faster now.",
+      "whoSaysThis": "engineering manager or team lead",
+      "counterMove": "Ask what got easier to produce, and what got easier to trust.",
+      "falsePositive": "Real productivity gains exist. Synthetic velocity begins when output and understanding separate.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "silent-model-drift",
+      "title": "Silent Model Drift",
+      "alternativeNames": [
+        "behavioral degradation",
+        "quiet regression",
+        "model decay",
+        "the shifting baseline"
+      ],
+      "category": "ai",
+      "summary": "Model behavior changes materially in production before the organization notices or responds effectively.",
+      "whoNoticesFirst": [
+        "ai engineer",
+        "support lead",
+        "operations"
+      ],
+      "mistakenFor": "normal variance",
+      "severity": "critical",
+      "frequency": "increasing",
+      "lifecycleStages": [
+        "operate"
+      ],
+      "whatItIs": "An AI-powered system degrades, shifts, or behaves differently over time due to model, provider, prompt, data, or context changes.",
+      "bestMomentToIntervene": "before production, by designing monitoring and evals around expected behavior",
+      "blastRadius": [
+        "product",
+        "operations",
+        "business",
+        "trust"
+      ],
+      "oftenMistakenAs": "random weirdness",
+      "starts": "An AI feature ships and behaves acceptably enough in early use.",
+      "feelsReasonableBecause": "Variance is expected, and small quality shifts rarely trigger immediate alarms.",
+      "escalates": "Prompts change, provider behavior changes, data shifts, or user patterns evolve. Quality declines unevenly.",
+      "ends": "Trust falls, support load rises, and the organization realizes too late that the system changed before its controls did.",
+      "earlyWarningSigns": [
+        "Some edge cases feel a bit worse lately.",
+        "User complaints are anecdotal and hard to aggregate.",
+        "Prompt or context changes are poorly tracked."
+      ],
+      "midWarningSigns": [
+        "Regression patterns appear across similar tasks.",
+        "Support gets recurring but weakly classified issues.",
+        "Internal confidence drops before formal metrics do."
+      ],
+      "lateWarningSigns": [
+        "Business errors or user trust issues become visible.",
+        "Teams cannot explain when quality started changing.",
+        "Rollback options are limited or absent."
+      ],
+      "whyItHappens": [
+        "Weak behavioral monitoring",
+        "Prompt, retrieval, model, or provider changes lack operational controls",
+        "Production evals are immature",
+        "Human anecdote arrives before system evidence"
+      ],
+      "immediateActions": [
+        "Stabilize prompts, versions, and dependencies",
+        "Create regression checks around high-risk tasks",
+        "Classify support signals into model-behavior patterns"
+      ],
+      "structuralFixes": [
+        "Run canaries and goldens",
+        "Track model, prompt, retrieval, and context versions explicitly",
+        "Maintain fallback or degradation paths"
+      ],
+      "whatNotToDo": [
+        "Do not treat user trust decay as ordinary noise",
+        "Do not rely solely on provider assurances"
+      ],
+      "recoveryDifficulty": "hard",
+      "aiCanHelpWith": [
+        "AI can help cluster failure cases, generate evaluation sets, and detect subtle answer-pattern changes across production traffic."
+      ],
+      "aiCanMakeWorseBy": [
+        "This is an AI-native failure mode: systems whose behavior is partly probabilistic and externally influenced drift silently unless deliberately observed."
+      ],
+      "aiSpecificNotes": "Behavioral monitoring must reflect task quality, not just uptime or latency.",
+      "oftenLeadsTo": [
+        "benchmark-mirage",
+        "ownership-drift"
+      ],
+      "oftenCausedBy": [
+        "prompt-ops-chaos",
+        "rag-without-ground-truth"
+      ],
+      "relatedRedFlags": [
+        "quality feels different but nobody can prove it",
+        "support sees a pattern before metrics do"
+      ],
+      "relatedTechDecisions": [
+        "managed-model-vs-self-hosted",
+        "online-vs-batch-evaluation"
+      ],
+      "relatedPlaybooks": [
+        "monitor-model-behavior-in-production"
+      ],
+      "commonQuote": "It's probably just variance.",
+      "whoSaysThis": "ai engineer or product manager",
+      "counterMove": "If behavior matters, version it, observe it, and test it like a production dependency.",
+      "falsePositive": "Some variance is normal. Silent drift is when meaningful change arrives without meaningful control.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "autocomplete-architecture",
+      "title": "Autocomplete Architecture",
+      "alternativeNames": [
+        "AI-generated design debt",
+        "vibe architecture",
+        "generated structure without intent",
+        "copilot coupling"
+      ],
+      "category": "ai",
+      "summary": "Teams accept AI-suggested structures faster than they understand or own them, embedding design decisions nobody made consciously.",
+      "whoNoticesFirst": [
+        "senior engineer",
+        "architect",
+        "new joiner"
+      ],
+      "mistakenFor": "rapid prototyping",
+      "severity": "high",
+      "frequency": "increasing",
+      "lifecycleStages": [
+        "build"
+      ],
+      "whatItIs": "Generated code lands quickly but architectural choices embedded in it are not reviewed, understood, or owned by the team.",
+      "bestMomentToIntervene": "before the generated structure becomes load-bearing",
+      "blastRadius": [
+        "code",
+        "delivery",
+        "team"
+      ],
+      "oftenMistakenAs": "efficient development",
+      "starts": "A team uses AI to scaffold a feature or service and the output looks reasonable.",
+      "feelsReasonableBecause": "The code works, tests pass, and it saved significant time.",
+      "escalates": "Patterns from the generated code spread. New code follows the same shape without questioning it. Coupling accumulates.",
+      "ends": "The architecture has design decisions nobody made, nobody understands fully, and nobody knows how to change safely.",
+      "earlyWarningSigns": [
+        "Generated code lands without a design discussion.",
+        "Architectural patterns spread across the codebase from a generated starting point.",
+        "Nobody can explain why the structure is the way it is."
+      ],
+      "midWarningSigns": [
+        "Inconsistent patterns appear because different prompts produced different structures.",
+        "Hidden coupling makes changes expensive.",
+        "Reviews focus on correctness, not structure."
+      ],
+      "lateWarningSigns": [
+        "The team avoids changing structural code because nobody is confident.",
+        "Incidents have architectural causes nobody anticipated.",
+        "New joiners cannot build a mental model of the system."
+      ],
+      "whyItHappens": [
+        "Speed of generation outpaces capacity for design review",
+        "Weak review practices for generated code",
+        "Output looks polished so scrutiny drops",
+        "Architecture decisions are embedded implicitly in generated code"
+      ],
+      "immediateActions": [
+        "Require explanation of any generated structural decision before it lands",
+        "Review generated code for structure, not just correctness",
+        "Trace the origin of any repeated structural pattern"
+      ],
+      "structuralFixes": [
+        "Make architectural review a condition of generated code merging",
+        "Maintain a lightweight architecture decision record",
+        "Distinguish implementation generation from design generation"
+      ],
+      "whatNotToDo": [
+        "Do not ban AI code generation",
+        "Do not let correctness substitute for comprehension"
+      ],
+      "recoveryDifficulty": "medium-hard",
+      "aiCanHelpWith": [
+        "AI can still accelerate implementation significantly once design choices are made explicitly and consciously."
+      ],
+      "aiCanMakeWorseBy": [
+        "Native mode: AI scales questionable design instantly across a codebase before anyone has reviewed the implicit decisions embedded in the output."
+      ],
+      "aiSpecificNotes": "Passing tests do not validate architectural choices.",
+      "oftenLeadsTo": [
+        "abstraction-addiction",
+        "the-dependency-fog"
+      ],
+      "oftenCausedBy": [
+        "synthetic-velocity"
+      ],
+      "relatedRedFlags": [
+        "nobody can explain why the structure is shaped this way",
+        "generated patterns spread without review"
+      ],
+      "relatedTechDecisions": [
+        "where-to-allow-ai-assisted-development",
+        "framework-vs-library"
+      ],
+      "relatedPlaybooks": [
+        "review-generated-code-for-structure-not-just-correctness"
+      ],
+      "commonQuote": "The AI just scaffolded it, it's fine.",
+      "whoSaysThis": "engineer closing a PR",
+      "counterMove": "Understand the structure before you inherit it.",
+      "falsePositive": "Generated code can be excellent. The failure mode is adopting embedded design decisions without examining them.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "benchmark-mirage",
+      "title": "The Benchmark Mirage",
+      "alternativeNames": [
+        "leaderboard chasing",
+        "eval overfitting",
+        "the demo illusion",
+        "benchmark goodhart"
+      ],
+      "category": "ai",
+      "summary": "Model selection or evaluation is guided by benchmark performance that does not reflect real production behavior.",
+      "whoNoticesFirst": [
+        "ai engineer",
+        "product lead",
+        "support lead"
+      ],
+      "mistakenFor": "evidence-based evaluation",
+      "severity": "high",
+      "frequency": "common in AI work",
+      "lifecycleStages": [
+        "planning",
+        "release"
+      ],
+      "whatItIs": "A team selects, tunes, or presents a model based on benchmark scores that do not map to the tasks, formats, or edge cases that matter in production.",
+      "bestMomentToIntervene": "before a model is selected based primarily on published benchmarks",
+      "blastRadius": [
+        "product",
+        "business",
+        "trust"
+      ],
+      "oftenMistakenAs": "rigorous model selection",
+      "starts": "A team needs to choose or evaluate a model and reaches for published benchmark scores.",
+      "feelsReasonableBecause": "Benchmarks are produced by credible sources and offer a consistent comparison point.",
+      "escalates": "The chosen model performs well in demos but struggles with real user tasks, edge cases, or production formats.",
+      "ends": "Trust erodes, performance is inconsistent, and the team realizes the eval never matched the use case.",
+      "earlyWarningSigns": [
+        "Model selection discussions center on benchmark rankings.",
+        "No task-specific evaluation exists.",
+        "Demo inputs are carefully selected and not representative."
+      ],
+      "midWarningSigns": [
+        "Good benchmark model underperforms on real tasks.",
+        "Users encounter failure modes that were not tested.",
+        "The team cannot explain the gap between benchmark and production."
+      ],
+      "lateWarningSigns": [
+        "Trust in the AI feature declines despite strong benchmark numbers.",
+        "Significant effort goes into prompting around model weaknesses.",
+        "The team re-evaluates the model selection with evidence that should have existed before launch."
+      ],
+      "whyItHappens": [
+        "Benchmarks are accessible and published",
+        "Task-level evaluation is expensive to build",
+        "Stakeholder pressure favors legible comparisons",
+        "Demo conditions do not reproduce production conditions"
+      ],
+      "immediateActions": [
+        "Build a small evaluation set from real or representative production inputs",
+        "Run shadow testing with real user tasks before committing",
+        "Include human review of representative outputs in evaluation"
+      ],
+      "structuralFixes": [
+        "Maintain a domain-specific evaluation harness",
+        "Require task-grounded evidence for model selection decisions",
+        "Separate benchmark review from production readiness review"
+      ],
+      "whatNotToDo": [
+        "Do not dismiss benchmarks entirely",
+        "Do not treat provider evaluation as neutral"
+      ],
+      "recoveryDifficulty": "medium",
+      "aiCanHelpWith": [
+        "AI can help generate scenario-based eval sets if the scenarios are carefully curated from real production patterns."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI-native by definition: the failure mode is built into how models are marketed and selected."
+      ],
+      "aiSpecificNotes": "A model that wins benchmarks you did not set may be optimized for problems you do not have.",
+      "oftenLeadsTo": [
+        "rag-without-ground-truth",
+        "silent-model-drift"
+      ],
+      "oftenCausedBy": [
+        "stakeholder-capture",
+        "weak evaluation discipline"
+      ],
+      "relatedRedFlags": [
+        "selection was driven by provider marketing",
+        "no task-level evals exist before launch"
+      ],
+      "relatedTechDecisions": [
+        "managed-model-vs-self-hosted",
+        "fine-tuning-vs-prompting"
+      ],
+      "relatedPlaybooks": [
+        "build-a-task-grounded-evaluation-harness"
+      ],
+      "commonQuote": "It scored highest on MMLU, so it should be the best choice.",
+      "whoSaysThis": "product lead or ai engineer in a model selection discussion",
+      "counterMove": "Build the eval before you pick the model.",
+      "falsePositive": "Benchmarks provide useful signal. The mirage begins when they substitute for task-grounded evidence.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "rag-without-ground-truth",
+      "title": "RAG Without Ground Truth",
+      "alternativeNames": [
+        "retrieval theater",
+        "confident hallucination pipeline",
+        "citation placebo",
+        "knowledge assistant without knowledge"
+      ],
+      "category": "ai",
+      "summary": "A retrieval-augmented system is built and deployed before source quality, citation reliability, and answer validation are established.",
+      "whoNoticesFirst": [
+        "ai engineer",
+        "support lead",
+        "domain expert"
+      ],
+      "mistakenFor": "knowledge assistant progress",
+      "severity": "high",
+      "frequency": "increasing",
+      "lifecycleStages": [
+        "build",
+        "operate"
+      ],
+      "whatItIs": "A RAG pipeline retrieves from untrusted or unvalidated sources and presents confident answers without ground-truth verification.",
+      "bestMomentToIntervene": "before the system is presented to users as authoritative",
+      "blastRadius": [
+        "product",
+        "trust",
+        "business"
+      ],
+      "oftenMistakenAs": "working knowledge retrieval",
+      "starts": "A team builds a retrieval system over a corpus of documents and it produces fluent, plausible answers.",
+      "feelsReasonableBecause": "Answers look good and demos are impressive.",
+      "escalates": "Answers are confidently wrong. Sources are stale, out of scope, or misinterpreted. Users trust the system more than they should.",
+      "ends": "A significant error surfaces publicly or operationally. The system loses credibility that is hard to recover.",
+      "earlyWarningSigns": [
+        "Source trust and freshness are vague.",
+        "Evaluation is based on demos rather than systematic testing.",
+        "No human expert has reviewed representative outputs."
+      ],
+      "midWarningSigns": [
+        "Users encounter confident wrong answers.",
+        "Citations point to sources that do not support the claim.",
+        "Edge cases and out-of-scope questions are handled poorly."
+      ],
+      "lateWarningSigns": [
+        "User distrust becomes explicit.",
+        "Support receives escalations about false information.",
+        "The team cannot explain which sources are authoritative."
+      ],
+      "whyItHappens": [
+        "Source quality is ignored in favor of fluency",
+        "Evaluation is weak or demo-based",
+        "No ground-truth corpus was built before deployment",
+        "Hallucination risk is underestimated"
+      ],
+      "immediateActions": [
+        "Define and publish the trusted source list",
+        "Add citation requirements and source verification",
+        "Build a hallucination test set from known facts in the domain"
+      ],
+      "structuralFixes": [
+        "Maintain a curated, versioned ground-truth corpus",
+        "Run regular answer quality audits with domain experts",
+        "Build fallback responses for out-of-scope queries"
+      ],
+      "whatNotToDo": [
+        "Do not treat fluency as accuracy",
+        "Do not deploy without domain expert sign-off on representative outputs"
+      ],
+      "recoveryDifficulty": "hard",
+      "aiCanHelpWith": [
+        "AI can improve discoverability and summarization if retrieval and validation are disciplined."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI makes plausible-sounding nonsense feel authoritative and confident, which is the core risk of this failure mode."
+      ],
+      "aiSpecificNotes": "A fluent answer is not a correct answer.",
+      "oftenLeadsTo": [
+        "stakeholder-capture",
+        "silent-model-drift"
+      ],
+      "oftenCausedBy": [
+        "synthetic-velocity"
+      ],
+      "relatedRedFlags": [
+        "demos are impressive but production behavior is not tested",
+        "source list is not defined or maintained"
+      ],
+      "relatedTechDecisions": [
+        "managed-model-vs-self-hosted",
+        "fine-tuning-vs-prompting"
+      ],
+      "relatedPlaybooks": [
+        "build-grounded-retrieval-with-source-trust"
+      ],
+      "commonQuote": "The demo looks great. It's pulling from our docs.",
+      "whoSaysThis": "product manager or ai engineer after a demo",
+      "counterMove": "Ask what happens when it does not know the answer before asking what happens when it does.",
+      "falsePositive": "RAG is a powerful pattern. The failure mode is deploying it without ground truth, not using it.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "prompt-ops-chaos",
+      "title": "Prompt Ops Chaos",
+      "alternativeNames": [
+        "prompt sprawl",
+        "invisible system prompt",
+        "config drift",
+        "the undocumented instruction layer"
+      ],
+      "category": "ai",
+      "summary": "Prompts, model settings, and hidden instructions change without version control, making system behavior unpredictable and undebuggable.",
+      "whoNoticesFirst": [
+        "ai engineer",
+        "platform engineer",
+        "operations"
+      ],
+      "mistakenFor": "fast iteration",
+      "severity": "medium",
+      "frequency": "common",
+      "lifecycleStages": [
+        "build",
+        "operate"
+      ],
+      "whatItIs": "The instruction layer of an AI system — prompts, system messages, retrieval configuration, tool definitions — changes without the controls applied to other production code.",
+      "bestMomentToIntervene": "before the first production prompt is written without version control",
+      "blastRadius": [
+        "product",
+        "operations",
+        "team"
+      ],
+      "oftenMistakenAs": "agile AI development",
+      "starts": "Prompts live in a shared doc, a config file, or someone's head.",
+      "feelsReasonableBecause": "Prompts feel more like text than code and iteration is fast.",
+      "escalates": "Behavior changes unexpectedly. Nobody can reproduce the good version. Debugging requires archaeology.",
+      "ends": "A behavior change causes a production incident and the team cannot explain when or why the prompt changed.",
+      "earlyWarningSigns": [
+        "Prompts live in chat threads, docs, or config files with no history.",
+        "Changes to prompts are not tracked alongside code changes.",
+        "Different environments use different prompts without documentation."
+      ],
+      "midWarningSigns": [
+        "Behavior changes cannot be traced to a specific change.",
+        "Testing a prompt change requires manual comparison.",
+        "The team argues about what the current prompt says."
+      ],
+      "lateWarningSigns": [
+        "A production issue is traced to an undocumented prompt change.",
+        "Rollback is not possible because no previous version was saved.",
+        "Debugging requires reconstructing history from conversations."
+      ],
+      "whyItHappens": [
+        "Poor versioning discipline",
+        "Prompts are treated as text, not configuration",
+        "Low observability of AI system internals",
+        "Fast iteration norms override operational controls"
+      ],
+      "immediateActions": [
+        "Move all prompts into version-controlled files immediately",
+        "Log the active prompt version alongside every production request",
+        "Create a change log for any prompt modification"
+      ],
+      "structuralFixes": [
+        "Version prompts, models, tools, and context windows together",
+        "Build eval runs that run automatically on prompt changes",
+        "Treat prompt changes as production deployments"
+      ],
+      "whatNotToDo": [
+        "Do not allow prompts to live outside version control",
+        "Do not iterate on production prompts without staging validation"
+      ],
+      "recoveryDifficulty": "medium",
+      "aiCanHelpWith": [
+        "AI can help diff prompt variants and summarize behavioral differences if prompts are tracked."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI systems are uniquely vulnerable to invisible behavioral changes because so much behavior is encoded in the instruction layer rather than in deterministic code."
+      ],
+      "aiSpecificNotes": "Configuration drift is still drift even when it lives in a prompt.",
+      "oftenLeadsTo": [
+        "silent-model-drift",
+        "ticket-theater"
+      ],
+      "oftenCausedBy": [
+        "weak operational discipline"
+      ],
+      "relatedRedFlags": [
+        "nobody can reproduce the good version",
+        "prompt changes are not in the deployment log"
+      ],
+      "relatedTechDecisions": [
+        "managed-model-vs-self-hosted"
+      ],
+      "relatedPlaybooks": [
+        "version-prompts-and-evaluations"
+      ],
+      "commonQuote": "I just tweaked the prompt a bit, it should be fine.",
+      "whoSaysThis": "ai engineer or product manager",
+      "counterMove": "If you changed the prompt, you changed the system.",
+      "falsePositive": "Prompt iteration is healthy. The failure mode is iteration without control.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "premature-scaling",
+      "title": "Premature Scaling",
+      "alternativeNames": [
+        "scale-before-product-fit",
+        "distributed too early",
+        "overengineered infrastructure",
+        "the load that never came"
+      ],
+      "category": "technical",
+      "summary": "Teams design and build for scale that has not arrived, creating unnecessary complexity before product-market fit is established.",
+      "whoNoticesFirst": [
+        "architect",
+        "staff engineer",
+        "engineering manager"
+      ],
+      "mistakenFor": "responsible infrastructure planning",
+      "severity": "high",
+      "frequency": "common",
+      "lifecycleStages": [
+        "planning",
+        "build"
+      ],
+      "whatItIs": "Significant infrastructure, architectural, or operational complexity is introduced to handle load, volume, or scale that does not yet exist and may never exist in that form.",
+      "bestMomentToIntervene": "when scaling is discussed before current load is actually constraining delivery",
+      "blastRadius": [
+        "code",
+        "delivery",
+        "team",
+        "business"
+      ],
+      "oftenMistakenAs": "engineering maturity",
+      "starts": "A team anticipates growth and designs the system to handle it.",
+      "feelsReasonableBecause": "Retrofitting scale later is genuinely expensive, and the team has seen or heard about systems that did not survive success.",
+      "escalates": "Operational complexity multiplies. A small team maintains distributed infrastructure designed for a system ten times larger.",
+      "ends": "Velocity slows, the system is expensive to run, and the scale never arrived or arrived in a form the infrastructure did not anticipate.",
+      "earlyWarningSigns": [
+        "Scale conversations happen before product validation.",
+        "Architecture discussions reference companies at orders-of-magnitude larger scale.",
+        "Complexity is introduced to handle theoretical load."
+      ],
+      "midWarningSigns": [
+        "The system is significantly harder to run than the business problem demands.",
+        "Engineers spend more time on infrastructure than product.",
+        "Onboarding to the system takes far longer than contributing to it."
+      ],
+      "lateWarningSigns": [
+        "The scale never came, or came in a shape that required a redesign anyway.",
+        "Infrastructure cost exceeds business value at current scale.",
+        "The team cannot change product direction quickly because the architecture assumes a specific load model."
+      ],
+      "whyItHappens": [
+        "Survivorship bias from high-scale case studies",
+        "Architecture prestige",
+        "Genuine but premature extrapolation of growth",
+        "Fear of being the engineer who did not plan for scale"
+      ],
+      "immediateActions": [
+        "Measure current load and define what would actually require architectural change",
+        "Identify complexity that serves anticipated rather than real load",
+        "Simplify the system to match current operating reality"
+      ],
+      "structuralFixes": [
+        "Set explicit scale thresholds before scaling architecture",
+        "Make the simple path the default until evidence demands otherwise",
+        "Treat complexity as a cost, not a quality signal"
+      ],
+      "whatNotToDo": [
+        "Do not optimize for load that has not been observed",
+        "Do not conflate architectural sophistication with engineering quality"
+      ],
+      "recoveryDifficulty": "hard",
+      "aiCanHelpWith": [
+        "AI can model current load, project realistic growth curves, and help identify which components genuinely need scaling investment."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can generate sophisticated distributed architecture quickly, making premature scaling feel cheap and easy to justify."
+      ],
+      "aiSpecificNotes": "The cost of premature scaling is not in writing the code but in operating it.",
+      "oftenLeadsTo": [
+        "abstraction-addiction",
+        "platform-before-product",
+        "the-dependency-fog"
+      ],
+      "oftenCausedBy": [
+        "platform-before-product"
+      ],
+      "relatedRedFlags": [
+        "infrastructure complexity exceeds product complexity",
+        "load tests are for traffic that has never occurred"
+      ],
+      "relatedTechDecisions": [
+        "monolith-vs-microservices",
+        "self-hosted-vs-managed-infrastructure"
+      ],
+      "relatedPlaybooks": [
+        "simplify-before-scaling"
+      ],
+      "commonQuote": "We need to design this to handle a million users from day one.",
+      "whoSaysThis": "architect or senior engineer in a design review",
+      "counterMove": "Design for the next order of magnitude, not the final one.",
+      "falsePositive": "Some systems genuinely require scale from the start. The failure mode is building for scale before the product exists.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "interface-contract-neglect",
+      "title": "Interface Contract Neglect",
+      "alternativeNames": [
+        "API drift",
+        "the broken handshake",
+        "implicit contract assumption",
+        "integration decay"
+      ],
+      "category": "technical",
+      "summary": "APIs, events, and data contracts between teams degrade silently as systems evolve without formal contract management.",
+      "whoNoticesFirst": [
+        "architect",
+        "backend engineer",
+        "delivery lead"
+      ],
+      "mistakenFor": "normal system evolution",
+      "severity": "high",
+      "frequency": "very common",
+      "lifecycleStages": [
+        "build",
+        "operate"
+      ],
+      "whatItIs": "The interfaces between systems or teams are assumed rather than specified, versioned, or tested, and they degrade over time without anyone noticing until something breaks.",
+      "bestMomentToIntervene": "when a second team begins consuming an interface for the first time",
+      "blastRadius": [
+        "systems",
+        "delivery",
+        "reliability"
+      ],
+      "oftenMistakenAs": "an isolated bug or integration issue",
+      "starts": "Two teams share an interface that was initially defined informally.",
+      "feelsReasonableBecause": "The contract is known to both teams, and changing it requires coordination.",
+      "escalates": "One team changes internal behavior. The other team's assumptions break silently or loudly. Nobody owns the contract.",
+      "ends": "A production incident reveals that the interface had changed, been misunderstood, or accumulated incompatible assumptions on both sides.",
+      "earlyWarningSigns": [
+        "APIs are documented in a README that is not kept current.",
+        "Interface changes are communicated verbally.",
+        "No consumer tests exist for the contract."
+      ],
+      "midWarningSigns": [
+        "Integration issues appear repeatedly at release time.",
+        "One team is surprised by a change the other team considers minor.",
+        "Different teams have different understandings of what the interface guarantees."
+      ],
+      "lateWarningSigns": [
+        "A production incident is caused by a contract mismatch.",
+        "Debugging requires archaeology across both teams' code.",
+        "Fear of changing interfaces causes both teams to accumulate workarounds."
+      ],
+      "whyItHappens": [
+        "Interfaces are treated as internal rather than owned",
+        "Contract testing is seen as overhead",
+        "Teams prioritize their own velocity over integration stability",
+        "No single owner exists for the interface"
+      ],
+      "immediateActions": [
+        "Document and publish the current interface contract",
+        "Add consumer-driven contract tests",
+        "Establish a change notification process for interface modifications"
+      ],
+      "structuralFixes": [
+        "Version interfaces explicitly",
+        "Assign interface ownership to a named person or team",
+        "Treat breaking changes as deployments with impact assessments"
+      ],
+      "whatNotToDo": [
+        "Do not treat absence of complaints as evidence the contract is sound",
+        "Do not allow interface changes without downstream notification"
+      ],
+      "recoveryDifficulty": "medium",
+      "aiCanHelpWith": [
+        "AI can help document existing contracts, generate consumer tests, and diff interface versions to surface incompatibilities."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can generate new interface implementations quickly without checking compatibility with existing consumers, accelerating contract drift."
+      ],
+      "aiSpecificNotes": "Generated implementations may be internally consistent but externally incompatible.",
+      "oftenLeadsTo": [
+        "the-dependency-fog",
+        "ownership-drift"
+      ],
+      "oftenCausedBy": [
+        "abstraction-addiction",
+        "local-optimization"
+      ],
+      "relatedRedFlags": [
+        "integration breaks at release but works in isolation",
+        "both teams thought the other team owned the contract"
+      ],
+      "relatedTechDecisions": [
+        "event-driven-vs-request-response",
+        "shared-platform-vs-team-owned-components"
+      ],
+      "relatedPlaybooks": [
+        "run-cross-team-dependency-mapping"
+      ],
+      "commonQuote": "We didn't think that change would affect anyone else.",
+      "whoSaysThis": "engineer explaining an incident",
+      "counterMove": "If two systems share a boundary, someone owns the contract.",
+      "falsePositive": "Some interface changes are minor and well-communicated. The failure mode is treating all interfaces as internal details.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "the-quiet-quitter-team",
+      "title": "The Quiet Quitter Team",
+      "alternativeNames": [
+        "silent disengagement",
+        "learned helplessness",
+        "the compliant team",
+        "psychological safety collapse"
+      ],
+      "category": "people",
+      "summary": "A team stops raising risks, pushing back on decisions, or flagging problems — appearing harmonious while actually disengaged.",
+      "whoNoticesFirst": [
+        "engineering manager",
+        "staff engineer",
+        "skip-level leader"
+      ],
+      "mistakenFor": "team maturity or harmony",
+      "severity": "high",
+      "frequency": "common",
+      "lifecycleStages": [
+        "operate",
+        "delivery"
+      ],
+      "whatItIs": "A team has learned that raising concerns, dissenting, or flagging problems does not change outcomes, and has stopped doing so.",
+      "bestMomentToIntervene": "when a team stops generating disagreement or surface-level conflict entirely",
+      "blastRadius": [
+        "team",
+        "product",
+        "delivery",
+        "business"
+      ],
+      "oftenMistakenAs": "good team dynamics",
+      "starts": "A team raises concerns that are dismissed, overridden, or penalized. This happens more than once.",
+      "feelsReasonableBecause": "Absence of conflict looks like trust and alignment.",
+      "escalates": "The team executes orders without input, stops flagging risks, and withdraws from problem-solving.",
+      "ends": "Preventable failures occur. Key people leave. The manager discovers the team had known about problems for months.",
+      "earlyWarningSigns": [
+        "Retrospectives produce safe feedback only.",
+        "No one pushes back in planning.",
+        "Questions from leadership are answered with agreement."
+      ],
+      "midWarningSigns": [
+        "Known risks are not escalated.",
+        "Problems are fixed silently without being surfaced.",
+        "Team engagement in decision-making drops quietly."
+      ],
+      "lateWarningSigns": [
+        "Attrition begins among the most capable.",
+        "A significant failure occurs that several people knew was coming.",
+        "Post-mortems reveal that concerns existed but were not raised."
+      ],
+      "whyItHappens": [
+        "Previous feedback was penalized or ignored",
+        "Psychological safety is low",
+        "Management rewards compliance over candor",
+        "Team has learned that input does not change outcomes"
+      ],
+      "immediateActions": [
+        "Run a skip-level or anonymous survey to surface real sentiment",
+        "Demonstrate that feedback changes a decision publicly and quickly",
+        "Create a low-stakes channel for raising concerns"
+      ],
+      "structuralFixes": [
+        "Reward candor explicitly and visibly",
+        "Close the loop on feedback in writing",
+        "Train managers to detect and respond to disengagement signals"
+      ],
+      "whatNotToDo": [
+        "Do not run engagement surveys without acting on results",
+        "Do not interpret silence as satisfaction"
+      ],
+      "recoveryDifficulty": "hard",
+      "aiCanHelpWith": [
+        "AI can analyze patterns in communication, code review comments, and written feedback to surface declining engagement signals."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI-generated summaries of team sentiment can produce falsely positive pictures if the underlying signal is passive compliance rather than genuine engagement."
+      ],
+      "aiSpecificNotes": "Polite language in surveys and stand-ups does not mean the team is engaged.",
+      "oftenLeadsTo": [
+        "the-hero-trap",
+        "ownership-drift",
+        "ticket-theater"
+      ],
+      "oftenCausedBy": [
+        "stakeholder-capture",
+        "metric-myopia"
+      ],
+      "relatedRedFlags": [
+        "no pushback in planning sessions",
+        "retrospectives produce only small safe observations"
+      ],
+      "relatedTechDecisions": [
+        "team-health-vs-output-metrics"
+      ],
+      "relatedPlaybooks": [
+        "run-a-psychological-safety-reset"
+      ],
+      "commonQuote": "The team seems really aligned lately.",
+      "whoSaysThis": "engineering manager or director",
+      "counterMove": "If no one is pushing back, find out why before assuming it is confidence.",
+      "falsePositive": "Mature, aligned teams do have genuine harmony. The failure mode is harmony that replaced candor rather than earned it.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "promotion-driven-architecture",
+      "title": "Promotion-Driven Architecture",
+      "alternativeNames": [
+        "resume-driven development",
+        "career-shaped engineering",
+        "visibility architecture",
+        "impact theater"
+      ],
+      "category": "people",
+      "summary": "Technical decisions are made primarily to create visible impact for career advancement rather than product or engineering need.",
+      "whoNoticesFirst": [
+        "staff engineer",
+        "architect",
+        "engineering manager"
+      ],
+      "mistakenFor": "ambitious engineering",
+      "severity": "medium",
+      "frequency": "common",
+      "lifecycleStages": [
+        "planning",
+        "build"
+      ],
+      "whatItIs": "Engineers build new systems, rewrites, or platforms whose primary value is career visibility rather than product need.",
+      "bestMomentToIntervene": "when a proposal reads more like a promotion packet than a design document",
+      "blastRadius": [
+        "code",
+        "product",
+        "team",
+        "delivery"
+      ],
+      "oftenMistakenAs": "engineer taking initiative",
+      "starts": "An engineer wants to demonstrate scope and impact for promotion.",
+      "feelsReasonableBecause": "The proposal is technically coherent and the engineer is capable.",
+      "escalates": "The project is scoped to maximize visibility, not value. Others are pulled in. The maintenance cost is left for the team.",
+      "ends": "A new system exists that nobody except its creator cares about, and the creator has moved on or been promoted.",
+      "earlyWarningSigns": [
+        "A proposal creates a new system rather than solving a problem in an existing one.",
+        "The scope is unusually well-defined for the proposer's own skills.",
+        "The proposal includes a lot of language about what it demonstrates."
+      ],
+      "midWarningSigns": [
+        "Adoption is weak but the project continues.",
+        "The engineer is the primary consumer and biggest advocate.",
+        "Feedback from other teams is not incorporated."
+      ],
+      "lateWarningSigns": [
+        "The engineer is promoted or leaves.",
+        "The system has no clear successor.",
+        "The team owns a system that solves a problem they did not have."
+      ],
+      "whyItHappens": [
+        "Promotion criteria reward new system creation",
+        "Maintenance and improvement work is less visible than new work",
+        "Career incentives are misaligned with team needs",
+        "Managers do not distinguish career-driven scope from product-driven scope"
+      ],
+      "immediateActions": [
+        "Require proposals to include a user need statement and an adoption plan",
+        "Ask who will maintain the system after the proposer moves on",
+        "Make improvement of existing systems as promotable as new system creation"
+      ],
+      "structuralFixes": [
+        "Align promotion criteria to team and product outcomes",
+        "Require stewardship evidence for systems created for promotion",
+        "Review proposals against existing roadmap and user needs"
+      ],
+      "whatNotToDo": [
+        "Do not assume visible work is valuable work",
+        "Do not promote work without asking who maintains it"
+      ],
+      "recoveryDifficulty": "medium",
+      "aiCanHelpWith": [
+        "AI can help evaluate proposals against existing systems to surface whether a new system is genuinely needed."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can generate the technical scaffolding for career-driven projects very quickly, lowering the barrier to starting systems that are not needed."
+      ],
+      "aiSpecificNotes": "Speed of execution does not validate need.",
+      "oftenLeadsTo": [
+        "platform-before-product",
+        "ownership-drift",
+        "abstraction-addiction"
+      ],
+      "oftenCausedBy": [
+        "metric-myopia"
+      ],
+      "relatedRedFlags": [
+        "new systems with no users except the creator",
+        "maintenance ownership is unclear from day one"
+      ],
+      "relatedTechDecisions": [
+        "build-vs-buy",
+        "service-ownership-model"
+      ],
+      "relatedPlaybooks": [
+        "validate-demand-before-platforming"
+      ],
+      "commonQuote": "This would be a great opportunity to build something from scratch.",
+      "whoSaysThis": "senior engineer in a design discussion",
+      "counterMove": "Ask who asked for it and who will own it before asking if it can be built.",
+      "falsePositive": "Engineers taking initiative is valuable. The failure mode is when personal career needs distort technical decisions.",
+      "patternConfidence": "medium"
+    },
+    {
+      "slug": "migration-debt",
+      "title": "Migration Debt",
+      "alternativeNames": [
+        "the half-migrated system",
+        "the permanent transition state",
+        "stranded migration",
+        "the never-finished move"
+      ],
+      "category": "technical",
+      "summary": "A planned migration starts well but stalls mid-execution, leaving the system permanently split across old and new states.",
+      "whoNoticesFirst": [
+        "staff engineer",
+        "architect",
+        "delivery lead"
+      ],
+      "mistakenFor": "work in progress",
+      "severity": "high",
+      "frequency": "very common",
+      "lifecycleStages": [
+        "build",
+        "operate"
+      ],
+      "whatItIs": "A migration — to a new platform, database, cloud environment, or architecture — begins but never completes, creating an indefinite dual-state system.",
+      "bestMomentToIntervene": "when a migration has no defined completion criteria or owner",
+      "blastRadius": [
+        "code",
+        "operations",
+        "delivery",
+        "team"
+      ],
+      "oftenMistakenAs": "acceptable technical debt",
+      "starts": "A migration is planned, resourced, and begins with enthusiasm.",
+      "feelsReasonableBecause": "The first phase is successful and the team moves on to other priorities.",
+      "escalates": "New features are built on both old and new systems. The old system receives patches. Completion keeps getting deprioritized.",
+      "ends": "Years later, the system has two data stores, two deployment models, or two infrastructure patterns — and nobody is sure how to finish.",
+      "earlyWarningSigns": [
+        "Migration has no explicit completion criteria.",
+        "No one owns the migration end state.",
+        "New features begin before old ones are migrated."
+      ],
+      "midWarningSigns": [
+        "Both old and new systems receive production traffic.",
+        "Migration progress is not tracked publicly.",
+        "The team cannot describe what remains to be migrated."
+      ],
+      "lateWarningSigns": [
+        "The migration has been in progress for over a year.",
+        "New engineers learn both systems as permanent.",
+        "The completion is described as a future initiative rather than a current one."
+      ],
+      "whyItHappens": [
+        "Completion criteria were not defined before starting",
+        "Business priorities shift mid-migration",
+        "The migration is harder than expected",
+        "No one owns the end state formally"
+      ],
+      "immediateActions": [
+        "Define what done looks like before the next phase begins",
+        "Freeze new development on the old system",
+        "Assign a named migration owner with authority to prioritize completion"
+      ],
+      "structuralFixes": [
+        "Track migration completion as a first-class metric",
+        "Set a retirement date for the old system before the new one is built",
+        "Treat dual-state as a temporary and expensive condition"
+      ],
+      "whatNotToDo": [
+        "Do not accept indefinite dual-state as a stable operating condition",
+        "Do not start a migration without a named owner and completion criteria"
+      ],
+      "recoveryDifficulty": "hard",
+      "aiCanHelpWith": [
+        "AI can help map what remains to be migrated, identify dependencies on the old system, and generate migration scripts for remaining cases."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can make working with both old and new systems easier, reducing the pain that would otherwise force completion of the migration."
+      ],
+      "aiSpecificNotes": "Reducing migration pain is not the same as finishing the migration.",
+      "oftenLeadsTo": [
+        "the-dependency-fog",
+        "ownership-drift",
+        "the-friendly-rewrite"
+      ],
+      "oftenCausedBy": [
+        "the-friendly-rewrite",
+        "platform-before-product"
+      ],
+      "relatedRedFlags": [
+        "both systems are in production and nobody plans to retire one",
+        "migration is always the next quarter's priority"
+      ],
+      "relatedTechDecisions": [
+        "rewrite-vs-refactor",
+        "monolith-vs-microservices"
+      ],
+      "relatedPlaybooks": [
+        "run-a-phased-migration"
+      ],
+      "commonQuote": "We're still in the middle of the migration to the new system.",
+      "whoSaysThis": "any engineer when asked about the current architecture",
+      "counterMove": "A migration without a retirement date is not a migration, it is a permanent fork.",
+      "falsePositive": "Long migrations are sometimes genuinely complex. The failure mode is indefinite dual-state without a plan to end it.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "test-theater",
+      "title": "Test Theater",
+      "alternativeNames": [
+        "coverage theater",
+        "the green build illusion",
+        "metric-driven testing",
+        "false safety net"
+      ],
+      "category": "technical",
+      "summary": "A team has high coverage numbers and a passing CI pipeline, but tests that do not catch real regressions.",
+      "whoNoticesFirst": [
+        "staff engineer",
+        "senior engineer",
+        "QA lead"
+      ],
+      "mistakenFor": "strong engineering discipline",
+      "severity": "high",
+      "frequency": "common",
+      "lifecycleStages": [
+        "build",
+        "operate"
+      ],
+      "whatItIs": "Tests are written to satisfy coverage metrics or pass CI rather than to verify behavior, creating a false sense of safety.",
+      "bestMomentToIntervene": "when coverage is celebrated without asking what the tests actually assert",
+      "blastRadius": [
+        "code",
+        "reliability",
+        "delivery"
+      ],
+      "oftenMistakenAs": "a well-tested codebase",
+      "starts": "A team is told to increase test coverage or maintain a green build.",
+      "feelsReasonableBecause": "Coverage numbers and passing CI are measurable and feel like quality signals.",
+      "escalates": "Tests are written to hit coverage targets, not to express intent. Assertions are weak or absent.",
+      "ends": "A significant regression ships despite a fully green build. The team is surprised; coverage was above the threshold.",
+      "earlyWarningSigns": [
+        "Test coverage is tracked but test quality is not discussed.",
+        "Tests have no assertions or assert only that code runs without exceptions.",
+        "The same coverage number is cited as evidence in different contexts."
+      ],
+      "midWarningSigns": [
+        "Bugs are found in areas with high coverage.",
+        "Refactors break tests that were not testing behavior.",
+        "Engineers describe tests as a formality before merging."
+      ],
+      "lateWarningSigns": [
+        "A significant production regression ships through a green build.",
+        "Post-mortem reveals tests existed but did not cover the failing scenario.",
+        "Engineers have stopped trusting the test suite."
+      ],
+      "whyItHappens": [
+        "Coverage is used as a proxy for quality",
+        "Tests are written after the fact to satisfy requirements",
+        "There is no culture of test review as distinct from code review",
+        "Assertion quality is not a review criterion"
+      ],
+      "immediateActions": [
+        "Review a sample of tests for meaningful assertions",
+        "Run mutation testing to measure how many tests actually catch bugs",
+        "Stop reporting coverage without also reporting defect escape rate"
+      ],
+      "structuralFixes": [
+        "Pair coverage metrics with defect escape metrics",
+        "Add test quality as a criterion in code review",
+        "Use behavior-driven test naming to make intent explicit"
+      ],
+      "whatNotToDo": [
+        "Do not raise coverage targets as a response to escaped defects",
+        "Do not treat a green build as evidence the system is correct"
+      ],
+      "recoveryDifficulty": "medium",
+      "aiCanHelpWith": [
+        "AI can help generate meaningful test cases from specifications, edge cases, and real incident reports."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can generate high-coverage test suites quickly that satisfy metrics without meaningfully testing behavior, accelerating the theater at scale."
+      ],
+      "aiSpecificNotes": "Generated tests inherit the bias of their prompt. If the prompt does not ask for meaningful assertions, it will not produce them.",
+      "oftenLeadsTo": [
+        "synthetic-velocity",
+        "metric-myopia"
+      ],
+      "oftenCausedBy": [
+        "metric-myopia",
+        "ticket-theater"
+      ],
+      "relatedRedFlags": [
+        "bugs appear in high-coverage areas",
+        "engineers describe tests as a formality"
+      ],
+      "relatedTechDecisions": [
+        "tdd-vs-test-after",
+        "unit-vs-integration-test-balance"
+      ],
+      "relatedPlaybooks": [
+        "measure-durable-outcomes-not-artifact-volume"
+      ],
+      "commonQuote": "Coverage is at 85%, so we should be fine.",
+      "whoSaysThis": "engineer or manager before a release",
+      "counterMove": "Ask what the tests catch, not how many there are.",
+      "falsePositive": "High coverage is better than low coverage. The failure mode is treating coverage as a quality guarantee rather than a partial quality indicator.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "discovery-theater",
+      "title": "Discovery Theater",
+      "alternativeNames": [
+        "fake user research",
+        "post-hoc validation",
+        "the research ritual",
+        "insight without impact"
+      ],
+      "category": "people",
+      "summary": "User research and discovery activities produce artifacts but do not meaningfully change decisions.",
+      "whoNoticesFirst": [
+        "product lead",
+        "UX researcher",
+        "senior PM"
+      ],
+      "mistakenFor": "user-centered design",
+      "severity": "medium",
+      "frequency": "common",
+      "lifecycleStages": [
+        "strategy",
+        "planning"
+      ],
+      "whatItIs": "Discovery activities — interviews, personas, journey maps, usability tests — are conducted as process compliance rather than genuine inquiry.",
+      "bestMomentToIntervene": "when research activities are scheduled after decisions have already been made",
+      "blastRadius": [
+        "product",
+        "team",
+        "business"
+      ],
+      "oftenMistakenAs": "mature product practice",
+      "starts": "A team adopts discovery practices to be more user-led.",
+      "feelsReasonableBecause": "Running research looks like the right thing to do.",
+      "escalates": "Research is conducted after the decision is made, framed to validate rather than challenge, or ignored when inconvenient.",
+      "ends": "The team ships something users do not want and cannot understand why, given that research was done.",
+      "earlyWarningSigns": [
+        "Research is scheduled after the roadmap is already committed.",
+        "Personas and journey maps are created but not referenced in design reviews.",
+        "Research findings that contradict current direction are not discussed."
+      ],
+      "midWarningSigns": [
+        "Discovery outputs are not connected to specific decisions.",
+        "The same insights appear in successive research cycles without driving change.",
+        "Researchers feel their work is not used."
+      ],
+      "lateWarningSigns": [
+        "A feature ships that contradicts known user needs.",
+        "The team is surprised by user reception despite having done research.",
+        "Researchers stop raising inconvenient findings."
+      ],
+      "whyItHappens": [
+        "Decisions are made by conviction or seniority before research begins",
+        "Research is treated as documentation rather than input",
+        "Inconvenient findings threaten committed roadmaps",
+        "Discovery is a ritual not a decision input"
+      ],
+      "immediateActions": [
+        "Identify one current decision that research could change",
+        "Present inconvenient findings to the decision-maker directly",
+        "Connect each research activity to a specific open question"
+      ],
+      "structuralFixes": [
+        "Run research before committing roadmap items",
+        "Make research findings a required input for design reviews",
+        "Track which decisions were changed by research"
+      ],
+      "whatNotToDo": [
+        "Do not run research that cannot change the outcome",
+        "Do not use user quotes to validate decisions already made"
+      ],
+      "recoveryDifficulty": "medium",
+      "aiCanHelpWith": [
+        "AI can help analyze real user feedback, session recordings, and support tickets to surface genuine patterns quickly."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can generate synthetic personas, journey maps, and user stories that reinforce existing assumptions without real user contact."
+      ],
+      "aiSpecificNotes": "Synthetic user insight is not user insight.",
+      "oftenLeadsTo": [
+        "stakeholder-capture",
+        "metric-myopia"
+      ],
+      "oftenCausedBy": [
+        "stakeholder-capture",
+        "the-consensus-trap"
+      ],
+      "relatedRedFlags": [
+        "research findings never appear in design reviews",
+        "research is always scheduled after roadmap is committed"
+      ],
+      "relatedTechDecisions": [
+        "continuous-discovery-vs-project-based-research"
+      ],
+      "relatedPlaybooks": [
+        "connect-research-to-open-decisions"
+      ],
+      "commonQuote": "We did the research. Users will get used to it.",
+      "whoSaysThis": "product manager or senior leader",
+      "counterMove": "If the research cannot change the decision, do not do the research.",
+      "falsePositive": "Some research genuinely validates good decisions. The failure mode is research that cannot challenge any decision.",
+      "patternConfidence": "medium"
+    },
+    {
+      "slug": "the-feature-factory-trap",
+      "title": "The Feature Factory Trap",
+      "alternativeNames": [
+        "output over outcome",
+        "shipping without learning",
+        "the velocity treadmill",
+        "build-measure-ignore"
+      ],
+      "category": "leadership",
+      "summary": "A team ships features continuously but never pauses to measure whether any of them worked, prioritizing delivery speed over learning.",
+      "whoNoticesFirst": [
+        "product lead",
+        "engineering manager",
+        "data analyst"
+      ],
+      "mistakenFor": "high-performing team",
+      "severity": "high",
+      "frequency": "very common",
+      "lifecycleStages": [
+        "delivery",
+        "operate"
+      ],
+      "whatItIs": "A team treats shipping as the end goal rather than as the beginning of learning, and never builds a feedback loop between shipped features and user outcomes.",
+      "bestMomentToIntervene": "when the team celebrates shipping without discussing what they expect to learn",
+      "blastRadius": [
+        "product",
+        "business",
+        "team"
+      ],
+      "oftenMistakenAs": "productive engineering culture",
+      "starts": "A team is rewarded for shipping and develops strong delivery practices.",
+      "feelsReasonableBecause": "Shipping feels like progress and the backlog always has more important features.",
+      "escalates": "No feature is ever revisited. Success is defined as shipping, not as changing user behavior.",
+      "ends": "The product has many features, most of which are under-used, and the team does not know which ones actually matter.",
+      "earlyWarningSigns": [
+        "Features are celebrated at launch and never reviewed afterward.",
+        "There is no definition of success for a feature before it ships.",
+        "The backlog grows faster than features are validated."
+      ],
+      "midWarningSigns": [
+        "Shipped features are not mentioned in planning until they cause problems.",
+        "Usage data exists but is not used in prioritization.",
+        "The team cannot name its three most impactful features."
+      ],
+      "lateWarningSigns": [
+        "The product is complex and hard to navigate.",
+        "Users use workarounds rather than features that were built for them.",
+        "The team is busy but the product metrics are not improving."
+      ],
+      "whyItHappens": [
+        "Velocity culture overrides learning culture",
+        "Shipping is measured, outcomes are not",
+        "Roadmap pressure prevents retrospective measurement",
+        "Success is defined by stakeholders as features shipped, not outcomes achieved"
+      ],
+      "immediateActions": [
+        "Define a success metric for the next feature before building it",
+        "Schedule a review of the last five shipped features against their intended outcomes",
+        "Add outcome review to sprint or cycle retrospectives"
+      ],
+      "structuralFixes": [
+        "Make outcome measurement a condition of feature completion",
+        "Include feature impact in prioritization discussions",
+        "Deprioritize features that have not moved their metric"
+      ],
+      "whatNotToDo": [
+        "Do not slow shipping — add learning alongside it",
+        "Do not use engagement metrics as a proxy for user value"
+      ],
+      "recoveryDifficulty": "medium",
+      "aiCanHelpWith": [
+        "AI can help analyze usage patterns, cluster user feedback, and surface which features are actually being used and how."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can accelerate the factory by making feature generation faster, increasing the gap between what is shipped and what is understood."
+      ],
+      "aiSpecificNotes": "Faster shipping without faster learning widens the knowledge gap.",
+      "oftenLeadsTo": [
+        "metric-myopia",
+        "ticket-theater",
+        "discovery-theater"
+      ],
+      "oftenCausedBy": [
+        "metric-myopia",
+        "stakeholder-capture"
+      ],
+      "relatedRedFlags": [
+        "team cannot name which features moved key metrics",
+        "no feature has ever been removed or rolled back"
+      ],
+      "relatedTechDecisions": [
+        "continuous-delivery-vs-milestone-releases",
+        "okrs-vs-kpis"
+      ],
+      "relatedPlaybooks": [
+        "measure-durable-outcomes-not-artifact-volume"
+      ],
+      "commonQuote": "We shipped twelve features this quarter.",
+      "whoSaysThis": "engineering manager or product lead in a business review",
+      "counterMove": "Ask which three of those features changed user behavior before planning the next twelve.",
+      "falsePositive": "High delivery cadence is valuable. The failure mode is cadence without measurement.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "eval-goodhart",
+      "title": "Eval Goodhart",
+      "alternativeNames": [
+        "eval overfitting",
+        "benchmark poisoning",
+        "internal benchmark trap",
+        "metric-shaped evaluation"
+      ],
+      "category": "ai",
+      "summary": "Internal evaluation sets become optimization targets rather than honest capability measures, producing models or prompts that score well but behave poorly in production.",
+      "whoNoticesFirst": [
+        "ai engineer",
+        "staff engineer",
+        "product lead"
+      ],
+      "mistakenFor": "rigorous internal evaluation",
+      "severity": "high",
+      "frequency": "increasing",
+      "lifecycleStages": [
+        "build",
+        "delivery"
+      ],
+      "whatItIs": "A team builds an evaluation harness to measure AI system quality, and then optimizes the system to perform on that harness rather than on real user tasks.",
+      "bestMomentToIntervene": "when eval scores improve faster than production quality does",
+      "blastRadius": [
+        "product",
+        "trust",
+        "business"
+      ],
+      "oftenMistakenAs": "effective AI quality management",
+      "starts": "A team builds an eval suite to measure quality and sets improvement targets.",
+      "feelsReasonableBecause": "Evals are a legitimate and important quality signal.",
+      "escalates": "The eval suite becomes the primary measure. Changes are made that improve eval scores without improving real behavior.",
+      "ends": "The system scores well internally but users report deteriorating quality. The eval set has been implicitly overfitted.",
+      "earlyWarningSigns": [
+        "Eval scores are the primary success metric for AI quality.",
+        "Eval set is not regularly refreshed with new real-world cases.",
+        "Changes that hurt eval scores are rejected regardless of user signal."
+      ],
+      "midWarningSigns": [
+        "Eval scores improve but user complaints do not decrease.",
+        "The eval set has not changed significantly in months.",
+        "Production behavior diverges from eval behavior in specific scenarios."
+      ],
+      "lateWarningSigns": [
+        "A production failure occurs in a scenario the eval does not cover.",
+        "The team realizes the eval set reflects old use cases, not current ones.",
+        "Trust in the eval as a quality signal collapses internally."
+      ],
+      "whyItHappens": [
+        "Evals are treated as targets rather than signals",
+        "Eval sets are not maintained alongside production behavior",
+        "Goodhart's Law applies to internal evals as much as external benchmarks",
+        "Production feedback loop is weak or slow"
+      ],
+      "immediateActions": [
+        "Refresh the eval set with recent production cases",
+        "Add a production behavior signal alongside eval scores",
+        "Review cases where eval score and user signal diverge"
+      ],
+      "structuralFixes": [
+        "Treat eval sets as living documents tied to current use cases",
+        "Pair eval scores with human review and production sampling",
+        "Separate the eval set from the optimization target explicitly"
+      ],
+      "whatNotToDo": [
+        "Do not abandon evals because they can be gamed",
+        "Do not treat eval score improvement as equivalent to user experience improvement"
+      ],
+      "recoveryDifficulty": "medium",
+      "aiCanHelpWith": [
+        "AI can help generate diverse and adversarial eval cases that are harder to overfit and better represent real production edge cases."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can optimize prompts and configurations to score well on known eval cases, accelerating overfitting without surfacing production risk."
+      ],
+      "aiSpecificNotes": "An eval that cannot surprise you is not testing anything you do not already know.",
+      "oftenLeadsTo": [
+        "benchmark-mirage",
+        "silent-model-drift"
+      ],
+      "oftenCausedBy": [
+        "metric-myopia",
+        "prompt-ops-chaos"
+      ],
+      "relatedRedFlags": [
+        "eval scores improving while user satisfaction is flat or declining",
+        "eval set has not been updated in more than three months"
+      ],
+      "relatedTechDecisions": [
+        "online-vs-batch-evaluation",
+        "managed-model-vs-self-hosted"
+      ],
+      "relatedPlaybooks": [
+        "build-a-task-grounded-evaluation-harness"
+      ],
+      "commonQuote": "Our eval scores are up 8% this sprint.",
+      "whoSaysThis": "ai engineer in a team review",
+      "counterMove": "If the eval set has not changed, the score improvement may be overfitting, not progress.",
+      "falsePositive": "Evals are essential. The failure mode begins when the eval becomes the target rather than the signal.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "context-window-hoarding",
+      "title": "Context Window Hoarding",
+      "alternativeNames": [
+        "prompt stuffing",
+        "context inflation",
+        "over-contextualizing",
+        "the kitchen sink prompt"
+      ],
+      "category": "ai",
+      "summary": "Teams fill context windows maximally with documents, history, and examples without understanding what actually helps, leading to unpredictable behavior, high cost, and debugging nightmares.",
+      "whoNoticesFirst": [
+        "ai engineer",
+        "platform engineer",
+        "staff engineer"
+      ],
+      "mistakenFor": "thorough AI system design",
+      "severity": "medium",
+      "frequency": "increasing",
+      "lifecycleStages": [
+        "build",
+        "operate"
+      ],
+      "whatItIs": "Context windows are stuffed with every potentially relevant document, instruction, and example under the assumption that more context produces better outputs.",
+      "bestMomentToIntervene": "before a bloated context becomes the default and spreading pattern",
+      "blastRadius": [
+        "product",
+        "operations",
+        "cost"
+      ],
+      "oftenMistakenAs": "comprehensive AI system design",
+      "starts": "A team adds more context to improve model output quality.",
+      "feelsReasonableBecause": "In many cases, more relevant context does improve output.",
+      "escalates": "Context grows uncritically. Old instructions accumulate. Retrieval dumps everything. The prompt is enormous.",
+      "ends": "Behavior becomes unpredictable, cost is high, debugging requires reading thousands of tokens, and nobody can explain why output changed.",
+      "earlyWarningSigns": [
+        "Context length grows over time without review.",
+        "Instructions accumulate without removing obsolete ones.",
+        "Retrieval returns everything above a low similarity threshold."
+      ],
+      "midWarningSigns": [
+        "Behavior changes after minor context additions that should not matter.",
+        "Token cost is high relative to task complexity.",
+        "Debugging requires reading the full prompt to understand a failure."
+      ],
+      "lateWarningSigns": [
+        "Nobody knows what all the context instructions do.",
+        "Removing context causes unpredictable behavior changes.",
+        "The team treats the context as brittle and stops modifying it."
+      ],
+      "whyItHappens": [
+        "More context sometimes helps and the heuristic overgeneralizes",
+        "Context additions are easier than context removals",
+        "No ownership of the full context window",
+        "Cost and complexity of long contexts are underestimated"
+      ],
+      "immediateActions": [
+        "Audit every section of the current context for demonstrated value",
+        "Remove instructions that cannot be explained or traced to a decision",
+        "Set a budget for context length and require justification to exceed it"
+      ],
+      "structuralFixes": [
+        "Version and review context window contents like code",
+        "Measure output quality at different context lengths",
+        "Use dynamic retrieval with relevance filtering instead of static large contexts"
+      ],
+      "whatNotToDo": [
+        "Do not assume longer context always produces better output",
+        "Do not add context to fix a problem without understanding why the problem exists"
+      ],
+      "recoveryDifficulty": "medium",
+      "aiCanHelpWith": [
+        "AI can help analyze which parts of a context window are actually referenced or influential in outputs."
+      ],
+      "aiCanMakeWorseBy": [
+        "Native mode: the failure mode is in the structure of how AI systems are built. Adding context feels like improvement even when it is not."
+      ],
+      "aiSpecificNotes": "Context is not free. Every token in the window is a cost, a potential distraction, and a debugging surface.",
+      "oftenLeadsTo": [
+        "prompt-ops-chaos",
+        "silent-model-drift"
+      ],
+      "oftenCausedBy": [
+        "synthetic-velocity"
+      ],
+      "relatedRedFlags": [
+        "nobody can explain what all the context instructions do",
+        "context additions are never removed"
+      ],
+      "relatedTechDecisions": [
+        "rag-architecture-choices",
+        "managed-model-vs-self-hosted"
+      ],
+      "relatedPlaybooks": [
+        "version-prompts-and-evaluations"
+      ],
+      "commonQuote": "Let's just add the full documentation as context.",
+      "whoSaysThis": "ai engineer or product manager",
+      "counterMove": "Measure what context contributes before adding more of it.",
+      "falsePositive": "Rich context can genuinely improve output. The failure mode is adding context without evidence it helps.",
+      "patternConfidence": "medium"
+    },
+    {
+      "slug": "human-in-the-loop-decay",
+      "title": "Human-in-the-Loop Decay",
+      "alternativeNames": [
+        "oversight erosion",
+        "automation complacency",
+        "the disappearing reviewer",
+        "trust without verification"
+      ],
+      "category": "ai",
+      "summary": "Human review steps designed to catch AI errors are gradually skipped as volume increases and confidence grows, removing oversight before the risk does.",
+      "whoNoticesFirst": [
+        "ai engineer",
+        "operations lead",
+        "compliance officer"
+      ],
+      "mistakenFor": "process maturity and efficiency",
+      "severity": "critical",
+      "frequency": "increasing",
+      "lifecycleStages": [
+        "operate"
+      ],
+      "whatItIs": "Review, approval, or verification steps that exist to catch AI system errors are gradually bypassed, automated away, or made nominal as the system appears to perform well.",
+      "bestMomentToIntervene": "when review steps begin to feel like formalities rather than genuine checks",
+      "blastRadius": [
+        "product",
+        "trust",
+        "business",
+        "compliance"
+      ],
+      "oftenMistakenAs": "operational efficiency",
+      "starts": "A human review step is built into an AI system to catch errors before they reach users or downstream systems.",
+      "feelsReasonableBecause": "The system performs well, reviewers rarely catch errors, and the review feels like a bottleneck.",
+      "escalates": "Review frequency drops. Sample sizes shrink. Approval becomes rubber-stamping. Eventually the step is automated or removed.",
+      "ends": "An AI error that the review was designed to catch propagates without detection, causing a significant incident.",
+      "earlyWarningSigns": [
+        "Reviewers rarely reject or modify AI output.",
+        "Review is described as a bottleneck rather than a quality gate.",
+        "Proposals emerge to reduce review frequency or sample size."
+      ],
+      "midWarningSigns": [
+        "Reviewers spend less time per item.",
+        "Review outcomes are not tracked or analyzed.",
+        "The review step has become nominal in practice."
+      ],
+      "lateWarningSigns": [
+        "The review step is removed, automated, or formally deprioritized.",
+        "An error propagates that the original review would have caught.",
+        "The team cannot reconstruct when oversight was last meaningful."
+      ],
+      "whyItHappens": [
+        "Apparent system reliability reduces perceived need for oversight",
+        "Volume makes thorough review impractical without investment",
+        "Efficiency pressure treats review as cost not value",
+        "No mechanism exists to measure what the review is catching"
+      ],
+      "immediateActions": [
+        "Measure what the review step is actually catching",
+        "Distinguish low-risk from high-risk AI decisions for tiered oversight",
+        "Make review outcomes visible to understand their value"
+      ],
+      "structuralFixes": [
+        "Design oversight to scale with volume rather than fighting it",
+        "Maintain oversight on high-stakes decisions regardless of apparent performance",
+        "Treat removal of oversight as a risk decision, not an efficiency decision"
+      ],
+      "whatNotToDo": [
+        "Do not remove oversight because errors have not been caught recently",
+        "Do not automate the oversight step without designing what catches the automator"
+      ],
+      "recoveryDifficulty": "medium-hard",
+      "aiCanHelpWith": [
+        "AI can help design tiered, intelligent oversight that scales with volume while concentrating human review on genuinely high-risk cases."
+      ],
+      "aiCanMakeWorseBy": [
+        "Native mode: AI performance can create genuine confidence that erodes oversight in ways that are hard to detect until an incident occurs."
+      ],
+      "aiSpecificNotes": "The review step that catches nothing most of the time is catching something some of the time.",
+      "oftenLeadsTo": [
+        "silent-model-drift",
+        "ownership-drift"
+      ],
+      "oftenCausedBy": [
+        "synthetic-velocity",
+        "metric-myopia"
+      ],
+      "relatedRedFlags": [
+        "review is described as a formality",
+        "no data exists on what the review has caught recently"
+      ],
+      "relatedTechDecisions": [
+        "where-to-allow-ai-assisted-development",
+        "online-vs-batch-evaluation"
+      ],
+      "relatedPlaybooks": [
+        "monitor-model-behavior-in-production"
+      ],
+      "commonQuote": "We barely ever reject anything in review. It's mostly just a rubber stamp at this point.",
+      "whoSaysThis": "operations lead or AI engineer",
+      "counterMove": "Measure what oversight catches before deciding it is catching nothing.",
+      "falsePositive": "Some automation of oversight is appropriate for well-understood, low-risk cases. The failure mode is removing oversight on high-stakes decisions because the system has appeared reliable.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "scope-negotiation-theater",
+      "title": "Scope Negotiation Theater",
+      "alternativeNames": [
+        "fake descoping",
+        "the scope that never shrinks",
+        "committed scope in disguise",
+        "expectation laundering"
+      ],
+      "category": "leadership",
+      "summary": "Scope negotiation processes exist and are followed, but the real scope is never actually reduced — only the formal acknowledgment of it changes.",
+      "whoNoticesFirst": [
+        "delivery lead",
+        "engineering manager",
+        "product manager"
+      ],
+      "mistakenFor": "healthy trade-off management",
+      "severity": "high",
+      "frequency": "common",
+      "lifecycleStages": [
+        "planning",
+        "delivery"
+      ],
+      "whatItIs": "A team goes through the motions of scoping and descoping, but the actual set of expectations held by powerful stakeholders never changes. Removed scope reappears at delivery.",
+      "bestMomentToIntervene": "when scope is removed from the formal plan but not from stakeholder expectations",
+      "blastRadius": [
+        "delivery",
+        "team",
+        "business"
+      ],
+      "oftenMistakenAs": "agile flexibility",
+      "starts": "A team agrees to cut scope to hit a date.",
+      "feelsReasonableBecause": "The process of negotiation and cutting looks like good trade-off management.",
+      "escalates": "The cut items are treated as deferred, not removed. Stakeholders expect them anyway. The team is held to the full original scope at delivery.",
+      "ends": "The team misses expectations despite having had an agreed-upon reduced scope, and trust breaks down on both sides.",
+      "earlyWarningSigns": [
+        "Scope cut discussions produce agreement but no stakeholder communication.",
+        "Cut items are described as deferred rather than removed.",
+        "Stakeholders do not acknowledge the trade-off publicly."
+      ],
+      "midWarningSigns": [
+        "Cut items reappear in delivery conversations.",
+        "Expectations held by leadership are broader than the formal plan.",
+        "The team cannot point to a written record of what was agreed."
+      ],
+      "lateWarningSigns": [
+        "The team is judged against the original scope despite formal agreement to cut it.",
+        "Trust breaks down because each side believes it behaved correctly.",
+        "The delivery process is blamed rather than the unstated expectations."
+      ],
+      "whyItHappens": [
+        "Stakeholders agree to reduce scope formally but cannot accept it emotionally",
+        "Cuts are not communicated beyond the immediate negotiation",
+        "No written record of the trade-off is maintained",
+        "Conflict avoidance prevents honest expectation management"
+      ],
+      "immediateActions": [
+        "Write down what was cut and who agreed",
+        "Communicate cuts to all stakeholders who hold expectations, not just the negotiating party",
+        "Distinguish deferred from removed explicitly and in writing"
+      ],
+      "structuralFixes": [
+        "Use decision records for scope changes",
+        "Require stakeholder sign-off on the implications of cuts",
+        "Follow up scope conversations with written confirmation"
+      ],
+      "whatNotToDo": [
+        "Do not treat verbal agreement as sufficient for scope reduction",
+        "Do not cut scope without communicating the change to everyone who holds expectations"
+      ],
+      "recoveryDifficulty": "medium",
+      "aiCanHelpWith": [
+        "AI can help identify which stakeholders hold expectations not reflected in the current plan and surface mismatches."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can produce polished project plans and status updates that reflect the formal reduced scope while stakeholder expectations remain unaddressed."
+      ],
+      "aiSpecificNotes": "A plan that reflects agreed scope but not held expectations is not a plan.",
+      "oftenLeadsTo": [
+        "the-invisible-deadline",
+        "ticket-theater"
+      ],
+      "oftenCausedBy": [
+        "stakeholder-capture",
+        "the-consensus-trap"
+      ],
+      "relatedRedFlags": [
+        "cut scope reappears at delivery",
+        "each side believes it behaved correctly in a delivery miss"
+      ],
+      "relatedTechDecisions": [
+        "date-driven-vs-scope-driven-delivery"
+      ],
+      "relatedPlaybooks": [
+        "frame-scope-time-quality-explicitly"
+      ],
+      "commonQuote": "We agreed to cut it, but of course we still expect it by launch.",
+      "whoSaysThis": "stakeholder after a delivery miss",
+      "counterMove": "A scope cut that is not communicated to all expectation holders is not a cut.",
+      "falsePositive": "Genuine descoping with full stakeholder alignment is healthy. The theater begins when the process produces agreement without changing expectations.",
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "the-long-tail-release",
+      "title": "The Long Tail Release",
+      "alternativeNames": [
+        "the 95% done trap",
+        "the never-ending launch",
+        "perpetual beta",
+        "release creep"
+      ],
+      "category": "planning",
+      "summary": "A release is declared almost ready for weeks or months, with the final 5-10% consuming as much time as the previous 90-95%.",
+      "whoNoticesFirst": [
+        "delivery lead",
+        "product manager",
+        "engineering manager"
+      ],
+      "mistakenFor": "quality diligence",
+      "severity": "high",
+      "frequency": "very common",
+      "lifecycleStages": [
+        "delivery",
+        "release"
+      ],
+      "whatItIs": "The last phase of a release expands indefinitely as edge cases, polish items, and newly discovered issues consume far more time than estimated.",
+      "bestMomentToIntervene": "when the remaining work list is growing faster than it is shrinking",
+      "blastRadius": [
+        "delivery",
+        "team",
+        "business"
+      ],
+      "oftenMistakenAs": "careful pre-release preparation",
+      "starts": "A team approaches a release and discovers more work than expected in the final stretch.",
+      "feelsReasonableBecause": "The items are real and fixing them before launch feels responsible.",
+      "escalates": "Each fix reveals new issues. The definition of done expands. The release date keeps moving.",
+      "ends": "The release either ships significantly late or is forced out in a worse state than if it had shipped at 85% done with a clear fix timeline.",
+      "earlyWarningSigns": [
+        "The remaining work list is not shrinking.",
+        "New items are discovered as fast as existing ones are resolved.",
+        "Launch criteria are not written down."
+      ],
+      "midWarningSigns": [
+        "The release has been 'almost ready' for more than two weeks.",
+        "The team is unsure what done means.",
+        "Stakeholders are asking for a new date weekly."
+      ],
+      "lateWarningSigns": [
+        "The team has lost confidence in its own estimates.",
+        "The release is being extended to include scope that should be post-launch.",
+        "Morale drops as the finish line keeps moving."
+      ],
+      "whyItHappens": [
+        "Done criteria were not defined before the release began",
+        "Edge cases and polish items are treated as blockers when they are not",
+        "Fear of shipping imperfect work",
+        "Scope creep in the release phase masquerades as quality"
+      ],
+      "immediateActions": [
+        "Write down launch criteria explicitly and freeze them",
+        "Separate must-fix from nice-to-fix items with explicit criteria",
+        "Set a release date and work backwards to decide what ships"
+      ],
+      "structuralFixes": [
+        "Define done before starting the release phase",
+        "Build a post-launch fix process so not everything needs to be solved before shipping",
+        "Track remaining work items by count and trend, not just current state"
+      ],
+      "whatNotToDo": [
+        "Do not expand launch criteria during the release phase",
+        "Do not treat every discovered issue as a launch blocker"
+      ],
+      "recoveryDifficulty": "medium",
+      "aiCanHelpWith": [
+        "AI can help categorize remaining issues by severity and distinguish genuine blockers from improvements."
+      ],
+      "aiCanMakeWorseBy": [
+        "AI can generate additional polish items, edge case tests, and quality checks quickly, expanding the tail rather than shortening it."
+      ],
+      "aiSpecificNotes": "More issues found does not mean more issues need to be fixed before launch.",
+      "oftenLeadsTo": [
+        "the-invisible-deadline",
+        "ticket-theater"
+      ],
+      "oftenCausedBy": [
+        "scope-negotiation-theater",
+        "the-consensus-trap"
+      ],
+      "relatedRedFlags": [
+        "the remaining work list is growing",
+        "the release has been almost ready for more than two weeks"
+      ],
+      "relatedTechDecisions": [
+        "date-driven-vs-scope-driven-delivery"
+      ],
+      "relatedPlaybooks": [
+        "frame-scope-time-quality-explicitly"
+      ],
+      "commonQuote": "We're almost there, just a few more things to sort out.",
+      "whoSaysThis": "engineering manager or delivery lead on a weekly basis",
+      "counterMove": "Define done before you build, not after you finish.",
+      "falsePositive": "Some pre-launch diligence is appropriate. The failure mode is treating every discovered issue as a launch blocker.",
+      "patternConfidence": "high"
+    }
+  ]
+}

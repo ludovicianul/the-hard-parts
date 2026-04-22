@@ -1,0 +1,1584 @@
+{
+  "category": {
+    "code": "EP",
+    "name": "Engineering Playbook",
+    "summary": "Practical playbooks for recurring engineering situations — delivery, architecture, operations, teamwork, and AI adoption.",
+    "categories": [
+      "delivery",
+      "team",
+      "architecture",
+      "operations",
+      "ai"
+    ]
+  },
+  "template": {
+    "fields": [
+      "slug",
+      "title",
+      "situation",
+      "category",
+      "summary",
+      "goal",
+      "useWhen",
+      "doNotUseWhen",
+      "whyThisMatters",
+      "whatGoodLooksLike",
+      "inputs",
+      "rolesInvolved",
+      "primaryOwner",
+      "estimatedTimeHorizon",
+      "difficulty",
+      "prerequisites",
+      "steps",
+      "decisionPoints",
+      "commonMistakes",
+      "warningSignsYouAreDoingItWrong",
+      "artifactsToProduce",
+      "successSignals",
+      "followUpActions",
+      "metricsOrSignals",
+      "aiCanHelpWith",
+      "aiCanMakeWorseBy",
+      "aiSpecificNotes",
+      "relatedFailureModes",
+      "relatedRedFlags",
+      "relatedTechDecisions",
+      "relatedPlaybooks",
+      "examplePromptsOrQuestions",
+      "patternConfidence"
+    ]
+  },
+  "entries": [
+    {
+      "slug": "review-service-boundaries",
+      "title": "Review service boundaries",
+      "situation": "You need to evaluate whether current service boundaries are helping or hurting.",
+      "category": "architecture",
+      "summary": "Review service boundaries by looking at change patterns, ownership reality, dependency shape, and runtime behavior — not just diagrams or intended architecture.",
+      "goal": "Determine whether current boundaries are reducing complexity, clarifying ownership, and localizing change, or whether they are creating coupling, coordination cost, and fuzzy responsibility.",
+      "useWhen": [
+        "simple changes require coordination across too many services or teams",
+        "ownership is unclear at service edges",
+        "integration incidents are common",
+        "teams debate whether a boundary is right but lack evidence",
+        "a monolith split or service consolidation is being considered"
+      ],
+      "doNotUseWhen": [
+        "the system is too new to have meaningful change and incident history",
+        "the real problem is local implementation quality rather than boundary shape",
+        "leadership already decided the answer politically and only wants a justification exercise",
+        "the team is using boundary review to postpone immediate operational fixes"
+      ],
+      "whyThisMatters": "Bad service boundaries create invisible tax: broader changes, slower delivery, more coordination, hidden duplication, and weaker accountability. Good boundaries reduce cognitive load and make failure and change more local.",
+      "whatGoodLooksLike": [
+        "the team can explain what each service owns in business terms",
+        "common changes stay local more often than not",
+        "consumers depend on explicit contracts rather than accidental behavior",
+        "ownership and operational accountability align with the service boundary",
+        "boundary changes are justified by evidence, not fashion"
+      ],
+      "inputs": [
+        "service inventory",
+        "change history across services",
+        "incident and dependency history",
+        "team ownership map",
+        "API or event contracts",
+        "architecture diagrams if available"
+      ],
+      "rolesInvolved": [
+        "architect",
+        "tech lead",
+        "service owners",
+        "staff engineers",
+        "delivery lead when change cost matters",
+        "platform or operations partner when runtime behavior matters"
+      ],
+      "primaryOwner": "architect",
+      "estimatedTimeHorizon": "days to weeks depending on system size",
+      "difficulty": "high",
+      "prerequisites": [
+        "you can identify current service owners and consumers",
+        "you have access to recent change and incident history",
+        "the review is allowed to challenge the current boundary model honestly"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "State what each service is supposed to own",
+          "purpose": "Compare intended boundaries with real ones.",
+          "actions": [
+            "describe each service in one sentence using business behavior, not tech stack",
+            "list what it explicitly owns and what it should not own",
+            "identify where different teams describe the same service differently"
+          ],
+          "outputs": [
+            "service purpose inventory"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Look at change fan-out and coordination cost",
+          "purpose": "Use actual change behavior as evidence.",
+          "actions": [
+            "review common changes from the last few months",
+            "measure how many services and teams a typical change crosses",
+            "identify recurring cross-boundary edits that look structural, not incidental"
+          ],
+          "outputs": [
+            "change fan-out map"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Inspect runtime and contract coupling",
+          "purpose": "Find where boundaries look clean in diagrams but not in operation.",
+          "actions": [
+            "review dependencies, shared schemas, hidden data assumptions, and retry or failure patterns",
+            "identify contracts that are implicit, brittle, or operationally expensive",
+            "check whether services depend on implementation detail rather than declared interface"
+          ],
+          "outputs": [
+            "coupling and contract assessment"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Check ownership fit",
+          "purpose": "Make sure service boundaries support real accountability.",
+          "actions": [
+            "ask who owns roadmap, incidents, operability, and compatibility for each service",
+            "identify boundaries where responsibility and authority do not match",
+            "note where a service looks shared but is really owned through heroics or hidden escalation"
+          ],
+          "outputs": [
+            "ownership fit review"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Recommend targeted boundary moves",
+          "purpose": "Avoid vague conclusions like re-architect more.",
+          "actions": [
+            "name which boundaries should stay, shift, merge, split, or be made more explicit",
+            "tie each recommendation to change locality, contract health, or ownership clarity",
+            "sequence the changes in small, evidence-based steps"
+          ],
+          "outputs": [
+            "boundary recommendation set",
+            "next-step architecture plan"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "Is the problem really the service boundary, or the contract and ownership around it?",
+        "Should two services merge, or should their interface become cleaner?",
+        "Would a modular monolith boundary serve this responsibility better?",
+        "Which changes are worth making now versus watching longer?"
+      ],
+      "commonMistakes": [
+        "reviewing boundaries from diagrams only",
+        "treating all cross-service traffic as proof boundaries are wrong",
+        "optimizing for theoretical purity over real ownership and change cost",
+        "using service count as a maturity proxy",
+        "deciding to split or merge without looking at change history"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "the review produces generic statements like reduce coupling without naming where",
+        "teams still cannot explain who owns what after the review",
+        "the answer is microservices are bad or monoliths are bad instead of context-specific",
+        "common changes still cross the same boundaries but the review calls them edge cases"
+      ],
+      "artifactsToProduce": [
+        "service purpose inventory",
+        "change fan-out map",
+        "coupling and contract assessment",
+        "ownership fit review",
+        "boundary recommendation set"
+      ],
+      "successSignals": [
+        "future changes become more local",
+        "service purpose descriptions become sharper and more consistent",
+        "ownership and on-call routing become clearer",
+        "teams stop rediscovering the same contract and boundary problems"
+      ],
+      "followUpActions": [
+        "turn repeated cross-boundary friction into explicit migration or contract work",
+        "review high-friction boundaries again after a few release cycles",
+        "update service catalogs, onboarding docs, and dependency maps with the clearer boundary model"
+      ],
+      "metricsOrSignals": [
+        "median number of services touched per common change",
+        "cross-team coordination count per feature",
+        "contract-related incident rate",
+        "service ownership ambiguity events"
+      ],
+      "aiCanHelpWith": [
+        "summarizing change histories across repos or services",
+        "mapping dependency and call patterns from code and telemetry",
+        "drafting first-pass service inventories and interface summaries",
+        "finding likely hidden couplings in configs, schemas, and logs"
+      ],
+      "aiCanMakeWorseBy": [
+        "making weak boundaries look coherent through elegant summaries",
+        "encouraging large speculative service redesigns before evidence is solid",
+        "confusing generated architecture rationales with actual system understanding"
+      ],
+      "aiSpecificNotes": "AI is useful for evidence gathering and system mapping. Boundary decisions still need strong human judgment on ownership, operability, and business meaning.",
+      "relatedFailureModes": [
+        "dependency-fog",
+        "ownership-drift"
+      ],
+      "relatedRedFlags": [
+        "changes-always-touch-too-many-places",
+        "nobody-can-explain-this-module-simply",
+        "integration-contracts-are-implicit"
+      ],
+      "relatedTechDecisions": [
+        "monolith-vs-microservices",
+        "modular-monolith-vs-distributed-services"
+      ],
+      "relatedPlaybooks": [
+        "reduce-change-fan-out",
+        "make-an-integration-contract-explicit"
+      ],
+      "examplePromptsOrQuestions": [
+        "What common changes cross these boundaries today?",
+        "Which service owns this business behavior end to end?",
+        "Are we paying more in coordination than we gain in separation?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "reduce-change-fan-out",
+      "title": "Reduce change fan-out",
+      "situation": "Small changes spread across too many files, modules, or teams.",
+      "category": "architecture",
+      "summary": "Reduce fan-out by finding the responsibilities and contracts that make ordinary changes travel too far, then redesigning for locality of change instead of only tidier structure.",
+      "goal": "Make common changes smaller, safer, and more local by reducing hidden coupling and misplaced logic.",
+      "useWhen": [
+        "routine changes require edits across many services, layers, or repos",
+        "feature work triggers coordination that feels disproportionate",
+        "bug fixes often require multi-team validation",
+        "the team says simple changes are never simple anymore"
+      ],
+      "doNotUseWhen": [
+        "the work is genuinely cross-cutting by business nature and not repetitive enough to redesign around",
+        "the fan-out is caused mainly by one temporary migration or audit program",
+        "the team wants locality without making any ownership or contract changes"
+      ],
+      "whyThisMatters": "Wide change surfaces slow delivery and make systems fragile. If ordinary changes require many synchronized edits, the architecture is externalizing complexity onto humans.",
+      "whatGoodLooksLike": [
+        "common changes touch fewer units",
+        "logic lives closer to its owning boundary",
+        "contracts carry more meaning so fewer downstream compensations are needed",
+        "coordination effort drops for everyday work",
+        "teams know why a change is local or why it is not"
+      ],
+      "inputs": [
+        "recent changes with high fan-out",
+        "dependency graph",
+        "service or module ownership map",
+        "test and release coupling patterns",
+        "contract and schema relationships"
+      ],
+      "rolesInvolved": [
+        "tech lead",
+        "architect",
+        "maintainers of affected areas",
+        "delivery lead if fan-out is hurting roadmap flow"
+      ],
+      "primaryOwner": "tech lead",
+      "estimatedTimeHorizon": "days to diagnose, weeks to months to reduce materially",
+      "difficulty": "high",
+      "prerequisites": [
+        "you can identify recent high-fan-out changes",
+        "the team is willing to challenge current boundary and layering assumptions",
+        "there is enough observability into code and coordination patterns"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Find real fan-out cases",
+          "purpose": "Anchor the work in actual change pain, not abstract taste.",
+          "actions": [
+            "collect examples of routine changes that spread too far",
+            "classify the spread by layer, service, repo, or team boundary",
+            "identify whether the fan-out is structural or incidental"
+          ],
+          "outputs": [
+            "fan-out case set"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Trace why the change had to spread",
+          "purpose": "Locate the coupling mechanism behind the visible edits.",
+          "actions": [
+            "identify shared schemas, duplicated rules, boundary leaks, and synchronized release needs",
+            "ask which change was primary and which edits were compensating edits",
+            "find where source of truth is ambiguous"
+          ],
+          "outputs": [
+            "coupling cause map"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Choose the locality lever",
+          "purpose": "Reduce fan-out through the right intervention, not generic cleanup.",
+          "actions": [
+            "decide whether to move logic, tighten contracts, consolidate ownership, or reshape the boundary",
+            "prefer the smallest change that improves locality for repeated work",
+            "avoid broad redesign when one clearer contract would solve most of the spread"
+          ],
+          "outputs": [
+            "locality intervention plan"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Improve one repeated path first",
+          "purpose": "Prove locality gains on a real pattern.",
+          "actions": [
+            "pick one high-frequency fan-out path",
+            "apply the chosen structural fix",
+            "measure whether the next similar change stays smaller"
+          ],
+          "outputs": [
+            "pilot locality fix"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Bake locality into design review",
+          "purpose": "Stop new fan-out from reappearing invisibly.",
+          "actions": [
+            "add change-locality questions to design and review rituals",
+            "flag new work that expands ordinary change surfaces",
+            "teach the team to notice compensating edits early"
+          ],
+          "outputs": [
+            "change locality review guide"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "Is the fan-out caused by ownership, contracts, or misplaced logic?",
+        "Should we move behavior or improve the interface around it?",
+        "Is one source of truth missing?",
+        "What locality improvement is worth the cost right now?"
+      ],
+      "commonMistakes": [
+        "treating every wide change as inevitable complexity",
+        "optimizing file structure while leaving source-of-truth problems intact",
+        "splitting code further when the problem is actually fragmented ownership",
+        "changing too much at once before proving locality gain"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "common changes still require the same multi-area edits after the intervention",
+        "the team cannot explain which edit is now authoritative",
+        "locality is discussed in theory but not measured on repeated work",
+        "the fix creates more abstractions than reduced fan-out"
+      ],
+      "artifactsToProduce": [
+        "fan-out case set",
+        "coupling cause map",
+        "locality intervention plan",
+        "change locality review guide"
+      ],
+      "successSignals": [
+        "repeated changes become smaller and more local",
+        "coordination effort declines for common work",
+        "source-of-truth questions get easier to answer",
+        "the team starts identifying fan-out risks earlier in design"
+      ],
+      "followUpActions": [
+        "apply the same analysis to the next repeated fan-out pattern",
+        "refresh ownership and contract docs after locality improvements",
+        "teach reviewers to call out compensating changes explicitly"
+      ],
+      "metricsOrSignals": [
+        "average number of repos or services touched per routine change",
+        "multi-team review count per common feature",
+        "time lost to synchronized edits",
+        "number of duplicated rule edits per release"
+      ],
+      "aiCanHelpWith": [
+        "finding common multi-file or multi-repo change patterns",
+        "summarizing repeated compensating edits from commit history",
+        "highlighting duplicated business logic and schema dependencies"
+      ],
+      "aiCanMakeWorseBy": [
+        "making cross-cutting edits cheaper without reducing the structural cause",
+        "spreading identical mistakes faster across many layers",
+        "encouraging broad automated edits that hide poor locality"
+      ],
+      "aiSpecificNotes": "AI can reveal fan-out patterns quickly. Do not confuse cheaper wide edits with healthier architecture.",
+      "relatedFailureModes": [
+        "dependency-fog"
+      ],
+      "relatedRedFlags": [
+        "changes-always-touch-too-many-places",
+        "business-logic-leaks-across-layers"
+      ],
+      "relatedTechDecisions": [
+        "shared-database-vs-service-owned-data",
+        "strong-ownership-vs-shared-ownership"
+      ],
+      "relatedPlaybooks": [
+        "review-service-boundaries",
+        "choose-where-business-rules-should-live"
+      ],
+      "examplePromptsOrQuestions": [
+        "Which ordinary change patterns travel too far?",
+        "What part of the fan-out is real, and what part is compensation for weak boundaries?",
+        "What is the smallest structural move that would make the next similar change more local?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "make-an-integration-contract-explicit",
+      "title": "Make an integration contract explicit",
+      "situation": "A producer and consumer depend on behavior that is currently implicit or informal.",
+      "category": "architecture",
+      "summary": "Turn accidental behavior into an explicit contract by naming what is guaranteed, what is incidental, who owns compatibility, and how consumers will learn about change.",
+      "goal": "Reduce integration fragility by moving from assumption-based compatibility to clear, owned contract behavior.",
+      "useWhen": [
+        "consumers rely on undocumented behavior",
+        "breaking changes are discovered late downstream",
+        "API or event semantics are argued from examples rather than rules",
+        "the producer says we never promised that and the consumer says we rely on it"
+      ],
+      "doNotUseWhen": [
+        "the integration is genuinely throwaway and low-risk",
+        "producer and consumer are one small team with no real need for explicit contract management yet",
+        "the contract is already explicit and the real problem is implementation quality"
+      ],
+      "whyThisMatters": "Integrations become dangerous when teams act as if only the syntax is shared. Real contracts include field meaning, timing, ordering, failure semantics, compatibility promises, and operational expectations.",
+      "whatGoodLooksLike": [
+        "both producer and consumer can describe the same contract similarly",
+        "compatibility expectations are visible and owned",
+        "undocumented assumptions are reduced",
+        "contract change becomes easier to discuss and safer to execute",
+        "consumers learn about breaking changes before production"
+      ],
+      "inputs": [
+        "current API, event, or data interface",
+        "consumer usage patterns",
+        "recent breakage or ambiguity examples",
+        "existing docs and schemas",
+        "ownership model"
+      ],
+      "rolesInvolved": [
+        "producer owner",
+        "consumer owner",
+        "tech lead or architect",
+        "QA or contract test owner where applicable",
+        "platform owner if the interface is shared broadly"
+      ],
+      "primaryOwner": "producer owner",
+      "estimatedTimeHorizon": "days to weeks",
+      "difficulty": "medium-high",
+      "prerequisites": [
+        "producer and consumer representatives are present",
+        "the interface can be inspected in real usage, not only in theory",
+        "someone owns compatibility decisions"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Expose actual consumer dependence",
+          "purpose": "Find the contract that already exists in practice.",
+          "actions": [
+            "review how consumers use the interface in real workflows",
+            "identify assumptions about fields, timing, ordering, idempotency, and failure behavior",
+            "separate guaranteed behavior from accidental producer behavior"
+          ],
+          "outputs": [
+            "actual contract map"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Define explicit guarantees",
+          "purpose": "Turn ambiguity into shared rules.",
+          "actions": [
+            "document what is stable, what may change, and what is out of contract",
+            "clarify backward compatibility policy",
+            "decide how deprecated or optional behaviors are handled"
+          ],
+          "outputs": [
+            "contract definition",
+            "compatibility policy"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Add verification paths",
+          "purpose": "Make the contract enforceable, not merely narrated.",
+          "actions": [
+            "introduce or tighten contract tests, schema validation, and compatibility checks",
+            "ensure test ownership is clear",
+            "cover consumer-critical behaviors, not just type correctness"
+          ],
+          "outputs": [
+            "contract verification plan"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Define change communication and versioning",
+          "purpose": "Reduce downstream surprise.",
+          "actions": [
+            "name how consumers are informed about changes",
+            "set versioning or change announcement expectations",
+            "clarify timelines for deprecation and removal"
+          ],
+          "outputs": [
+            "change management model"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Review drift periodically",
+          "purpose": "Prevent the contract from becoming implicit again.",
+          "actions": [
+            "review new consumer assumptions regularly",
+            "check whether docs still match runtime behavior",
+            "capture breakage or near-miss lessons"
+          ],
+          "outputs": [
+            "contract drift review"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What behavior do we truly guarantee?",
+        "What existing consumer dependence must be honored for now?",
+        "What is the right compatibility policy for this interface?",
+        "How much verification is needed given the impact and blast radius?"
+      ],
+      "commonMistakes": [
+        "documenting only syntax and calling the contract done",
+        "declaring undocumented behavior out of scope after consumers already depend on it",
+        "treating internal APIs as exempt from contract discipline",
+        "adding versioning theater without compatibility ownership"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "producer and consumer still describe the interface differently after the exercise",
+        "breaking changes are still found downstream by surprise",
+        "contract tests pass but operational expectations still break",
+        "nobody can say who decides whether a change is compatible"
+      ],
+      "artifactsToProduce": [
+        "actual contract map",
+        "contract definition",
+        "compatibility policy",
+        "contract verification plan",
+        "change management model"
+      ],
+      "successSignals": [
+        "fewer surprises during integration changes",
+        "producer and consumer discussions get shorter and more precise",
+        "compatibility decisions become explicit",
+        "incident patterns shift away from accidental contract breakage"
+      ],
+      "followUpActions": [
+        "review frequently violated contracts for boundary redesign",
+        "update consumer onboarding and producer docs with the explicit model",
+        "audit where other interfaces are still running on accidental behavior"
+      ],
+      "metricsOrSignals": [
+        "contract-related incident count",
+        "consumer surprise change events",
+        "time to resolve integration ambiguity",
+        "rate of compatibility disputes"
+      ],
+      "aiCanHelpWith": [
+        "comparing docs, code, and real interface usage for mismatches",
+        "drafting first-pass contract descriptions from code and examples",
+        "highlighting likely undocumented semantics in consumer usage"
+      ],
+      "aiCanMakeWorseBy": [
+        "producing polished contract docs that still miss actual runtime semantics",
+        "encouraging reliance on inferred examples over explicit guarantees",
+        "masking disagreement with overly tidy summaries"
+      ],
+      "aiSpecificNotes": "AI is useful for diffing examples against definitions. Final contract decisions must be made by the owning humans on both sides.",
+      "relatedFailureModes": [
+        "dependency-fog"
+      ],
+      "relatedRedFlags": [
+        "integration-contracts-are-implicit",
+        "dependencies-are-discovered-late-every-cycle"
+      ],
+      "relatedTechDecisions": [
+        "rest-vs-graphql",
+        "backward-compatibility-vs-faster-evolution"
+      ],
+      "relatedPlaybooks": [
+        "review-service-boundaries",
+        "design-a-safe-rollout-path"
+      ],
+      "examplePromptsOrQuestions": [
+        "What behavior are consumers depending on that we never formally declared?",
+        "What exactly is guaranteed versus incidental?",
+        "How will downstream teams know a change is safe or breaking?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "improve-testability-without-stopping-delivery",
+      "title": "Improve testability without stopping delivery",
+      "situation": "The system is hard to test, but delivery cannot pause for a large rewrite.",
+      "category": "architecture",
+      "summary": "Improve testability incrementally by adding seams, isolating side effects, simplifying change hotspots, and rebalancing confidence creation across layers while real work continues.",
+      "goal": "Make routine changes safer and cheaper to validate without waiting for a total redesign.",
+      "useWhen": [
+        "small changes are expensive to test",
+        "the team relies too heavily on manual or end-to-end validation",
+        "developers avoid touching areas because testing them is painful",
+        "the system resists focused automated confidence"
+      ],
+      "doNotUseWhen": [
+        "the system is already testable enough and the issue is weak review or release process instead",
+        "leadership expects a quick tooling fix for what is clearly a deep coupling problem",
+        "the team wants universal test coverage without prioritizing risky areas first"
+      ],
+      "whyThisMatters": "Poor testability is often architecture feedback. If simple changes are hard to test, the system is revealing tight coupling, side-effect sprawl, hidden state, or weak boundaries.",
+      "whatGoodLooksLike": [
+        "the team can add focused tests around important behaviors more easily",
+        "high-risk changes no longer require huge setup or full-stack confidence only",
+        "testability improves first in hotspots that slow delivery the most",
+        "confidence gets created earlier and closer to the change"
+      ],
+      "inputs": [
+        "painful recent changes",
+        "test pyramid or current confidence map",
+        "hotspot areas",
+        "incident and escape defect history",
+        "dependency and side-effect map"
+      ],
+      "rolesInvolved": [
+        "tech lead",
+        "maintainers of hotspot areas",
+        "QA or quality lead",
+        "architect where structural moves are needed"
+      ],
+      "primaryOwner": "tech lead",
+      "estimatedTimeHorizon": "weeks to months",
+      "difficulty": "high",
+      "prerequisites": [
+        "you can identify which changes are hard to test and why",
+        "the team is willing to improve structure during normal delivery work",
+        "there is some discipline around not making testability worse in the meantime"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Map test pain to design pain",
+          "purpose": "Avoid treating testability as only a tooling issue.",
+          "actions": [
+            "review recent painful changes and what made them hard to validate",
+            "separate fixture pain, environment pain, hidden state, and side-effect pain",
+            "identify repeated missing seams"
+          ],
+          "outputs": [
+            "testability pain map"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Choose one hotspot and one seam at a time",
+          "purpose": "Improve incrementally where it matters most.",
+          "actions": [
+            "pick a high-change or high-risk area",
+            "introduce one clearer seam: isolate side effects, split orchestration from rules, or clarify data flow",
+            "ensure the next similar change can be tested more locally"
+          ],
+          "outputs": [
+            "testability improvement slice"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Rebalance confidence layers",
+          "purpose": "Move some safety earlier and cheaper.",
+          "actions": [
+            "identify where unit, component, contract, and end-to-end tests each add value",
+            "reduce reliance on full-stack tests for behavior that can be proven earlier",
+            "add focused checks around the business-critical parts, not generic volume"
+          ],
+          "outputs": [
+            "confidence layer plan"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Change the definition of ready-to-merge",
+          "purpose": "Make testability improvement part of normal work.",
+          "actions": [
+            "ask on hot areas whether the change made the next change easier or harder to validate",
+            "prefer review comments that challenge hidden coupling or weak seams",
+            "avoid accepting new hard-to-test patterns casually"
+          ],
+          "outputs": [
+            "testability review guidance"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Track whether confidence is becoming cheaper",
+          "purpose": "Ensure the work improves real delivery flow.",
+          "actions": [
+            "watch time to validate common changes",
+            "watch flake dependence and end-to-end overuse",
+            "review whether the same areas remain scary to change"
+          ],
+          "outputs": [
+            "testability progress review"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What hotspot should improve first?",
+        "Which seam gives the biggest gain in local confidence?",
+        "What confidence should stay end-to-end and what can move lower?",
+        "How much structure change can fit into normal delivery work?"
+      ],
+      "commonMistakes": [
+        "trying to improve testability everywhere at once",
+        "adding many tests around poor structure without reducing the core pain",
+        "treating end-to-end volume as the main answer",
+        "separating refactor time completely from product work so it never happens"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "test count rises but validation time does not improve",
+        "hotspot changes are still avoided for the same reasons",
+        "developers still say it is faster to click than to write a useful test",
+        "the new tests assert implementation detail rather than behavior"
+      ],
+      "artifactsToProduce": [
+        "testability pain map",
+        "testability improvement slice plan",
+        "confidence layer plan",
+        "testability review guidance",
+        "testability progress review"
+      ],
+      "successSignals": [
+        "common changes become easier to validate",
+        "fewer changes require full-stack setup by default",
+        "developers report less fear in targeted hotspots",
+        "review and release confidence improve together"
+      ],
+      "followUpActions": [
+        "promote recurring testability issues into architecture debt work",
+        "update coding and review norms for hotspot areas",
+        "teach the team to spot hidden state and side-effect sprawl earlier"
+      ],
+      "metricsOrSignals": [
+        "time to validate a routine change",
+        "share of confidence coming from end-to-end only",
+        "hotspot change failure rate",
+        "flake rate in confidence-critical paths"
+      ],
+      "aiCanHelpWith": [
+        "finding side-effect-heavy methods and coupling hotspots",
+        "drafting targeted tests and seam extraction ideas",
+        "summarizing repeated test pain from PRs and incident history"
+      ],
+      "aiCanMakeWorseBy": [
+        "generating lots of shallow tests around bad structure",
+        "inflating confidence dashboards without improving local understanding",
+        "encouraging snapshot-like or brittle assertions that do not reduce real risk"
+      ],
+      "aiSpecificNotes": "AI is useful for identifying seam candidates and generating first drafts of tests. It should not drive the design decisions about where confidence must live.",
+      "relatedFailureModes": [
+        "synthetic-velocity",
+        "dependency-fog"
+      ],
+      "relatedRedFlags": [
+        "tests-are-hard-to-write-for-normal-changes",
+        "end-to-end-tests-carry-all-the-confidence"
+      ],
+      "relatedTechDecisions": [
+        "test-pyramid-vs-heavy-end-to-end",
+        "ci-gate-strictness-vs-developer-throughput"
+      ],
+      "relatedPlaybooks": [
+        "reduce-review-bottlenecks-without-lowering-quality",
+        "stabilize-a-fragile-service"
+      ],
+      "examplePromptsOrQuestions": [
+        "What makes routine changes hard to validate here?",
+        "Which seam would most reduce test pain in the next two weeks?",
+        "What confidence are we creating too late today?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "choose-where-business-rules-should-live",
+      "title": "Choose where business rules should live",
+      "situation": "A business rule is duplicated or inconsistently implemented across layers.",
+      "category": "architecture",
+      "summary": "Choose rule placement by deciding where the authoritative truth belongs, what other layers may mirror or guard, and how the team will prevent behavior drift across boundaries.",
+      "goal": "Reduce inconsistency, coordination cost, and ambiguity by giving business rules a clear home and explicit supporting copies where needed.",
+      "useWhen": [
+        "the same rule exists in UI, API, batch jobs, or database logic differently",
+        "bugs appear because two layers disagree on policy or validation",
+        "teams argue over where a rule should live",
+        "business behavior is hard to change consistently"
+      ],
+      "doNotUseWhen": [
+        "the issue is only technical validation and not a real business rule",
+        "the duplicate check is obviously defensive and the authoritative rule is already clear",
+        "the team is trying to solve a bad boundary with only a placement decision"
+      ],
+      "whyThisMatters": "Business rules spread by convenience. Once the same rule exists in several layers without an explicit authority model, every change gets slower and every inconsistency becomes harder to trust and debug.",
+      "whatGoodLooksLike": [
+        "the team can name the authoritative home of the rule",
+        "other copies are clearly classified as mirror, cache, guardrail, or presentation convenience",
+        "rule change triggers are easier to reason about",
+        "behavior stays consistent across channels and workflows"
+      ],
+      "inputs": [
+        "rule examples and recent bugs",
+        "affected layers or services",
+        "runtime paths where the rule applies",
+        "latency, UX, and operational constraints",
+        "ownership map"
+      ],
+      "rolesInvolved": [
+        "tech lead",
+        "domain-aware engineer",
+        "architect if multiple boundaries are affected",
+        "frontend and backend owners when both implement the rule"
+      ],
+      "primaryOwner": "tech lead",
+      "estimatedTimeHorizon": "days to weeks",
+      "difficulty": "medium-high",
+      "prerequisites": [
+        "the rule can be stated clearly in business terms",
+        "the layers currently applying it are known",
+        "the team can distinguish authority from convenience duplication"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "State the rule in plain domain language",
+          "purpose": "Reduce debate caused by implementation-specific framing.",
+          "actions": [
+            "write the rule as a business statement",
+            "list where the rule currently exists in code or workflow",
+            "identify where behavior disagrees today"
+          ],
+          "outputs": [
+            "rule statement",
+            "current placement map"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Choose the authoritative home",
+          "purpose": "Give the rule one source of truth.",
+          "actions": [
+            "decide where the rule must be authoritative to preserve consistency and ownership",
+            "test whether that layer actually owns the required context and decision rights",
+            "record what other layers may only mirror or guard"
+          ],
+          "outputs": [
+            "authority model"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Define allowed secondary copies",
+          "purpose": "Avoid fake purity while preventing drift.",
+          "actions": [
+            "identify where UX, latency, or safety justify a secondary check",
+            "label each secondary copy as advisory, guardrail, or projection",
+            "make sure those copies do not silently redefine the rule"
+          ],
+          "outputs": [
+            "secondary copy policy"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Align tests and change flow to the authority model",
+          "purpose": "Keep the rule consistent under change.",
+          "actions": [
+            "add tests at the authoritative layer",
+            "verify supporting layers reflect but do not redefine the behavior",
+            "make future rule changes start from the source of truth"
+          ],
+          "outputs": [
+            "rule validation plan"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Review drift over time",
+          "purpose": "Prevent convenience from rebuilding duplication.",
+          "actions": [
+            "watch for new implementations of the same rule elsewhere",
+            "review recurring bugs or exceptions as placement failures or clarity failures",
+            "teach the team the authority model in code review"
+          ],
+          "outputs": [
+            "rule drift review"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "Where does the rule have enough context and ownership to be authoritative?",
+        "What secondary copies are justified?",
+        "Is the duplication defensive, advisory, or accidental?",
+        "Would moving the rule expose a deeper boundary problem?"
+      ],
+      "commonMistakes": [
+        "arguing from layers like frontend or backend instead of from ownership and context",
+        "pursuing purity that hurts user experience or safety with no real gain",
+        "keeping all copies as equal truth sources",
+        "changing the rule in one place and trusting others to catch up"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "different teams still disagree on which behavior is correct",
+        "bugs keep appearing as layer disagreement rather than obvious failure",
+        "the team says the rule lives everywhere because it needs to",
+        "secondary copies keep growing extra semantics"
+      ],
+      "artifactsToProduce": [
+        "rule statement",
+        "current placement map",
+        "authority model",
+        "secondary copy policy",
+        "rule validation plan"
+      ],
+      "successSignals": [
+        "rule changes start from the authoritative layer",
+        "inconsistency bugs decline",
+        "teams use more consistent language about the rule",
+        "supporting copies remain visibly subordinate"
+      ],
+      "followUpActions": [
+        "review other duplicated rules using the same model",
+        "update service and layer ownership guidance",
+        "turn repeated placement confusion into architecture heuristics for the team"
+      ],
+      "metricsOrSignals": [
+        "rule inconsistency bug count",
+        "number of layers implementing the rule",
+        "time to apply a rule change consistently",
+        "review findings about duplicate rule introduction"
+      ],
+      "aiCanHelpWith": [
+        "finding where similar rule logic exists across codebases",
+        "summarizing inconsistent validations and conditions",
+        "drafting rule placement options and authority models"
+      ],
+      "aiCanMakeWorseBy": [
+        "copying the same rule into more places faster",
+        "making supporting copies look consistent while semantics drift",
+        "masking source-of-truth ambiguity behind tidy code generation"
+      ],
+      "aiSpecificNotes": "AI is strong at spotting duplicate logic. It is weak at deciding which layer should own the business truth unless the team supplies strong context.",
+      "relatedFailureModes": [
+        "ownership-drift",
+        "dependency-fog"
+      ],
+      "relatedRedFlags": [
+        "business-logic-leaks-across-layers",
+        "changes-always-touch-too-many-places"
+      ],
+      "relatedTechDecisions": [
+        "edge-logic-vs-centralized-backend-logic",
+        "strong-ownership-vs-shared-ownership"
+      ],
+      "relatedPlaybooks": [
+        "reduce-change-fan-out",
+        "make-an-integration-contract-explicit"
+      ],
+      "examplePromptsOrQuestions": [
+        "Where should this rule be authoritative and why?",
+        "Which copies are justified and which are accidental?",
+        "What would stop this rule from drifting again six months from now?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "audit-a-shared-layer-for-accidental-complexity",
+      "title": "Audit a shared layer for accidental complexity",
+      "situation": "A common/shared layer keeps growing and may be hiding speculative abstraction.",
+      "category": "architecture",
+      "summary": "Audit the shared layer by testing whether it serves real repeated needs, has clear consumers, and simplifies product work — or whether it has become a prestige dumping ground for abstracted uncertainty.",
+      "goal": "Separate real leverage from speculative reuse and reduce shared-layer complexity that is costing teams more than it helps them.",
+      "useWhen": [
+        "common or shared packages keep expanding",
+        "teams complain the shared layer is hard to understand or risky to change",
+        "consumer demand is vague while shared output is high",
+        "the layer has many generic helpers, flags, or abstractions"
+      ],
+      "doNotUseWhen": [
+        "the shared layer is small, stable, and has a few clear proven use cases",
+        "the issue is simply weak documentation on an otherwise healthy shared layer",
+        "the audit is being used to attack any reuse on principle"
+      ],
+      "whyThisMatters": "Shared layers often accumulate accidental power. They feel central and sophisticated, but can quietly increase coupling, hide ownership, and slow product teams that did not ask for the abstraction in the first place.",
+      "whatGoodLooksLike": [
+        "each major shared capability has identifiable consumers and value",
+        "shared code stays smaller and more intentional than product-specific code",
+        "ownership and change policy for the layer are explicit",
+        "teams can explain what belongs in shared and what should stay local",
+        "the audit leads to pruning, clarification, or productization—not just criticism"
+      ],
+      "inputs": [
+        "shared layer inventory",
+        "consumer list",
+        "change history",
+        "adoption and support pain",
+        "docs and ownership model"
+      ],
+      "rolesInvolved": [
+        "platform or shared-layer owner",
+        "consumer teams",
+        "architect",
+        "tech leads",
+        "engineering manager where capacity or authority is needed"
+      ],
+      "primaryOwner": "platform or shared-layer owner",
+      "estimatedTimeHorizon": "days to weeks for audit, longer for simplification",
+      "difficulty": "medium-high",
+      "prerequisites": [
+        "you can identify real consumers",
+        "consumer teams are willing to speak honestly about fit and cost",
+        "there is permission to prune or localize parts of the layer"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Map the shared layer by capability and consumer",
+          "purpose": "See what the layer actually provides, not what it claims to provide.",
+          "actions": [
+            "inventory the major capabilities and modules",
+            "list real current consumers for each capability",
+            "identify parts with low or unclear adoption"
+          ],
+          "outputs": [
+            "shared capability map"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Review whether reuse is real or speculative",
+          "purpose": "Test whether abstraction earned its place.",
+          "actions": [
+            "ask what repeated problem each capability solved",
+            "identify which abstractions existed before real repeated demand",
+            "find where teams are forced into the layer rather than choosing it"
+          ],
+          "outputs": [
+            "reuse validity assessment"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Inspect complexity and coupling costs",
+          "purpose": "Price the hidden costs of sharing.",
+          "actions": [
+            "review optionality, configuration sprawl, extension points, and consumer breakage risk",
+            "identify where shared changes impose product-team coordination or fear",
+            "note where the layer is acting as a weak platform instead of a clear product"
+          ],
+          "outputs": [
+            "shared complexity review"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Decide what to keep, prune, localize, or productize",
+          "purpose": "Turn audit into architecture movement.",
+          "actions": [
+            "keep capabilities with clear multi-consumer value",
+            "prune dead or speculative abstractions",
+            "move low-value shared logic back to local ownership where useful",
+            "productize high-value shared capabilities with clear support and change policy"
+          ],
+          "outputs": [
+            "shared layer action plan"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Set entry rules for future shared code",
+          "purpose": "Stop accidental complexity from rebuilding itself.",
+          "actions": [
+            "define what evidence is required before adding new shared abstractions",
+            "clarify ownership and support expectations",
+            "teach teams when local code is the better choice"
+          ],
+          "outputs": [
+            "shared layer contribution policy"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "Is this truly shared value or just centrally stored code?",
+        "Should a capability become product-like with support expectations, or go back local?",
+        "What evidence is enough to justify a new abstraction in shared space?",
+        "Which complexity costs are acceptable for the reuse gained?"
+      ],
+      "commonMistakes": [
+        "treating all reuse as obviously good",
+        "keeping low-value shared abstractions because they feel strategic",
+        "auditing the layer without asking consumers what it costs them",
+        "pruning code without clarifying future rules for what belongs in shared"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "the audit concludes the layer is too abstract but changes nothing",
+        "consumer teams still cannot explain what the shared layer is for",
+        "new shared additions continue without evidence or review",
+        "the layer keeps growing while product teams route around it"
+      ],
+      "artifactsToProduce": [
+        "shared capability map",
+        "reuse validity assessment",
+        "shared complexity review",
+        "shared layer action plan",
+        "shared layer contribution policy"
+      ],
+      "successSignals": [
+        "the shared layer becomes smaller or clearer",
+        "consumer trust and adoption quality improve",
+        "change fear around shared code decreases",
+        "teams use stronger criteria before extracting new abstractions"
+      ],
+      "followUpActions": [
+        "review consumer experience after pruning or productization",
+        "repeat the audit periodically for high-growth shared layers",
+        "update onboarding and architecture guidance with clearer shared-layer rules"
+      ],
+      "metricsOrSignals": [
+        "number of real consumers per capability",
+        "shared-layer growth rate versus product-layer growth rate",
+        "consumer breakage or coordination incidents",
+        "route-around rate by product teams"
+      ],
+      "aiCanHelpWith": [
+        "inventorying shared capabilities and imports",
+        "mapping consumer usage patterns from code and config",
+        "summarizing complexity hotspots and unused abstractions"
+      ],
+      "aiCanMakeWorseBy": [
+        "accelerating speculative helper and wrapper generation into shared space",
+        "making generic abstractions look more coherent than they are",
+        "producing over-neat capability summaries that ignore consumer pain"
+      ],
+      "aiSpecificNotes": "AI is especially good at revealing actual consumer counts and repeated patterns. It is especially risky when used to generate shared abstractions before repeated need is proven.",
+      "relatedFailureModes": [
+        "abstraction-addiction",
+        "platform-before-product"
+      ],
+      "relatedRedFlags": [
+        "shared-utility-layer-grows-faster-than-products",
+        "naming-is-generic-where-understanding-is-weak"
+      ],
+      "relatedTechDecisions": [
+        "generic-solution-vs-case-specific-solution",
+        "platform-first-vs-product-first"
+      ],
+      "relatedPlaybooks": [
+        "review-service-boundaries",
+        "reduce-change-fan-out"
+      ],
+      "examplePromptsOrQuestions": [
+        "Which parts of this shared layer have real repeated demand?",
+        "What is this abstraction saving consumers, and what is it costing them?",
+        "Should this stay shared, become a supported platform capability, or go back local?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "design-a-safe-rollout-path",
+      "title": "Design a safe rollout path",
+      "situation": "A change is ready to ship, but rollout strategy matters as much as the code itself.",
+      "category": "architecture",
+      "summary": "Design rollout as a control system: decide how to limit blast radius, observe early effects, pause or reverse safely, and learn from each stage before widening exposure.",
+      "goal": "Reduce the chance that a valid code change becomes a production incident because exposure, detection, or reversal was poorly designed.",
+      "useWhen": [
+        "a change affects critical workflows or large user populations",
+        "rollback or reversal is non-trivial",
+        "the change crosses data, infra, or contract boundaries",
+        "a progressive rollout could materially reduce risk"
+      ],
+      "doNotUseWhen": [
+        "the change is routine and the team is adding rollout complexity by default",
+        "the system lacks the basic observability to support staged rollout and needs that fixed first",
+        "the change is fundamentally irreversible and the team is pretending otherwise"
+      ],
+      "whyThisMatters": "Many failures attributed to bad code are really failures of exposure design. A safe rollout path makes uncertainty manageable instead of hoping pre-production confidence covered everything.",
+      "whatGoodLooksLike": [
+        "the first exposure is intentionally smaller than the full blast radius",
+        "release stages map to observable signals and explicit decisions",
+        "pause and rollback paths are credible and understood",
+        "the team knows when to continue, hold, or reverse",
+        "rollout shape matches the risk shape of the change"
+      ],
+      "inputs": [
+        "change description",
+        "affected systems and users",
+        "rollback constraints",
+        "release windows",
+        "observability setup",
+        "incident and failure scenarios"
+      ],
+      "rolesInvolved": [
+        "tech lead",
+        "release owner",
+        "SRE or operations partner",
+        "QA or quality owner",
+        "product or business owner if user rollout needs coordination"
+      ],
+      "primaryOwner": "tech lead",
+      "estimatedTimeHorizon": "hours to days for planning, longer for complex staged rollout execution",
+      "difficulty": "medium-high",
+      "prerequisites": [
+        "minimum observability exists",
+        "the team can control exposure in some meaningful way",
+        "someone owns the operational decision during rollout"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Classify the change by reversibility and blast radius",
+          "purpose": "Match rollout design to real risk.",
+          "actions": [
+            "decide whether the change is reversible, partially reversible, or effectively one-way",
+            "identify the most dangerous failure modes",
+            "determine which users, traffic, data, or dependencies are most sensitive"
+          ],
+          "outputs": [
+            "rollout risk profile"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Choose the exposure ladder",
+          "purpose": "Define how the change will expand safely.",
+          "actions": [
+            "choose a staged pattern such as internal-first, cohort-based, traffic percentage, regional, or feature-flag rollout",
+            "ensure the early stage is small enough to learn safely",
+            "prefer simpler ladders the team can operate confidently"
+          ],
+          "outputs": [
+            "exposure ladder"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Define decision signals at each stage",
+          "purpose": "Prevent rollout from becoming intuition-driven.",
+          "actions": [
+            "name leading indicators and key alarms for each stage",
+            "define hold, continue, and rollback thresholds",
+            "tie stage progression to evidence, not elapsed time alone"
+          ],
+          "outputs": [
+            "stage decision sheet"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Make pause and rollback credible",
+          "purpose": "Ensure the team can really stop or reverse.",
+          "actions": [
+            "clarify feature-flag, routing, or deploy reversal mechanisms",
+            "identify what cannot be undone and how that affects stage size",
+            "rehearse the decision and communication path"
+          ],
+          "outputs": [
+            "rollback and pause plan"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Run and review the rollout",
+          "purpose": "Learn from the release as it progresses.",
+          "actions": [
+            "record decisions and observations at each stage",
+            "avoid widening exposure while key signals are ambiguous",
+            "capture lessons about whether the rollout shape matched the risk"
+          ],
+          "outputs": [
+            "rollout execution log",
+            "rollout review"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "How reversible is this change in practice?",
+        "What is the smallest safe first exposure?",
+        "What exact signals must be green before the next stage?",
+        "When is pause better than rollback?"
+      ],
+      "commonMistakes": [
+        "shipping in one big step because the team is impatient",
+        "using feature flags without operational clarity on how to use them",
+        "equating deploy success with rollout safety",
+        "widening exposure despite ambiguous signals"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "the team says we will know if it is bad but cannot define the signals",
+        "stage gates are based only on time passed",
+        "rollback exists technically but no one has walked through it",
+        "the rollout plan is more complicated than the team can operate calmly"
+      ],
+      "artifactsToProduce": [
+        "rollout risk profile",
+        "exposure ladder",
+        "stage decision sheet",
+        "rollback and pause plan",
+        "rollout execution log"
+      ],
+      "successSignals": [
+        "exposure grows in controlled steps",
+        "teams make rollout decisions using agreed signals",
+        "small anomalies are caught before large exposure",
+        "the rollout becomes a reusable model for similar changes"
+      ],
+      "followUpActions": [
+        "review whether better architecture or contracts could make future rollout simpler",
+        "clean up temporary controls and flags after stabilization",
+        "update release guidance with what the rollout taught the team"
+      ],
+      "metricsOrSignals": [
+        "time to detect bad effect after stage entry",
+        "rollback or pause decision latency",
+        "user or system impact per rollout stage",
+        "number of rollout stages completed without surprise escalation"
+      ],
+      "aiCanHelpWith": [
+        "drafting stage decision sheets and risk summaries",
+        "finding similar past releases and failure patterns",
+        "suggesting likely observability gaps from prior incidents"
+      ],
+      "aiCanMakeWorseBy": [
+        "encouraging overdesigned rollout plans the team cannot actually operate",
+        "producing confident rollback language without testing reality",
+        "making release documents look stronger than the underlying controls"
+      ],
+      "aiSpecificNotes": "AI is good at planning scaffolds and scenario checklists. Human operators still need to decide whether the rollout is operationally credible.",
+      "relatedFailureModes": [
+        "invisible-deadline"
+      ],
+      "relatedRedFlags": [
+        "release-confidence-depends-on-luck-and-timing"
+      ],
+      "relatedTechDecisions": [
+        "one-way-door-vs-two-way-door-rollout",
+        "feature-flags-vs-branch-based-release-isolation"
+      ],
+      "relatedPlaybooks": [
+        "de-risk-a-risky-release",
+        "build-a-practical-rollback-strategy"
+      ],
+      "examplePromptsOrQuestions": [
+        "What is the smallest exposure that still teaches us something useful?",
+        "What signal tells us to stop, not just to watch more closely?",
+        "What part of this change is actually hard to reverse?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "refactor-a-dangerous-hotspot",
+      "title": "Refactor a dangerous hotspot",
+      "situation": "A frequently changing or high-risk code area is slowing delivery and raising risk.",
+      "category": "architecture",
+      "summary": "Refactor a hotspot by targeting the specific reasons it is dangerous: high churn, poor testability, unclear ownership, or oversized responsibility — and improving it in narrow, repeatable steps.",
+      "goal": "Make a risky high-churn area safer to change without turning refactoring into a disguised rewrite.",
+      "useWhen": [
+        "one file, module, or service keeps appearing in risky changes and incidents",
+        "teams avoid an area because it is brittle",
+        "review and validation cost is disproportionately high there",
+        "the hotspot is clearly slowing delivery repeatedly"
+      ],
+      "doNotUseWhen": [
+        "the hotspot is rarely touched and the team is optimizing aesthetics over risk",
+        "the true problem is outside the hotspot, such as an unstable dependency or unclear ownership elsewhere",
+        "the team wants to use hotspot language as cover for a large rewrite"
+      ],
+      "whyThisMatters": "Hotspots attract risk because they are already where change, complexity, and ambiguity meet. Improving them produces outsized payoff, but only if the refactor is tied to real recurring pain rather than cleanup ambition.",
+      "whatGoodLooksLike": [
+        "the hotspot becomes easier to understand and test",
+        "changes in the area get smaller and more local",
+        "ownership and purpose become clearer",
+        "fear around modifying the area declines",
+        "incident and regression frequency tied to the hotspot drops"
+      ],
+      "inputs": [
+        "change hotspot analysis",
+        "incident history",
+        "review pain points",
+        "current tests and seams",
+        "ownership map",
+        "recent diffs touching the hotspot"
+      ],
+      "rolesInvolved": [
+        "maintainer",
+        "tech lead",
+        "reviewers familiar with the area",
+        "QA or quality partner if test pain is severe"
+      ],
+      "primaryOwner": "maintainer",
+      "estimatedTimeHorizon": "days to months depending on hotspot severity",
+      "difficulty": "high",
+      "prerequisites": [
+        "the hotspot is evidenced by real change or incident patterns",
+        "the team can reserve some refactoring capacity during delivery",
+        "someone owns the area strongly enough to guide the work"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Define why this hotspot is dangerous",
+          "purpose": "Avoid vague cleanup instincts.",
+          "actions": [
+            "review incidents, painful PRs, and high-churn changes tied to the hotspot",
+            "classify the pain as testability, coupling, oversized responsibility, unclear intent, or hidden side effects",
+            "write the top 2 to 3 recurring harms"
+          ],
+          "outputs": [
+            "hotspot danger profile"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Pick the smallest refactoring seam",
+          "purpose": "Improve safely without exploding scope.",
+          "actions": [
+            "identify a narrow seam where logic, state, or responsibility can be separated",
+            "choose a move that makes the next similar change easier",
+            "avoid broad restructuring before the first safe cut"
+          ],
+          "outputs": [
+            "refactor seam plan"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Add confidence around the seam",
+          "purpose": "Protect the hotspot while changing it.",
+          "actions": [
+            "add targeted tests or observational checks around key behavior",
+            "capture edge cases that commonly break",
+            "define how you will know the hotspot actually improved"
+          ],
+          "outputs": [
+            "hotspot confidence pack"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Refactor in production-relevant slices",
+          "purpose": "Keep the work anchored to real behavior and real delivery.",
+          "actions": [
+            "make one structural improvement at a time",
+            "ship and review the next similar change to see whether the pain reduced",
+            "keep a visible list of what got safer and what remains dangerous"
+          ],
+          "outputs": [
+            "refactor progress log"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Decide whether to continue, stop, or escalate",
+          "purpose": "Prevent endless hotspot work with unclear returns.",
+          "actions": [
+            "review whether risk and cost are going down",
+            "stop if marginal refactoring value has flattened",
+            "escalate to broader architecture work only if hotspot evidence points there"
+          ],
+          "outputs": [
+            "hotspot review decision"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What makes this hotspot truly dangerous?",
+        "What seam is small enough to improve safely?",
+        "What evidence would show the hotspot is actually getting better?",
+        "When does hotspot refactoring become broader redesign?"
+      ],
+      "commonMistakes": [
+        "refactoring the whole area instead of one seam",
+        "cleaning for aesthetics instead of recurring pain",
+        "skipping targeted confidence because the team is eager to improve structure",
+        "declaring victory because the code looks nicer while the next change is still painful"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "the refactor grows in scope faster than the hotspot risk is shrinking",
+        "the same kind of change remains just as hard after several rounds",
+        "nobody can say what specific danger was reduced",
+        "the hotspot is now cleaner-looking but still avoided by the team"
+      ],
+      "artifactsToProduce": [
+        "hotspot danger profile",
+        "refactor seam plan",
+        "hotspot confidence pack",
+        "refactor progress log",
+        "hotspot review decision"
+      ],
+      "successSignals": [
+        "the next similar change is easier and smaller",
+        "review and validation burden decreases",
+        "more engineers can work in the hotspot safely",
+        "hotspot-driven regressions decline"
+      ],
+      "followUpActions": [
+        "repeat on the next highest-value seam if evidence supports it",
+        "promote repeated hotspot classes into boundary or ownership work",
+        "update coding and review expectations around the area"
+      ],
+      "metricsOrSignals": [
+        "change size in the hotspot over time",
+        "review time for hotspot changes",
+        "hotspot-related defect rate",
+        "number of engineers making safe changes there"
+      ],
+      "aiCanHelpWith": [
+        "spotting churn and coupling patterns in hotspot code",
+        "suggesting seam candidates and extracting repeated structures",
+        "drafting targeted tests around known risky behavior"
+      ],
+      "aiCanMakeWorseBy": [
+        "encouraging overly broad automated refactors",
+        "making cosmetic cleanup look like architectural progress",
+        "introducing new subtle inconsistencies in already risky code"
+      ],
+      "aiSpecificNotes": "AI can be useful for hotspot discovery and for generating narrow refactor assists. Keep all broad structural decisions and risky edits tightly human-reviewed.",
+      "relatedFailureModes": [
+        "hero-trap",
+        "abstraction-addiction"
+      ],
+      "relatedRedFlags": [
+        "one-file-does-too-much",
+        "people-avoid-touching-certain-areas",
+        "tests-are-hard-to-write-for-normal-changes"
+      ],
+      "relatedTechDecisions": [
+        "rewrite-vs-refactor"
+      ],
+      "relatedPlaybooks": [
+        "improve-testability-without-stopping-delivery",
+        "stabilize-a-fragile-service"
+      ],
+      "examplePromptsOrQuestions": [
+        "Why is this hotspot actually dangerous today?",
+        "What is the smallest seam that makes the next change easier?",
+        "How will we know the hotspot is genuinely safer, not just cleaner-looking?"
+      ],
+      "patternConfidence": "high"
+    }
+  ]
+}

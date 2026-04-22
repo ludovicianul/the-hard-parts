@@ -1,0 +1,94 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import type { CategoryCode } from "@/content/schemas/shared";
+import { categoryByCode } from "@/lib/categories";
+
+export interface Props {
+  code: CategoryCode;
+  title: string;
+  summary?: string;
+  /** Optional subcategory / family / layer label, rendered in the meta rail. */
+  subcategory?: string;
+  /** Optional short description used for <meta name="description">. */
+  description?: string;
+}
+
+const { code, title, summary, subcategory, description } = Astro.props;
+const desc = categoryByCode(code);
+const accent = code.toLowerCase() as "fm" | "td" | "rf" | "ep";
+---
+<BaseLayout
+  title={title}
+  description={description ?? summary}
+  accent={accent}
+>
+  <article class="nsb-container nsb-detail">
+    <nav class="nsb-breadcrumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li><a href={`/${desc.route}`}>{desc.name}</a></li>
+        <li aria-current="page">{title}</li>
+      </ol>
+    </nav>
+
+    <header class="nsb-detail__header">
+      <p class="nsb-eyebrow">{desc.shortLabel} · {desc.name}</p>
+      <hr class="nsb-accent-rule" />
+      <h1 class="nsb-detail__title">{title}</h1>
+      {summary && <p class="nsb-detail__summary">{summary}</p>}
+      {subcategory && (
+        <p class="nsb-detail__sub">
+          <span class="nsb-eyebrow">Subcategory</span>
+          <span class="nsb-detail__sub-value">{subcategory}</span>
+        </p>
+      )}
+    </header>
+
+    <section class="nsb-detail__body">
+      <slot />
+    </section>
+  </article>
+
+  <style is:global>
+    .nsb-detail { padding-block: var(--space-4) var(--space-8); }
+    .nsb-breadcrumbs ol {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin: 0 0 var(--space-6) 0;
+      padding: 0;
+      font-family: var(--font-sans);
+      font-size: var(--text-sm);
+      color: var(--color-ink-soft);
+    }
+    .nsb-breadcrumbs li + li::before {
+      content: "/";
+      color: var(--color-ink-faint);
+      margin-right: var(--space-2);
+    }
+    .nsb-detail__header {
+      padding-bottom: var(--space-6);
+      border-bottom: var(--rule);
+      margin-bottom: var(--space-7);
+    }
+    .nsb-detail__title {
+      font-size: var(--text-4xl);
+      margin: 0 0 var(--space-4) 0;
+    }
+    .nsb-detail__summary {
+      font-size: var(--text-lg);
+      color: var(--color-ink-dim);
+      max-width: var(--reading-max);
+    }
+    .nsb-detail__sub {
+      font-family: var(--font-sans);
+      font-size: var(--text-sm);
+      display: flex;
+      gap: var(--space-3);
+      align-items: baseline;
+      margin-top: var(--space-4);
+    }
+    .nsb-detail__sub-value { color: var(--color-ink-dim); }
+  </style>
+</BaseLayout>

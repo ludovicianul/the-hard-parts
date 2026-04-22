@@ -1,0 +1,1579 @@
+{
+  "category": {
+    "code": "EP",
+    "name": "Engineering Playbook",
+    "summary": "Practical playbooks for recurring engineering situations — delivery, architecture, operations, teamwork, and AI adoption.",
+    "categories": [
+      "delivery",
+      "team",
+      "architecture",
+      "operations",
+      "ai"
+    ]
+  },
+  "template": {
+    "fields": [
+      "slug",
+      "title",
+      "situation",
+      "category",
+      "summary",
+      "goal",
+      "useWhen",
+      "doNotUseWhen",
+      "whyThisMatters",
+      "whatGoodLooksLike",
+      "inputs",
+      "rolesInvolved",
+      "primaryOwner",
+      "estimatedTimeHorizon",
+      "difficulty",
+      "prerequisites",
+      "steps",
+      "decisionPoints",
+      "commonMistakes",
+      "warningSignsYouAreDoingItWrong",
+      "artifactsToProduce",
+      "successSignals",
+      "followUpActions",
+      "metricsOrSignals",
+      "aiCanHelpWith",
+      "aiCanMakeWorseBy",
+      "aiSpecificNotes",
+      "relatedFailureModes",
+      "relatedRedFlags",
+      "relatedTechDecisions",
+      "relatedPlaybooks",
+      "examplePromptsOrQuestions",
+      "patternConfidence"
+    ]
+  },
+  "entries": [
+    {
+      "slug": "run-an-incident-review-that-actually-helps",
+      "title": "Run an incident review that actually helps",
+      "situation": "An incident happened and the team needs to learn from it usefully.",
+      "category": "operations",
+      "summary": "Turn an incident review into a system-learning exercise that explains what happened, why it made sense at the time, what conditions enabled it, and what changes will reduce recurrence.",
+      "goal": "Improve the system, operating model, and team judgment after an incident rather than producing blame, theater, or generic action items.",
+      "useWhen": [
+        "a service incident, degraded release, security event, or serious near-miss occurred",
+        "the same class of issue has happened more than once",
+        "stakeholders want to know what changed after the event",
+        "the team needs a shared factual account of what happened"
+      ],
+      "doNotUseWhen": [
+        "the incident is still live and response work is not finished",
+        "leadership only wants a blame artifact or defensive narrative",
+        "facts are too incomplete for a review and more evidence needs to be gathered first",
+        "the team is using the review as a substitute for urgent remediation"
+      ],
+      "whyThisMatters": "A weak incident review teaches the wrong lesson: hide uncertainty, compress the story, blame a person, move on. A strong review increases operational truth, system understanding, and future response quality.",
+      "whatGoodLooksLike": [
+        "the review explains the timeline clearly without oversimplifying",
+        "human decisions are described in context, not as hindsight caricatures",
+        "technical causes and organizational conditions are both visible",
+        "actions are few, concrete, and connected to the real failure chain",
+        "people leave with more trust in the learning process, not less"
+      ],
+      "inputs": [
+        "incident timeline",
+        "logs, traces, alerts, dashboards",
+        "deployment and config changes",
+        "communication channels used during the incident",
+        "customer or stakeholder impact summary",
+        "previous incidents of similar shape"
+      ],
+      "rolesInvolved": [
+        "incident lead",
+        "service owner",
+        "engineering manager",
+        "tech lead",
+        "operations or SRE",
+        "people directly involved in diagnosis and response",
+        "stakeholder representative when useful"
+      ],
+      "primaryOwner": "incident lead",
+      "estimatedTimeHorizon": "1 to 5 business days after containment, with follow-through over weeks",
+      "difficulty": "medium-high",
+      "prerequisites": [
+        "the incident is contained or stable",
+        "basic evidence has been preserved",
+        "someone can facilitate neutrally enough to keep the review truthful"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Reconstruct the timeline before debating causes",
+          "purpose": "Create a shared factual base before interpretation diverges.",
+          "actions": [
+            "build a timeline of events, signals, decisions, and observable impact",
+            "separate what was known at the time from what became clear later",
+            "include detection, escalation, mitigation, rollback, and communication events"
+          ],
+          "outputs": [
+            "incident timeline"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Explain why the failure path was possible",
+          "purpose": "Move beyond the final error into enabling conditions.",
+          "actions": [
+            "identify technical contributors, missing controls, unclear ownership, or weak observability",
+            "ask why the system allowed this path to remain open",
+            "distinguish trigger, amplifier, and recovery friction"
+          ],
+          "outputs": [
+            "failure chain analysis"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Describe human behavior in context",
+          "purpose": "Preserve learning without blame reductionism.",
+          "actions": [
+            "describe what responders saw, believed, and prioritized at each stage",
+            "capture ambiguity, overload, handoff confusion, and missing context",
+            "avoid rewriting decisions with hindsight certainty"
+          ],
+          "outputs": [
+            "human context analysis"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Choose a small set of corrective moves",
+          "purpose": "Make the review operationally useful.",
+          "actions": [
+            "select changes that close or reduce the highest-leverage failure paths",
+            "separate immediate fixes from systemic follow-up",
+            "assign owners and evidence for completion"
+          ],
+          "outputs": [
+            "incident action set"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Publish the learning clearly",
+          "purpose": "Turn the review into shared operational memory.",
+          "actions": [
+            "write a concise review artifact for engineers and stakeholders",
+            "link actions to observed failure conditions",
+            "review follow-through at agreed checkpoints"
+          ],
+          "outputs": [
+            "incident review document",
+            "follow-up tracker"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What was the trigger versus the enabling condition?",
+        "Which conditions most increased impact or slowed recovery?",
+        "What action would most reduce recurrence or blast radius?",
+        "What lessons should change guidance, tooling, or ownership norms?"
+      ],
+      "commonMistakes": [
+        "stopping at a shallow root cause",
+        "writing an incident story that makes responders look irrational in hindsight",
+        "creating too many weak actions",
+        "equating document completion with learning completion",
+        "publishing a sanitized version upward and a different truth locally"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "the review blames one person or one deploy and ends there",
+        "actions sound generic, such as improve monitoring or communicate better",
+        "the same class of incident keeps recurring with new labels",
+        "people become less willing to speak openly after reviews"
+      ],
+      "artifactsToProduce": [
+        "incident timeline",
+        "failure chain analysis",
+        "human context analysis",
+        "incident action set",
+        "incident review document",
+        "follow-up tracker"
+      ],
+      "successSignals": [
+        "repeat incidents in the same class decline",
+        "responders feel the account is fair and accurate",
+        "stakeholders can see what changed after the incident",
+        "future response gets faster or clearer in the affected areas"
+      ],
+      "followUpActions": [
+        "fold durable learnings into runbooks, onboarding, and release guidance",
+        "promote repeated review themes into architecture or ownership work",
+        "check whether action items reduced the targeted risk in practice"
+      ],
+      "metricsOrSignals": [
+        "repeat incident rate by class",
+        "time to detect and mitigate in similar incidents",
+        "action completion rate with evidence",
+        "stakeholder confidence in incident handling"
+      ],
+      "aiCanHelpWith": [
+        "assembling timelines from chat, logs, and deployment events",
+        "clustering symptoms and correlating signals across large evidence sets",
+        "drafting first-pass incident summaries and action templates"
+      ],
+      "aiCanMakeWorseBy": [
+        "compressing nuance into overly clean narratives",
+        "masking uncertainty with confident summaries",
+        "making a weak review look complete before the hard causal work is done"
+      ],
+      "aiSpecificNotes": "Use AI for evidence gathering and summarization, not for deciding the official truth of the incident. Human judgment is essential for causal reasoning and fair interpretation.",
+      "relatedFailureModes": [
+        "hero-trap",
+        "ownership-drift"
+      ],
+      "relatedRedFlags": [
+        "reporting-looks-healthier-than-delivery-feels",
+        "ownership-is-claimed-but-not-visible"
+      ],
+      "relatedTechDecisions": [],
+      "relatedPlaybooks": [
+        "repair-trust-after-a-painful-incident",
+        "create-meaningful-alerts"
+      ],
+      "examplePromptsOrQuestions": [
+        "What did we know at each stage versus what we know now?",
+        "Why did this make sense to responders in the moment?",
+        "What single condition most increased impact or slowed recovery?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "write-a-useful-runbook",
+      "title": "Write a useful runbook",
+      "situation": "A team needs operational guidance that works under pressure.",
+      "category": "operations",
+      "summary": "Write a runbook for real operational use: quick orientation, clear triggers, diagnostic paths, safe actions, escalation criteria, and links to trustworthy deeper context.",
+      "goal": "Enable responders to act more safely and consistently during operational work, especially when stress, ambiguity, or unfamiliarity is high.",
+      "useWhen": [
+        "a service or recurring operational process lacks clear response guidance",
+        "on-call responders depend too much on one expert",
+        "incidents repeatedly start with the same confusion",
+        "new engineers need operational ramp-up support"
+      ],
+      "doNotUseWhen": [
+        "the task is so unstable that a fixed runbook would be fiction",
+        "the team wants a runbook but has not yet understood the process well enough to document it",
+        "the real problem is missing observability or broken ownership rather than missing instructions"
+      ],
+      "whyThisMatters": "A runbook is not a technical essay. Under pressure, responders need orientation, triage clues, safe next moves, and escalation boundaries. Bad runbooks create false confidence or go unread; good ones reduce ambiguity and time-to-useful-action.",
+      "whatGoodLooksLike": [
+        "a responder can scan the runbook quickly under pressure",
+        "the runbook distinguishes diagnosis from mitigation from escalation",
+        "it points to trustworthy dashboards, logs, and owners",
+        "it matches how the team actually operates",
+        "it gets used and updated after real events"
+      ],
+      "inputs": [
+        "current operational workflow or incident type",
+        "frequent failure modes",
+        "dashboards, logs, and alert paths",
+        "team escalation model",
+        "existing tribal knowledge or scattered notes"
+      ],
+      "rolesInvolved": [
+        "service owner",
+        "on-call responders",
+        "SRE or operations partner",
+        "tech lead",
+        "engineering manager when ownership or escalation is unclear"
+      ],
+      "primaryOwner": "service owner",
+      "estimatedTimeHorizon": "hours to days for an initial version, ongoing refinement afterward",
+      "difficulty": "medium",
+      "prerequisites": [
+        "the operational workflow or incident class is understood well enough to describe",
+        "the team knows who owns the service and who escalates when",
+        "there is at least a minimal observability surface to reference"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Start with the operational question",
+          "purpose": "Design the runbook around the situation a responder is in.",
+          "actions": [
+            "state what event or symptom this runbook is for",
+            "describe when to use it and when not to",
+            "put the first-minute triage cues near the top"
+          ],
+          "outputs": [
+            "runbook scope and trigger section"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Lay out the response path in order",
+          "purpose": "Make the document usable under pressure.",
+          "actions": [
+            "define what to check first, second, and third",
+            "separate observation steps from mutation steps",
+            "flag dangerous or irreversible actions clearly"
+          ],
+          "outputs": [
+            "ordered response flow"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Link to the real tools and owners",
+          "purpose": "Anchor guidance in live operational reality.",
+          "actions": [
+            "link relevant dashboards, logs, tracing, and feature flag controls",
+            "name ownership and escalation contacts or roles",
+            "clarify what conditions require escalation immediately"
+          ],
+          "outputs": [
+            "tool and escalation references"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Add context that helps judgment",
+          "purpose": "Prevent the runbook from becoming blindly procedural.",
+          "actions": [
+            "explain common failure modes and false positives briefly",
+            "note what normal looks like where useful",
+            "include known caveats from prior incidents"
+          ],
+          "outputs": [
+            "judgment notes section"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Test and evolve it in real use",
+          "purpose": "Keep it operationally honest.",
+          "actions": [
+            "use the runbook in shadow or live operational contexts",
+            "update it after incidents and confusing handoffs",
+            "remove stale, low-trust, or over-detailed content"
+          ],
+          "outputs": [
+            "validated runbook",
+            "runbook improvement log"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What belongs in the top section versus linked context?",
+        "What actions are safe for first responders versus only for owners?",
+        "Which escalation conditions should be explicit?",
+        "How much explanation is enough without slowing usage?"
+      ],
+      "commonMistakes": [
+        "writing the runbook like documentation instead of an operational guide",
+        "burying the first useful action below too much context",
+        "including commands without safety boundaries",
+        "letting the runbook drift away from current dashboards or ownership"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "responders still go directly to a hero instead of the runbook",
+        "the runbook is long but rarely used under pressure",
+        "links are stale or tools no longer match the text",
+        "the document explains the system but does not help with the operational decision"
+      ],
+      "artifactsToProduce": [
+        "runbook scope and trigger section",
+        "ordered response flow",
+        "tool and escalation references",
+        "judgment notes section",
+        "runbook improvement log"
+      ],
+      "successSignals": [
+        "responders reach useful first actions faster",
+        "handoffs are clearer during incidents",
+        "runbook usage increases and hero dependence declines",
+        "updates happen after real operational events"
+      ],
+      "followUpActions": [
+        "connect the runbook to onboarding and on-call practice",
+        "split the runbook if it grows into multiple distinct incident classes",
+        "review whether repeated runbook confusion signals deeper architecture or ownership issues"
+      ],
+      "metricsOrSignals": [
+        "time to first useful action for common incidents",
+        "runbook usage during incidents",
+        "stale link or stale ownership findings",
+        "number of hero escalations for covered scenarios"
+      ],
+      "aiCanHelpWith": [
+        "drafting first versions from incident history and scattered notes",
+        "summarizing recurring diagnostic patterns",
+        "turning long explanations into scan-friendly operational structure"
+      ],
+      "aiCanMakeWorseBy": [
+        "producing plausible but unverified steps",
+        "making an incomplete workflow sound authoritative",
+        "adding too much polished context that gets in the way during stress"
+      ],
+      "aiSpecificNotes": "AI is valuable for converting raw notes into structure. Every actionable step still needs human verification against live systems and current ownership.",
+      "relatedFailureModes": [
+        "hero-trap"
+      ],
+      "relatedRedFlags": [
+        "critical-knowledge-lives-in-chat-and-memory"
+      ],
+      "relatedTechDecisions": [
+        "documentation-first-vs-tacit-coordination"
+      ],
+      "relatedPlaybooks": [
+        "prepare-a-handover-properly",
+        "onboard-a-new-engineer-well"
+      ],
+      "examplePromptsOrQuestions": [
+        "What does a responder need to know in the first five minutes?",
+        "Which actions are safe, and which require explicit escalation?",
+        "What confusion from past incidents should this runbook remove?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "build-a-practical-rollback-strategy",
+      "title": "Build a practical rollback strategy",
+      "situation": "A team needs credible recovery options when a release or change goes wrong.",
+      "category": "operations",
+      "summary": "Design rollback as a practical recovery system, not a comforting word: understand what can be reversed, what cannot, how quickly, by whom, and under what evidence thresholds.",
+      "goal": "Reduce damage and decision hesitation when a change must be paused, reversed, or contained.",
+      "useWhen": [
+        "a service or product ships changes that can materially fail in production",
+        "deployments involve risky schema, config, or contract changes",
+        "the team says rollback exists but has not tested it",
+        "release confidence depends too heavily on caution rather than reversibility"
+      ],
+      "doNotUseWhen": [
+        "the system is so small and reversible that ordinary redeploy is sufficient and well understood",
+        "the change is fundamentally irreversible and the team is using rollback language dishonestly",
+        "the real problem is missing observability, making rollback decisions impossible either way"
+      ],
+      "whyThisMatters": "Rollback only helps if it is real. Teams often discover too late that data changed irreversibly, downstream contracts shifted, or the rollback path is slower and less reliable than the forward path.",
+      "whatGoodLooksLike": [
+        "the team knows which kinds of change are reversible, partially reversible, or one-way",
+        "rollback actions are time-bounded and owned",
+        "rollback decisions use explicit signals rather than panic or delay",
+        "data and compatibility risks are accounted for honestly",
+        "the team can pause or contain even when full rollback is not possible"
+      ],
+      "inputs": [
+        "deployment model",
+        "change types and typical failure modes",
+        "data mutation paths",
+        "feature flag and routing controls",
+        "release windows and dependencies",
+        "current incident response habits"
+      ],
+      "rolesInvolved": [
+        "release owner",
+        "tech lead",
+        "SRE or operations",
+        "data owner when schema or state is involved",
+        "service owner",
+        "business or product contact when rollout exposure matters"
+      ],
+      "primaryOwner": "release owner",
+      "estimatedTimeHorizon": "days to establish, then revisited per major change",
+      "difficulty": "medium-high",
+      "prerequisites": [
+        "the team can describe its deployment and data mutation model",
+        "someone owns release decisions operationally",
+        "the team is willing to label some changes as only partially reversible or one-way"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Classify change reversibility",
+          "purpose": "Stop pretending all rollback is equal.",
+          "actions": [
+            "classify code-only, config, schema, data, and contract changes separately",
+            "name which parts are easy to reverse and which are not",
+            "document containment options where full rollback is impossible"
+          ],
+          "outputs": [
+            "reversibility matrix"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Define rollback mechanics and owners",
+          "purpose": "Make rollback executable under stress.",
+          "actions": [
+            "document who can trigger rollback and how",
+            "state the exact actions for pause, partial rollback, full rollback, and containment",
+            "clarify prerequisites such as backups, flags, or deployment artifacts"
+          ],
+          "outputs": [
+            "rollback procedure set"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Tie rollback to operational evidence",
+          "purpose": "Prevent hesitation and ambiguity during a bad rollout.",
+          "actions": [
+            "define signals and thresholds for hold, rollback, or contain",
+            "make the decision logic visible in release prep",
+            "distinguish user harm, system harm, and business harm triggers"
+          ],
+          "outputs": [
+            "rollback decision sheet"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Exercise the path",
+          "purpose": "Test whether rollback is real or decorative.",
+          "actions": [
+            "rehearse rollback scenarios for representative change types",
+            "verify tools, permissions, timing, and communication paths",
+            "capture where the rollback story breaks down"
+          ],
+          "outputs": [
+            "rollback rehearsal notes"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Improve forward design using rollback learnings",
+          "purpose": "Make future changes safer by architecture, not only procedure.",
+          "actions": [
+            "add flags, staged rollouts, decoupled schema paths, or compatibility buffers where needed",
+            "reduce one-way changes when avoidable",
+            "update release design guidance"
+          ],
+          "outputs": [
+            "rollback-informed design improvements"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What does rollback mean for this change type?",
+        "When is containment safer than rollback?",
+        "How much reversibility is enough before shipping?",
+        "What forward-design changes would make future rollback easier?"
+      ],
+      "commonMistakes": [
+        "equating rollback with redeploying old code",
+        "ignoring irreversible data or downstream side effects",
+        "having a rollback plan nobody has rehearsed",
+        "waiting too long to decide because the signal thresholds were never defined"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "the team says we can always roll back without specifying how",
+        "schema or data changes have no containment story",
+        "release incidents repeatedly involve indecision about whether to reverse",
+        "rollback time is unknown or assumed"
+      ],
+      "artifactsToProduce": [
+        "reversibility matrix",
+        "rollback procedure set",
+        "rollback decision sheet",
+        "rollback rehearsal notes",
+        "rollback-informed design improvements"
+      ],
+      "successSignals": [
+        "rollback or containment decisions happen faster and with less confusion",
+        "the team knows which changes require stronger rollout controls",
+        "release fear decreases because reversibility is better understood",
+        "future changes are designed with rollback reality in mind"
+      ],
+      "followUpActions": [
+        "refresh rollback guidance after major platform or data model changes",
+        "review incidents where rollback was delayed or ineffective",
+        "connect rollback improvements with rollout design and release confidence work"
+      ],
+      "metricsOrSignals": [
+        "time to rollback or contain",
+        "rollback success rate",
+        "number of change types with rehearsed rollback paths",
+        "incidents worsened by rollback hesitation"
+      ],
+      "aiCanHelpWith": [
+        "drafting reversibility matrices and procedure docs",
+        "summarizing historical rollback pain points from incidents",
+        "checking release plans for rollback blind spots"
+      ],
+      "aiCanMakeWorseBy": [
+        "creating procedures that sound complete but were never validated",
+        "oversimplifying one-way data paths",
+        "encouraging false confidence in generated rollback steps"
+      ],
+      "aiSpecificNotes": "AI is useful for scenario and procedure drafting. Rollback authority, feasibility, and timing must be validated in real environments by humans.",
+      "relatedFailureModes": [
+        "invisible-deadline"
+      ],
+      "relatedRedFlags": [
+        "release-confidence-depends-on-luck-and-timing"
+      ],
+      "relatedTechDecisions": [
+        "one-way-door-vs-two-way-door-rollout"
+      ],
+      "relatedPlaybooks": [
+        "design-a-safe-rollout-path",
+        "de-risk-a-risky-release"
+      ],
+      "examplePromptsOrQuestions": [
+        "What exactly can we reverse for this change, and what cannot be undone?",
+        "Who can trigger rollback, based on which signals?",
+        "If full rollback is impossible, what containment options exist?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "reduce-operational-dependence-on-heroes",
+      "title": "Reduce operational dependence on heroes",
+      "situation": "Operations, incidents, or risky changes depend on a small number of people.",
+      "category": "operations",
+      "summary": "Make operations less person-fragile by exposing where hero dependence exists, redistributing capability through practice and artifacts, and improving the system conditions that keep creating heroics.",
+      "goal": "Ensure operational safety and continuity do not depend on a single expert, rescuer, or informal escalation hub.",
+      "useWhen": [
+        "on-call or incident response depends heavily on one or two people",
+        "certain deploys only feel safe when specific people are present",
+        "knowledge is routed through memory and chat rather than durable operating materials",
+        "heroic rescue work is normalised as strength"
+      ],
+      "doNotUseWhen": [
+        "the dependence is temporary and an active handover is already underway",
+        "the real problem is severe understaffing or missing operational ownership, not just knowledge concentration",
+        "leaders want to remove dependence without creating time for transfer or documentation"
+      ],
+      "whyThisMatters": "Hero dependence makes operations look functional until the hero is overloaded, absent, or wrong. The hidden cost shows up as release anxiety, incident bottlenecks, and slow team maturity.",
+      "whatGoodLooksLike": [
+        "multiple responders can handle common operational work confidently",
+        "critical workflows are documented and practiced",
+        "escalations become rarer, more specific, and less person-centric",
+        "operational load is less unevenly distributed",
+        "the expert spends less time rescuing and more time improving the system"
+      ],
+      "inputs": [
+        "incident responder patterns",
+        "release and rollback dependence patterns",
+        "runbooks and docs",
+        "on-call rotation data",
+        "hero-centric workflows and known risky areas"
+      ],
+      "rolesInvolved": [
+        "engineering manager",
+        "service owners",
+        "on-call responders",
+        "hero or key expert",
+        "SRE or operations partner"
+      ],
+      "primaryOwner": "engineering manager",
+      "estimatedTimeHorizon": "weeks to months",
+      "difficulty": "high",
+      "prerequisites": [
+        "the team can identify where hero dependence shows up operationally",
+        "the expert is willing and supported to transfer capability",
+        "management treats transfer and practice as real work"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Map hero dependence in operations",
+          "purpose": "Make the invisible dependency visible and specific.",
+          "actions": [
+            "list incident classes, deploys, and operational tasks that route to one person",
+            "identify what those people know or do that others do not",
+            "rank the dependency by risk and recurrence"
+          ],
+          "outputs": [
+            "operational hero map"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Transfer capability through live participation",
+          "purpose": "Build real operational muscle, not passive familiarity.",
+          "actions": [
+            "pair on incidents, deployments, and recovery flows",
+            "let secondary responders lead parts of the work with support",
+            "rotate operational tasks intentionally"
+          ],
+          "outputs": [
+            "capability transfer plan",
+            "operational rotation plan"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Capture operational memory",
+          "purpose": "Move crucial actions and judgment cues out of heads.",
+          "actions": [
+            "write or improve runbooks, rollback notes, and service maps",
+            "document why and when to escalate, not only how",
+            "capture historical traps and false positives"
+          ],
+          "outputs": [
+            "operational knowledge pack"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Reduce the need for heroics systemically",
+          "purpose": "Improve the environment that keeps producing hero work.",
+          "actions": [
+            "fix alert quality, ownership ambiguity, observability gaps, or release fragility",
+            "remove unsafe manual steps where possible",
+            "target the recurring conditions that summon the hero"
+          ],
+          "outputs": [
+            "anti-heroics improvement plan"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Test for independence",
+          "purpose": "Confirm the team is genuinely less dependent.",
+          "actions": [
+            "simulate or observe normal operations without the hero in the lead role",
+            "review where hesitation or confusion still appears",
+            "repeat until the dependence narrows to true specialty, not default rescue"
+          ],
+          "outputs": [
+            "independence check"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "Which operational dependencies are dangerous versus merely specialized?",
+        "What should be transferred first for biggest risk reduction?",
+        "What system conditions are creating the repeated heroics?",
+        "When is the team truly independent enough?"
+      ],
+      "commonMistakes": [
+        "focusing only on documentation and not real operational practice",
+        "keeping the hero as final approver forever",
+        "ignoring the structural reasons heroics are required",
+        "treating availability of the hero as acceptable mitigation"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "the same person still gets pulled into every serious event",
+        "secondary responders can recite the steps but hesitate in live work",
+        "docs improved but operational behavior did not",
+        "the hero remains overloaded by invisible review and reassurance work"
+      ],
+      "artifactsToProduce": [
+        "operational hero map",
+        "capability transfer plan",
+        "operational rotation plan",
+        "operational knowledge pack",
+        "anti-heroics improvement plan",
+        "independence check"
+      ],
+      "successSignals": [
+        "more responders can handle common incidents and deploys safely",
+        "release and incident anxiety decreases when the hero is unavailable",
+        "the expert is interrupted less often for known scenarios",
+        "operational learning becomes more distributed"
+      ],
+      "followUpActions": [
+        "keep rotation and shadowing alive after the initial transfer",
+        "review new hero concentrations as systems and teams evolve",
+        "link anti-heroics work to onboarding and runbook quality"
+      ],
+      "metricsOrSignals": [
+        "incident dependence on specific individuals",
+        "distribution of on-call escalations",
+        "number of effective responders per critical service",
+        "hero interruption frequency"
+      ],
+      "aiCanHelpWith": [
+        "finding repeated rescue patterns in incident and chat history",
+        "drafting runbooks and knowledge packs from scattered notes",
+        "summarizing hidden dependence areas across repos and operational artifacts"
+      ],
+      "aiCanMakeWorseBy": [
+        "concentrating AI-tool expertise into a new kind of hero role",
+        "making operational summaries seem complete when practice is missing",
+        "masking dependence with better-looking docs"
+      ],
+      "aiSpecificNotes": "AI helps convert tribal knowledge into first-pass artifacts, but only repeated live practice reduces real hero dependence.",
+      "relatedFailureModes": [
+        "hero-trap"
+      ],
+      "relatedRedFlags": [
+        "everyone-asks-the-same-person",
+        "people-avoid-touching-certain-areas"
+      ],
+      "relatedTechDecisions": [
+        "strong-ownership-vs-shared-ownership"
+      ],
+      "relatedPlaybooks": [
+        "spread-knowledge-out-of-one-expert",
+        "prepare-a-handover-properly"
+      ],
+      "examplePromptsOrQuestions": [
+        "Which operational situations still require a specific person to feel safe?",
+        "What do those people know, do, or notice that others do not?",
+        "What system changes would most reduce the need for rescue heroics?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "create-meaningful-alerts",
+      "title": "Create meaningful alerts",
+      "situation": "Alerting is noisy, weak, or not tied to meaningful operational action.",
+      "category": "operations",
+      "summary": "Design alerts around actionable operational meaning: what is wrong, who should care, how urgent it is, and what first action or investigation path should follow.",
+      "goal": "Reduce noisy, low-trust alerting and improve the team’s ability to detect and respond to important issues quickly.",
+      "useWhen": [
+        "on-call responders ignore, mute, or distrust alerts",
+        "important incidents are detected late despite many alerts",
+        "alerts do not map clearly to ownership or action",
+        "teams argue over which alerts matter"
+      ],
+      "doNotUseWhen": [
+        "the service lacks basic instrumentation and needs observability foundations first",
+        "the alerting set is already small, trusted, and actionable",
+        "the team is trying to solve product or business ambiguity with alert thresholds alone"
+      ],
+      "whyThisMatters": "Alerts are supposed to convert system degradation into timely human attention. When they are noisy, vague, or ownerless, they train people to ignore the very system meant to protect them.",
+      "whatGoodLooksLike": [
+        "alerts correspond to user or system-impactful conditions",
+        "responders know what each important alert means and who owns it",
+        "alert volume is low enough that attention still has value",
+        "alerts link naturally into runbooks or diagnostic paths",
+        "false positives and repeated low-value alerts are actively pruned"
+      ],
+      "inputs": [
+        "current alert inventory",
+        "incident history",
+        "false positive and missed detection patterns",
+        "service SLOs or practical health indicators",
+        "ownership and escalation map"
+      ],
+      "rolesInvolved": [
+        "service owner",
+        "SRE or operations partner",
+        "on-call responders",
+        "tech lead",
+        "product or business contact when user harm thresholds matter"
+      ],
+      "primaryOwner": "service owner",
+      "estimatedTimeHorizon": "days to weeks, ongoing tuning afterward",
+      "difficulty": "medium-high",
+      "prerequisites": [
+        "the team can inspect current alerting and incident outcomes",
+        "there is enough telemetry to build meaningful conditions",
+        "ownership and escalation paths are defined"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Audit the current alert set",
+          "purpose": "Measure what the alert system is actually teaching responders.",
+          "actions": [
+            "review current alerts, frequency, recipients, and outcomes",
+            "identify noisy, ignored, duplicate, and low-value alerts",
+            "find incidents that were missed or detected too late"
+          ],
+          "outputs": [
+            "alert audit"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Classify alerts by operational meaning",
+          "purpose": "Separate what matters from what is merely measurable.",
+          "actions": [
+            "group alerts into user-impact, service-health, dependency, capacity, and informational classes",
+            "decide which alerts require action and which belong in dashboards only",
+            "tie urgency to impact, not just threshold breach"
+          ],
+          "outputs": [
+            "alert taxonomy"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Align alerting with ownership and first action",
+          "purpose": "Make alerts useful the moment they fire.",
+          "actions": [
+            "assign ownership for each action-worthy alert",
+            "link alerts to runbooks, dashboards, or diagnostic starting points",
+            "clarify escalation expectations"
+          ],
+          "outputs": [
+            "owner-mapped alert set"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Tune for trust, not volume",
+          "purpose": "Reduce alert fatigue while preserving detection.",
+          "actions": [
+            "remove or downgrade low-value alerts",
+            "tighten thresholds and grouping where repeated noise exists",
+            "prefer symptom and impact signals over endless internal chatter"
+          ],
+          "outputs": [
+            "tuned alert configuration"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Review alerts after real events",
+          "purpose": "Keep the alert system grounded in operational outcomes.",
+          "actions": [
+            "check which alerts helped, confused, or failed to detect incidents",
+            "adjust based on real operational use",
+            "treat alert design as continuous operational design, not one-time setup"
+          ],
+          "outputs": [
+            "post-incident alert review"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "Which conditions deserve interrupting a human?",
+        "What should be a dashboard signal instead of an alert?",
+        "What first action should follow this alert?",
+        "What threshold reflects meaningful risk rather than background noise?"
+      ],
+      "commonMistakes": [
+        "alerting on everything measurable",
+        "sending the same low-context alert to everyone",
+        "confusing threshold breach with action-worthy degradation",
+        "never pruning alerts once added"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "responders mute or ignore frequent alert classes",
+        "major incidents are still discovered through users or side channels",
+        "alerts require tribal knowledge to interpret",
+        "the alert list grows but trust in alerting shrinks"
+      ],
+      "artifactsToProduce": [
+        "alert audit",
+        "alert taxonomy",
+        "owner-mapped alert set",
+        "tuned alert configuration",
+        "post-incident alert review"
+      ],
+      "successSignals": [
+        "important issues are detected earlier",
+        "noise and false positives decline",
+        "responders know what to do when key alerts fire",
+        "alert discussions become more about meaning than fatigue"
+      ],
+      "followUpActions": [
+        "review alert health after every major incident",
+        "fold changes into runbooks and service onboarding",
+        "remove stale alerts as architecture and traffic patterns evolve"
+      ],
+      "metricsOrSignals": [
+        "alert volume per responder",
+        "false positive rate",
+        "missed detection count",
+        "time from issue onset to useful human awareness"
+      ],
+      "aiCanHelpWith": [
+        "grouping alert noise patterns",
+        "correlating alerts with incident outcomes",
+        "drafting alert rationales and runbook links"
+      ],
+      "aiCanMakeWorseBy": [
+        "encouraging more alerts because generation is cheap",
+        "creating plausible descriptions for alerts that still lack action value",
+        "masking noisy alerting behind better wording"
+      ],
+      "aiSpecificNotes": "AI can help analyze historical noise and missed detections. It should not be trusted to define alert semantics without operational review by owners.",
+      "relatedFailureModes": [
+        "hero-trap"
+      ],
+      "relatedRedFlags": [
+        "release-confidence-depends-on-luck-and-timing",
+        "metrics-are-visible-but-not-trusted"
+      ],
+      "relatedTechDecisions": [],
+      "relatedPlaybooks": [
+        "run-an-incident-review-that-actually-helps",
+        "stabilize-a-fragile-service"
+      ],
+      "examplePromptsOrQuestions": [
+        "Which alerts actually changed responder behavior during real incidents?",
+        "What should wake a human versus remain visible in a dashboard?",
+        "What does this alert expect the responder to do first?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "triage-operational-debt",
+      "title": "Triage operational debt",
+      "situation": "Operational pain is accumulating faster than the team can address it all at once.",
+      "category": "operations",
+      "summary": "Triage operational debt by identifying recurring pain patterns, ranking them by impact and drag, and choosing what to eliminate, reduce, contain, or deliberately tolerate for now.",
+      "goal": "Turn operational debt from background suffering into an explicit, prioritized reliability and delivery problem.",
+      "useWhen": [
+        "the team lives with too many known operational rough edges",
+        "incidents, noise, manual work, and brittle release paths accumulate faster than fixes",
+        "teams repeatedly say we know about it but never get to it",
+        "operational debt is clearly affecting delivery and morale"
+      ],
+      "doNotUseWhen": [
+        "the team has almost no visibility into its operational pain and needs measurement first",
+        "leadership wants a debt list but no prioritization trade-offs",
+        "the operational pain is dominated by one acute service crisis that should be stabilized first"
+      ],
+      "whyThisMatters": "Operational debt becomes normal very quickly. Once normalized, teams stop seeing it as a system cost even while it quietly eats roadmap time, responder attention, and trust.",
+      "whatGoodLooksLike": [
+        "operational debt items are clustered into meaningful classes, not just a long complaint list",
+        "the team knows which debt creates the most repeat pain or risk",
+        "some debt is explicitly accepted rather than silently carried",
+        "debt reduction work is tied to actual operational outcomes"
+      ],
+      "inputs": [
+        "incident history",
+        "manual operational tasks",
+        "alert fatigue patterns",
+        "release and rollback pain",
+        "support escalations",
+        "team-reported chronic friction"
+      ],
+      "rolesInvolved": [
+        "engineering manager",
+        "service owners",
+        "operations or SRE",
+        "tech lead",
+        "delivery lead when debt affects roadmap predictability"
+      ],
+      "primaryOwner": "engineering manager",
+      "estimatedTimeHorizon": "days to assess, then ongoing prioritization over weeks or quarters",
+      "difficulty": "medium-high",
+      "prerequisites": [
+        "the team can identify recurring operational pain with examples",
+        "there is space to reprioritize some capacity",
+        "leadership accepts that some roadmap work may need to move"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Collect debt by pain pattern, not by random complaint",
+          "purpose": "Turn noise into operational categories.",
+          "actions": [
+            "gather recurring manual steps, noisy failures, fragile deploy paths, and repeat incidents",
+            "group them into patterns such as alerting, ownership, release, observability, data recovery, or runbook gaps",
+            "connect each to actual operational cost"
+          ],
+          "outputs": [
+            "operational debt map"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Rank debt by impact and drag",
+          "purpose": "Prioritize where debt reduction matters most.",
+          "actions": [
+            "estimate impact on incidents, team load, roadmap drag, and risk exposure",
+            "distinguish high-cost repeat pain from annoying but low-impact problems",
+            "identify hidden dependencies where one debt class amplifies others"
+          ],
+          "outputs": [
+            "debt ranking"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Choose treatment mode for each major item",
+          "purpose": "Avoid pretending every debt needs full elimination now.",
+          "actions": [
+            "label items as eliminate, reduce, contain, monitor, or accept",
+            "record what evidence would justify keeping or escalating an item",
+            "make acceptance explicit instead of silent"
+          ],
+          "outputs": [
+            "debt treatment plan"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Allocate capacity intentionally",
+          "purpose": "Make debt reduction part of the operating plan.",
+          "actions": [
+            "reserve a realistic slice of capacity for operational debt work",
+            "sequence debt fixes that unlock other fixes or reduce repeated toil fastest",
+            "tie work to measurable operational gains where possible"
+          ],
+          "outputs": [
+            "operational debt roadmap"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Review whether debt load is shrinking or shifting",
+          "purpose": "Keep the debt picture honest over time.",
+          "actions": [
+            "track whether targeted debt reduced incidents, noise, or manual work",
+            "review new debt created by growth or platform change",
+            "refresh ranking periodically"
+          ],
+          "outputs": [
+            "debt review cycle"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "Which debt is actually causing the most repeated pain?",
+        "What should be fixed now versus explicitly accepted for now?",
+        "Which debt classes unlock the biggest reduction in operational drag?",
+        "How much capacity can the team protect for this work?"
+      ],
+      "commonMistakes": [
+        "keeping an unranked debt list forever",
+        "treating all debt as equally urgent",
+        "hiding accepted debt instead of naming it",
+        "measuring debt reduction by tickets closed instead of pain removed"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "the debt list keeps growing but nothing becomes easier operationally",
+        "the same debt themes dominate incidents and retros quarter after quarter",
+        "leaders say debt matters but capacity is never protected",
+        "debt work produces artifacts without reducing operational burden"
+      ],
+      "artifactsToProduce": [
+        "operational debt map",
+        "debt ranking",
+        "debt treatment plan",
+        "operational debt roadmap",
+        "debt review cycle"
+      ],
+      "successSignals": [
+        "repeat pain and responder burden decline in targeted areas",
+        "the team can explain its operational debt posture clearly",
+        "some accepted debt becomes visible rather than quietly normalized",
+        "delivery stability improves because operational drag decreases"
+      ],
+      "followUpActions": [
+        "connect repeat debt classes to architecture and ownership changes",
+        "keep accepted debt visible in planning conversations",
+        "re-run the triage after major platform or team changes"
+      ],
+      "metricsOrSignals": [
+        "manual operational hours",
+        "repeat incident count by debt class",
+        "alert fatigue indicators",
+        "release friction indicators",
+        "operational debt trend by category"
+      ],
+      "aiCanHelpWith": [
+        "clustering incident and toil patterns into debt categories",
+        "drafting debt rankings and treatment options",
+        "finding recurring operational pain in chats, tickets, and runbooks"
+      ],
+      "aiCanMakeWorseBy": [
+        "inflating debt inventories with low-value noise",
+        "making the debt program look organized without real reprioritization",
+        "encouraging summary over judgment"
+      ],
+      "aiSpecificNotes": "AI is good at collecting and grouping pain signals. Final triage still needs human prioritization grounded in team capacity and business reality.",
+      "relatedFailureModes": [
+        "hero-trap",
+        "ticket-theater"
+      ],
+      "relatedRedFlags": [
+        "everything-is-urgent",
+        "work-enters-faster-than-it-leaves"
+      ],
+      "relatedTechDecisions": [
+        "speed-vs-robustness"
+      ],
+      "relatedPlaybooks": [
+        "turn-recurring-urgent-work-into-managed-work",
+        "stabilize-a-fragile-service"
+      ],
+      "examplePromptsOrQuestions": [
+        "Which operational pain is costing us the most repeatedly?",
+        "What debt should we explicitly accept versus keep pretending is temporary?",
+        "Which one or two fixes would reduce the most repeated toil or incident risk?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "prepare-a-handover-properly",
+      "title": "Prepare a handover properly",
+      "situation": "Knowledge, ownership, or operational responsibility needs to transfer from one person or team to another.",
+      "category": "operations",
+      "summary": "Prepare a handover as a transfer of capability and accountability, not just files and meetings. Make sure the receiving side can actually operate, decide, and recover safely.",
+      "goal": "Ensure continuity of operation and ownership when responsibility moves between people or teams.",
+      "useWhen": [
+        "a service or system is changing owning team",
+        "a key engineer is leaving or rotating off",
+        "an acquisition, reorg, or project transition shifts operational load",
+        "a vendor or platform handoff is happening"
+      ],
+      "doNotUseWhen": [
+        "the transfer is informal and low-risk enough that full handover would be overkill",
+        "there is no real receiving owner yet",
+        "leadership wants to declare handover complete before capability exists on the receiving side"
+      ],
+      "whyThisMatters": "Bad handovers create ghost ownership: the sender assumes it is over, the receiver is not ready, and the system becomes less safe in the exact period when confidence is most needed.",
+      "whatGoodLooksLike": [
+        "the receiving side can explain the system, common risks, and escalation paths",
+        "ownership artifacts, access, and operating routines are transferred",
+        "live shadowing or paired practice happens before the sender fully exits",
+        "the sender’s hidden responsibilities become visible before they disappear"
+      ],
+      "inputs": [
+        "system overview",
+        "runbooks and service docs",
+        "incident history",
+        "release and rollback practices",
+        "ownership and dependency map",
+        "access and tooling inventory"
+      ],
+      "rolesInvolved": [
+        "sending owner",
+        "receiving owner",
+        "engineering manager or director",
+        "on-call responders",
+        "SRE or operations where relevant"
+      ],
+      "primaryOwner": "sending owner and receiving owner jointly",
+      "estimatedTimeHorizon": "days to weeks depending on criticality",
+      "difficulty": "medium-high",
+      "prerequisites": [
+        "a real receiving owner exists",
+        "the sender can describe what they actually do beyond what docs claim",
+        "time is reserved for shadowing and transfer"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Map what is actually being handed over",
+          "purpose": "Avoid transferring only the obvious parts.",
+          "actions": [
+            "list systems, services, incident roles, review responsibilities, and release duties involved",
+            "capture hidden dependencies, critical contacts, and known traps",
+            "compare formal ownership with actual work performed"
+          ],
+          "outputs": [
+            "handover scope map"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Package operational memory",
+          "purpose": "Move knowledge into durable forms before the sender leaves.",
+          "actions": [
+            "refresh runbooks, service maps, dashboards, and escalation notes",
+            "document why and when things are done, not only the commands",
+            "identify what is still missing or low trust"
+          ],
+          "outputs": [
+            "handover knowledge pack"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Transfer through live work",
+          "purpose": "Build actual operating confidence.",
+          "actions": [
+            "shadow deployments, incidents, investigations, or support flows together",
+            "have the receiver lead with the sender observing where safe",
+            "practice common and high-risk scenarios"
+          ],
+          "outputs": [
+            "live transfer log"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Switch authority and routing explicitly",
+          "purpose": "Make the operating system match the handover story.",
+          "actions": [
+            "change service catalog, on-call, escalation paths, review expectations, and support routes",
+            "communicate the new ownership model clearly",
+            "remove ambiguous fallback assumptions"
+          ],
+          "outputs": [
+            "ownership cutover record"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Review post-handover stability",
+          "purpose": "Check that the transfer worked in practice.",
+          "actions": [
+            "review first incidents, deploys, and escalations after cutover",
+            "capture remaining gaps quickly",
+            "close the handover only when operational confidence is visible"
+          ],
+          "outputs": [
+            "post-handover review"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What hidden responsibilities must be made visible before transfer?",
+        "What must be practiced live versus documented?",
+        "When is the receiver ready enough for full authority?",
+        "What fallback support remains temporarily after cutover?"
+      ],
+      "commonMistakes": [
+        "equating handover with document sharing",
+        "declaring transfer complete before the receiver has led live work",
+        "keeping old routing paths alive indefinitely",
+        "failing to make hidden dependencies explicit"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "the receiver still relies on the sender for real-time reassurance in normal operations",
+        "ownership systems and org language diverge after cutover",
+        "first post-handover incident reveals missing basics",
+        "the sender still informally does the hard parts"
+      ],
+      "artifactsToProduce": [
+        "handover scope map",
+        "handover knowledge pack",
+        "live transfer log",
+        "ownership cutover record",
+        "post-handover review"
+      ],
+      "successSignals": [
+        "the receiving side handles normal operations independently",
+        "first incidents and releases route correctly",
+        "handover gaps become visible early and shrink quickly",
+        "the sender is no longer silently carrying the system"
+      ],
+      "followUpActions": [
+        "update onboarding and runbook materials from handover lessons",
+        "review whether the new owner needs more authority or support",
+        "capture repeat handover patterns as team-level guidance"
+      ],
+      "metricsOrSignals": [
+        "post-handover escalation dependence on sender",
+        "time to resolve first operational events after transfer",
+        "handover gap count found in first month",
+        "owner-routing accuracy after cutover"
+      ],
+      "aiCanHelpWith": [
+        "assembling docs, dashboards, and incident summaries into a first-pass pack",
+        "summarizing repeated operational patterns from history",
+        "extracting hidden tasks from chats and ticket trails"
+      ],
+      "aiCanMakeWorseBy": [
+        "making the handover pack look more complete than it is",
+        "creating polished summaries that the receiver trusts too quickly",
+        "obscuring which parts were never validated in live operation"
+      ],
+      "aiSpecificNotes": "AI can accelerate packaging and discovery, but handover readiness must be proven through live operational practice and explicit authority transfer.",
+      "relatedFailureModes": [
+        "hero-trap",
+        "ownership-drift"
+      ],
+      "relatedRedFlags": [
+        "critical-knowledge-lives-in-chat-and-memory",
+        "ownership-is-claimed-but-not-visible"
+      ],
+      "relatedTechDecisions": [
+        "documentation-first-vs-tacit-coordination"
+      ],
+      "relatedPlaybooks": [
+        "write-a-useful-runbook",
+        "spread-knowledge-out-of-one-expert"
+      ],
+      "examplePromptsOrQuestions": [
+        "What does the sender actually do that is not visible in official ownership?",
+        "What must the receiver practice live before cutover?",
+        "What would expose a weak handover in the first week?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "improve-release-confidence",
+      "title": "Improve release confidence",
+      "situation": "The team can ship, but does not truly trust what happens when it does.",
+      "category": "operations",
+      "summary": "Improve release confidence by strengthening the system of evidence, controls, ownership, and recovery around deployment—not by asking people to feel calmer about the same fragile process.",
+      "goal": "Make releases safer, more routine, and less dependent on luck, rituals, or specific people being present.",
+      "useWhen": [
+        "deployments create unusual anxiety",
+        "release timing depends on who is online or what else is happening",
+        "the team relies on rituals because it does not trust the system",
+        "release problems are common enough to shape team behavior"
+      ],
+      "doNotUseWhen": [
+        "release confidence is already strong and the issue lies elsewhere, such as product ambiguity",
+        "the team wants confidence without investing in better release design or operations",
+        "the service is in acute instability and first needs hotspot stabilization"
+      ],
+      "whyThisMatters": "Low release confidence changes team behavior everywhere: it slows delivery, increases fear, weakens experimentation, and creates hidden operational tax. Improving confidence is not emotional work alone; it is systems work.",
+      "whatGoodLooksLike": [
+        "releases are treated as controlled operational events with predictable behavior",
+        "confidence comes from observable evidence and rollback credibility",
+        "deploy timing becomes less superstitious and more standardised",
+        "more of the team can participate safely in release work",
+        "release incidents decline or become easier to contain"
+      ],
+      "inputs": [
+        "deployment workflow",
+        "recent release incidents and near-misses",
+        "test and verification path",
+        "rollback and pause controls",
+        "current release rituals and exceptions",
+        "release ownership model"
+      ],
+      "rolesInvolved": [
+        "release owner",
+        "tech lead",
+        "SRE or operations",
+        "QA or quality owner",
+        "engineering manager",
+        "service owners"
+      ],
+      "primaryOwner": "release owner",
+      "estimatedTimeHorizon": "weeks to months",
+      "difficulty": "high",
+      "prerequisites": [
+        "the team can inspect release history honestly",
+        "there is enough deployment and incident evidence to analyze",
+        "someone can change release rules, tooling, or controls"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Describe where release confidence currently comes from",
+          "purpose": "Expose whether confidence is systemic or personal.",
+          "actions": [
+            "list what currently makes a release feel safe or unsafe",
+            "separate evidence-based confidence from rituals, timing preferences, or person-dependence",
+            "review which parts of release are high-trust versus fear-loaded"
+          ],
+          "outputs": [
+            "release confidence map"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Strengthen the evidence chain",
+          "purpose": "Improve confidence at the points where risk is introduced.",
+          "actions": [
+            "review testing, contract validation, rollout signals, and pre-release checks",
+            "tighten weak signals and remove low-value theater checks",
+            "make riskier change types earn more explicit confidence"
+          ],
+          "outputs": [
+            "confidence control plan"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Improve release operability",
+          "purpose": "Make deployments safer even when confidence is incomplete.",
+          "actions": [
+            "strengthen staged rollout, pause, and rollback paths",
+            "ensure alerting and dashboards support release decisions",
+            "clarify release roles and escalation expectations"
+          ],
+          "outputs": [
+            "release operability plan"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Reduce person- and timing-dependence",
+          "purpose": "Move from superstition toward repeatability.",
+          "actions": [
+            "identify where confidence depends on specific people or special windows",
+            "document, automate, or redesign those dependencies where possible",
+            "standardise release routines that are actually useful"
+          ],
+          "outputs": [
+            "repeatability improvement plan"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Reassess release trust regularly",
+          "purpose": "Measure whether release confidence is becoming real.",
+          "actions": [
+            "review release outcomes, pauses, and incidents",
+            "track whether the team is relying less on folklore",
+            "update the release model as architecture and traffic evolve"
+          ],
+          "outputs": [
+            "release confidence review"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What kind of evidence actually predicts a safe release here?",
+        "Which release rituals are valuable and which are comfort theater?",
+        "What changes are needed to reduce reliance on particular people or times?",
+        "Which risky change types require stronger rollout design?"
+      ],
+      "commonMistakes": [
+        "asking for more discipline without changing fragile release mechanics",
+        "adding more checklists when the real issue is reversibility or signal quality",
+        "treating successful releases as proof the process is healthy without examining near-misses",
+        "allowing special-case release paths to multiply"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "the same people are still required for emotional reassurance every release",
+        "release notes and prep improve but operational trust does not",
+        "the team continues to choose windows based on fear rather than evidence",
+        "release incidents still feel surprising in the same way"
+      ],
+      "artifactsToProduce": [
+        "release confidence map",
+        "confidence control plan",
+        "release operability plan",
+        "repeatability improvement plan",
+        "release confidence review"
+      ],
+      "successSignals": [
+        "release anxiety declines because the system got stronger, not because the team got quieter",
+        "deploys become more routine and less dependent on specific individuals",
+        "release incidents or near-misses decline or are contained faster",
+        "the team can explain why a release is safe in operational terms"
+      ],
+      "followUpActions": [
+        "connect recurring release confidence gaps to architecture and hotspot work",
+        "teach new engineers the improved release model as part of onboarding",
+        "periodically prune release theater as stronger controls arrive"
+      ],
+      "metricsOrSignals": [
+        "change failure rate",
+        "time to detect release regression",
+        "time to rollback or pause",
+        "number of releases requiring special handling",
+        "person-dependence during release"
+      ],
+      "aiCanHelpWith": [
+        "summarizing release incidents and near-miss patterns",
+        "drafting release check models and confidence maps",
+        "finding recurring release failure conditions across history"
+      ],
+      "aiCanMakeWorseBy": [
+        "producing better release narratives without better release mechanics",
+        "encouraging more release artifacts instead of stronger controls",
+        "masking fragile confidence behind polished status"
+      ],
+      "aiSpecificNotes": "AI can improve synthesis and check design. Real release confidence still comes from strong rollout design, observability, ownership, and reversibility.",
+      "relatedFailureModes": [
+        "invisible-deadline"
+      ],
+      "relatedRedFlags": [
+        "release-confidence-depends-on-luck-and-timing",
+        "end-to-end-tests-carry-all-the-confidence"
+      ],
+      "relatedTechDecisions": [
+        "ci-gate-strictness-vs-developer-throughput",
+        "feature-flags-vs-branch-based-release-isolation"
+      ],
+      "relatedPlaybooks": [
+        "de-risk-a-risky-release",
+        "build-a-practical-rollback-strategy"
+      ],
+      "examplePromptsOrQuestions": [
+        "What currently makes release confidence feel real here, and what is just ritual?",
+        "Why do certain releases only feel safe at certain times or with certain people?",
+        "What would most improve repeatable release safety in the next month?"
+      ],
+      "patternConfidence": "high"
+    }
+  ]
+}

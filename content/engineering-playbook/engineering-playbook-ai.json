@@ -1,0 +1,1593 @@
+{
+  "category": {
+    "code": "EP",
+    "name": "Engineering Playbook",
+    "summary": "Practical playbooks for recurring engineering situations — delivery, architecture, operations, teamwork, and AI adoption.",
+    "categories": [
+      "delivery",
+      "team",
+      "architecture",
+      "operations",
+      "ai"
+    ]
+  },
+  "template": {
+    "fields": [
+      "slug",
+      "title",
+      "situation",
+      "category",
+      "summary",
+      "goal",
+      "useWhen",
+      "doNotUseWhen",
+      "whyThisMatters",
+      "whatGoodLooksLike",
+      "inputs",
+      "rolesInvolved",
+      "primaryOwner",
+      "estimatedTimeHorizon",
+      "difficulty",
+      "prerequisites",
+      "steps",
+      "decisionPoints",
+      "commonMistakes",
+      "warningSignsYouAreDoingItWrong",
+      "artifactsToProduce",
+      "successSignals",
+      "followUpActions",
+      "metricsOrSignals",
+      "aiCanHelpWith",
+      "aiCanMakeWorseBy",
+      "aiSpecificNotes",
+      "relatedFailureModes",
+      "relatedRedFlags",
+      "relatedTechDecisions",
+      "relatedPlaybooks",
+      "examplePromptsOrQuestions",
+      "patternConfidence"
+    ]
+  },
+  "entries": [
+    {
+      "slug": "upgrade-code-review-for-ai-assisted-work",
+      "title": "Upgrade code review for AI-assisted work",
+      "situation": "AI-assisted code generation is common, but review practices have not adapted.",
+      "category": "ai",
+      "summary": "Redesign review so that AI-assisted changes are judged by risk, understanding, and behavioral correctness, not by surface polish or author confidence.",
+      "goal": "Preserve real engineering judgment and code quality when generated output volume rises faster than human review habits evolve.",
+      "useWhen": [
+        "developers are using copilots or LLMs regularly",
+        "pull requests are getting larger or faster without corresponding explanation quality",
+        "reviewers are increasingly approving code they did not fully reason through",
+        "the team senses that output is rising faster than confidence"
+      ],
+      "doNotUseWhen": [
+        "AI-assisted development is rare and low-impact in the team",
+        "the real review problem is unrelated to AI and comes from deeper ownership or staffing gaps alone",
+        "leaders want faster approval but not stronger review expectations"
+      ],
+      "whyThisMatters": "AI changes review economics. Generated code often looks cleaner than human-authored code, which makes shallow approval easier. The danger is not only bad code. It is that the team gradually loses the habit of proving understanding before merge.",
+      "whatGoodLooksLike": [
+        "review depth is matched to change risk, not to how polished the diff looks",
+        "authors can explain the intent, failure modes, and constraints of AI-assisted changes",
+        "reviewers look for behavior, design fit, and hidden risk rather than style alone",
+        "large generated diffs are broken down or framed so they remain reviewable",
+        "AI-assisted work is visible enough to trigger the right review posture"
+      ],
+      "inputs": [
+        "current review norms",
+        "sample AI-assisted pull requests",
+        "review latency and defect patterns",
+        "team expectations on disclosure and authorship",
+        "hotspot areas where generated code is especially risky"
+      ],
+      "rolesInvolved": [
+        "tech lead",
+        "reviewers",
+        "contributors",
+        "engineering manager",
+        "staff engineer or architect for high-risk domains"
+      ],
+      "primaryOwner": "tech lead",
+      "estimatedTimeHorizon": "days to define new norms, weeks to reinforce them",
+      "difficulty": "medium-high",
+      "prerequisites": [
+        "the team acknowledges that AI-assisted code is materially changing review conditions",
+        "reviewers are willing to challenge polished but weakly understood changes",
+        "there is permission to slow high-risk merges when needed"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Define what review must still prove",
+          "purpose": "Anchor review in judgment rather than ritual.",
+          "actions": [
+            "state the minimum questions a review must answer for AI-assisted code",
+            "separate syntax cleanliness from behavioral correctness and design fit",
+            "clarify that authorship still includes accountability for generated sections"
+          ],
+          "outputs": [
+            "AI review principles"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Require better author framing",
+          "purpose": "Reduce reviewer guesswork on generated diffs.",
+          "actions": [
+            "ask authors to summarize what changed, why, and what was AI-assisted if relevant",
+            "require explicit notes on risky assumptions, touched boundaries, and validation approach",
+            "make giant generated diffs unacceptable without decomposition or guiding context"
+          ],
+          "outputs": [
+            "AI-assisted PR template"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Tier review by risk",
+          "purpose": "Preserve speed for low-risk work while increasing scrutiny for consequential changes.",
+          "actions": [
+            "define review tiers for low-risk, medium-risk, and high-risk AI-assisted changes",
+            "reserve deeper review for generated logic in critical domains, hidden side-effect areas, or large refactors",
+            "ensure risky changes require reviewers with domain understanding"
+          ],
+          "outputs": [
+            "risk-tier review model"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Audit review behavior after merge",
+          "purpose": "Check whether faster review became weaker review.",
+          "actions": [
+            "review escaped defects and brittle changes tied to AI-assisted work",
+            "sample approved PRs for actual review depth and comprehension",
+            "adjust norms when evidence shows approval outpacing understanding"
+          ],
+          "outputs": [
+            "review quality audit"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Train reviewers on AI-specific failure patterns",
+          "purpose": "Build new instincts, not just new forms.",
+          "actions": [
+            "teach common failure modes like plausible wrong abstractions, hidden duplication, and dead-path logic",
+            "review example diffs that looked good but failed behaviorally",
+            "promote questions that surface understanding rather than style preference"
+          ],
+          "outputs": [
+            "reviewer guidance pack"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What kinds of AI-assisted changes require disclosure or stronger review framing?",
+        "Which code areas should have stricter human-review expectations?",
+        "What signals show that approval is outpacing understanding?",
+        "Where is automation enough and where must domain reviewers stay central?"
+      ],
+      "commonMistakes": [
+        "treating generated code as lower-effort review because it reads fluently",
+        "allowing huge AI-assisted diffs to merge because breaking them down feels slower",
+        "assuming green tests compensate for shallow conceptual review",
+        "letting authors merge code they cannot explain under pressure"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "review comments get shorter while diff size rises",
+        "authors cannot explain important edge cases in their own PRs",
+        "the team merges generated code mainly because it compiles and looks coherent",
+        "post-merge surprises rise while review speed improves"
+      ],
+      "artifactsToProduce": [
+        "AI review principles",
+        "AI-assisted PR template",
+        "risk-tier review model",
+        "review quality audit",
+        "reviewer guidance pack"
+      ],
+      "successSignals": [
+        "review comments stay behavior-focused even as AI use rises",
+        "risky AI-assisted changes receive stronger review and clearer framing",
+        "escaped defects from shallow generated-code review decline",
+        "contributors understand that AI use changes review posture, not authorship responsibility"
+      ],
+      "followUpActions": [
+        "revisit review tiers as AI usage patterns change",
+        "connect recurring review failures to training or ownership work",
+        "update onboarding so new engineers understand AI-era review expectations from day one"
+      ],
+      "metricsOrSignals": [
+        "median review time by AI-assisted risk tier",
+        "post-merge defect rate for AI-assisted changes",
+        "average diff size for AI-assisted PRs",
+        "percentage of reviewed PRs with meaningful reviewer questions"
+      ],
+      "aiCanHelpWith": [
+        "summarizing large diffs into behavior-focused review notes",
+        "highlighting risky files, generated patterns, and duplicated logic",
+        "suggesting reviewer checklists for specific change types"
+      ],
+      "aiCanMakeWorseBy": [
+        "making weak designs look elegant",
+        "encouraging reviewers to trust summaries instead of code paths",
+        "inflating diff volume beyond what the team can meaningfully inspect"
+      ],
+      "aiSpecificNotes": "The core rule is simple: AI can assist authorship, but it must not weaken accountability. Review should shift from surface polish toward behavioral scrutiny and explicit understanding.",
+      "relatedFailureModes": [
+        "synthetic-velocity",
+        "autocomplete-architecture"
+      ],
+      "relatedRedFlags": [
+        "generated-code-is-merged-without-deep-review",
+        "prs-are-approved-faster-than-they-are-understood",
+        "more-output-less-certainty"
+      ],
+      "relatedTechDecisions": [
+        "ai-assisted-development-vs-manual-only-development",
+        "manual-review-depth-vs-automation-dependence"
+      ],
+      "relatedPlaybooks": [
+        "reduce-review-bottlenecks-without-lowering-quality",
+        "define-safe-ai-development-zones"
+      ],
+      "examplePromptsOrQuestions": [
+        "Can the author explain why this generated solution fits this system?",
+        "What part of this diff is highest-risk despite looking clean?",
+        "Would this still pass review if it were handwritten and equally large?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "define-safe-ai-development-zones",
+      "title": "Define safe AI development zones",
+      "situation": "A team wants to use AI productively without applying the same risk model to every task.",
+      "category": "ai",
+      "summary": "Create explicit zones of safe, cautious, and restricted AI use so the team can move fast where the cost of error is low and stay deliberate where the risk is structural, legal, operational, or hard to detect.",
+      "goal": "Match AI usage freedom to task risk instead of letting usage patterns evolve through informal habit.",
+      "useWhen": [
+        "AI use is spreading unevenly across the team",
+        "different engineers are making different assumptions about where AI is acceptable",
+        "the team wants enablement without hidden quality variance",
+        "leaders want a practical operating model instead of blanket approval or blanket fear"
+      ],
+      "doNotUseWhen": [
+        "the team has not yet identified any meaningful AI use cases",
+        "the environment is so regulated or sensitive that case-by-case zones are not realistic",
+        "leaders want a symbolic policy with no enforcement or training"
+      ],
+      "whyThisMatters": "Without clear zones, teams drift into inconsistent norms. Some over-trust AI in high-risk areas, others avoid it even where it would be useful. Both create waste. Safe zones help the team move fast with less confusion and less silent risk.",
+      "whatGoodLooksLike": [
+        "the team can describe where AI use is encouraged, cautious, or restricted",
+        "high-risk areas have stronger review or approval expectations",
+        "low-risk, high-friction work gets faster without guilt or ambiguity",
+        "developers know which tasks need stronger human authorship and why",
+        "the policy is operational enough to affect real behavior"
+      ],
+      "inputs": [
+        "team workflows",
+        "code and system risk areas",
+        "data sensitivity constraints",
+        "review and release expectations",
+        "known AI usage patterns in the team"
+      ],
+      "rolesInvolved": [
+        "tech lead",
+        "engineering manager",
+        "security or compliance partner when needed",
+        "senior engineers",
+        "AI-using contributors"
+      ],
+      "primaryOwner": "tech lead",
+      "estimatedTimeHorizon": "days to define, weeks to socialize and reinforce",
+      "difficulty": "medium",
+      "prerequisites": [
+        "the team has enough self-awareness to describe current AI use honestly",
+        "owners can identify higher-risk domains or flows",
+        "leadership supports differentiated policy rather than vague encouragement"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Map work by risk and detectability",
+          "purpose": "Ground the zones in engineering reality rather than opinion.",
+          "actions": [
+            "list common tasks where AI is being or could be used",
+            "rank them by blast radius, detectability of mistakes, and reversibility",
+            "distinguish low-risk scaffolding from hard-to-detect, high-consequence logic"
+          ],
+          "outputs": [
+            "AI task risk map"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Define usage zones",
+          "purpose": "Create a practical operating model.",
+          "actions": [
+            "mark tasks as encouraged, allowed with caution, or restricted",
+            "tie each zone to review expectations and ownership assumptions",
+            "state why each zone exists in engineering terms"
+          ],
+          "outputs": [
+            "AI development zones model"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Attach workflow rules to each zone",
+          "purpose": "Make the zones affect real work.",
+          "actions": [
+            "define what disclosure, review depth, or approval is required in each zone",
+            "clarify what counts as unacceptable delegation to AI",
+            "set special expectations for security-, money-, data-, or availability-critical code"
+          ],
+          "outputs": [
+            "zone operating rules"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Teach the team with examples",
+          "purpose": "Prevent the model from remaining abstract.",
+          "actions": [
+            "show concrete examples of safe, borderline, and unsafe uses",
+            "review near-miss scenarios and what zone they belong to",
+            "create a lightweight cheat sheet for daily decisions"
+          ],
+          "outputs": [
+            "AI zone examples pack"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Review real usage drift",
+          "purpose": "Keep the zones aligned with evolving practice.",
+          "actions": [
+            "sample actual work across zones",
+            "update rules when new tools or patterns change risk",
+            "watch for shadow norms that diverge from the model"
+          ],
+          "outputs": [
+            "AI zone review"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "Which tasks are low-risk enough for broad AI use?",
+        "Which areas require caution because mistakes are subtle or high-impact?",
+        "Which tasks should remain strongly human-authored?",
+        "What usage must be disclosed or subjected to stronger review?"
+      ],
+      "commonMistakes": [
+        "making zones too vague to guide real decisions",
+        "treating all code generation as equally risky or equally safe",
+        "ignoring detectability and focusing only on importance",
+        "writing policy without examples"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "engineers still answer 'it depends' with no shared guidance",
+        "high-risk areas are receiving the same AI treatment as boilerplate work",
+        "the team cites the policy but behaves inconsistently",
+        "AI use becomes more hidden after the rollout"
+      ],
+      "artifactsToProduce": [
+        "AI task risk map",
+        "AI development zones model",
+        "zone operating rules",
+        "AI zone examples pack",
+        "AI zone review"
+      ],
+      "successSignals": [
+        "the team uses AI more confidently in safe zones",
+        "review and disclosure are stronger in risky zones",
+        "arguments about AI use become more specific and less ideological",
+        "quality surprises caused by context-inappropriate AI use decline"
+      ],
+      "followUpActions": [
+        "update zones when new tools alter risk and capability",
+        "fold zone guidance into onboarding and review expectations",
+        "promote repeated zone failures into stronger engineering controls"
+      ],
+      "metricsOrSignals": [
+        "AI usage by task class",
+        "review escalation rate in high-risk zones",
+        "quality incidents tied to zone misuse",
+        "team understanding of zone model"
+      ],
+      "aiCanHelpWith": [
+        "drafting task maps and example sets",
+        "clustering current AI uses into likely zone categories",
+        "turning raw team practice into clearer policy structure"
+      ],
+      "aiCanMakeWorseBy": [
+        "making poor policy language sound comprehensive",
+        "encouraging overconfidence in borderline zones",
+        "creating the illusion that documentation alone solved the norm problem"
+      ],
+      "aiSpecificNotes": "This playbook is about selective enablement, not restriction for its own sake. The important distinction is not whether AI is used, but whether the task can safely absorb AI-generated uncertainty.",
+      "relatedFailureModes": [
+        "synthetic-velocity"
+      ],
+      "relatedRedFlags": [
+        "ai-use-is-widespread-but-norms-are-unclear",
+        "generated-code-is-merged-without-deep-review"
+      ],
+      "relatedTechDecisions": [
+        "ai-assisted-development-vs-manual-only-development",
+        "broad-ai-enablement-vs-restricted-high-trust-use"
+      ],
+      "relatedPlaybooks": [
+        "create-ai-usage-norms-for-a-team",
+        "upgrade-code-review-for-ai-assisted-work"
+      ],
+      "examplePromptsOrQuestions": [
+        "Which tasks in this team are low-risk enough for broad AI use?",
+        "Where are AI mistakes hardest to notice before damage happens?",
+        "What work should remain strongly human-authored no matter how good the tooling looks?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "introduce-ai-tools-without-synthetic-velocity",
+      "title": "Introduce AI tools without synthetic velocity",
+      "situation": "A team is adopting AI tools and wants real leverage, not just more apparent output.",
+      "category": "ai",
+      "summary": "Adopt AI by measuring whether it improves durable outcomes like clarity, cycle time, quality, and system understanding — not just output volume, ticket count, or code throughput.",
+      "goal": "Prevent AI adoption from inflating visible activity while leaving the team less certain, less coherent, or more brittle.",
+      "useWhen": [
+        "leadership or the team wants to scale AI use quickly",
+        "tool output is rising but confidence is not",
+        "there is pressure to prove productivity gains",
+        "the team senses that AI is changing behavior faster than it is changing results"
+      ],
+      "doNotUseWhen": [
+        "AI usage is still too limited to evaluate meaningfully",
+        "the organization wants output metrics only and will ignore quality signals",
+        "the team has no stable baseline for delivery or quality at all"
+      ],
+      "whyThisMatters": "Synthetic velocity is one of the most dangerous AI-era traps. It feels like acceleration because artifacts multiply. But if understanding, maintainability, and decision quality do not keep up, the team is building future drag while celebrating present speed.",
+      "whatGoodLooksLike": [
+        "AI usage is tied to specific workflow improvements, not vague productivity claims",
+        "the team measures confidence and quality alongside throughput",
+        "adoption starts in areas where value can be seen and damage is limited",
+        "teams can explain where AI saved time and where it added review cost",
+        "leaders hear a balanced story, not a hype narrative"
+      ],
+      "inputs": [
+        "current workflow pain points",
+        "baseline cycle time and quality signals",
+        "candidate AI tools and target use cases",
+        "review and release expectations",
+        "team AI skill variance"
+      ],
+      "rolesInvolved": [
+        "engineering manager",
+        "tech lead",
+        "contributors",
+        "staff engineer or architect",
+        "delivery lead where throughput claims matter"
+      ],
+      "primaryOwner": "engineering manager",
+      "estimatedTimeHorizon": "weeks to pilot, months to assess durable adoption",
+      "difficulty": "medium-high",
+      "prerequisites": [
+        "the team has named workflows where AI might help",
+        "there is at least a minimal baseline of current performance and quality",
+        "the organization is willing to measure more than output"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Start from workflow pain, not tool excitement",
+          "purpose": "Tie adoption to real leverage opportunities.",
+          "actions": [
+            "identify slow, repetitive, ambiguous, or cognitively expensive tasks",
+            "choose a few high-friction workflows as pilot targets",
+            "state what better would look like for each"
+          ],
+          "outputs": [
+            "AI pilot target list"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Define success beyond volume",
+          "purpose": "Prevent throughput-only self-deception.",
+          "actions": [
+            "choose indicators like time saved, review cost, defect rate, handoff clarity, or onboarding help",
+            "pair every output metric with a confidence or quality metric",
+            "state what failure would look like even if output rises"
+          ],
+          "outputs": [
+            "AI adoption scorecard"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Run a bounded pilot",
+          "purpose": "Learn before scaling.",
+          "actions": [
+            "apply the tool to a small number of workflows or people first",
+            "keep the use visible enough to inspect",
+            "compare before and after without turning the pilot into theater"
+          ],
+          "outputs": [
+            "bounded pilot plan",
+            "pilot observations"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Audit second-order effects",
+          "purpose": "See whether speed created hidden costs.",
+          "actions": [
+            "check review burden, maintainability, rework, and confusion after AI-assisted output enters the flow",
+            "look for places where the team is shipping more but understanding less",
+            "identify whether the tool improves the workflow or only the artifact count"
+          ],
+          "outputs": [
+            "second-order effects review"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Scale selectively and narrate honestly",
+          "purpose": "Expand only where real leverage exists.",
+          "actions": [
+            "scale the tool where gains are durable and visible",
+            "tighten or restrict use where the signal is weak or harmful",
+            "report adoption using balanced evidence rather than enthusiasm"
+          ],
+          "outputs": [
+            "AI adoption decision report"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "Which workflows show real leverage potential?",
+        "What indicators prove improvement rather than busyness?",
+        "Where is AI helping, neutral, or actively harmful?",
+        "What should scale now versus stay experimental?"
+      ],
+      "commonMistakes": [
+        "starting with tool capabilities instead of workflow pain",
+        "measuring only output volume",
+        "rolling out broadly before second-order effects are visible",
+        "presenting adoption success as a narrative rather than a comparison"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "code and doc output rise while review cost rises too",
+        "contributors seem faster but the team feels less certain",
+        "leaders ask for more AI use without understanding where it helps",
+        "the team uses AI everywhere because it is there, not because it fits"
+      ],
+      "artifactsToProduce": [
+        "AI pilot target list",
+        "AI adoption scorecard",
+        "bounded pilot plan",
+        "pilot observations",
+        "second-order effects review",
+        "AI adoption decision report"
+      ],
+      "successSignals": [
+        "specific workflows become measurably easier or faster with no major quality loss",
+        "the team can say where AI helped and where it did not",
+        "review and maintenance burdens remain visible in adoption decisions",
+        "adoption expands selectively instead of ideologically"
+      ],
+      "followUpActions": [
+        "repeat the evaluation on new workflows as the team matures",
+        "connect synthetic-velocity signals to review, ownership, and documentation work",
+        "refresh the scorecard as tools and baseline performance change"
+      ],
+      "metricsOrSignals": [
+        "time saved per targeted workflow",
+        "review cost or review depth change",
+        "post-merge defect rate in AI-assisted work",
+        "team confidence in generated artifacts",
+        "rework rate after AI-assisted output"
+      ],
+      "aiCanHelpWith": [
+        "summarizing pilot observations and before-after comparisons",
+        "drafting balanced adoption reports",
+        "clustering recurring AI win and loss patterns"
+      ],
+      "aiCanMakeWorseBy": [
+        "creating more polished but misleading productivity narratives",
+        "inflating artifact volume so measurement looks better than reality",
+        "reducing friction around bad use cases, which makes misuse scale faster"
+      ],
+      "aiSpecificNotes": "The key discipline is to treat AI like any other operational change: pilot it, measure it, inspect second-order effects, and resist tool-first storytelling.",
+      "relatedFailureModes": [
+        "synthetic-velocity",
+        "autocomplete-architecture"
+      ],
+      "relatedRedFlags": [
+        "more-output-less-certainty",
+        "ai-use-is-widespread-but-norms-are-unclear"
+      ],
+      "relatedTechDecisions": [
+        "ai-assisted-development-vs-manual-only-development",
+        "fast-ai-adoption-vs-governance-first"
+      ],
+      "relatedPlaybooks": [
+        "define-safe-ai-development-zones",
+        "create-ai-usage-norms-for-a-team"
+      ],
+      "examplePromptsOrQuestions": [
+        "What workflow pain are we actually trying to reduce with this tool?",
+        "What would count as failure even if output goes up?",
+        "Where is AI improving the work versus only increasing visible activity?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "build-a-grounded-rag-system",
+      "title": "Build a grounded RAG system",
+      "situation": "A team wants retrieval-augmented generation that is genuinely grounded in trustworthy sources.",
+      "category": "ai",
+      "summary": "Design RAG around source trust, retrieval quality, task fit, and answer behavior so that citation and grounding mean something more than 'the model found text nearby'.",
+      "goal": "Build a RAG system that produces answers users can inspect, trust, and challenge because the retrieval and source model are explicit and meaningful.",
+      "useWhen": [
+        "the team is building a knowledge assistant, support assistant, or internal search-answer system",
+        "users need source-backed answers rather than purely generative ones",
+        "the corpus contains mixed trust levels or mixed freshness levels",
+        "hallucination or ungrounded synthesis would be costly"
+      ],
+      "doNotUseWhen": [
+        "the task is not really knowledge retrieval and needs a different architecture",
+        "the corpus has no trustworthy source model at all yet",
+        "leaders want citations for appearance rather than for answer auditability"
+      ],
+      "whyThisMatters": "Many RAG systems are only cosmetically grounded. They cite text, but not authoritative truth. Grounding is only useful when the system knows which sources count, how freshness matters, and when the model should refuse or narrow its claims.",
+      "whatGoodLooksLike": [
+        "the source corpus is curated by trust and freshness, not only indexed by convenience",
+        "retrieval matches the real task and answer form",
+        "answers reflect source quality and uncertainty honestly",
+        "users can inspect why the answer should be believed or doubted",
+        "source citations help verification instead of creating fake authority"
+      ],
+      "inputs": [
+        "target user tasks",
+        "candidate source corpus",
+        "source trust model",
+        "freshness requirements",
+        "expected answer shapes",
+        "evaluation scenarios"
+      ],
+      "rolesInvolved": [
+        "AI engineer",
+        "product owner",
+        "domain expert",
+        "knowledge-source owners",
+        "evaluation owner"
+      ],
+      "primaryOwner": "AI engineer",
+      "estimatedTimeHorizon": "weeks to months",
+      "difficulty": "high",
+      "prerequisites": [
+        "the team can describe what users actually need to know or do",
+        "there is a way to distinguish authoritative from merely available sources",
+        "some evaluation set or real task sample exists"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Define what grounded must mean here",
+          "purpose": "Avoid cargo-cult RAG.",
+          "actions": [
+            "state what kinds of claims require source support",
+            "decide how freshness, authority, and completeness affect answer trust",
+            "clarify when the system should answer, hedge, narrow, or refuse"
+          ],
+          "outputs": [
+            "grounding definition"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Curate the corpus by trust and task relevance",
+          "purpose": "Prevent low-quality retrieval from becoming polished misinformation.",
+          "actions": [
+            "classify sources by authority, ownership, freshness, and use-case fit",
+            "exclude or downgrade sources that humans would not trust in serious work",
+            "prefer smaller high-trust corpora over broad low-trust indexing at first"
+          ],
+          "outputs": [
+            "source trust model",
+            "curated corpus"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Design retrieval for the user’s real task",
+          "purpose": "Make retrieval serve the job, not just semantic similarity.",
+          "actions": [
+            "choose chunking, indexing, and ranking strategies that preserve useful context",
+            "handle structured, semi-structured, and long-form sources differently where needed",
+            "test retrieval on real task queries, not only synthetic ones"
+          ],
+          "outputs": [
+            "retrieval design",
+            "task-based retrieval cases"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Constrain answer behavior",
+          "purpose": "Keep the model from overstating weak evidence.",
+          "actions": [
+            "require attribution patterns appropriate to the task",
+            "shape the model to answer within supported evidence",
+            "surface uncertainty when source support is partial or conflicting"
+          ],
+          "outputs": [
+            "answer policy"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Evaluate retrieval, grounding, and usefulness together",
+          "purpose": "Avoid scoring the wrong thing.",
+          "actions": [
+            "measure whether the right sources were retrieved",
+            "check whether the answer respected the evidence",
+            "test whether users could verify or act from the answer safely"
+          ],
+          "outputs": [
+            "RAG evaluation pack"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What sources are truly authoritative for this task?",
+        "How much freshness matters to the answer?",
+        "When should the system cite, abstain, or narrow the claim?",
+        "What retrieval failure matters most for users: missing key context, wrong source ranking, or stale truth?"
+      ],
+      "commonMistakes": [
+        "indexing everything because more data feels safer",
+        "confusing accessible sources with authoritative sources",
+        "treating citation presence as proof of grounding",
+        "evaluating only answer fluency rather than evidence quality"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "users say the answer cited sources but still felt untrustworthy",
+        "the system retrieves documents humans would never rely on directly",
+        "evaluation looks good on retrieval recall but fails in real workflow use",
+        "the model sounds more certain than the source support allows"
+      ],
+      "artifactsToProduce": [
+        "grounding definition",
+        "source trust model",
+        "curated corpus",
+        "retrieval design",
+        "answer policy",
+        "RAG evaluation pack"
+      ],
+      "successSignals": [
+        "users can trace answers back to trusted evidence",
+        "low-trust source leakage declines",
+        "real task usefulness improves without fake confidence increasing",
+        "source and answer failures become easier to diagnose separately"
+      ],
+      "followUpActions": [
+        "review source trust and freshness continuously",
+        "add task-specific retrieval cases as real user needs evolve",
+        "connect repeated retrieval failures to corpus and ranking redesign"
+      ],
+      "metricsOrSignals": [
+        "high-trust source retrieval rate",
+        "answer-evidence alignment rate",
+        "user verification success rate",
+        "low-trust citation frequency",
+        "freshness failure incidents"
+      ],
+      "aiCanHelpWith": [
+        "proposing chunking candidates and retrieval structures",
+        "summarizing source differences and trust annotations",
+        "drafting evaluation sets from real documents and user tasks"
+      ],
+      "aiCanMakeWorseBy": [
+        "sounding more grounded than the sources justify",
+        "masking weak retrieval with articulate synthesis",
+        "encouraging broader corpus inclusion without trust discipline"
+      ],
+      "aiSpecificNotes": "In RAG, the AI is both the thing being controlled and the thing that can hide control failures. Strong source curation and task-grounded evaluation matter more than clever prompting alone.",
+      "relatedFailureModes": [
+        "rag-without-ground-truth",
+        "benchmark-mirage"
+      ],
+      "relatedRedFlags": [
+        "rag-uses-sources-nobody-actually-trusts",
+        "ai-generated-artifacts-are-trusted-more-than-source-material"
+      ],
+      "relatedTechDecisions": [
+        "rag-vs-fine-tuning",
+        "model-api-vs-self-hosted-model"
+      ],
+      "relatedPlaybooks": [
+        "evaluate-an-ai-feature-against-real-tasks",
+        "detect-ai-drift-before-users-do"
+      ],
+      "examplePromptsOrQuestions": [
+        "What counts as an authoritative source for this task?",
+        "Would a human trust the same sources the RAG system is citing?",
+        "When should the assistant refuse to answer because evidence is weak or conflicting?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "evaluate-an-ai-feature-against-real-tasks",
+      "title": "Evaluate an AI feature against real tasks",
+      "situation": "An AI feature needs evaluation beyond synthetic benchmarks or generic demos.",
+      "category": "ai",
+      "summary": "Evaluate the feature against real user jobs, realistic failure patterns, and operational constraints so the team learns whether the system actually helps, not just whether it performs well on curated examples.",
+      "goal": "Replace proxy confidence with task-grounded evidence about usefulness, correctness, risk, and failure behavior.",
+      "useWhen": [
+        "a team is deciding whether an AI feature is ready to ship or scale",
+        "benchmarks look good but user value is uncertain",
+        "real-world behavior matters more than lab performance",
+        "the system affects workflow quality, accuracy, or decision-making"
+      ],
+      "doNotUseWhen": [
+        "the feature is still too undefined to know what task it serves",
+        "the organization only wants benchmark optics and will ignore real-task evidence",
+        "there is no access to representative tasks, users, or task traces at all"
+      ],
+      "whyThisMatters": "AI features often fail in the gap between benchmark success and actual work. Real evaluation reveals whether the feature helps on the messy edges: ambiguous prompts, incomplete evidence, user misuse, changing context, and operational pressure.",
+      "whatGoodLooksLike": [
+        "evaluation is tied to concrete user tasks and success criteria",
+        "the team knows the feature’s strong cases, weak cases, and unsafe cases",
+        "measurement includes usefulness, failure shape, and review burden",
+        "go/no-go decisions are legible and evidence-based",
+        "benchmark results are contextualized instead of treated as truth"
+      ],
+      "inputs": [
+        "feature scope",
+        "target user personas and tasks",
+        "representative prompts or inputs",
+        "ground truth or review criteria where possible",
+        "benchmark results if available",
+        "human workflow expectations"
+      ],
+      "rolesInvolved": [
+        "AI engineer",
+        "product owner",
+        "evaluation owner",
+        "domain experts",
+        "representative users or user proxies",
+        "risk or quality partner when needed"
+      ],
+      "primaryOwner": "evaluation owner",
+      "estimatedTimeHorizon": "days to define, weeks to gather useful evidence",
+      "difficulty": "high",
+      "prerequisites": [
+        "the team knows what user task the feature claims to improve",
+        "there is access to realistic task examples",
+        "someone owns the evaluation design rather than treating it as a side job"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Define the real task and failure cost",
+          "purpose": "Make evaluation answer the right question.",
+          "actions": [
+            "write the task in user terms, not model terms",
+            "define what good, acceptable, weak, and harmful performance look like",
+            "state what kinds of failure matter most"
+          ],
+          "outputs": [
+            "task evaluation definition"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Assemble representative task cases",
+          "purpose": "Prevent evaluation from overfitting to convenience examples.",
+          "actions": [
+            "collect real or realistic examples spanning common, tricky, and edge cases",
+            "include ambiguity, incomplete context, and failure-prone scenarios",
+            "tag the cases by risk, domain, and expected behavior"
+          ],
+          "outputs": [
+            "task case set"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Measure outcome, not just output",
+          "purpose": "Check whether the feature improves the workflow.",
+          "actions": [
+            "evaluate answer quality, user effort reduction, review burden, and decision confidence",
+            "measure where human correction is needed and how often",
+            "compare against baseline workflow, not only against itself"
+          ],
+          "outputs": [
+            "task outcome scorecard"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Analyze failure shape",
+          "purpose": "Understand how the feature goes wrong, not just how often.",
+          "actions": [
+            "cluster errors into categories like omission, hallucination, overconfidence, bad retrieval, or unsafe shortcut",
+            "identify failure cases that users are unlikely to catch",
+            "separate tolerable errors from unacceptable ones"
+          ],
+          "outputs": [
+            "failure taxonomy"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Make an evidence-based shipping decision",
+          "purpose": "Tie launch decisions to task reality.",
+          "actions": [
+            "state where the feature is ready, limited, or unsafe",
+            "define mitigations such as stronger review, narrower scope, or better retrieval",
+            "record what evidence would justify broader rollout later"
+          ],
+          "outputs": [
+            "shipping recommendation"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What user task are we truly evaluating?",
+        "What failure is unacceptable even at low frequency?",
+        "Does the feature reduce user effort enough to justify its new risks?",
+        "Where should this feature be limited or gated?"
+      ],
+      "commonMistakes": [
+        "evaluating generic helpfulness instead of a concrete job",
+        "overfitting evaluation to easy examples",
+        "using benchmark lifts as a substitute for workflow evidence",
+        "ignoring the cost of human review or correction"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "the team can quote eval scores but not real task outcomes",
+        "the feature performs well in demos and poorly in messy use",
+        "failure discussions focus on rate but not on detectability or harm",
+        "shipping decisions happen before failure shape is understood"
+      ],
+      "artifactsToProduce": [
+        "task evaluation definition",
+        "task case set",
+        "task outcome scorecard",
+        "failure taxonomy",
+        "shipping recommendation"
+      ],
+      "successSignals": [
+        "the team understands where the feature truly helps",
+        "unsafe or low-value use cases are identified before broad rollout",
+        "task-grounded evaluation changes design or launch decisions",
+        "benchmark discussion becomes secondary to workflow evidence"
+      ],
+      "followUpActions": [
+        "refresh the case set as real usage broadens",
+        "connect repeated failure classes to model, retrieval, or UX changes",
+        "track whether live behavior matches pre-launch task evaluation"
+      ],
+      "metricsOrSignals": [
+        "task success rate",
+        "human correction rate",
+        "review or validation time per output",
+        "unacceptable failure frequency",
+        "user trust or usefulness ratings by task"
+      ],
+      "aiCanHelpWith": [
+        "drafting case taxonomies and evaluation sheets",
+        "clustering failure patterns from evaluation runs",
+        "summarizing differences between benchmark and task-grounded outcomes"
+      ],
+      "aiCanMakeWorseBy": [
+        "generating synthetic cases that are too clean",
+        "masking weak task fit behind persuasive evaluation summaries",
+        "inflating apparent rigor with more metrics that still miss user reality"
+      ],
+      "aiSpecificNotes": "The evaluation itself can become benchmark theater if it is not anchored to real work. Keep asking: what job is improved, for whom, and at what risk?",
+      "relatedFailureModes": [
+        "benchmark-mirage",
+        "silent-model-drift"
+      ],
+      "relatedRedFlags": [
+        "benchmarks-are-discussed-more-than-real-user-outcomes",
+        "model-drift-is-noticed-informally-not-measured"
+      ],
+      "relatedTechDecisions": [
+        "synthetic-evaluation-vs-real-world-evaluation",
+        "human-in-the-loop-vs-full-automation"
+      ],
+      "relatedPlaybooks": [
+        "detect-ai-drift-before-users-do",
+        "build-a-grounded-rag-system"
+      ],
+      "examplePromptsOrQuestions": [
+        "What real user job does this feature improve?",
+        "Which failures matter most because users will not catch them?",
+        "How does this compare to the current workflow, not just to a benchmark?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "design-human-review-that-is-not-rubber-stamping",
+      "title": "Design human review that is not rubber-stamping",
+      "situation": "An AI workflow includes human review, but the review step risks becoming symbolic.",
+      "category": "ai",
+      "summary": "Design the human-in-the-loop step so the human still adds real judgment: enough context, enough authority, enough time, and clear criteria for when to intervene, reject, or escalate.",
+      "goal": "Ensure human review actually changes outcomes where needed, rather than serving as procedural theater around automated output.",
+      "useWhen": [
+        "an AI system routes output through human approval",
+        "stakeholders rely on the phrase human in the loop as a safety claim",
+        "reviewers approve most outputs quickly without much visible reasoning",
+        "AI output risk is high enough that human judgment still matters"
+      ],
+      "doNotUseWhen": [
+        "the task is genuinely low-risk and human review adds cost without value",
+        "the team has no intention of giving humans time, context, or override power",
+        "the workflow should really be either stronger automation or stronger manual control, not a symbolic hybrid"
+      ],
+      "whyThisMatters": "A human checkpoint only helps if it still shapes the decision. If reviewers are overloaded, blind, or disempowered, the loop becomes a rubber stamp that adds latency without safety.",
+      "whatGoodLooksLike": [
+        "reviewers know what they are checking and why",
+        "the workflow gives them the context needed to catch important errors",
+        "reviewers can meaningfully reject, edit, or escalate outputs",
+        "review performance is judged by judgment quality, not only throughput",
+        "the team can show that human review changes outcomes on important cases"
+      ],
+      "inputs": [
+        "AI workflow design",
+        "reviewer role and context",
+        "types of output being reviewed",
+        "known failure patterns",
+        "approval and override statistics",
+        "risk thresholds"
+      ],
+      "rolesInvolved": [
+        "AI product owner",
+        "workflow designer",
+        "reviewers",
+        "quality or risk partner",
+        "domain experts"
+      ],
+      "primaryOwner": "workflow designer",
+      "estimatedTimeHorizon": "days to redesign criteria, weeks to validate effectiveness",
+      "difficulty": "medium-high",
+      "prerequisites": [
+        "the review step has a clearly defined purpose",
+        "there is access to reviewer behavior and outcome data",
+        "reviewers have enough domain understanding to contribute meaningfully"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Define what humans are supposed to catch",
+          "purpose": "Prevent review from becoming vague reassurance.",
+          "actions": [
+            "state which failures human review is meant to detect or prevent",
+            "separate review-for-legality, review-for-domain-correctness, and review-for-style or polish",
+            "remove review duties that cannot be performed with available context"
+          ],
+          "outputs": [
+            "human review purpose model"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Improve review context",
+          "purpose": "Give reviewers a fair chance to exercise judgment.",
+          "actions": [
+            "show evidence, retrieved sources, inputs, and risk cues where relevant",
+            "highlight uncertain or unusual model behavior",
+            "reduce the need for reviewers to reconstruct everything from scratch"
+          ],
+          "outputs": [
+            "review context design"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Design meaningful reviewer actions",
+          "purpose": "Ensure the human can do more than approve.",
+          "actions": [
+            "allow reject, revise, escalate, or send-back actions as appropriate",
+            "record why outputs are changed or rejected",
+            "ensure reviewer intervention affects future workflow improvements"
+          ],
+          "outputs": [
+            "review action model"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Measure whether human review changes outcomes",
+          "purpose": "Test if the loop is real or symbolic.",
+          "actions": [
+            "track override, correction, and escalation rates",
+            "sample decisions for depth and judgment quality",
+            "compare reviewed outcomes against what would have happened without intervention"
+          ],
+          "outputs": [
+            "human-loop effectiveness review"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Tighten or loosen the loop based on evidence",
+          "purpose": "Keep review matched to risk.",
+          "actions": [
+            "strengthen the loop where reviewers catch important issues",
+            "simplify or remove it where it adds delay without judgment value",
+            "clarify task classes that require different human review models"
+          ],
+          "outputs": [
+            "review model adjustment plan"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What failures are humans actually expected to catch?",
+        "Do reviewers have enough context and authority to do that?",
+        "Which outputs need strong review versus light review?",
+        "Where is the current review loop symbolic rather than meaningful?"
+      ],
+      "commonMistakes": [
+        "adding humans to the workflow without changing the interface for review",
+        "measuring reviewer performance by speed alone",
+        "calling every approval equal even when risk varies",
+        "keeping a human loop because it sounds safe, not because it works"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "approval rates are near-total with minimal reviewer change",
+        "reviewers cannot explain what they are supposed to detect",
+        "risky outputs pass because reviewers lacked context",
+        "the workflow is slower, but not safer"
+      ],
+      "artifactsToProduce": [
+        "human review purpose model",
+        "review context design",
+        "review action model",
+        "human-loop effectiveness review",
+        "review model adjustment plan"
+      ],
+      "successSignals": [
+        "reviewers catch important issues before users do",
+        "review interventions are visible and meaningful",
+        "the team can justify where human review is still necessary",
+        "review burden is better matched to risk"
+      ],
+      "followUpActions": [
+        "re-segment tasks by risk and review value as the system evolves",
+        "train reviewers on recurring AI failure shapes",
+        "connect reviewer findings back into model, retrieval, or product improvements"
+      ],
+      "metricsOrSignals": [
+        "override and correction rate",
+        "review time by task type",
+        "critical issue catch rate before user exposure",
+        "percentage of reviewed outputs that required meaningful intervention"
+      ],
+      "aiCanHelpWith": [
+        "highlighting uncertainty signals and source evidence for reviewers",
+        "summarizing repeated reviewer edits into improvement themes",
+        "drafting reviewer decision aids"
+      ],
+      "aiCanMakeWorseBy": [
+        "making low-quality outputs look more trustworthy than they are",
+        "reducing reviewers into confirmation-click operators",
+        "creating the illusion of safety because human review exists nominally"
+      ],
+      "aiSpecificNotes": "The presence of a human is not the same thing as meaningful human control. The test is simple: if the human vanished, would the outcome materially change?",
+      "relatedFailureModes": [
+        "benchmark-mirage"
+      ],
+      "relatedRedFlags": [
+        "humans-in-the-loop-are-rubber-stamps"
+      ],
+      "relatedTechDecisions": [
+        "human-in-the-loop-vs-full-automation"
+      ],
+      "relatedPlaybooks": [
+        "evaluate-an-ai-feature-against-real-tasks",
+        "define-safe-ai-development-zones"
+      ],
+      "examplePromptsOrQuestions": [
+        "What exactly is the reviewer supposed to notice or stop?",
+        "Does the reviewer have the information needed to do that well?",
+        "If we removed the reviewer, what important harm would become more likely?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "detect-ai-drift-before-users-do",
+      "title": "Detect AI drift before users do",
+      "situation": "An AI system can change over time through model, prompt, retrieval, or workflow drift.",
+      "category": "ai",
+      "summary": "Build a drift-detection system based on task slices, baseline behavior, and operational signals so changes in model quality are noticed intentionally rather than through user frustration or vague team instinct.",
+      "goal": "Identify and localize meaningful behavior change before it becomes user-facing trust erosion or silent quality decay.",
+      "useWhen": [
+        "the system depends on external models or evolving prompts",
+        "RAG, routing, or orchestration changes happen regularly",
+        "users say it feels different but the team cannot prove why",
+        "AI quality matters enough that silent degradation is costly"
+      ],
+      "doNotUseWhen": [
+        "the system is too experimental to promise stable behavior yet",
+        "no baseline or representative task set exists at all",
+        "the team only wants generic monitoring and not task-grounded quality detection"
+      ],
+      "whyThisMatters": "AI systems drift in ways traditional services often do not. The model may still be up, latency may still be fine, and infrastructure may still look healthy while the answer behavior quietly worsens on the exact tasks users care about.",
+      "whatGoodLooksLike": [
+        "the team has task-based baselines rather than vague intuition only",
+        "behavior changes are noticed in slices, not only as global complaints",
+        "model, prompt, retrieval, and workflow changes are trackable against outcomes",
+        "teams can distinguish drift from random bad examples",
+        "quality regressions are caught before widespread user distrust forms"
+      ],
+      "inputs": [
+        "representative task set",
+        "model and prompt version history",
+        "retrieval and toolchain changes",
+        "user feedback signals",
+        "evaluation baselines",
+        "release history for the AI system"
+      ],
+      "rolesInvolved": [
+        "AI engineer",
+        "evaluation owner",
+        "product owner",
+        "domain expert",
+        "operations or platform owner where deployment changes matter"
+      ],
+      "primaryOwner": "evaluation owner",
+      "estimatedTimeHorizon": "weeks to establish, then continuous monitoring",
+      "difficulty": "high",
+      "prerequisites": [
+        "there is a task set that reflects real value",
+        "the team tracks model or system changes over time",
+        "someone owns the question of quality stability"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Choose the task slices worth protecting",
+          "purpose": "Focus monitoring on behavior users actually care about.",
+          "actions": [
+            "define core tasks and high-risk slices",
+            "include edge cases and ambiguity-heavy scenarios",
+            "prioritize slices where errors are subtle or harmful"
+          ],
+          "outputs": [
+            "drift protection task set"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Establish baseline behavior",
+          "purpose": "Create a reference point that can be compared over time.",
+          "actions": [
+            "record expected performance by slice",
+            "capture both score-based and exemplar-based baselines",
+            "note known weak areas so future changes are interpreted correctly"
+          ],
+          "outputs": [
+            "behavior baseline"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Track system changes that can cause drift",
+          "purpose": "Connect quality change to system change.",
+          "actions": [
+            "log model, prompt, retrieval, routing, and tool-use changes",
+            "tie deployments and configuration shifts to evaluation checkpoints",
+            "avoid silent changes with no quality observation"
+          ],
+          "outputs": [
+            "drift change log"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Monitor both evaluation and field signals",
+          "purpose": "Combine lab and production awareness.",
+          "actions": [
+            "run recurring task-slice evaluations",
+            "watch user correction patterns, complaints, abstentions, and escalation behavior",
+            "compare field signals to baseline shifts"
+          ],
+          "outputs": [
+            "drift monitoring dashboard"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Respond with diagnosis, not panic",
+          "purpose": "Localize drift and choose the right fix.",
+          "actions": [
+            "identify whether drift came from model change, retrieval quality, prompt change, or surrounding workflow",
+            "roll back or isolate the change where possible",
+            "update baselines when intended behavior improvements genuinely occurred"
+          ],
+          "outputs": [
+            "drift response playbook",
+            "updated baseline when justified"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "Which task slices are important enough to monitor continuously?",
+        "What counts as meaningful drift versus acceptable variance?",
+        "Which upstream changes require a fresh evaluation checkpoint?",
+        "When should the team roll back, re-tune, or just re-baseline?"
+      ],
+      "commonMistakes": [
+        "tracking overall score while missing slice-specific degradation",
+        "not versioning prompts, retrieval logic, or model providers clearly",
+        "waiting for user complaints to define drift",
+        "treating every quality change as model drift when workflow changes caused it"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "users say it feels worse but the team has no comparison evidence",
+        "quality changes are discussed socially rather than measured",
+        "different parts of the AI stack change without evaluation checkpoints",
+        "the baseline quietly becomes stale and stops reflecting the real task"
+      ],
+      "artifactsToProduce": [
+        "drift protection task set",
+        "behavior baseline",
+        "drift change log",
+        "drift monitoring dashboard",
+        "drift response playbook"
+      ],
+      "successSignals": [
+        "quality shifts are caught before widespread user dissatisfaction",
+        "the team can localize likely causes of drift faster",
+        "model or retrieval changes are accompanied by meaningful evaluation",
+        "trust conversations move from vibes to evidence"
+      ],
+      "followUpActions": [
+        "refresh task slices as user workflows evolve",
+        "retire stale baselines and replace them with living ones",
+        "connect drift incidents back into release and evaluation design"
+      ],
+      "metricsOrSignals": [
+        "task-slice performance over time",
+        "user correction or override rate",
+        "complaint frequency by slice",
+        "time from quality shift to detection",
+        "number of untracked system changes affecting quality"
+      ],
+      "aiCanHelpWith": [
+        "comparing outputs across model or prompt versions",
+        "clustering drift examples by failure pattern",
+        "summarizing which slices changed most between runs"
+      ],
+      "aiCanMakeWorseBy": [
+        "over-explaining drift with plausible but unverified narratives",
+        "normalizing drift because the model still sounds fluent",
+        "encouraging baseline churn so no stable comparison remains"
+      ],
+      "aiSpecificNotes": "Drift is not only a model problem. Prompt, corpus, routing, and tool-use drift often matter just as much. The monitoring system should reflect that wider truth.",
+      "relatedFailureModes": [
+        "silent-model-drift",
+        "benchmark-mirage"
+      ],
+      "relatedRedFlags": [
+        "model-drift-is-noticed-informally-not-measured"
+      ],
+      "relatedTechDecisions": [
+        "model-api-vs-self-hosted-model",
+        "synthetic-evaluation-vs-real-world-evaluation"
+      ],
+      "relatedPlaybooks": [
+        "evaluate-an-ai-feature-against-real-tasks",
+        "build-a-grounded-rag-system"
+      ],
+      "examplePromptsOrQuestions": [
+        "What task slices matter enough that we should detect regression before users do?",
+        "What upstream changes should automatically trigger re-evaluation?",
+        "How would we distinguish model drift from retrieval or workflow drift here?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "create-ai-usage-norms-for-a-team",
+      "title": "Create AI usage norms for a team",
+      "situation": "AI is already being used by the team, but expectations and norms are inconsistent.",
+      "category": "ai",
+      "summary": "Create team-level norms that define how AI is used, disclosed, reviewed, challenged, and learned from so that the team behaves intentionally rather than drifting into private habit systems.",
+      "goal": "Replace implicit, person-specific AI behavior with shared norms that protect quality, trust, and collaboration.",
+      "useWhen": [
+        "different engineers use AI in very different ways",
+        "reviewers are unsure what to expect from AI-assisted work",
+        "the team debates AI socially but lacks operating agreements",
+        "AI usage is common enough to change team behavior"
+      ],
+      "doNotUseWhen": [
+        "AI use is still negligible",
+        "leaders want a performative policy with no real adoption or review impact",
+        "the team lacks enough trust to discuss behavior honestly"
+      ],
+      "whyThisMatters": "Unwritten AI norms create invisible inequality and quality variance. One person overuses AI, another hides it, a third avoids it entirely, and the team slowly stops sharing a common model of authorship, review, and acceptable risk.",
+      "whatGoodLooksLike": [
+        "the team can explain how AI use fits its engineering values",
+        "people know what should be disclosed, reviewed, or challenged differently",
+        "AI use does not become a source of hidden mistrust",
+        "new team members can learn the norms without guessing",
+        "the norms evolve from observed reality rather than abstract ideology"
+      ],
+      "inputs": [
+        "current AI usage patterns",
+        "review friction points",
+        "team values and quality expectations",
+        "known wins and failures from current use",
+        "security or policy constraints where relevant"
+      ],
+      "rolesInvolved": [
+        "engineering manager",
+        "tech lead",
+        "contributors",
+        "reviewers",
+        "security or compliance partner if needed"
+      ],
+      "primaryOwner": "engineering manager",
+      "estimatedTimeHorizon": "days to define, ongoing reinforcement through practice",
+      "difficulty": "medium",
+      "prerequisites": [
+        "the team is willing to talk honestly about current use",
+        "leaders will back the norms operationally",
+        "there is enough observed usage to norm around"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Make current usage visible",
+          "purpose": "Start from reality, not theory.",
+          "actions": [
+            "collect how people currently use AI across coding, docs, debugging, and planning",
+            "surface where the team already feels tension or confusion",
+            "identify invisible norms that already exist"
+          ],
+          "outputs": [
+            "current AI usage map"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Define what the team values around AI use",
+          "purpose": "Ground norms in engineering principles.",
+          "actions": [
+            "state what matters most: quality, explainability, speed, ownership, privacy, trust",
+            "identify where AI use supports those values and where it can distort them",
+            "turn values into practical behavioral statements"
+          ],
+          "outputs": [
+            "AI norms principles"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Set norms for usage, disclosure, and review",
+          "purpose": "Translate principle into day-to-day behavior.",
+          "actions": [
+            "decide when AI assistance should be disclosed or made visible",
+            "clarify expectations for reviewing, testing, and explaining AI-assisted work",
+            "define unacceptable behavior such as merging generated code without understanding"
+          ],
+          "outputs": [
+            "team AI norms",
+            "review and disclosure expectations"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Teach the norms with examples",
+          "purpose": "Make the norms easier to apply than ignore.",
+          "actions": [
+            "show concrete good, bad, and gray-area examples",
+            "turn repeated team questions into FAQ-style guidance",
+            "align onboarding and review templates with the norms"
+          ],
+          "outputs": [
+            "AI norms examples pack"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Revisit the norms as practice changes",
+          "purpose": "Keep them alive and relevant.",
+          "actions": [
+            "review recurring confusion, near-misses, and successes",
+            "update the norms when tools or risks change materially",
+            "prevent drift between stated norms and actual team behavior"
+          ],
+          "outputs": [
+            "AI norms review cycle"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What AI use needs disclosure in this team?",
+        "What behaviors are acceptable but require caution?",
+        "What should be explicitly disallowed or escalated?",
+        "How will the team know the norms are helping rather than becoming theater?"
+      ],
+      "commonMistakes": [
+        "writing generic principles with no operational meaning",
+        "ignoring current usage reality and imposing abstract ideals",
+        "assuming everyone shares the same definition of responsible AI use",
+        "treating the norms as static while tooling changes rapidly"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "the team still handles AI use through private judgment only",
+        "reviewers and authors have incompatible expectations",
+        "people hide AI usage because norms feel punitive or performative",
+        "the team cites norms, but repeated AI-related confusion persists"
+      ],
+      "artifactsToProduce": [
+        "current AI usage map",
+        "AI norms principles",
+        "team AI norms",
+        "review and disclosure expectations",
+        "AI norms examples pack",
+        "AI norms review cycle"
+      ],
+      "successSignals": [
+        "AI-related review conflicts decline",
+        "contributors understand what responsible use looks like in this team",
+        "new engineers learn the norms quickly",
+        "the team can revise norms based on evidence instead of ideology"
+      ],
+      "followUpActions": [
+        "fold norms into onboarding, PR templates, and team rituals",
+        "review incidents or near-misses involving AI against the norms",
+        "connect norm failures to clearer zone design or review strengthening"
+      ],
+      "metricsOrSignals": [
+        "AI-related review conflict frequency",
+        "team clarity on disclosure expectations",
+        "number of repeated AI gray-area questions",
+        "norm adoption in onboarding and review workflows"
+      ],
+      "aiCanHelpWith": [
+        "summarizing current usage patterns and recurring questions",
+        "drafting examples and FAQ language",
+        "turning team discussions into clearer norm statements"
+      ],
+      "aiCanMakeWorseBy": [
+        "producing polished but generic norms that do not affect behavior",
+        "masking unresolved disagreement behind pretty language",
+        "encouraging the team to outsource norm-setting to the tool itself"
+      ],
+      "aiSpecificNotes": "Good norms are neither anti-AI nor pro-AI by default. They are pro-intentionality. The point is shared behavior that protects quality and trust.",
+      "relatedFailureModes": [
+        "synthetic-velocity"
+      ],
+      "relatedRedFlags": [
+        "ai-use-is-widespread-but-norms-are-unclear",
+        "generated-code-is-merged-without-deep-review"
+      ],
+      "relatedTechDecisions": [
+        "broad-ai-enablement-vs-restricted-high-trust-use",
+        "fast-ai-adoption-vs-governance-first"
+      ],
+      "relatedPlaybooks": [
+        "define-safe-ai-development-zones",
+        "introduce-ai-tools-without-synthetic-velocity"
+      ],
+      "examplePromptsOrQuestions": [
+        "What does responsible AI use mean in this team specifically?",
+        "What AI use should be visible to reviewers or collaborators?",
+        "Which current behaviors are already causing confusion or mistrust?"
+      ],
+      "patternConfidence": "high"
+    }
+  ]
+}

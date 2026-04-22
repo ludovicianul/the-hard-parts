@@ -1,0 +1,1593 @@
+{
+  "category": {
+    "code": "EP",
+    "name": "Engineering Playbook",
+    "summary": "Practical playbooks for recurring engineering situations — delivery, architecture, operations, teamwork, and AI adoption.",
+    "categories": [
+      "delivery",
+      "team",
+      "architecture",
+      "operations",
+      "ai"
+    ]
+  },
+  "template": {
+    "fields": [
+      "slug",
+      "title",
+      "situation",
+      "category",
+      "summary",
+      "goal",
+      "useWhen",
+      "doNotUseWhen",
+      "whyThisMatters",
+      "whatGoodLooksLike",
+      "inputs",
+      "rolesInvolved",
+      "primaryOwner",
+      "estimatedTimeHorizon",
+      "difficulty",
+      "prerequisites",
+      "steps",
+      "decisionPoints",
+      "commonMistakes",
+      "warningSignsYouAreDoingItWrong",
+      "artifactsToProduce",
+      "successSignals",
+      "followUpActions",
+      "metricsOrSignals",
+      "aiCanHelpWith",
+      "aiCanMakeWorseBy",
+      "aiSpecificNotes",
+      "relatedFailureModes",
+      "relatedRedFlags",
+      "relatedTechDecisions",
+      "relatedPlaybooks",
+      "examplePromptsOrQuestions",
+      "patternConfidence"
+    ]
+  },
+  "entries": [
+    {
+      "slug": "onboard-a-new-engineer-well",
+      "title": "Onboard a new engineer well",
+      "situation": "A new engineer joins and needs to become productive without relying on luck or heroics.",
+      "category": "team",
+      "summary": "Turn onboarding into a deliberate path from orientation to safe contribution, with clear context, early wins, visible ownership, and durable learning artifacts.",
+      "goal": "Help a new engineer become useful, confident, and connected without creating extra hidden load on one or two experienced teammates.",
+      "useWhen": [
+        "a new engineer joins the team",
+        "a contractor or internal transfer needs to ramp quickly",
+        "the system has non-trivial domain or operational complexity",
+        "the team wants onboarding quality to stop depending on which mentor is assigned"
+      ],
+      "doNotUseWhen": [
+        "the work is a very short-lived, low-context task with no expectation of long-term ownership",
+        "the team has no stable ownership, documentation, or priorities yet and needs basic team repair first",
+        "the environment is so chaotic that onboarding promises would be fiction"
+      ],
+      "whyThisMatters": "Poor onboarding quietly compounds almost every other team problem. It increases dependency on heroes, slows contribution, damages confidence, and teaches new people that knowledge lives in people rather than systems.",
+      "whatGoodLooksLike": [
+        "the new engineer can explain the team’s mission, systems, and ownership model in simple terms",
+        "they make a safe first contribution quickly",
+        "they know where to find trustworthy context without asking the same person every time",
+        "they understand what matters technically and organizationally, not just how to run the project",
+        "their ramp-up improves the team’s shared artifacts, not only their private knowledge"
+      ],
+      "inputs": [
+        "team mission and current priorities",
+        "system map",
+        "service ownership map",
+        "setup guide",
+        "runbooks or operating docs",
+        "backlog of starter tasks",
+        "key glossary and domain language"
+      ],
+      "rolesInvolved": [
+        "engineering manager",
+        "tech lead",
+        "buddy or onboarding partner",
+        "new engineer",
+        "service owners",
+        "product or domain contact when useful"
+      ],
+      "primaryOwner": "engineering manager",
+      "estimatedTimeHorizon": "2 to 8 weeks depending on role and system complexity",
+      "difficulty": "medium",
+      "prerequisites": [
+        "someone owns onboarding quality",
+        "the team can identify trustworthy reference docs",
+        "there is at least one safe first contribution path",
+        "basic access and environment setup are understood"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Frame the team and the terrain",
+          "purpose": "Give the new engineer a mental map before drowning them in tools and tickets.",
+          "actions": [
+            "explain what the team owns and does not own",
+            "show the key systems, workflows, and users or stakeholders",
+            "clarify how the team makes decisions, ships changes, and handles incidents"
+          ],
+          "outputs": [
+            "team and system orientation"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Build a trustworthy starting pack",
+          "purpose": "Create a small set of reliable references instead of a giant doc dump.",
+          "actions": [
+            "curate the essential docs, dashboards, repos, and runbooks",
+            "label what is authoritative and what is historical context only",
+            "add missing links or explanations discovered during the ramp-up"
+          ],
+          "outputs": [
+            "onboarding pack",
+            "trustworthy reference set"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Create a safe first contribution",
+          "purpose": "Convert passive learning into early participation.",
+          "actions": [
+            "choose one small but real task that touches meaningful workflow",
+            "pair on the first contribution if the system is high-risk",
+            "explain review, testing, and release expectations explicitly"
+          ],
+          "outputs": [
+            "first contribution plan",
+            "merged starter change"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Expose real ownership and operations",
+          "purpose": "Teach how the system is actually run, not just how it is coded.",
+          "actions": [
+            "walk through service ownership, alerting, release flow, and incident handling",
+            "show which docs are used under pressure",
+            "explain where the scary areas are and why"
+          ],
+          "outputs": [
+            "operational orientation"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Turn questions into team assets",
+          "purpose": "Make onboarding improve the system for the next person.",
+          "actions": [
+            "capture repeated questions and confusing gaps",
+            "update docs, maps, and runbooks as the new engineer ramps",
+            "review what still depends too much on person-to-person explanation"
+          ],
+          "outputs": [
+            "onboarding gap list",
+            "improved onboarding artifacts"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What should the first real contribution be?",
+        "Which docs are authoritative versus merely available?",
+        "How much operational exposure is safe early on?",
+        "Where does pairing add real value versus becoming dependency?"
+      ],
+      "commonMistakes": [
+        "treating onboarding as access setup only",
+        "throwing too much documentation at the engineer without trust signals",
+        "waiting too long before giving real work",
+        "routing all questions through one helpful expert",
+        "assuming strong engineers will just figure it out"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "the new engineer asks the same person for everything",
+        "their first useful contribution takes too long without good reason",
+        "they can run the code but cannot explain the system or ownership model",
+        "the team keeps saying 'it’s complicated' instead of improving orientation"
+      ],
+      "artifactsToProduce": [
+        "onboarding pack",
+        "team and system map",
+        "starter task list",
+        "glossary of important domain and system terms",
+        "onboarding gap list"
+      ],
+      "successSignals": [
+        "the new engineer makes a safe contribution early",
+        "they ask more targeted, higher-value questions over time",
+        "fewer onboarding questions depend on a single person",
+        "onboarding artifacts improve after each new joiner"
+      ],
+      "followUpActions": [
+        "review onboarding after 2 weeks, 1 month, and 2 months",
+        "fold common confusion into durable docs and runbooks",
+        "promote newly learned system questions into ownership or architecture conversations when relevant"
+      ],
+      "metricsOrSignals": [
+        "time to first meaningful contribution",
+        "time to independent change in a low-risk area",
+        "number of repeated onboarding questions",
+        "number of docs improved through onboarding"
+      ],
+      "aiCanHelpWith": [
+        "building first-pass system overviews from code and docs",
+        "summarizing key repos, services, and historical incidents",
+        "drafting onboarding checklists and knowledge maps",
+        "generating quick glossary or reference cards"
+      ],
+      "aiCanMakeWorseBy": [
+        "creating polished but untrustworthy onboarding summaries",
+        "making weak documentation look more complete than it is",
+        "encouraging the new engineer to trust summaries instead of source truth in critical areas"
+      ],
+      "aiSpecificNotes": "Use AI to speed orientation and reduce blank-page friction. Do not let AI summaries become the only map of the system; link them back to trustworthy sources and real owners.",
+      "relatedFailureModes": [
+        "hero-trap"
+      ],
+      "relatedRedFlags": [
+        "critical-knowledge-lives-in-chat-and-memory",
+        "nobody-can-explain-this-module-simply"
+      ],
+      "relatedTechDecisions": [
+        "documentation-first-vs-tacit-coordination"
+      ],
+      "relatedPlaybooks": [
+        "write-a-useful-runbook",
+        "spread-knowledge-out-of-one-expert"
+      ],
+      "examplePromptsOrQuestions": [
+        "What does this team actually own end to end?",
+        "What is the safest first real contribution for this engineer?",
+        "Which docs should a new joiner trust first, and which are just background?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "spread-knowledge-out-of-one-expert",
+      "title": "Spread knowledge out of one expert",
+      "situation": "Critical knowledge is concentrated in one person or a very small group.",
+      "category": "team",
+      "summary": "Reduce hero dependence by moving operational, technical, and decision knowledge into the team through structured transfer, shared execution, and durable artifacts.",
+      "goal": "Make the team safer, less fragile, and more capable without turning the expert into a permanent bottleneck.",
+      "useWhen": [
+        "one person is the default answer for too many critical questions",
+        "vacations or absences materially slow delivery or raise anxiety",
+        "ownership is nominally shared but practically concentrated",
+        "the team avoids important areas unless the expert is present"
+      ],
+      "doNotUseWhen": [
+        "the expertise concentration is temporary and already part of a structured transition",
+        "the issue is not knowledge concentration but lack of authority or staffing",
+        "the team wants transfer without creating time for transfer work"
+      ],
+      "whyThisMatters": "Knowledge concentration feels efficient right up until it becomes fragility. The cost appears as slower onboarding, bottlenecks, fear of change, and operational risk that no system diagram will show by itself.",
+      "whatGoodLooksLike": [
+        "the expert is no longer the first stop for every important question",
+        "multiple engineers can change and operate key areas safely",
+        "critical knowledge exists in docs, runbooks, decision logs, and routines, not only in memory",
+        "the expert’s time shifts from rescue and explanation to higher-value design work"
+      ],
+      "inputs": [
+        "list of high-dependency systems or workflows",
+        "expert time map",
+        "incident and escalation history",
+        "ownership map",
+        "current docs and runbooks",
+        "backlog of risky or avoided areas"
+      ],
+      "rolesInvolved": [
+        "expert or key holder",
+        "engineering manager",
+        "tech lead",
+        "engineers taking on the knowledge",
+        "incident or operational owners where relevant"
+      ],
+      "primaryOwner": "engineering manager",
+      "estimatedTimeHorizon": "weeks to months",
+      "difficulty": "high",
+      "prerequisites": [
+        "the expert is willing and given time to transfer knowledge",
+        "management treats transfer as real work",
+        "the team can identify which knowledge areas are most dangerous to concentrate"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Map the dependency on the expert",
+          "purpose": "Make the concentration visible and specific.",
+          "actions": [
+            "list the questions, systems, incidents, reviews, and decisions that route through the expert",
+            "separate rare specialty knowledge from everyday operational dependence",
+            "identify the top risk areas if the expert were unavailable"
+          ],
+          "outputs": [
+            "knowledge concentration map"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Choose transfer targets",
+          "purpose": "Focus transfer where it reduces the most fragility.",
+          "actions": [
+            "rank the top 3 to 5 knowledge areas by business or delivery risk",
+            "assign receiving owners or learners for each area",
+            "avoid trying to spread everything equally at once"
+          ],
+          "outputs": [
+            "knowledge transfer plan"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Transfer through real work, not explanation alone",
+          "purpose": "Move capability, not just information.",
+          "actions": [
+            "pair on live changes, incidents, and reviews",
+            "rotate ownership of recurring operational tasks",
+            "require the receiving engineer to lead part of the work with the expert shadowing"
+          ],
+          "outputs": [
+            "paired execution log",
+            "ownership rotation schedule"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Capture durable knowledge",
+          "purpose": "Prevent re-concentration after each transfer.",
+          "actions": [
+            "create or update runbooks, decision notes, diagrams, and service maps",
+            "document how to investigate, not only what to do",
+            "store references where the team actually looks under pressure"
+          ],
+          "outputs": [
+            "durable knowledge pack"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Test independence gradually",
+          "purpose": "Verify that the transfer changed team capability.",
+          "actions": [
+            "have receiving engineers handle work without the expert in the lead role",
+            "review where they still get stuck",
+            "repeat on the next risk area"
+          ],
+          "outputs": [
+            "independence review",
+            "remaining dependency list"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "Which knowledge concentration is actually dangerous versus merely specialized?",
+        "What should be transferred first?",
+        "When is documentation enough versus live pairing required?",
+        "How much expert time can be reserved without breaking current delivery?"
+      ],
+      "commonMistakes": [
+        "trying to document everything before any real transfer happens",
+        "making the expert produce docs alone without shared execution",
+        "spreading shallow knowledge broadly instead of building real second owners",
+        "treating the expert’s availability as infinite"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "the expert still approves or rescues every risky change",
+        "new docs exist but nobody else can act independently",
+        "the team says knowledge transfer is important but never reserves time for it",
+        "the expert becomes the reviewer of all transferred knowledge forever"
+      ],
+      "artifactsToProduce": [
+        "knowledge concentration map",
+        "transfer plan",
+        "runbooks and service maps",
+        "decision notes",
+        "ownership rotation schedule"
+      ],
+      "successSignals": [
+        "multiple engineers can handle previously concentrated areas",
+        "incident and review bottlenecks reduce",
+        "expert time is less dominated by interruption and explanation",
+        "team confidence rises in previously avoided zones"
+      ],
+      "followUpActions": [
+        "repeat the process on the next concentration zone",
+        "refresh runbooks and maps after each real transfer event",
+        "build knowledge-sharing into normal team rituals, not only recovery programs"
+      ],
+      "metricsOrSignals": [
+        "number of effective maintainers per critical area",
+        "review bottleneck concentration",
+        "incident dependency on one person",
+        "time to cover for absence safely"
+      ],
+      "aiCanHelpWith": [
+        "summarizing code and doc surfaces around concentrated areas",
+        "drafting first-pass runbooks and service maps",
+        "pulling recurring question patterns from chats or tickets",
+        "generating knowledge transfer checklists"
+      ],
+      "aiCanMakeWorseBy": [
+        "making it look like knowledge is transferred when only summaries were produced",
+        "centralizing AI usage knowledge into the same expert dynamic",
+        "creating overconfident but shallow documentation"
+      ],
+      "aiSpecificNotes": "AI can reduce the blank-page cost of transfer artifacts, but it cannot replace shared execution and real second ownership.",
+      "relatedFailureModes": [
+        "hero-trap",
+        "ownership-drift"
+      ],
+      "relatedRedFlags": [
+        "everyone-asks-the-same-person",
+        "critical-knowledge-lives-in-chat-and-memory",
+        "people-avoid-touching-certain-areas"
+      ],
+      "relatedTechDecisions": [
+        "strong-ownership-vs-shared-ownership",
+        "specialist-teams-vs-cross-functional-teams"
+      ],
+      "relatedPlaybooks": [
+        "onboard-a-new-engineer-well",
+        "prepare-a-handover-properly",
+        "reduce-operational-dependence-on-heroes"
+      ],
+      "examplePromptsOrQuestions": [
+        "If this expert vanished for two weeks, what would hurt first?",
+        "Which three knowledge areas are most dangerous to concentrate?",
+        "What would prove the team can now act without the expert in the lead role?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "re-establish-ownership-in-a-blurry-area",
+      "title": "Re-establish ownership in a blurry area",
+      "situation": "A system area has unclear, overlapping, or invisible ownership.",
+      "category": "team",
+      "summary": "Restore ownership by clarifying decision rights, stewardship expectations, operating responsibility, and visible accountability in a system area that currently lives in ambiguity.",
+      "goal": "Make ownership operationally real so changes, incidents, and decisions stop drifting between teams or people.",
+      "useWhen": [
+        "multiple teams believe they partly own the same area",
+        "incidents bounce between groups before action happens",
+        "docs and roadmaps do not match actual stewardship",
+        "the team can name the system but not the accountable owner"
+      ],
+      "doNotUseWhen": [
+        "the issue is temporary handover noise that is already being closed down actively",
+        "the real problem is missing authority from leadership rather than local ambiguity",
+        "leaders want ownership labels without changing responsibilities or capacity"
+      ],
+      "whyThisMatters": "Blurry ownership is one of the most expensive forms of ambiguity because it hides inside polite coordination. The system appears shared and collaborative while accountability, maintenance, and decisions quietly degrade.",
+      "whatGoodLooksLike": [
+        "there is a visible primary owner for the area",
+        "decision rights, escalation rights, and maintenance responsibilities are explicit",
+        "adjacent teams know when they are consumers, contributors, or approvers",
+        "incidents and roadmap questions route clearly",
+        "ownership is visible in docs, runbooks, backlogs, and reviews"
+      ],
+      "inputs": [
+        "system boundary map",
+        "current ownership claims",
+        "incident history",
+        "backlog and roadmap ownership",
+        "approval and change patterns",
+        "support or escalation history"
+      ],
+      "rolesInvolved": [
+        "engineering manager",
+        "tech lead",
+        "architect if boundaries are unclear",
+        "adjacent team leads",
+        "director or sponsor if authority reset is needed"
+      ],
+      "primaryOwner": "engineering manager",
+      "estimatedTimeHorizon": "days to a few weeks for reset, then reinforcement over time",
+      "difficulty": "medium-high",
+      "prerequisites": [
+        "the area can be named and bounded well enough to discuss",
+        "leaders are willing to make trade-offs explicit",
+        "somebody can change ownership records and expectations"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Find where ownership actually breaks",
+          "purpose": "Move from abstract ambiguity to real failure points.",
+          "actions": [
+            "review recent incidents, roadmap questions, and blocked changes",
+            "identify where routing confusion caused delay or neglect",
+            "separate boundary ambiguity from authority ambiguity"
+          ],
+          "outputs": [
+            "ownership failure map"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Clarify the area and the interfaces",
+          "purpose": "Define what is actually being owned.",
+          "actions": [
+            "draw the area boundary in terms of services, workflows, and responsibilities",
+            "list consumer teams and dependent interfaces",
+            "note what is explicitly outside this ownership boundary"
+          ],
+          "outputs": [
+            "bounded ownership map"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Assign real ownership, not symbolic ownership",
+          "purpose": "Tie accountability to action rights and routine stewardship.",
+          "actions": [
+            "name a primary owner and backup or adjacent contributors",
+            "define who owns incidents, roadmap, docs, approvals, and operational care",
+            "align decision rights with the declared owner as much as possible"
+          ],
+          "outputs": [
+            "ownership model",
+            "decision rights summary"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Make ownership visible in the operating system",
+          "purpose": "Prevent the reset from living only in meetings.",
+          "actions": [
+            "update service catalogs, docs, on-call, backlog, and review expectations",
+            "change escalation paths and default routing",
+            "announce the model in team-facing terms, not org-chart language"
+          ],
+          "outputs": [
+            "updated ownership artifacts"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Review whether ownership now works in practice",
+          "purpose": "Validate that the new ownership model changes behavior.",
+          "actions": [
+            "watch the next incidents, changes, and roadmap calls",
+            "check whether work routes more clearly",
+            "identify any remaining authority gaps"
+          ],
+          "outputs": [
+            "ownership effectiveness review"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "Is the problem boundary ambiguity or missing authority?",
+        "Should one owner be primary, or is a split needed by clearer seams?",
+        "What must adjacent teams stop assuming after the reset?",
+        "Does the chosen owner actually have the power to act?"
+      ],
+      "commonMistakes": [
+        "declaring ownership without defining what it includes",
+        "keeping all approval power elsewhere while naming a primary owner",
+        "treating shared ownership as a default instead of a carefully justified choice",
+        "updating a registry but not the daily operating artifacts"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "people still ask the same routing question after the reset",
+        "incidents continue to bounce before someone acts",
+        "the named owner has responsibility but not enough decision authority",
+        "adjacent teams still behave like the boundary never changed"
+      ],
+      "artifactsToProduce": [
+        "ownership failure map",
+        "bounded ownership map",
+        "ownership model",
+        "decision rights summary",
+        "updated service and escalation records"
+      ],
+      "successSignals": [
+        "routing is clearer during incidents and changes",
+        "maintenance work lands with the real owner more consistently",
+        "adjacent teams describe the boundary similarly",
+        "ownership becomes visible without explanation-heavy meetings"
+      ],
+      "followUpActions": [
+        "revisit the boundary after major architectural changes",
+        "review whether the owner needs more authority or support capacity",
+        "fold repeated ownership confusion into service maps and onboarding materials"
+      ],
+      "metricsOrSignals": [
+        "incident routing delay",
+        "ownership confusion events",
+        "time to decision in affected area",
+        "number of backlog items without a clear owner"
+      ],
+      "aiCanHelpWith": [
+        "summarizing incident and ticket routing patterns",
+        "building draft ownership maps from docs and repos",
+        "highlighting mismatches between service catalogs and operational behavior"
+      ],
+      "aiCanMakeWorseBy": [
+        "creating neat ownership summaries that hide unresolved authority gaps",
+        "making symbolic ownership look operationally credible",
+        "encouraging people to trust generated maps over real team behavior"
+      ],
+      "aiSpecificNotes": "AI can help expose contradictions between declared and observed ownership, but the final reset must be made by humans with real authority.",
+      "relatedFailureModes": [
+        "ownership-drift",
+        "hero-trap"
+      ],
+      "relatedRedFlags": [
+        "ownership-is-claimed-but-not-visible",
+        "ownership-and-authority-do-not-match",
+        "everyone-asks-the-same-person"
+      ],
+      "relatedTechDecisions": [
+        "strong-ownership-vs-shared-ownership",
+        "local-autonomy-vs-central-governance"
+      ],
+      "relatedPlaybooks": [
+        "reduce-operational-dependence-on-heroes",
+        "review-service-boundaries"
+      ],
+      "examplePromptsOrQuestions": [
+        "Where does ownership confusion show up in real work today?",
+        "Who owns incidents, roadmap, and docs for this area in practice?",
+        "What would adjacent teams need to stop assuming after this reset?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "run-a-healthy-engineering-retrospective",
+      "title": "Run a healthy engineering retrospective",
+      "situation": "A team needs to reflect on delivery, collaboration, and system friction in a useful way.",
+      "category": "team",
+      "summary": "Use retrospectives to identify patterns, distinguish local from systemic issues, and produce a small number of meaningful actions or escalations instead of repeating ritual complaints.",
+      "goal": "Turn reflection into better team judgment and selective change, not just a recurring emotional release.",
+      "useWhen": [
+        "a team completes a sprint, milestone, or meaningful period of work",
+        "delivery friction or team tension is recurring",
+        "the team needs a safe place to surface how work actually felt",
+        "leadership wants retros to inform real changes, not just ceremony"
+      ],
+      "doNotUseWhen": [
+        "the team is in acute crisis and needs immediate operational triage first",
+        "leadership will not allow any action or escalation from the retro",
+        "the team is treating retros as performance judgment sessions"
+      ],
+      "whyThisMatters": "A healthy retro makes weak signals visible early. A bad retro teaches the team that honesty changes nothing, which is worse than not having the ritual at all.",
+      "whatGoodLooksLike": [
+        "the team surfaces real patterns rather than isolated frustrations",
+        "local actions and systemic escalations are separated clearly",
+        "there are fewer, stronger actions instead of many vague ones",
+        "previous retro actions are reviewed for effect",
+        "the team leaves with more clarity, not just more notes"
+      ],
+      "inputs": [
+        "work period under review",
+        "delivery outcomes and incidents",
+        "blocked work examples",
+        "context-switching or interruption patterns",
+        "previous retro actions"
+      ],
+      "rolesInvolved": [
+        "facilitator",
+        "engineering manager",
+        "team members",
+        "delivery or product partner if relevant",
+        "optional observer only if psychologically safe"
+      ],
+      "primaryOwner": "facilitator",
+      "estimatedTimeHorizon": "60 to 120 minutes, plus follow-through over days or weeks",
+      "difficulty": "medium",
+      "prerequisites": [
+        "psychological safety is good enough for honest discussion",
+        "there is time to review previous commitments",
+        "the meeting is not secretly serving another purpose"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Review the period with evidence",
+          "purpose": "Anchor the retro in reality rather than memory distortion.",
+          "actions": [
+            "summarize key delivery outcomes, interruptions, incidents, and surprises",
+            "review previous retro actions first",
+            "bring a few concrete examples of what felt good or painful"
+          ],
+          "outputs": [
+            "shared period recap"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Collect patterns, not just opinions",
+          "purpose": "Move from event complaints to system signals.",
+          "actions": [
+            "capture what helped, what hurt, and what repeated",
+            "group similar observations into themes",
+            "ask what these signals say about the system of work"
+          ],
+          "outputs": [
+            "theme map"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Separate local control from systemic constraint",
+          "purpose": "Avoid assigning team actions to problems the team cannot solve alone.",
+          "actions": [
+            "label each theme as team-actionable, cross-team, or leadership/systemic",
+            "keep the team from pretending everything is locally fixable",
+            "choose which items need escalation rather than team commitments"
+          ],
+          "outputs": [
+            "local vs systemic split"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Choose very few meaningful next moves",
+          "purpose": "Increase follow-through and reduce ritual noise.",
+          "actions": [
+            "pick 1 to 3 meaningful actions or escalations",
+            "define owners, evidence of progress, and review date",
+            "avoid vague actions like improve communication"
+          ],
+          "outputs": [
+            "retro action set"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Close with clarity",
+          "purpose": "Make the retro useful after the room ends.",
+          "actions": [
+            "summarize what the team learned",
+            "publish actions and escalations clearly",
+            "schedule the next follow-up checkpoint"
+          ],
+          "outputs": [
+            "retro summary",
+            "follow-up plan"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What is a recurring pattern versus a one-off event?",
+        "Which issues are actually inside the team’s control?",
+        "What is worth escalating rather than converting into a weak local action?",
+        "What evidence will show whether an action worked?"
+      ],
+      "commonMistakes": [
+        "repeating the same themes without reviewing prior actions",
+        "collecting too many actions with no owners",
+        "treating systemic problems as team behavior problems",
+        "using the retro to settle blame or performance concerns"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "the same outputs appear every cycle with no real shift",
+        "actions are vague and ownerless",
+        "people become quieter over time rather than clearer",
+        "the team jokes that the retro changes nothing"
+      ],
+      "artifactsToProduce": [
+        "theme map",
+        "local vs systemic split",
+        "retro action set",
+        "retro summary"
+      ],
+      "successSignals": [
+        "the team sees repeated patterns more clearly",
+        "actions are fewer and more concrete",
+        "systemic issues get escalated with evidence",
+        "future retros reference actual changed behavior"
+      ],
+      "followUpActions": [
+        "review action effects before the next retro",
+        "carry systemic issues to managers or cross-team forums explicitly",
+        "drop retro formats that create noise rather than signal"
+      ],
+      "metricsOrSignals": [
+        "percentage of retro actions completed meaningfully",
+        "repeat-theme frequency over time",
+        "number of escalations that led to external action",
+        "team confidence in retro usefulness"
+      ],
+      "aiCanHelpWith": [
+        "summarizing the period from tickets, incidents, and changes",
+        "grouping repeated themes or complaints",
+        "drafting concise summaries and action logs"
+      ],
+      "aiCanMakeWorseBy": [
+        "flattening emotionally important nuance into generic summaries",
+        "producing polished but empty action language",
+        "normalizing repetition because the retro notes look structured"
+      ],
+      "aiSpecificNotes": "AI is good at clustering signals and summarizing prior periods. Keep the actual interpretation and action selection human, especially where trust or conflict is involved.",
+      "relatedFailureModes": [
+        "ticket-theater"
+      ],
+      "relatedRedFlags": [
+        "retrospectives-repeat-the-same-outputs",
+        "everything-is-urgent"
+      ],
+      "relatedTechDecisions": [],
+      "relatedPlaybooks": [
+        "recover-a-team-stuck-in-reactive-mode",
+        "repair-trust-after-a-painful-incident"
+      ],
+      "examplePromptsOrQuestions": [
+        "What repeated patterns mattered more than single bad days?",
+        "Which frustrations are actually inside our control?",
+        "What one change would most improve how this team works next cycle?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "repair-trust-after-a-painful-incident",
+      "title": "Repair trust after a painful incident",
+      "situation": "A serious incident damaged trust inside the team, with leadership, or with users.",
+      "category": "team",
+      "summary": "Repair trust by making the event intelligible, changing the conditions that produced it, and demonstrating through behavior that the team is safer, more honest, and more accountable than before.",
+      "goal": "Restore credible working trust after an incident without reducing the response to blame theater or PR language.",
+      "useWhen": [
+        "a major outage, release failure, or avoidable incident occurred",
+        "the team is carrying shame, blame, fear, or distrust afterward",
+        "leadership or partner teams no longer trust operational confidence",
+        "the incident changed social as well as technical conditions"
+      ],
+      "doNotUseWhen": [
+        "the system is still in the middle of the live incident response",
+        "leadership only wants optics and not real change",
+        "the team is unable to speak honestly and needs immediate safety work first"
+      ],
+      "whyThisMatters": "Incidents damage more than uptime. They damage team belief, leadership confidence, and willingness to trust future commitments. Trust is not repaired by apology alone; it is repaired by clearer truth and better conditions.",
+      "whatGoodLooksLike": [
+        "people can explain what happened without turning the story into heroics or blame",
+        "the team distinguishes technical causes from organizational conditions",
+        "leaders and partners see visible changes tied to the incident",
+        "the same failure pattern becomes less likely, not just better narrated",
+        "the team becomes more candid, not more defensive"
+      ],
+      "inputs": [
+        "incident timeline",
+        "operational evidence",
+        "communication history",
+        "affected users or stakeholders",
+        "incident review outputs",
+        "current trust fracture areas"
+      ],
+      "rolesInvolved": [
+        "engineering manager",
+        "tech lead",
+        "incident lead",
+        "team members involved",
+        "stakeholder or partner leads when trust needs repair across boundaries"
+      ],
+      "primaryOwner": "engineering manager",
+      "estimatedTimeHorizon": "days for immediate repair work, weeks to months for durable trust recovery",
+      "difficulty": "high",
+      "prerequisites": [
+        "the incident is contained",
+        "basic facts are available",
+        "someone is willing to lead a non-defensive repair process"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Stabilize the emotional and operational aftermath",
+          "purpose": "Create enough safety and clarity for honest recovery.",
+          "actions": [
+            "separate immediate operational follow-up from trust repair conversations",
+            "acknowledge impact clearly to affected people",
+            "avoid premature blame assignment or performance narratives"
+          ],
+          "outputs": [
+            "initial repair frame"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Build a truthful shared account",
+          "purpose": "Replace rumor, shame, or defensive simplification with reality.",
+          "actions": [
+            "reconstruct the incident timeline clearly",
+            "name both technical and organizational contributors",
+            "identify where the team was misled, overloaded, or unsupported"
+          ],
+          "outputs": [
+            "shared incident account"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Identify the trust breaks",
+          "purpose": "Understand what kind of trust was damaged.",
+          "actions": [
+            "separate confidence in the system from confidence in the team’s behavior",
+            "identify whether trust broke inside the team, upward, outward, or all three",
+            "ask what people now fear will happen again"
+          ],
+          "outputs": [
+            "trust break map"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Make visible repairs",
+          "purpose": "Show that the system and behavior will actually change.",
+          "actions": [
+            "choose a small number of changes with direct trust value",
+            "fix misleading status patterns, ownership confusion, rollback weakness, or alert gaps",
+            "communicate the change in terms of reduced uncertainty, not just work completed"
+          ],
+          "outputs": [
+            "repair action set"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Rebuild credibility through follow-through",
+          "purpose": "Let repeated behavior, not reassurance, repair trust.",
+          "actions": [
+            "review whether repair actions happened and helped",
+            "update stakeholders on changed conditions, not just closure status",
+            "watch whether fear and defensiveness actually decline"
+          ],
+          "outputs": [
+            "trust recovery review"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What type of trust actually broke?",
+        "Which repairs matter most for credibility right now?",
+        "What must be communicated broadly versus fixed quietly first?",
+        "Who needs to hear the truth in what level of detail?"
+      ],
+      "commonMistakes": [
+        "focusing only on root cause and ignoring relational damage",
+        "using apology language without operational change",
+        "reducing the incident to one person’s mistake when conditions were systemic",
+        "trying to restore confidence faster than evidence justifies"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "the incident story gets cleaner as it moves upward but less true",
+        "the same vague promises appear in every follow-up",
+        "people are careful in public and bitter in private",
+        "teams say trust is repaired but still behave defensively around the same risk"
+      ],
+      "artifactsToProduce": [
+        "shared incident account",
+        "trust break map",
+        "repair action set",
+        "trust recovery review"
+      ],
+      "successSignals": [
+        "the team can discuss the incident without spiraling into blame or denial",
+        "stakeholders observe visible change tied to the incident",
+        "future status language becomes more truthful",
+        "the same fragility is reduced in practice"
+      ],
+      "followUpActions": [
+        "review whether trust gaps are shrinking after one month and one quarter",
+        "promote systemic issues into ownership, release, or architecture work",
+        "update onboarding and operating docs with incident learnings"
+      ],
+      "metricsOrSignals": [
+        "repeat incident rate in similar category",
+        "status-reporting honesty improvements",
+        "stakeholder confidence signals",
+        "team willingness to escalate early"
+      ],
+      "aiCanHelpWith": [
+        "assembling timelines from logs, chats, and tickets",
+        "summarizing technical and organizational factors from large evidence sets",
+        "drafting clear incident account structures"
+      ],
+      "aiCanMakeWorseBy": [
+        "flattening nuance into a polished but emotionally false story",
+        "softening accountability language into PR language",
+        "making leadership summaries cleaner than the trust damage actually is"
+      ],
+      "aiSpecificNotes": "Use AI for evidence synthesis, not narrative control. Trust repair needs human judgment, empathy, and explicit behavioral change.",
+      "relatedFailureModes": [
+        "hero-trap",
+        "stakeholder-capture"
+      ],
+      "relatedRedFlags": [
+        "reporting-looks-healthier-than-delivery-feels",
+        "ownership-is-claimed-but-not-visible"
+      ],
+      "relatedTechDecisions": [
+        "strong-ownership-vs-shared-ownership"
+      ],
+      "relatedPlaybooks": [
+        "run-an-incident-review-that-actually-helps",
+        "re-establish-ownership-in-a-blurry-area"
+      ],
+      "examplePromptsOrQuestions": [
+        "What kind of trust broke here: system trust, team trust, leadership trust, or user trust?",
+        "What visible repair would make the biggest difference right now?",
+        "What are people afraid will happen again?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "facilitate-a-difficult-technical-disagreement",
+      "title": "Facilitate a difficult technical disagreement",
+      "situation": "A technical disagreement is blocking progress or damaging team alignment.",
+      "category": "team",
+      "summary": "Turn argument into decision quality by clarifying the actual choice, separating evidence from identity, and designing a process where trade-offs are compared explicitly rather than won socially.",
+      "goal": "Reach a credible decision without suppressing disagreement or letting status dynamics decide the outcome.",
+      "useWhen": [
+        "a technical choice is stuck between strong competing views",
+        "the argument has started to damage trust or delivery speed",
+        "people are repeating positions instead of learning from each other",
+        "the same issue keeps reopening because the decision never actually settled"
+      ],
+      "doNotUseWhen": [
+        "the issue is not actually technical but a hidden ownership or priority problem",
+        "the choice is trivial enough that a lightweight owner call is sufficient",
+        "the room lacks anyone empowered to accept the trade-off"
+      ],
+      "whyThisMatters": "Bad disagreement handling does two kinds of damage: the wrong technical decision and the wrong social lesson. People either learn that force wins, or that silence is safer than clarity.",
+      "whatGoodLooksLike": [
+        "the actual decision is framed clearly",
+        "participants understand the trade-off, not only their preferred option",
+        "evidence and constraints are visible",
+        "the final call is legible even to people who preferred another option",
+        "the disagreement reduces future confusion rather than generating resentment"
+      ],
+      "inputs": [
+        "decision statement",
+        "constraints and goals",
+        "options under consideration",
+        "known risks and dependencies",
+        "decision owner or approving authority"
+      ],
+      "rolesInvolved": [
+        "facilitator",
+        "decision owner",
+        "relevant technical experts",
+        "stakeholders affected by the choice",
+        "optional architect or manager when authority needs support"
+      ],
+      "primaryOwner": "decision owner",
+      "estimatedTimeHorizon": "hours to days depending on importance",
+      "difficulty": "medium-high",
+      "prerequisites": [
+        "the choice can be stated clearly",
+        "participants are willing to compare trade-offs rather than only defend identity",
+        "someone can actually decide or ratify the decision"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "State the decision in one sentence",
+          "purpose": "Stop the room arguing three different questions at once.",
+          "actions": [
+            "write the exact decision to be made",
+            "name the constraints that matter most",
+            "separate this decision from adjacent but separate debates"
+          ],
+          "outputs": [
+            "decision frame"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Surface the real trade-offs",
+          "purpose": "Move from preference to comparison.",
+          "actions": [
+            "list the options and what each optimizes for",
+            "capture hidden costs, dependencies, and second-order effects",
+            "ask what would have to be true for each option to be good"
+          ],
+          "outputs": [
+            "trade-off matrix"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Separate evidence from status",
+          "purpose": "Reduce social distortion in the room.",
+          "actions": [
+            "require claims to be tied to examples, constraints, or prior evidence",
+            "draw out quieter voices before converging",
+            "call out when authority or confidence is replacing argument quality"
+          ],
+          "outputs": [
+            "evidence-backed option notes"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Choose with explicit reasoning",
+          "purpose": "Make the decision legible and durable.",
+          "actions": [
+            "record the chosen option and why it won under current conditions",
+            "note what was accepted as downside",
+            "document what would cause the decision to be revisited"
+          ],
+          "outputs": [
+            "decision record"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Close the argument productively",
+          "purpose": "Prevent social residue from undermining execution.",
+          "actions": [
+            "summarize what was learned from the disagreement",
+            "clarify who owns execution and follow-up",
+            "invite future evidence, not repeated personality conflict"
+          ],
+          "outputs": [
+            "execution and review plan"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What exact choice are we making?",
+        "Which constraints actually matter most here?",
+        "What evidence is strong enough to change minds?",
+        "Who owns the final call if the room does not converge?"
+      ],
+      "commonMistakes": [
+        "letting the debate expand into adjacent unresolved topics",
+        "treating consensus as mandatory when a real owner exists",
+        "allowing loudness or seniority to end the discussion",
+        "failing to record why a choice was made"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "the same people are defending identity, not comparing trade-offs",
+        "quieter participants stop contributing early",
+        "the final answer is a vague compromise nobody believes in",
+        "the issue reopens immediately because the reasoning was never made explicit"
+      ],
+      "artifactsToProduce": [
+        "decision frame",
+        "trade-off matrix",
+        "decision record",
+        "execution and review plan"
+      ],
+      "successSignals": [
+        "the decision can be explained clearly after the meeting",
+        "participants understand why the chosen option won",
+        "dissent is reduced by clarity rather than by silence",
+        "the decision does not immediately reopen without new evidence"
+      ],
+      "followUpActions": [
+        "review whether the decision held up after implementation begins",
+        "capture repeated disagreement patterns as process improvements",
+        "update related architecture or team guidance if this pattern recurs"
+      ],
+      "metricsOrSignals": [
+        "time to decision",
+        "decision reopen rate",
+        "participant understanding of trade-offs",
+        "execution friction after the decision"
+      ],
+      "aiCanHelpWith": [
+        "drafting option comparisons and trade-off tables",
+        "summarizing prior incidents or evidence relevant to the choice",
+        "extracting repeated arguments from previous docs or threads"
+      ],
+      "aiCanMakeWorseBy": [
+        "arming dominant participants with more persuasive but shallow rhetoric",
+        "flattening the disagreement into generic summaries",
+        "creating false symmetry between weak and strong arguments"
+      ],
+      "aiSpecificNotes": "AI can improve structure and evidence gathering. It should not be allowed to turn a status-driven debate into a better-packaged status-driven debate.",
+      "relatedFailureModes": [
+        "consensus-trap",
+        "stakeholder-capture"
+      ],
+      "relatedRedFlags": [
+        "the-loudest-person-wins-architecture-discussions",
+        "no-one-disagrees-in-meetings-everyone-complains-later"
+      ],
+      "relatedTechDecisions": [
+        "build-vs-buy",
+        "monolith-vs-microservices"
+      ],
+      "relatedPlaybooks": [
+        "review-service-boundaries",
+        "re-scope-without-lying"
+      ],
+      "examplePromptsOrQuestions": [
+        "What exact decision are we making right now?",
+        "What does each option optimize for, and what does it make worse?",
+        "What evidence would actually change the outcome?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "reduce-review-bottlenecks-without-lowering-quality",
+      "title": "Reduce review bottlenecks without lowering quality",
+      "situation": "Code or design review is slowing delivery, but quality still matters.",
+      "category": "team",
+      "summary": "Reduce bottlenecks by changing review shape, diff quality, ownership, and review expectations—not by silently lowering the bar or converting review into a rubber stamp.",
+      "goal": "Increase review throughput while preserving understanding, risk control, and team learning.",
+      "useWhen": [
+        "review turnaround time is hurting delivery",
+        "a few reviewers are overloaded",
+        "PRs are too large or too numerous",
+        "AI-assisted coding is increasing review volume"
+      ],
+      "doNotUseWhen": [
+        "the real problem is weak code quality before review",
+        "the team wants faster merges but no change in review behavior",
+        "review is being used to compensate for missing tests or missing ownership in every case"
+      ],
+      "whyThisMatters": "Review bottlenecks often trigger the worst fake fix: shallow approval. The right fix is to improve what enters review, clarify what review is for, and distribute review capability intelligently.",
+      "whatGoodLooksLike": [
+        "reviews are smaller, clearer, and faster for the right reasons",
+        "review depth matches change risk",
+        "more people can review meaningful changes safely",
+        "review comments focus on behavior, risks, and design—not only style",
+        "review quality remains trusted even as flow improves"
+      ],
+      "inputs": [
+        "review timing data",
+        "PR size and volume patterns",
+        "review concentration map",
+        "post-merge defect patterns",
+        "team review expectations"
+      ],
+      "rolesInvolved": [
+        "tech lead",
+        "reviewers",
+        "engineering manager",
+        "contributors",
+        "quality lead if review and testing are entangled"
+      ],
+      "primaryOwner": "tech lead",
+      "estimatedTimeHorizon": "days to weeks for initial change, longer for review culture shift",
+      "difficulty": "medium-high",
+      "prerequisites": [
+        "the team is willing to inspect current review behavior honestly",
+        "review data or observable patterns exist",
+        "owners of risky areas are known"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Diagnose the bottleneck shape",
+          "purpose": "Find out whether the issue is volume, size, concentration, or unclear expectations.",
+          "actions": [
+            "analyze review turnaround, reviewer concentration, and diff size",
+            "identify where reviews stall and why",
+            "separate high-risk reviews from routine ones"
+          ],
+          "outputs": [
+            "review bottleneck profile"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Improve what enters review",
+          "purpose": "Make the unit of review more reviewable.",
+          "actions": [
+            "reduce PR size where possible",
+            "require clearer context, test notes, and risk notes from authors",
+            "separate mechanical changes from conceptual changes"
+          ],
+          "outputs": [
+            "improved review entry standard"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Match review depth to change risk",
+          "purpose": "Avoid over-reviewing trivial changes and under-reviewing risky ones.",
+          "actions": [
+            "define risk tiers for common change types",
+            "set expectations for routine, medium-risk, and high-risk reviews",
+            "reserve scarce expert review time for changes that truly need it"
+          ],
+          "outputs": [
+            "risk-based review model"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Spread review capability",
+          "purpose": "Reduce concentration and improve team understanding.",
+          "actions": [
+            "identify areas where only one or two people review effectively",
+            "pair on reviews for risky areas",
+            "teach more engineers how to review specific domains competently"
+          ],
+          "outputs": [
+            "review capability plan"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Audit whether speed damaged quality",
+          "purpose": "Ensure the fix stayed honest.",
+          "actions": [
+            "watch post-merge defects and review comment quality",
+            "check whether faster review became shallower approval",
+            "adjust thresholds if quality dropped"
+          ],
+          "outputs": [
+            "review health check"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What changes deserve deep review versus routine review?",
+        "Where is review concentrated for good reason versus bad habit?",
+        "Should review speed be improved by smaller PRs, more reviewers, or better pre-review quality first?"
+      ],
+      "commonMistakes": [
+        "measuring review health by speed alone",
+        "lowering review depth silently instead of changing the system",
+        "keeping giant PRs and asking reviewers to be faster",
+        "assuming automation can replace conceptual review everywhere"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "review comments get shorter while defect rates rise",
+        "the same reviewers remain overloaded despite the change",
+        "authors still ship context-poor diffs into review",
+        "high-risk AI-generated changes are reviewed like trivial routine edits"
+      ],
+      "artifactsToProduce": [
+        "review bottleneck profile",
+        "review entry standard",
+        "risk-based review model",
+        "review capability plan",
+        "review health check"
+      ],
+      "successSignals": [
+        "review latency drops without trust collapsing",
+        "more reviewers can handle meaningful areas safely",
+        "comment quality remains behavior- and risk-focused",
+        "post-merge surprises do not rise as review flow improves"
+      ],
+      "followUpActions": [
+        "refresh review tiers as architecture and team shape evolve",
+        "train reviewers in under-covered domains",
+        "connect review improvements with testability and ownership work"
+      ],
+      "metricsOrSignals": [
+        "median review turnaround time",
+        "reviewer concentration ratio",
+        "average diff size",
+        "post-merge defect rate",
+        "review comment depth indicators"
+      ],
+      "aiCanHelpWith": [
+        "pre-review summarization of changed files and likely risk areas",
+        "spotting large mechanical edits versus behavioral edits",
+        "drafting author-side change summaries and checklists"
+      ],
+      "aiCanMakeWorseBy": [
+        "increasing diff volume faster than review depth can scale",
+        "making weakly understood code look cleaner and safer",
+        "encouraging shallow review when summaries replace reading"
+      ],
+      "aiSpecificNotes": "AI should reduce review friction on structure and context. It should not become the substitute for human understanding in risky changes.",
+      "relatedFailureModes": [
+        "synthetic-velocity"
+      ],
+      "relatedRedFlags": [
+        "prs-are-approved-faster-than-they-are-understood",
+        "generated-code-is-merged-without-deep-review"
+      ],
+      "relatedTechDecisions": [
+        "manual-review-depth-vs-automation-dependence",
+        "ai-assisted-development-vs-manual-only-development"
+      ],
+      "relatedPlaybooks": [
+        "upgrade-code-review-for-ai-assisted-work",
+        "improve-testability-without-stopping-delivery"
+      ],
+      "examplePromptsOrQuestions": [
+        "Where is review slow for the right reason versus the wrong reason?",
+        "What can we change before review begins to make review faster?",
+        "Which review classes need real expert depth and which do not?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "recover-a-team-stuck-in-reactive-mode",
+      "title": "Recover a team stuck in reactive mode",
+      "situation": "A team spends most of its time handling interruption, urgency, and spillover work.",
+      "category": "team",
+      "summary": "Recover by making interruption load visible, reducing hidden priority channels, protecting planning capacity, and converting repeated reactive patterns into owned, managed work.",
+      "goal": "Move the team from endless reaction toward a more deliberate, sustainable operating rhythm.",
+      "useWhen": [
+        "planned work is regularly displaced by interrupts",
+        "the team feels permanently busy but not effective",
+        "retros repeatedly mention urgency, switching, and unclear priorities",
+        "people cannot remember the last time the team had stable focus"
+      ],
+      "doNotUseWhen": [
+        "the team is temporarily in true incident or launch mode and the reactivity is expected",
+        "the real issue is severe understaffing that nobody is willing to confront",
+        "leadership continues to reward every escalation channel equally"
+      ],
+      "whyThisMatters": "Reactive teams lose more than productivity. They lose confidence, decision quality, learning time, and often their ability to tell what is actually important versus merely loud.",
+      "whatGoodLooksLike": [
+        "interruptions are visible and categorized",
+        "the team has fewer surprise priority channels",
+        "some capacity is protected for planned work and prevention work",
+        "repeat urgent patterns become managed workstreams",
+        "the team can explain its operating mode with evidence rather than fatigue language"
+      ],
+      "inputs": [
+        "interrupt history",
+        "current backlog and commitments",
+        "sources of urgent work",
+        "incident/support patterns",
+        "team capacity profile",
+        "recent retro themes"
+      ],
+      "rolesInvolved": [
+        "engineering manager",
+        "tech lead",
+        "delivery lead",
+        "product partner",
+        "support or operations partner if interrupts originate there"
+      ],
+      "primaryOwner": "engineering manager",
+      "estimatedTimeHorizon": "weeks to months",
+      "difficulty": "high",
+      "prerequisites": [
+        "the team can observe or reconstruct interruption patterns",
+        "someone can influence intake and prioritization",
+        "the team is willing to stop normalizing reactivity"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Expose the real interrupt system",
+          "purpose": "Make the hidden operating model visible.",
+          "actions": [
+            "track what interrupts the team, from whom, and how often",
+            "identify hidden priority channels and escalation paths",
+            "estimate how much planned work is displaced"
+          ],
+          "outputs": [
+            "interrupt map",
+            "priority channel inventory"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Separate urgent from unmanaged",
+          "purpose": "Stop every repeated pain from wearing the same urgent label.",
+          "actions": [
+            "classify interrupts into true emergencies, recurring urgent classes, and weakly filtered asks",
+            "identify the categories that should become managed work",
+            "challenge urgency inflation with evidence"
+          ],
+          "outputs": [
+            "interrupt taxonomy"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Protect focus and prevention capacity",
+          "purpose": "Create room for the team to stop living only in response mode.",
+          "actions": [
+            "reserve some capacity for planned work and recurrence reduction",
+            "reduce simultaneous priority streams",
+            "assign a visible interrupt owner where that helps contain switching"
+          ],
+          "outputs": [
+            "capacity protection model"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Tighten intake and escalation",
+          "purpose": "Reduce the number of ways work can become urgent by social force alone.",
+          "actions": [
+            "define what qualifies as urgent",
+            "create a simpler intake path for non-urgent asks",
+            "ensure leadership and partner teams know the new model"
+          ],
+          "outputs": [
+            "urgency and intake policy"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Review whether the team is regaining control",
+          "purpose": "Make recovery visible and durable.",
+          "actions": [
+            "track changes in interruption rate, focus time, and repeat pain",
+            "review whether planned work completion stabilizes",
+            "continue converting recurring interrupt classes into owned work"
+          ],
+          "outputs": [
+            "reactivity recovery review"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What interrupts are truly urgent?",
+        "Which recurring urgent patterns deserve prevention work first?",
+        "How much protected capacity is realistic right now?",
+        "Who has the authority to reject weakly filtered priority demands?"
+      ],
+      "commonMistakes": [
+        "calling for better prioritization without changing intake channels",
+        "expecting the team to self-protect against leadership-driven urgency",
+        "trying to eliminate all interrupts instead of managing the system",
+        "ignoring support and operational sources of churn"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "the team still says everything is urgent after the reset",
+        "planned work is still displaced but nobody can explain by what",
+        "interruptions are better logged but not better controlled",
+        "leaders still route around the new intake and priority model"
+      ],
+      "artifactsToProduce": [
+        "interrupt map",
+        "priority channel inventory",
+        "interrupt taxonomy",
+        "capacity protection model",
+        "urgency and intake policy",
+        "reactivity recovery review"
+      ],
+      "successSignals": [
+        "the team finishes more planned work predictably",
+        "recurring interrupt categories start shrinking",
+        "people describe the system of work more clearly and less emotionally",
+        "retros shift from helplessness toward controllable action"
+      ],
+      "followUpActions": [
+        "promote repeated interrupt classes into operational or architecture improvement plans",
+        "review whether staffing or ownership changes are needed",
+        "keep interrupt visibility alive after the first improvement cycle"
+      ],
+      "metricsOrSignals": [
+        "interrupt count by source",
+        "planned work displacement rate",
+        "repeat urgent class frequency",
+        "focus time or uninterrupted work blocks",
+        "team confidence in its ability to plan"
+      ],
+      "aiCanHelpWith": [
+        "clustering interrupts and recurring urgent classes from chat, tickets, and incidents",
+        "summarizing hidden priority channels from work history",
+        "drafting intake rules and escalation summaries"
+      ],
+      "aiCanMakeWorseBy": [
+        "increasing the volume of polished incoming asks",
+        "making reactivity sound well-managed through better summaries",
+        "creating more activity without reducing system load"
+      ],
+      "aiSpecificNotes": "AI is useful for revealing interrupt patterns. It becomes harmful when it lowers the cost of generating more supposedly urgent work.",
+      "relatedFailureModes": [
+        "invisible-deadline",
+        "ticket-theater"
+      ],
+      "relatedRedFlags": [
+        "everything-is-urgent",
+        "work-enters-faster-than-it-leaves",
+        "retrospectives-repeat-the-same-outputs"
+      ],
+      "relatedTechDecisions": [
+        "experimentation-vs-operational-stability"
+      ],
+      "relatedPlaybooks": [
+        "turn-recurring-urgent-work-into-managed-work",
+        "run-a-healthy-engineering-retrospective"
+      ],
+      "examplePromptsOrQuestions": [
+        "What actually interrupts this team most often?",
+        "Which interrupts are real emergencies versus unmanaged repeat pain?",
+        "What priority channels need to be closed or controlled?"
+      ],
+      "patternConfidence": "high"
+    }
+  ]
+}

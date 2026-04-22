@@ -1,0 +1,1634 @@
+{
+  "category": {
+    "code": "EP",
+    "name": "Engineering Playbook",
+    "summary": "Practical playbooks for recurring engineering situations — delivery, architecture, operations, teamwork, and AI adoption.",
+    "categories": [
+      "delivery",
+      "team",
+      "architecture",
+      "operations",
+      "ai"
+    ]
+  },
+  "template": {
+    "fields": [
+      "slug",
+      "title",
+      "situation",
+      "category",
+      "summary",
+      "goal",
+      "useWhen",
+      "doNotUseWhen",
+      "whyThisMatters",
+      "whatGoodLooksLike",
+      "inputs",
+      "rolesInvolved",
+      "primaryOwner",
+      "estimatedTimeHorizon",
+      "difficulty",
+      "prerequisites",
+      "steps",
+      "decisionPoints",
+      "commonMistakes",
+      "warningSignsYouAreDoingItWrong",
+      "artifactsToProduce",
+      "successSignals",
+      "followUpActions",
+      "metricsOrSignals",
+      "aiCanHelpWith",
+      "aiCanMakeWorseBy",
+      "aiSpecificNotes",
+      "relatedFailureModes",
+      "relatedRedFlags",
+      "relatedTechDecisions",
+      "relatedPlaybooks",
+      "examplePromptsOrQuestions",
+      "patternConfidence"
+    ]
+  },
+  "entries": [
+    {
+      "slug": "run-a-phased-migration",
+      "title": "Run a phased migration",
+      "situation": "You need to replace or move a live system without stopping delivery.",
+      "category": "delivery",
+      "summary": "Move from old to new in controlled slices, where each slice has explicit ownership, cutover criteria, rollback, and retirement of the old path.",
+      "goal": "Reduce migration risk by replacing behavior incrementally instead of betting everything on one cutover.",
+      "useWhen": [
+        "a legacy system must be replaced or decomposed",
+        "a monolith capability is moving into a new service or platform",
+        "a schema, provider, or runtime migration is unavoidable",
+        "the existing system is painful but still business-critical"
+      ],
+      "doNotUseWhen": [
+        "the target system is still conceptually undefined",
+        "no one can name the first migration slice",
+        "the team is secretly trying to bundle a rewrite, redesign, and platform change together",
+        "there is no realistic way to run old and new behavior side by side, even temporarily"
+      ],
+      "whyThisMatters": "Most migrations fail because ambition outruns displacement. A phased migration keeps the team focused on moving real behavior, not just producing new code.",
+      "whatGoodLooksLike": [
+        "the migration is divided into business-meaningful slices",
+        "old and new paths are both observable during transition",
+        "every slice has explicit entry and exit criteria",
+        "teams can say what was displaced, not just what was built",
+        "the legacy surface shrinks over time in visible ways"
+      ],
+      "inputs": [
+        "current system map",
+        "dependency inventory",
+        "business-critical workflows",
+        "cutover constraints",
+        "rollback options",
+        "operational readiness expectations"
+      ],
+      "rolesInvolved": [
+        "tech lead",
+        "architect",
+        "delivery lead",
+        "service owner",
+        "QA or quality lead",
+        "operations or platform owner",
+        "product owner if user-facing impact exists"
+      ],
+      "primaryOwner": "tech lead",
+      "estimatedTimeHorizon": "multi-sprint to multi-quarter",
+      "difficulty": "high",
+      "prerequisites": [
+        "shared understanding of why migration is needed",
+        "minimum observability on the current path",
+        "named owners for both source and target behavior",
+        "agreement on what counts as displacement"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Define the migration unit",
+          "purpose": "Turn the migration into slices that move real behavior instead of abstract layers.",
+          "actions": [
+            "map the current system by business capability, not only by code structure",
+            "identify the smallest slice that can be moved and verified independently",
+            "write down what remains in the old system after that slice moves"
+          ],
+          "outputs": [
+            "migration slice map",
+            "first slice definition"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Make legacy behavior explicit",
+          "purpose": "Avoid losing hidden behavior that nobody remembered until production proves it mattered.",
+          "actions": [
+            "capture current inputs, outputs, side effects, edge cases, and operational expectations",
+            "review incident history for hidden assumptions",
+            "identify consumers that depend on undocumented behavior"
+          ],
+          "outputs": [
+            "behavior inventory",
+            "known edge-case list"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Design cutover and coexistence",
+          "purpose": "Ensure the team can compare, phase, and reverse safely.",
+          "actions": [
+            "define how old and new paths will coexist",
+            "decide what traffic, data, or users move first",
+            "define rollback conditions and rollback mechanics"
+          ],
+          "outputs": [
+            "cutover strategy",
+            "rollback approach",
+            "coexistence model"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Move one slice and retire one slice",
+          "purpose": "Prevent endless parallel ownership.",
+          "actions": [
+            "implement the target slice",
+            "validate parity and operational behavior",
+            "retire or isolate the old slice explicitly once confidence is sufficient"
+          ],
+          "outputs": [
+            "migrated slice",
+            "legacy retirement note"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Measure displacement, not activity",
+          "purpose": "Keep the program honest.",
+          "actions": [
+            "track legacy dependency reduction",
+            "track which users, workflows, or traffic moved",
+            "review whether old operational load actually fell"
+          ],
+          "outputs": [
+            "displacement dashboard",
+            "migration progress review"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What is the first slice: technical seam or business capability?",
+        "Do we mirror behavior first or improve behavior during the move?",
+        "Can old and new paths run in parallel, or do we need progressive cutover?",
+        "What level of parity is required before retirement?"
+      ],
+      "commonMistakes": [
+        "making the slice too technical and not user- or behavior-meaningful",
+        "adding net-new product ambition before parity is reached",
+        "measuring generated code instead of displaced legacy behavior",
+        "keeping the old path alive indefinitely out of vague caution",
+        "assuming undocumented legacy behavior is accidental"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "nobody can name what has been retired so far",
+        "the new system keeps expanding in scope while the old one stays fully alive",
+        "migration status sounds impressive but no user or workload has actually moved",
+        "teams describe the migration using architecture language only, not business behavior"
+      ],
+      "artifactsToProduce": [
+        "migration slice map",
+        "behavior parity checklist",
+        "cutover plan",
+        "rollback plan",
+        "legacy retirement record"
+      ],
+      "successSignals": [
+        "specific legacy paths are retired on a steady cadence",
+        "support and operational burden drops on the source system",
+        "cutover decisions are made with evidence, not optimism",
+        "stakeholders can see what has actually moved"
+      ],
+      "followUpActions": [
+        "clean up coexistence code quickly after each slice",
+        "review whether the target design still fits reality after each major slice",
+        "update ownership and runbooks as the center of gravity shifts"
+      ],
+      "metricsOrSignals": [
+        "legacy dependency count",
+        "percentage of traffic or workflows on new path",
+        "rollback frequency",
+        "incidents caused by parity gaps",
+        "time spent maintaining dual paths"
+      ],
+      "aiCanHelpWith": [
+        "mapping legacy code paths and dependencies",
+        "summarizing incident history around the old system",
+        "generating migration checklists and parity matrices",
+        "finding likely consumers of hidden behaviors"
+      ],
+      "aiCanMakeWorseBy": [
+        "accelerating speculative replacement code before behavior is understood",
+        "making parallel systems grow faster than the team can validate",
+        "creating false confidence through polished migration documentation"
+      ],
+      "aiSpecificNotes": "Use AI heavily for discovery, inventory, and comparison. Use it cautiously for replacement logic unless behavior is already well bounded.",
+      "relatedFailureModes": [
+        "friendly-rewrite",
+        "dependency-fog",
+        "ownership-drift"
+      ],
+      "relatedRedFlags": [
+        "changes-always-touch-too-many-places",
+        "integration-contracts-are-implicit",
+        "release-confidence-depends-on-luck-and-timing"
+      ],
+      "relatedTechDecisions": [
+        "rewrite-vs-refactor",
+        "one-way-door-vs-two-way-door-rollout"
+      ],
+      "relatedPlaybooks": [
+        "start-a-rewrite-safely",
+        "design-a-safe-rollout-path",
+        "build-a-practical-rollback-strategy"
+      ],
+      "examplePromptsOrQuestions": [
+        "What is the smallest migration slice that removes real legacy responsibility?",
+        "What hidden behaviors does the current system provide that nobody wrote down?",
+        "How will we prove this slice is displaced rather than duplicated?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "start-a-rewrite-safely",
+      "title": "Start a rewrite safely",
+      "situation": "The current system is painful enough that a rewrite is being seriously considered.",
+      "category": "delivery",
+      "summary": "Before approving a rewrite, force clarity on the actual problem, what must be preserved, what will be displaced first, and how success will be measured beyond cleaner code.",
+      "goal": "Prevent a justified frustration from becoming an uncontrolled second system.",
+      "useWhen": [
+        "the team keeps proposing a fresh start",
+        "maintenance pain is real and recurring",
+        "architectural debt is affecting delivery materially",
+        "the current system resists safe change"
+      ],
+      "doNotUseWhen": [
+        "the rewrite is mostly a morale move",
+        "the team cannot distinguish pain symptoms from root causes",
+        "no migration path exists beyond 'build the new thing'",
+        "nobody has mapped which legacy behaviors actually matter"
+      ],
+      "whyThisMatters": "Rewrites are seductive because pain is real. The failure usually comes from vague success criteria, hidden parity obligations, and optimism about forgotten legacy behavior.",
+      "whatGoodLooksLike": [
+        "the rewrite has a sharply defined problem statement",
+        "the first displaced slice is known before broad implementation begins",
+        "the team can explain what will not be rebuilt",
+        "the old system is treated as a behavior inventory, not only a code smell",
+        "leadership understands cost, overlap, and coexistence risk"
+      ],
+      "inputs": [
+        "top maintenance pain points",
+        "incident history",
+        "dependency map",
+        "delivery friction analysis",
+        "stakeholder expectations",
+        "legacy behavior inventory"
+      ],
+      "rolesInvolved": [
+        "tech lead",
+        "architect",
+        "engineering manager",
+        "product owner or sponsor",
+        "senior maintainers of legacy system"
+      ],
+      "primaryOwner": "architect",
+      "estimatedTimeHorizon": "2 to 6 weeks to frame safely before broad commitment",
+      "difficulty": "high",
+      "prerequisites": [
+        "honest diagnosis of current pain",
+        "explicit rewrite sponsor",
+        "access to people who know the old system well",
+        "willingness to reject the rewrite if the case is weak"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Name the actual reasons",
+          "purpose": "Separate real causes from emotional shorthand.",
+          "actions": [
+            "list the concrete failures of the current system",
+            "group them into structure, delivery, operations, and ownership issues",
+            "test whether each issue truly requires a rewrite or could be addressed incrementally"
+          ],
+          "outputs": [
+            "rewrite problem statement",
+            "pain-to-cause map"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Inventory what must survive",
+          "purpose": "Expose the hidden parity burden early.",
+          "actions": [
+            "identify critical workflows, edge cases, contracts, and operational dependencies",
+            "review legacy incidents for behaviors that matter more than code elegance",
+            "capture business behaviors that users assume even if engineers dislike them"
+          ],
+          "outputs": [
+            "must-preserve inventory",
+            "legacy behavior map"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Define first displacement before full build",
+          "purpose": "Prevent open-ended replacement efforts.",
+          "actions": [
+            "name the first slice that will move and how it will be proven live",
+            "define the minimum architecture needed for that slice",
+            "write down what is intentionally not in scope"
+          ],
+          "outputs": [
+            "first displacement slice",
+            "excluded scope list"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Constrain ambition",
+          "purpose": "Stop the rewrite becoming a wishlist.",
+          "actions": [
+            "separate parity work from improvement work",
+            "ban unrelated modernization goals unless they are required by the slice",
+            "set explicit criteria for when net-new scope may be added"
+          ],
+          "outputs": [
+            "rewrite guardrails",
+            "scope constraints"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Approve only with a migration model",
+          "purpose": "Tie the rewrite to displacement reality.",
+          "actions": [
+            "show how the old system shrinks over time",
+            "define coexistence and rollback assumptions",
+            "agree on success metrics tied to retirement, not output"
+          ],
+          "outputs": [
+            "rewrite approval brief",
+            "migration model"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "Is this truly a rewrite candidate or a refactor candidate?",
+        "What are the non-negotiable legacy behaviors?",
+        "What is the first slice that proves the rewrite is real?",
+        "What scope is explicitly banned until parity is proven?"
+      ],
+      "commonMistakes": [
+        "starting architecture work before defining the first displacement slice",
+        "using the rewrite to also fix every adjacent problem",
+        "treating ugly legacy behavior as unimportant because it is hard to defend aesthetically",
+        "telling leadership the rewrite will simplify everything quickly"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "the rewrite is described as cleanup, modernization, platform reset, and product acceleration all at once",
+        "the team cannot state what will be turned off first",
+        "the architecture is getting clearer faster than the migration path",
+        "legacy behavior is dismissed with phrases like 'we probably do not need that'"
+      ],
+      "artifactsToProduce": [
+        "rewrite problem statement",
+        "must-preserve inventory",
+        "first-slice plan",
+        "scope guardrails",
+        "migration approval brief"
+      ],
+      "successSignals": [
+        "the rewrite has a sharply limited early scope",
+        "stakeholders understand what will not be rebuilt yet",
+        "the team can point to explicit displacement milestones",
+        "the rewrite is framed as migration, not just construction"
+      ],
+      "followUpActions": [
+        "review the rewrite case after the first slice rather than locking all assumptions up front",
+        "kill or reduce the rewrite if the first displacement proves weaker than expected",
+        "refresh the preserve-inventory after every major incident or discovery"
+      ],
+      "metricsOrSignals": [
+        "time to first displaced slice",
+        "ratio of parity work to net-new ambition",
+        "number of legacy behaviors discovered late",
+        "dual-run duration"
+      ],
+      "aiCanHelpWith": [
+        "summarizing maintenance pain from historical tickets and incidents",
+        "mapping legacy dependencies and hidden contracts",
+        "highlighting code hotspots and behavior clusters",
+        "drafting parity and cutover checklists"
+      ],
+      "aiCanMakeWorseBy": [
+        "making it too easy to generate a large shiny replacement quickly",
+        "giving teams false confidence that understanding has caught up with output",
+        "hiding ambiguity behind confident rewrite documents"
+      ],
+      "aiSpecificNotes": "AI is strong at discovery and comparison in rewrite framing. It is dangerous when used to justify building ahead of understanding.",
+      "relatedFailureModes": [
+        "friendly-rewrite",
+        "invisible-deadline"
+      ],
+      "relatedRedFlags": [
+        "nobody-can-explain-this-module-simply",
+        "people-avoid-touching-certain-areas",
+        "scope-changes-without-decision-records"
+      ],
+      "relatedTechDecisions": [
+        "rewrite-vs-refactor",
+        "scope-flexibility-vs-date-certainty"
+      ],
+      "relatedPlaybooks": [
+        "run-a-phased-migration",
+        "re-scope-without-lying",
+        "reduce-change-fan-out"
+      ],
+      "examplePromptsOrQuestions": [
+        "What exact pain are we rewriting to solve?",
+        "What legacy behaviors would break customers if we forgot them?",
+        "What is the first thing we will actually retire?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "de-risk-a-risky-release",
+      "title": "De-risk a risky release",
+      "situation": "A release has meaningful technical, operational, customer, or business risk.",
+      "category": "delivery",
+      "summary": "Reduce risk by clarifying what could fail, shrinking rollout scope, tightening observability, and defining credible rollback before the release becomes a test of nerve.",
+      "goal": "Turn a risky release from a hope-based event into a controlled operational decision.",
+      "useWhen": [
+        "the release changes critical flows or infrastructure",
+        "rollback is non-trivial",
+        "user or revenue impact could be significant",
+        "the team feels unusually anxious about shipping"
+      ],
+      "doNotUseWhen": [
+        "the change is small and routine and you are adding heavyweight process out of habit",
+        "there is no realistic plan to observe or reverse the change",
+        "the release is already overloaded with unrelated changes"
+      ],
+      "whyThisMatters": "High-risk releases usually fail before deployment day: risk is left vague, rollback is assumed, and monitoring is underdesigned. This playbook forces the team to earn confidence.",
+      "whatGoodLooksLike": [
+        "the main failure modes are named in advance",
+        "the rollout path is staged and reversible where possible",
+        "alerts and dashboards are tied to release-specific risk",
+        "responsibilities during rollout are explicit",
+        "the team knows what would trigger pause, continue, or rollback"
+      ],
+      "inputs": [
+        "release scope",
+        "risk inventory",
+        "affected systems and teams",
+        "rollback constraints",
+        "monitoring and alerting setup",
+        "release window considerations"
+      ],
+      "rolesInvolved": [
+        "release owner",
+        "tech lead",
+        "operations or SRE",
+        "QA or quality lead",
+        "incident commander if needed",
+        "stakeholder contact for business impact"
+      ],
+      "primaryOwner": "release owner",
+      "estimatedTimeHorizon": "days to a few weeks depending on risk",
+      "difficulty": "medium-high",
+      "prerequisites": [
+        "clear release contents",
+        "known dependencies",
+        "minimum observability on critical paths"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Name the real risks",
+          "purpose": "Get specific about what could go wrong.",
+          "actions": [
+            "list the top 3 to 5 failure scenarios",
+            "separate reversible failures from irreversible ones",
+            "identify user, data, operational, and dependency risks"
+          ],
+          "outputs": [
+            "release risk sheet"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Reduce blast radius",
+          "purpose": "Make the first rollout smaller than the full exposure.",
+          "actions": [
+            "choose staged rollout, feature gating, traffic shaping, or cohort release where possible",
+            "remove non-essential changes from the release bundle",
+            "prefer one meaningful change over many loosely related ones"
+          ],
+          "outputs": [
+            "reduced release scope",
+            "blast-radius plan"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Design the observation layer",
+          "purpose": "Know early whether the release is helping or hurting.",
+          "actions": [
+            "define release-specific dashboards and alerts",
+            "agree on leading indicators and lagging indicators",
+            "ensure on-call and release owners know where to look first"
+          ],
+          "outputs": [
+            "release dashboard",
+            "go-no-go indicators"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Rehearse rollback or pause",
+          "purpose": "Make rollback a real option, not a comforting phrase.",
+          "actions": [
+            "walk through rollback mechanics step by step",
+            "clarify who can trigger rollback",
+            "test partial rollback where feasible"
+          ],
+          "outputs": [
+            "rollback decision guide",
+            "release roles matrix"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Run the release like an operational event",
+          "purpose": "Ensure attention and decisions are coordinated.",
+          "actions": [
+            "time-box observation checkpoints",
+            "record key decisions during rollout",
+            "hold the release open until enough evidence exists"
+          ],
+          "outputs": [
+            "release timeline log",
+            "post-release review notes"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "Should this release be split?",
+        "What is the smallest viable initial rollout?",
+        "What evidence is enough to continue?",
+        "What exact condition forces rollback?"
+      ],
+      "commonMistakes": [
+        "shipping too many changes together",
+        "treating rollback as available without rehearsing it",
+        "using generic dashboards instead of release-specific signals",
+        "letting seniority override visible warning signals mid-rollout"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "the team says we will know if something is wrong but cannot say how quickly",
+        "the rollback plan is just 'redeploy the previous version'",
+        "nobody is sure who owns the operational call during release",
+        "release confidence depends mainly on which person is online"
+      ],
+      "artifactsToProduce": [
+        "release risk sheet",
+        "blast-radius plan",
+        "release dashboard",
+        "rollback guide",
+        "release event log"
+      ],
+      "successSignals": [
+        "the release was staged rather than all-or-nothing",
+        "the team made decisions from live evidence rather than intuition",
+        "rollback remained credible throughout the release",
+        "post-release analysis found few surprises outside the named risks"
+      ],
+      "followUpActions": [
+        "review whether release risk could have been reduced earlier in design",
+        "clean up temporary release controls that are no longer needed",
+        "feed new operational learnings into future rollout patterns"
+      ],
+      "metricsOrSignals": [
+        "time to detect issue after rollout",
+        "time to rollback or pause",
+        "error rate change",
+        "latency change",
+        "support or business signal change"
+      ],
+      "aiCanHelpWith": [
+        "drafting release risk scenarios",
+        "summarizing recent incidents in affected areas",
+        "building release checklists and communication drafts",
+        "finding likely dependency surfaces from code and config"
+      ],
+      "aiCanMakeWorseBy": [
+        "producing polished risk documents that hide operational weakness",
+        "encouraging too much confidence in unreviewed release notes or checklists",
+        "bundling more change because drafting is easy"
+      ],
+      "aiSpecificNotes": "Use AI to improve preparation quality, not to justify bigger release scope.",
+      "relatedFailureModes": [
+        "invisible-deadline",
+        "dependency-fog"
+      ],
+      "relatedRedFlags": [
+        "release-confidence-depends-on-luck-and-timing",
+        "teams-cannot-explain-what-done-means",
+        "dependencies-are-discovered-late-every-cycle"
+      ],
+      "relatedTechDecisions": [
+        "one-way-door-vs-two-way-door-rollout",
+        "feature-flags-vs-branch-based-release-isolation"
+      ],
+      "relatedPlaybooks": [
+        "design-a-safe-rollout-path",
+        "build-a-practical-rollback-strategy",
+        "improve-release-confidence"
+      ],
+      "examplePromptsOrQuestions": [
+        "What are the top three ways this release can hurt users or operations?",
+        "What is the smallest cohort we can ship to first?",
+        "What exact signal will make us stop or roll back?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "recover-a-slipping-project",
+      "title": "Recover a slipping project",
+      "situation": "A project is falling behind and confidence is degrading.",
+      "category": "delivery",
+      "summary": "Recover by replacing optimism and activity reporting with a sharp picture of reality: what is blocked, what still matters, what can move, and what must be cut or re-sequenced.",
+      "goal": "Restore credibility and control before the project turns into managed disappointment.",
+      "useWhen": [
+        "milestones are slipping repeatedly",
+        "status sounds healthier than the team feels",
+        "scope is moving while dates remain fixed",
+        "stakeholders are losing trust in the plan"
+      ],
+      "doNotUseWhen": [
+        "the project is exploratory by design and not being treated as a fixed delivery commitment",
+        "there is still enough time and the issue is a temporary local blockage rather than systemic slippage"
+      ],
+      "whyThisMatters": "Projects rarely recover through more pressure alone. They recover when reality becomes explicit, trade-offs become visible, and the team stops pretending all commitments still fit together.",
+      "whatGoodLooksLike": [
+        "current project state is described without status theater",
+        "scope, risk, and dependencies are re-baselined honestly",
+        "the team knows what the next credible milestone is",
+        "stakeholders understand the trade-offs behind the recovery plan",
+        "the plan gets simpler, not merely louder"
+      ],
+      "inputs": [
+        "current milestone plan",
+        "actual progress state",
+        "dependency and blocker list",
+        "scope inventory",
+        "risk log",
+        "team capacity picture"
+      ],
+      "rolesInvolved": [
+        "delivery lead",
+        "engineering manager",
+        "tech lead",
+        "product lead",
+        "sponsor or decision-maker for trade-offs"
+      ],
+      "primaryOwner": "delivery lead",
+      "estimatedTimeHorizon": "days to a few weeks for reset, longer for stabilization",
+      "difficulty": "high",
+      "prerequisites": [
+        "permission to surface bad news honestly",
+        "access to true current status, not only reports",
+        "someone with authority to make trade-offs"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Stop optimistic reporting",
+          "purpose": "Replace summary comfort with operational truth.",
+          "actions": [
+            "review what is actually complete versus merely in progress",
+            "separate visible work from blocked work",
+            "strip out vague status labels and force evidence-based status"
+          ],
+          "outputs": [
+            "current-state snapshot"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Rebuild the critical path",
+          "purpose": "Find the real drivers of delay.",
+          "actions": [
+            "identify true dependencies, decision bottlenecks, and unresolved risks",
+            "remove work that is important but not schedule-defining",
+            "map what must happen next for confidence to improve"
+          ],
+          "outputs": [
+            "revised critical path"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Force trade-offs explicitly",
+          "purpose": "Stop the team from carrying impossible combinations of scope, date, and quality.",
+          "actions": [
+            "name what can move: scope, timeline, quality bar, sequence, rollout shape",
+            "put trade-off options in front of actual decision-makers",
+            "record what was chosen and why"
+          ],
+          "outputs": [
+            "recovery options",
+            "decision log"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Create a narrower recovery plan",
+          "purpose": "Rebuild trust through smaller truths.",
+          "actions": [
+            "define the next credible milestone",
+            "reduce scope to what can actually be defended",
+            "assign visible owners to blockers and dependencies"
+          ],
+          "outputs": [
+            "recovery plan",
+            "owner-by-blocker list"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Operate on short feedback loops",
+          "purpose": "Make recovery visible and adaptive.",
+          "actions": [
+            "run more frequent short status reviews tied to evidence",
+            "surface new slips immediately",
+            "keep recovery metrics focused on exit, not activity"
+          ],
+          "outputs": [
+            "recovery cadence",
+            "evidence-based status updates"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What is truly fixed and what only looked fixed politically?",
+        "What can be cut without collapsing the purpose of the project?",
+        "Which dependencies need escalation rather than hope?",
+        "What is the next believable milestone?"
+      ],
+      "commonMistakes": [
+        "asking the team to work harder without changing commitments",
+        "keeping original scope while rewriting the status language",
+        "using more reporting detail instead of better trade-offs",
+        "treating all delays as execution problems instead of structure problems"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "status packs get more polished while delivery confidence falls",
+        "everything remains priority one after the recovery reset",
+        "the team still cannot explain what will actually be delivered next",
+        "stakeholders hear reassurance but no real trade-offs"
+      ],
+      "artifactsToProduce": [
+        "current-state snapshot",
+        "revised critical path",
+        "recovery options brief",
+        "recovery plan",
+        "decision log"
+      ],
+      "successSignals": [
+        "the project becomes simpler to explain",
+        "risk and dependency visibility improves quickly",
+        "one or more commitments are explicitly adjusted instead of silently carried",
+        "teams and stakeholders describe the project in more similar language"
+      ],
+      "followUpActions": [
+        "review what created the slippage pattern originally",
+        "remove temporary reporting layers once the project is stabilized",
+        "carry the same honesty into future planning rather than reverting to optimism"
+      ],
+      "metricsOrSignals": [
+        "blocked work ratio",
+        "critical-path stability",
+        "milestone confidence trend",
+        "scope change rate",
+        "number of unresolved external dependencies"
+      ],
+      "aiCanHelpWith": [
+        "summarizing blockers and plan deltas from project artifacts",
+        "drafting recovery options and communication packs",
+        "extracting repeated risk themes from status history",
+        "building dependency and scope comparison tables"
+      ],
+      "aiCanMakeWorseBy": [
+        "making weak status reporting sound more credible",
+        "creating polished but non-binding recovery plans",
+        "increasing activity noise when the real need is prioritization"
+      ],
+      "aiSpecificNotes": "AI is most helpful in synthesis and visibility during recovery. It is most dangerous when used to decorate weak commitments.",
+      "relatedFailureModes": [
+        "invisible-deadline",
+        "ticket-theater",
+        "stakeholder-capture"
+      ],
+      "relatedRedFlags": [
+        "work-enters-faster-than-it-leaves",
+        "everything-is-urgent",
+        "risks-are-acknowledged-but-never-priced-into-plans"
+      ],
+      "relatedTechDecisions": [
+        "scope-flexibility-vs-date-certainty",
+        "speed-vs-robustness"
+      ],
+      "relatedPlaybooks": [
+        "re-scope-without-lying",
+        "turn-recurring-urgent-work-into-managed-work",
+        "handle-a-high-dependency-delivery"
+      ],
+      "examplePromptsOrQuestions": [
+        "What is actually done versus merely active?",
+        "What must move for this project to become believable again?",
+        "What are the real options if the date does not move?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "re-scope-without-lying",
+      "title": "Re-scope without lying",
+      "situation": "You need to reduce or reshape scope while preserving trust.",
+      "category": "delivery",
+      "summary": "Cut or reshape scope by making the trade-off explicit, preserving the core value, and naming what is no longer promised rather than hiding the loss inside ambiguity.",
+      "goal": "Protect trust while adjusting commitments to reality.",
+      "useWhen": [
+        "timeline or capacity changed materially",
+        "dependencies proved larger than expected",
+        "the team can still preserve core value but not the original package",
+        "stakeholders need clarity more than reassurance"
+      ],
+      "doNotUseWhen": [
+        "the change is only cosmetic and does not materially alter the promise",
+        "leaders want the team to quietly absorb the cut without telling anyone",
+        "the core purpose itself is no longer coherent"
+      ],
+      "whyThisMatters": "Teams lose trust not only because scope changes, but because scope changes are disguised. Honest re-scoping protects credibility and helps better decisions happen earlier next time.",
+      "whatGoodLooksLike": [
+        "the team can say what remains, what moved out, and why",
+        "the core outcome is preserved as much as possible",
+        "stakeholders understand the trade-off clearly",
+        "the new scope is simpler and more defensible than the old one",
+        "future reporting uses the new promise, not the old ghost promise"
+      ],
+      "inputs": [
+        "original scope and intent",
+        "current constraints",
+        "risk picture",
+        "must-have versus nice-to-have view",
+        "stakeholder dependencies"
+      ],
+      "rolesInvolved": [
+        "product lead",
+        "delivery lead",
+        "engineering lead",
+        "decision-maker for commitment changes"
+      ],
+      "primaryOwner": "product lead",
+      "estimatedTimeHorizon": "hours to days for the decision, then ongoing alignment",
+      "difficulty": "medium-high",
+      "prerequisites": [
+        "clear understanding of the core outcome",
+        "authority to change commitments",
+        "willingness to state loss explicitly"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Re-state the purpose",
+          "purpose": "Protect the real value instead of preserving every item.",
+          "actions": [
+            "write down what user, business, or operational value the work was meant to create",
+            "separate that core purpose from the full original package",
+            "identify which elements are essential to that purpose"
+          ],
+          "outputs": [
+            "core outcome statement"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Classify scope by value and coupling",
+          "purpose": "Cut intelligently, not randomly.",
+          "actions": [
+            "mark items as essential, supporting, optional, or deferrable",
+            "note dependencies and sequencing constraints",
+            "look for scope that is expensive but not core"
+          ],
+          "outputs": [
+            "scope classification"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Create explicit re-scope options",
+          "purpose": "Turn vague disappointment into real choices.",
+          "actions": [
+            "prepare 2 to 3 scope options with trade-offs",
+            "show what each option preserves and loses",
+            "include impact on timeline, quality, and dependencies"
+          ],
+          "outputs": [
+            "re-scope options brief"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Decide and say the loss clearly",
+          "purpose": "Preserve trust through precision.",
+          "actions": [
+            "choose one option with accountable decision-makers",
+            "write down what is no longer in the promise",
+            "update all delivery and stakeholder artifacts to match"
+          ],
+          "outputs": [
+            "new scope statement",
+            "updated commitment language"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Align execution to the new promise",
+          "purpose": "Stop the old promise from surviving unofficially.",
+          "actions": [
+            "remove out-of-scope work from active planning",
+            "re-baseline milestones and definitions of done",
+            "watch for quiet re-expansion"
+          ],
+          "outputs": [
+            "updated execution plan"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What is the minimum scope that still preserves the real value?",
+        "What should be deferred versus discarded?",
+        "How much disappointment now is better than confusion later?",
+        "Who must explicitly approve the trade-off?"
+      ],
+      "commonMistakes": [
+        "softening the change so much that nobody understands the loss",
+        "leaving cut scope in planning tools as unofficial future work",
+        "trying to preserve every stakeholder concern equally",
+        "describing the change as a minor adjustment when it is a real reduction"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "different stakeholders describe the new scope differently",
+        "the team still feels pressure to deliver the old promise",
+        "status updates still compare progress to the original commitment",
+        "cut items keep returning through side conversations"
+      ],
+      "artifactsToProduce": [
+        "core outcome statement",
+        "scope classification",
+        "re-scope options brief",
+        "new scope statement",
+        "updated plan"
+      ],
+      "successSignals": [
+        "stakeholders can repeat the new scope accurately",
+        "planning and reporting reflect the new promise cleanly",
+        "the team feels reduced ambiguity, not just reduced ambition",
+        "work outside the new scope stops reappearing quietly"
+      ],
+      "followUpActions": [
+        "review whether the original scope was under-specified or under-priced",
+        "capture how re-scoping decisions will be triggered earlier next time",
+        "re-evaluate deferred items later as fresh choices, not hidden obligations"
+      ],
+      "metricsOrSignals": [
+        "scope churn after reset",
+        "stakeholder alignment quality",
+        "reintroduced out-of-scope requests",
+        "milestone confidence after re-scope"
+      ],
+      "aiCanHelpWith": [
+        "summarizing scope and dependency clusters",
+        "drafting option briefs and stakeholder communications",
+        "comparing original and revised commitments"
+      ],
+      "aiCanMakeWorseBy": [
+        "softening direct language into vague euphemisms",
+        "making scope changes sound cleaner than they are",
+        "creating too many option variants and delaying the decision"
+      ],
+      "aiSpecificNotes": "Use AI to sharpen option framing, not to blur hard trade-offs with better prose.",
+      "relatedFailureModes": [
+        "invisible-deadline",
+        "ticket-theater"
+      ],
+      "relatedRedFlags": [
+        "scope-changes-without-decision-records",
+        "dates-are-fixed-but-trade-offs-are-implicit",
+        "teams-cannot-explain-what-done-means"
+      ],
+      "relatedTechDecisions": [
+        "scope-flexibility-vs-date-certainty"
+      ],
+      "relatedPlaybooks": [
+        "recover-a-slipping-project",
+        "facilitate-a-difficult-technical-disagreement"
+      ],
+      "examplePromptsOrQuestions": [
+        "What is the core outcome we are protecting?",
+        "Which scope items are expensive but not essential?",
+        "What exactly are we no longer promising?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "handle-a-high-dependency-delivery",
+      "title": "Handle a high-dependency delivery",
+      "situation": "A delivery depends on many teams, systems, or approval paths.",
+      "category": "delivery",
+      "summary": "Treat coordination as real work: make dependencies visible, assign owners, define handoff quality, and avoid pretending the schedule is local when the delivery is not.",
+      "goal": "Increase delivery predictability when success depends on multiple actors beyond one team.",
+      "useWhen": [
+        "multiple teams must change in sequence or parallel",
+        "approvals or external providers materially affect timeline",
+        "critical integrations or contracts are involved",
+        "the delivery path crosses ownership boundaries repeatedly"
+      ],
+      "doNotUseWhen": [
+        "the work is mostly local but the team is over-formalizing it",
+        "dependencies are being invented as status cover for local execution problems",
+        "there is no authority to coordinate across the dependency set"
+      ],
+      "whyThisMatters": "Many deliveries fail because dependency work is treated as incidental overhead rather than as the true delivery system. What is not mapped early becomes surprise delay later.",
+      "whatGoodLooksLike": [
+        "the dependency graph is visible and current",
+        "each dependency has an owner and expected decision or output",
+        "handoff quality is defined, not assumed",
+        "blockers are surfaced before critical-path failure",
+        "status reflects dependency reality, not only local progress"
+      ],
+      "inputs": [
+        "delivery objective",
+        "list of participating teams or providers",
+        "expected handoffs",
+        "contracts and approvals",
+        "timeline constraints"
+      ],
+      "rolesInvolved": [
+        "delivery lead",
+        "tech lead",
+        "program or project lead if present",
+        "owners of each dependency",
+        "sponsor when escalation power is needed"
+      ],
+      "primaryOwner": "delivery lead",
+      "estimatedTimeHorizon": "weeks to months",
+      "difficulty": "high",
+      "prerequisites": [
+        "clear delivery objective",
+        "named stakeholders and participating owners",
+        "ability to escalate unresolved dependencies"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Map the dependency system",
+          "purpose": "Turn vague coordination into visible structure.",
+          "actions": [
+            "list each team, system, approval, and contract dependency",
+            "classify each as technical, organizational, operational, or external",
+            "show the sequence and coupling between them"
+          ],
+          "outputs": [
+            "dependency map"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Define what each dependency owes",
+          "purpose": "Replace soft assumptions with explicit expectations.",
+          "actions": [
+            "name the required output, decision, or availability from each dependency",
+            "define acceptance quality for handoffs",
+            "set owner and due signal for each item"
+          ],
+          "outputs": [
+            "dependency contract sheet"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Separate critical from supporting dependencies",
+          "purpose": "Protect the path that actually drives delivery.",
+          "actions": [
+            "mark which dependencies block the next major milestone",
+            "identify which can be parallelized, deferred, or buffered",
+            "focus coordination effort on critical-path items first"
+          ],
+          "outputs": [
+            "critical dependency set"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Create a coordination rhythm",
+          "purpose": "Keep dependency reality fresh.",
+          "actions": [
+            "run a light but regular cross-owner check-in",
+            "review only blockers, changes, and handoff quality",
+            "escalate changes immediately when critical items slip"
+          ],
+          "outputs": [
+            "dependency review cadence"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Re-plan around dependency movement",
+          "purpose": "Keep the plan connected to reality.",
+          "actions": [
+            "update milestones when dependencies shift materially",
+            "remove fake confidence from local plans when external inputs move",
+            "record major dependency changes and decisions"
+          ],
+          "outputs": [
+            "updated delivery plan",
+            "dependency decision log"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "Which dependencies are truly critical path?",
+        "Which dependencies can be buffered or decoupled?",
+        "Where is the bottleneck technical versus organizational?",
+        "When does a dependency issue require sponsor escalation?"
+      ],
+      "commonMistakes": [
+        "tracking only tasks, not dependencies",
+        "assuming all dependencies are equal",
+        "holding large coordination meetings without explicit dependency outputs",
+        "maintaining local green status while critical external blockers go red"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "teams discover blockers late and act surprised each cycle",
+        "dependency discussions focus on general updates instead of decisions and outputs",
+        "the delivery plan remains unchanged even when key dependencies move",
+        "nobody can say who owns a blocked handoff"
+      ],
+      "artifactsToProduce": [
+        "dependency map",
+        "dependency contract sheet",
+        "critical dependency set",
+        "dependency decision log"
+      ],
+      "successSignals": [
+        "cross-team blockers are visible earlier",
+        "handoff expectations become clearer and less emotional",
+        "schedule changes are tied to real dependency movement",
+        "teams use the same dependency picture"
+      ],
+      "followUpActions": [
+        "look for structural ways to reduce dependency count in future work",
+        "promote repeated handoff patterns into explicit contracts or platform capabilities",
+        "review which dependencies were real versus historically inherited"
+      ],
+      "metricsOrSignals": [
+        "late dependency discovery rate",
+        "blocked-by-external ratio",
+        "handoff rejection or rework rate",
+        "critical dependency age"
+      ],
+      "aiCanHelpWith": [
+        "extracting dependency references from tickets, docs, and repos",
+        "drafting dependency tables and handoff summaries",
+        "highlighting likely missing consumers or approval paths"
+      ],
+      "aiCanMakeWorseBy": [
+        "producing plans that look comprehensive without capturing social or approval reality",
+        "encouraging false completeness in dependency lists",
+        "making summaries cleaner than the actual commitments"
+      ],
+      "aiSpecificNotes": "AI is useful for surfacing likely dependency candidates. Human owners still need to validate and commit to each one.",
+      "relatedFailureModes": [
+        "dependency-fog",
+        "invisible-deadline"
+      ],
+      "relatedRedFlags": [
+        "dependencies-are-discovered-late-every-cycle",
+        "ownership-is-claimed-but-not-visible",
+        "changes-always-touch-too-many-places"
+      ],
+      "relatedTechDecisions": [
+        "strong-ownership-vs-shared-ownership",
+        "local-autonomy-vs-central-governance"
+      ],
+      "relatedPlaybooks": [
+        "make-an-integration-contract-explicit",
+        "review-service-boundaries",
+        "recover-a-slipping-project"
+      ],
+      "examplePromptsOrQuestions": [
+        "What does each dependency actually owe us?",
+        "Which dependencies are critical path versus distracting noise?",
+        "What changed upstream that should already have changed our plan?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "turn-recurring-urgent-work-into-managed-work",
+      "title": "Turn recurring urgent work into managed work",
+      "situation": "The same urgent issues keep recurring and disrupting planned work.",
+      "category": "delivery",
+      "summary": "Convert chronic urgency into a known workstream by categorizing recurrence, pricing the interruption cost, and building preventive work into normal planning rather than treating every recurrence as exceptional.",
+      "goal": "Reduce reactive load and stop recurring urgent work from consuming hidden capacity forever.",
+      "useWhen": [
+        "the same production or support issues recur",
+        "planned work is repeatedly displaced by urgent interrupts",
+        "incident or ops work is predictable in pattern but unmanaged in planning",
+        "the team feels permanently in catch-up mode"
+      ],
+      "doNotUseWhen": [
+        "the urgent work is a one-off crisis rather than a recurring pattern",
+        "the recurrence is too low to justify separate management",
+        "leadership refuses to let capacity be reserved for prevention work"
+      ],
+      "whyThisMatters": "Recurring urgent work is usually not truly urgent in the strategic sense. It is unmanaged debt. Teams get trapped when they keep paying the interrupt tax without converting it into structured improvement work.",
+      "whatGoodLooksLike": [
+        "urgent work patterns are named and categorized",
+        "some capacity is explicitly reserved for recurrence reduction",
+        "teams track prevention progress, not just incident handling",
+        "interruptions stop being explained as random bad luck",
+        "planned work becomes more stable over time"
+      ],
+      "inputs": [
+        "incident and interrupt history",
+        "support escalation patterns",
+        "team capacity view",
+        "delivery plan",
+        "recurrence cost estimate"
+      ],
+      "rolesInvolved": [
+        "engineering manager",
+        "tech lead",
+        "operations or support partner",
+        "delivery lead"
+      ],
+      "primaryOwner": "engineering manager",
+      "estimatedTimeHorizon": "weeks to quarters",
+      "difficulty": "medium-high",
+      "prerequisites": [
+        "at least some interrupt history exists",
+        "there is a way to reserve or reprioritize capacity",
+        "the team can distinguish real emergencies from chronic noise"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Name the recurring urgent classes",
+          "purpose": "Stop treating recurrence as randomness.",
+          "actions": [
+            "group urgent work by cause, system, and operational pattern",
+            "separate true emergencies from predictable recurring issues",
+            "estimate how much delivery time recurrence is consuming"
+          ],
+          "outputs": [
+            "urgent work taxonomy",
+            "interrupt cost estimate"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Choose what becomes managed work",
+          "purpose": "Promote repeat pain into normal planning.",
+          "actions": [
+            "identify the top recurring categories worth prevention effort",
+            "create explicit work items for reducing recurrence",
+            "assign owners and expected operational effect"
+          ],
+          "outputs": [
+            "recurrence reduction backlog"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Protect prevention capacity",
+          "purpose": "Ensure prevention is not always displaced by the next urgent event.",
+          "actions": [
+            "reserve capacity or a dedicated lane for recurrence reduction",
+            "make trade-offs explicit when prevention work is displaced",
+            "escalate if urgent intake makes prevention impossible"
+          ],
+          "outputs": [
+            "capacity protection model"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Measure recurrence down",
+          "purpose": "Show that the pattern is improving or not.",
+          "actions": [
+            "track recurrence rate by category",
+            "track time lost to urgent work",
+            "review whether prevention work changed the interrupt profile"
+          ],
+          "outputs": [
+            "recurrence dashboard"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Reclassify what counts as urgent",
+          "purpose": "Prevent every recurring issue from keeping premium priority forever.",
+          "actions": [
+            "define criteria for true urgent work",
+            "move known recurring issues into normal planning unless they break those criteria",
+            "teach stakeholders the difference between urgent and unmanaged"
+          ],
+          "outputs": [
+            "updated urgency policy"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "Which recurring issues deserve preventive investment first?",
+        "How much planned capacity should be protected for recurrence reduction?",
+        "When should a recurring issue stop being treated as urgent?"
+      ],
+      "commonMistakes": [
+        "trying to eliminate all urgent work at once",
+        "tracking incidents but not recurrence classes",
+        "allowing every new urgent request to displace prevention work",
+        "treating recurring pain as evidence the team is just in a tough phase"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "the same categories appear in incidents and retros month after month",
+        "the team says we never have time to fix the root cause",
+        "urgent work volume is described qualitatively but not measured",
+        "stakeholders still use urgent language to bypass prioritization"
+      ],
+      "artifactsToProduce": [
+        "urgent work taxonomy",
+        "interrupt cost estimate",
+        "recurrence reduction backlog",
+        "recurrence dashboard",
+        "urgency policy"
+      ],
+      "successSignals": [
+        "planned work survives more often",
+        "repeated urgent issues decline in count or impact",
+        "the team can explain its interrupt load with evidence",
+        "some operational pain moves from urgent to managed"
+      ],
+      "followUpActions": [
+        "review which recurring urgent items point to larger architectural fixes",
+        "adjust staffing or ownership if recurrence is concentrated unfairly",
+        "carry recurrence costs into future roadmap planning"
+      ],
+      "metricsOrSignals": [
+        "interrupt hours per sprint or month",
+        "repeat incident count by category",
+        "planned work displacement rate",
+        "mean time between recurring urgent events"
+      ],
+      "aiCanHelpWith": [
+        "clustering repeated incidents or tickets",
+        "summarizing interrupt patterns from support and ops data",
+        "drafting recurrence taxonomies and prevention candidates"
+      ],
+      "aiCanMakeWorseBy": [
+        "making interrupt reporting cleaner without changing the underlying policy",
+        "producing too many speculative prevention tasks",
+        "normalizing urgency through automated escalation summaries"
+      ],
+      "aiSpecificNotes": "AI is good at pattern extraction across repeated incidents. Use it to find recurrence, not to justify more activity without prioritization.",
+      "relatedFailureModes": [
+        "invisible-deadline",
+        "ticket-theater"
+      ],
+      "relatedRedFlags": [
+        "everything-is-urgent",
+        "work-enters-faster-than-it-leaves",
+        "retrospectives-repeat-the-same-outputs"
+      ],
+      "relatedTechDecisions": [
+        "experimentation-vs-operational-stability"
+      ],
+      "relatedPlaybooks": [
+        "recover-a-team-stuck-in-reactive-mode",
+        "triage-operational-debt",
+        "recover-a-slipping-project"
+      ],
+      "examplePromptsOrQuestions": [
+        "Which urgent issues are actually recurring classes in disguise?",
+        "How much delivery time are interrupts costing us each month?",
+        "What prevention work keeps getting pushed out by the next urgent ask?"
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "stabilize-a-fragile-service",
+      "title": "Stabilize a fragile service",
+      "situation": "A service is unreliable, scary to change, or operationally noisy.",
+      "category": "delivery",
+      "summary": "Stabilize by making the service observable, reducing risky change surfaces, clarifying ownership, and fixing the few failure drivers that create most of the pain before chasing architectural perfection.",
+      "goal": "Move a fragile service from fear-based operation to manageable reliability.",
+      "useWhen": [
+        "the service causes frequent incidents or support pain",
+        "teams avoid touching it",
+        "release confidence is weak",
+        "one or two people carry most of the risk knowledge"
+      ],
+      "doNotUseWhen": [
+        "the service is noisy mainly because of upstream instability that has not been isolated yet",
+        "the team is using fragility language to justify a rewrite before basic stabilization work"
+      ],
+      "whyThisMatters": "Fragile services create a double cost: user risk and organizational fear. Stabilization should first reduce operational volatility and fear, not chase ideal architecture immediately.",
+      "whatGoodLooksLike": [
+        "the main reliability problems are visible and prioritized",
+        "owners can explain the service’s top failure modes",
+        "risky changes become narrower and more rehearsable",
+        "operational response no longer depends on hero memory",
+        "incident volume and fear both decline"
+      ],
+      "inputs": [
+        "incident history",
+        "service dependency map",
+        "alert and observability state",
+        "release history",
+        "ownership map",
+        "change hotspot analysis"
+      ],
+      "rolesInvolved": [
+        "service owner",
+        "tech lead",
+        "operations or SRE",
+        "engineering manager",
+        "support partner if user-visible failures are frequent"
+      ],
+      "primaryOwner": "service owner",
+      "estimatedTimeHorizon": "weeks to months",
+      "difficulty": "high",
+      "prerequisites": [
+        "someone is explicitly accountable for the service",
+        "incident history is available",
+        "minimum production visibility exists or can be added quickly"
+      ],
+      "steps": [
+        {
+          "step": 1,
+          "title": "Define the fragility profile",
+          "purpose": "Turn vague fear into specific failure drivers.",
+          "actions": [
+            "review recent incidents and recurring failure patterns",
+            "separate reliability issues from change-safety issues",
+            "identify the few causes behind most operational pain"
+          ],
+          "outputs": [
+            "fragility profile"
+          ]
+        },
+        {
+          "step": 2,
+          "title": "Make the service visible",
+          "purpose": "Reduce time spent guessing.",
+          "actions": [
+            "improve key dashboards, alerts, logs, and traces",
+            "link alerts to actionable owners and expected responses",
+            "document the first places to look during degradation"
+          ],
+          "outputs": [
+            "service observability pack"
+          ]
+        },
+        {
+          "step": 3,
+          "title": "Reduce risky change surfaces",
+          "purpose": "Make normal changes less scary.",
+          "actions": [
+            "identify hotspots, unstable seams, and oversized change bundles",
+            "add guardrails such as flags, staged rollout, or stronger targeted tests",
+            "remove or isolate the worst cross-cutting dependencies where practical"
+          ],
+          "outputs": [
+            "change-risk reduction plan"
+          ]
+        },
+        {
+          "step": 4,
+          "title": "Clarify ownership and response",
+          "purpose": "Stop fragility from being social as well as technical.",
+          "actions": [
+            "name the service owner and backup owners",
+            "write or refresh runbooks for the top failure cases",
+            "reduce hero dependence through pairing and rotation"
+          ],
+          "outputs": [
+            "ownership matrix",
+            "service runbook"
+          ]
+        },
+        {
+          "step": 5,
+          "title": "Stabilize before redesigning broadly",
+          "purpose": "Avoid using fragility as a reason for uncontrolled rewrite.",
+          "actions": [
+            "fix the top failure drivers first",
+            "review whether deeper architectural change is still needed after stability improves",
+            "sequence structural work only after immediate fragility is down"
+          ],
+          "outputs": [
+            "stabilization roadmap"
+          ]
+        }
+      ],
+      "decisionPoints": [
+        "What are the top two or three fragility drivers?",
+        "Which fixes reduce fear fastest: visibility, ownership, rollout control, or refactoring?",
+        "What should be stabilized before any large redesign?"
+      ],
+      "commonMistakes": [
+        "trying to redesign everything at once",
+        "treating observability improvements as optional",
+        "keeping service knowledge in one expert while attempting technical fixes",
+        "solving every incident locally without building the fragility profile"
+      ],
+      "warningSignsYouAreDoingItWrong": [
+        "people still describe the service as scary but cannot say why specifically",
+        "incidents repeat in the same categories",
+        "the stabilization plan contains mostly architecture ideals and not immediate risk reducers",
+        "rollouts still depend on who is online"
+      ],
+      "artifactsToProduce": [
+        "fragility profile",
+        "service observability pack",
+        "change-risk reduction plan",
+        "ownership matrix",
+        "service runbook",
+        "stabilization roadmap"
+      ],
+      "successSignals": [
+        "incident rate or severity declines in the known categories",
+        "release confidence improves",
+        "more than one engineer can safely work in the service",
+        "service discussions shift from fear language to evidence language"
+      ],
+      "followUpActions": [
+        "reassess whether major redesign is still justified after stabilization",
+        "fold fragility learnings into architecture and platform standards",
+        "remove temporary protections when they stop being needed"
+      ],
+      "metricsOrSignals": [
+        "incident frequency by category",
+        "change failure rate",
+        "rollback frequency",
+        "service alert noise level",
+        "number of effective maintainers"
+      ],
+      "aiCanHelpWith": [
+        "summarizing incident history into failure categories",
+        "mapping dependency and hotspot patterns",
+        "drafting runbooks and stabilization checklists",
+        "highlighting likely risky code surfaces"
+      ],
+      "aiCanMakeWorseBy": [
+        "encouraging broad refactor output before the fragility is understood",
+        "producing shallow fixes at high speed in risky areas",
+        "making the service look more documented than it is actually safer"
+      ],
+      "aiSpecificNotes": "Use AI for diagnosis support and artifact drafting. Keep root-cause judgment and risky service changes tightly reviewed.",
+      "relatedFailureModes": [
+        "hero-trap",
+        "dependency-fog"
+      ],
+      "relatedRedFlags": [
+        "people-avoid-touching-certain-areas",
+        "release-confidence-depends-on-luck-and-timing",
+        "tests-are-hard-to-write-for-normal-changes"
+      ],
+      "relatedTechDecisions": [
+        "speed-vs-robustness",
+        "ci-gate-strictness-vs-developer-throughput"
+      ],
+      "relatedPlaybooks": [
+        "improve-release-confidence",
+        "reduce-operational-dependence-on-heroes",
+        "create-meaningful-alerts"
+      ],
+      "examplePromptsOrQuestions": [
+        "What are the top failure patterns in this service?",
+        "Why is the team afraid to change it?",
+        "What would reduce fragility fastest in the next two sprints?"
+      ],
+      "patternConfidence": "high"
+    }
+  ]
+}

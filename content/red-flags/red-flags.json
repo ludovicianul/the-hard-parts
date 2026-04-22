@@ -1,0 +1,3981 @@
+{
+  "category": {
+    "code": "RF",
+    "name": "Red Flags Reference",
+    "summary": "Early warning signals in code, teams, process, leadership, and AI usage that suggest deeper problems may already exist or are forming.",
+    "layers": [
+      "code",
+      "team",
+      "process",
+      "leadership",
+      "ai"
+    ],
+    "signalTypes": [
+      "structural",
+      "behavioral",
+      "delivery",
+      "communication",
+      "architectural",
+      "operational",
+      "ai-quality"
+    ]
+  },
+  "template": {
+    "fields": [
+      "slug",
+      "title",
+      "layer",
+      "signalType",
+      "summary",
+      "decisionHeuristic",
+      "whatYouNotice",
+      "whyItMatters",
+      "whatItUsuallyIndicates",
+      "notNecessarilyAProblemWhen",
+      "commonContexts",
+      "severity",
+      "frequency",
+      "detectability",
+      "leadingIndicators",
+      "diagnosticQuestions",
+      "whatToCheckNext",
+      "commonRootCauses",
+      "likelyConsequences",
+      "antiPatterns",
+      "falseFriends",
+      "ownerMostLikelyToNotice",
+      "ownerBestPlacedToAct",
+      "timeHorizon",
+      "aiAmplifies",
+      "aiMasks",
+      "aiSpecificVariant",
+      "relatedFailureModes",
+      "relatedTechDecisions",
+      "relatedPlaybooks",
+      "relatedRedFlags",
+      "exampleSignals",
+      "patternConfidence"
+    ]
+  },
+  "entries": [
+    {
+      "slug": "nobody-can-explain-this-module-simply",
+      "title": "Nobody can explain this module simply",
+      "layer": "code",
+      "signalType": "architectural",
+      "summary": "A module performs important work, but nobody can describe its purpose in plain language without hand-waving.",
+      "decisionHeuristic": "If a module cannot be explained simply, its boundary is probably already decaying.",
+      "whatYouNotice": "Explanations become circular, jargon-heavy, or depend on historical trivia rather than current purpose.",
+      "whyItMatters": "Poor conceptual clarity usually means poor ownership, weak boundaries, and dangerous change behavior.",
+      "whatItUsuallyIndicates": [
+        "unclear domain boundary",
+        "responsibility creep",
+        "historic layering without cleanup",
+        "knowledge concentrated in a few people"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "the module is genuinely low-level and highly specialized, but at least one owner can still explain it clearly",
+        "the audience lacks domain context but documentation and ownership are strong"
+      ],
+      "commonContexts": [
+        "legacy systems",
+        "shared service layers",
+        "heavily abstracted internal frameworks"
+      ],
+      "severity": "high",
+      "frequency": "very common",
+      "detectability": "visible-if-you-look",
+      "leadingIndicators": [
+        "different people describe the module differently",
+        "ownership boundaries sound vague",
+        "bug fixes in the module require multiple experts"
+      ],
+      "diagnosticQuestions": [
+        "What single job does this module do?",
+        "What would clearly not belong here?",
+        "Who is accountable for its behavior?"
+      ],
+      "whatToCheckNext": [
+        "dependency graph",
+        "recent change history",
+        "module-level documentation",
+        "ownership map"
+      ],
+      "commonRootCauses": [
+        "scope creep",
+        "architecture drift",
+        "no boundary reviews",
+        "hero ownership"
+      ],
+      "likelyConsequences": [
+        "change fear",
+        "slow onboarding",
+        "bug-prone edits",
+        "dependency fog"
+      ],
+      "antiPatterns": [
+        "adding more generic naming instead of clarifying boundaries",
+        "treating confusion as a documentation-only problem"
+      ],
+      "falseFriends": [
+        "it is complex so nobody can explain it simply",
+        "the code works so the conceptual model must be fine"
+      ],
+      "ownerMostLikelyToNotice": [
+        "new joiner",
+        "tech lead",
+        "staff engineer"
+      ],
+      "ownerBestPlacedToAct": [
+        "tech lead",
+        "architect",
+        "module owner"
+      ],
+      "timeHorizon": "medium-term",
+      "aiAmplifies": "AI can generate confident explanations that sound coherent while preserving underlying architectural confusion.",
+      "aiMasks": "AI summaries can make the module sound cleaner than it really is.",
+      "aiSpecificVariant": "Generated documentation creates false confidence in a boundary nobody has actually cleaned up.",
+      "relatedFailureModes": [
+        "abstraction-addiction",
+        "dependency-fog",
+        "ownership-drift"
+      ],
+      "relatedTechDecisions": [
+        "modular-monolith-vs-distributed-services",
+        "generic-solution-vs-case-specific-solution"
+      ],
+      "relatedPlaybooks": [
+        "review-module-boundaries",
+        "document-responsibilities-not-implementation"
+      ],
+      "relatedRedFlags": [
+        "naming-is-generic-where-understanding-is-weak",
+        "people-avoid-touching-certain-areas",
+        "ownership-is-claimed-but-not-visible"
+      ],
+      "exampleSignals": [
+        "It handles orchestration, transformation, policy, and fallback logic.",
+        "Ask Sam, they know how it really works.",
+        "We should not touch that right now."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "one-file-does-too-much",
+      "title": "One file does too much",
+      "layer": "code",
+      "signalType": "structural",
+      "summary": "A single file accumulates unrelated responsibilities and becomes a local gravity well.",
+      "decisionHeuristic": "When one file becomes the easiest place to add everything, you are already paying for missing structure.",
+      "whatYouNotice": "Large files mixing business logic, validation, orchestration, transformations, and edge-case handling.",
+      "whyItMatters": "Local convenience becomes systemic fragility. The file becomes hard to understand, review, and safely change.",
+      "whatItUsuallyIndicates": [
+        "weak decomposition discipline",
+        "urgent patches landing in the easiest visible place",
+        "missing domain boundaries"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "the file is large because of data tables or declarative mappings that remain easy to reason about",
+        "a code generator owns the file and it is not manually edited"
+      ],
+      "commonContexts": [
+        "controllers",
+        "service classes",
+        "job handlers",
+        "legacy integration points"
+      ],
+      "severity": "medium-high",
+      "frequency": "very common",
+      "detectability": "obvious",
+      "leadingIndicators": [
+        "reviewers skip full-file review",
+        "small changes trigger fear",
+        "merge conflicts cluster in one place"
+      ],
+      "diagnosticQuestions": [
+        "How many distinct reasons does this file change?",
+        "Could this file be explained as one coherent concept?",
+        "What responsibilities are accidentally coupled here?"
+      ],
+      "whatToCheckNext": [
+        "change history",
+        "review frequency",
+        "ownership patterns"
+      ],
+      "commonRootCauses": [
+        "shortcut culture",
+        "missing decomposition standards",
+        "unclear ownership"
+      ],
+      "likelyConsequences": [
+        "review fatigue",
+        "merge conflict hotspots",
+        "harder testing",
+        "fear-based maintenance"
+      ],
+      "antiPatterns": [
+        "solving file growth by adding regions or comments instead of splitting responsibilities",
+        "treating line count as the only signal"
+      ],
+      "falseFriends": [
+        "big file equals bad design in all cases",
+        "small files automatically mean good design"
+      ],
+      "ownerMostLikelyToNotice": [
+        "reviewers",
+        "new joiners",
+        "maintainers"
+      ],
+      "ownerBestPlacedToAct": [
+        "module owner",
+        "tech lead"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "AI makes it easy to append more logic into the already-central file because it predicts the local pattern well.",
+      "aiMasks": "Uniform generated style can make a bloated file look orderly.",
+      "aiSpecificVariant": "AI keeps extending the same giant file because it is the highest-context place in the repository.",
+      "relatedFailureModes": [
+        "abstraction-addiction",
+        "hero-trap"
+      ],
+      "relatedTechDecisions": [
+        "convention-over-configuration-vs-flexibility"
+      ],
+      "relatedPlaybooks": [
+        "split-by-change-reason",
+        "refactor-hotspot-files"
+      ],
+      "relatedRedFlags": [
+        "changes-always-touch-too-many-places",
+        "tests-are-hard-to-write-for-normal-changes"
+      ],
+      "exampleSignals": [
+        "This file is where the real behavior lives.",
+        "Do not split it yet or we will lose the flow.",
+        "Every incident fix touches this file."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "changes-always-touch-too-many-places",
+      "title": "Changes always touch too many places",
+      "layer": "code",
+      "signalType": "architectural",
+      "summary": "Even ordinary changes require edits across many files, layers, or services.",
+      "decisionHeuristic": "When routine changes fan out widely, the system is telling you its boundaries are wrong or too coupled.",
+      "whatYouNotice": "Simple requests require multiple coordinated changes across layers that should have been more local.",
+      "whyItMatters": "Broad change surface increases risk, slows delivery, and makes ownership murky.",
+      "whatItUsuallyIndicates": [
+        "tight coupling",
+        "leaky abstractions",
+        "premature layering",
+        "missing vertical ownership"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "the change is genuinely cross-cutting by nature",
+        "a one-time migration is in progress and is explicitly acknowledged"
+      ],
+      "commonContexts": [
+        "service-oriented systems",
+        "layer-heavy monoliths",
+        "schema-and-contract-driven platforms"
+      ],
+      "severity": "high",
+      "frequency": "very common",
+      "detectability": "visible-if-you-look",
+      "leadingIndicators": [
+        "ordinary features get framed as system-wide work",
+        "review size grows faster than value delivered",
+        "teams ask for coordination meetings before small changes"
+      ],
+      "diagnosticQuestions": [
+        "Why is this change not local?",
+        "Which dependency makes the fan-out unavoidable?",
+        "Are we paying for technical coupling or organizational coupling?"
+      ],
+      "whatToCheckNext": [
+        "dependency graph",
+        "change hotspot analysis",
+        "service or module boundaries"
+      ],
+      "commonRootCauses": [
+        "boundary decay",
+        "shared schemas",
+        "centralized business rules",
+        "no clear product slices"
+      ],
+      "likelyConsequences": [
+        "slower delivery",
+        "more regressions",
+        "coordination overload",
+        "invisible deadlines"
+      ],
+      "antiPatterns": [
+        "celebrating cross-team coordination as proof of maturity when it is often compensating for bad structure",
+        "accepting fan-out as normal"
+      ],
+      "falseFriends": [
+        "complex business domain automatically requires broad code fan-out"
+      ],
+      "ownerMostLikelyToNotice": [
+        "developers",
+        "tech leads",
+        "engineering managers"
+      ],
+      "ownerBestPlacedToAct": [
+        "architect",
+        "tech lead"
+      ],
+      "timeHorizon": "near-to-medium-term",
+      "aiAmplifies": "AI can speed up multi-place edits, reducing friction while preserving the underlying architectural problem.",
+      "aiMasks": "Generated cross-repo changes can make fan-out feel operationally normal.",
+      "aiSpecificVariant": "Teams mistake faster fan-out editing for healthier boundaries.",
+      "relatedFailureModes": [
+        "dependency-fog",
+        "ownership-drift"
+      ],
+      "relatedTechDecisions": [
+        "monolith-vs-microservices",
+        "shared-database-vs-service-owned-data"
+      ],
+      "relatedPlaybooks": [
+        "map-change-surface",
+        "review-boundaries-around-hotspots"
+      ],
+      "relatedRedFlags": [
+        "integration-contracts-are-implicit",
+        "business-logic-leaks-across-layers"
+      ],
+      "exampleSignals": [
+        "It is just a small change, but it touches six services.",
+        "We need three teams for this simple rule update."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "naming-is-generic-where-understanding-is-weak",
+      "title": "Naming is generic where understanding is weak",
+      "layer": "code",
+      "signalType": "structural",
+      "summary": "As conceptual clarity drops, code and design names become broader and more vague.",
+      "decisionHeuristic": "Generic naming is often a symptom, not the disease. Follow it to the unclear boundary underneath.",
+      "whatYouNotice": "Names like Manager, Processor, Util, Handler, Common, Core, Engine appear where domain meaning should be stronger.",
+      "whyItMatters": "Weak naming hides weak modeling. It reduces shared understanding and makes refactoring harder.",
+      "whatItUsuallyIndicates": [
+        "unclear domain concepts",
+        "responsibility overlap",
+        "fear of committing to a real model"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "the abstraction is intentionally generic and tightly scoped",
+        "the name is stable because the role is infrastructural and well understood"
+      ],
+      "commonContexts": [
+        "utility layers",
+        "service classes",
+        "integration glue",
+        "shared libraries"
+      ],
+      "severity": "medium",
+      "frequency": "very common",
+      "detectability": "visible-if-you-look",
+      "leadingIndicators": [
+        "different files use the same vague nouns for different jobs",
+        "code reviews rarely challenge names",
+        "domain experts do not recognize terms used in code"
+      ],
+      "diagnosticQuestions": [
+        "Could a non-author explain what this component is for?",
+        "Is this name hiding multiple responsibilities?",
+        "Does the domain have better words than the code does?"
+      ],
+      "whatToCheckNext": [
+        "neighboring classes or modules",
+        "domain language in product or business docs",
+        "change reasons for the generic component"
+      ],
+      "commonRootCauses": [
+        "shallow modeling",
+        "premature abstraction",
+        "infrastructure language dominating domain language"
+      ],
+      "likelyConsequences": [
+        "miscommunication",
+        "scope creep",
+        "harder onboarding"
+      ],
+      "antiPatterns": [
+        "renaming without changing structure",
+        "using generic nouns as a substitute for design clarity"
+      ],
+      "falseFriends": [
+        "good naming alone fixes bad boundaries"
+      ],
+      "ownerMostLikelyToNotice": [
+        "new joiners",
+        "reviewers",
+        "domain-aware engineers"
+      ],
+      "ownerBestPlacedToAct": [
+        "module owner",
+        "tech lead"
+      ],
+      "timeHorizon": "medium-term",
+      "aiAmplifies": "AI tends to generate safe generic names when the model lacks strong domain signals.",
+      "aiMasks": "Consistent generic naming can look orderly and intentional.",
+      "aiSpecificVariant": "Generated code spreads bland naming conventions faster than the team notices conceptual erosion.",
+      "relatedFailureModes": [
+        "abstraction-addiction"
+      ],
+      "relatedTechDecisions": [
+        "generic-solution-vs-case-specific-solution"
+      ],
+      "relatedPlaybooks": [
+        "align-code-language-with-domain-language"
+      ],
+      "relatedRedFlags": [
+        "nobody-can-explain-this-module-simply",
+        "business-logic-leaks-across-layers"
+      ],
+      "exampleSignals": [
+        "We have DataManager, SyncManager, RuleEngine, and CommonProcessor.",
+        "It is generic because we might reuse it later."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "business-logic-leaks-across-layers",
+      "title": "Business logic leaks across layers",
+      "layer": "code",
+      "signalType": "architectural",
+      "summary": "Rules and decisions show up in controllers, mappers, jobs, UI, SQL, and integrations instead of one clear home.",
+      "decisionHeuristic": "When business logic appears everywhere, it effectively has no owner.",
+      "whatYouNotice": "The same rule is partially duplicated in multiple runtime or architectural layers.",
+      "whyItMatters": "Behavior becomes hard to trust, hard to test, and hard to change consistently.",
+      "whatItUsuallyIndicates": [
+        "missing domain layer",
+        "convenience-driven implementation",
+        "weak ownership of business rules"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "light validation is intentionally duplicated near boundaries for safety and the canonical logic is still clear"
+      ],
+      "commonContexts": [
+        "enterprise applications",
+        "API plus frontend products",
+        "integration-heavy systems"
+      ],
+      "severity": "high",
+      "frequency": "common",
+      "detectability": "subtle",
+      "leadingIndicators": [
+        "rule changes need coordinated edits across unrelated layers",
+        "bugs appear as inconsistent behavior rather than hard failures"
+      ],
+      "diagnosticQuestions": [
+        "Where does this rule truly live?",
+        "Which layer is canonical when behavior disagrees?",
+        "Are we validating the same concept or redefining it in each layer?"
+      ],
+      "whatToCheckNext": [
+        "rule ownership map",
+        "tests by layer",
+        "duplicate behavior across UI, API, and persistence"
+      ],
+      "commonRootCauses": [
+        "missing domain model",
+        "deadline shortcuts",
+        "layer-centric rather than behavior-centric design"
+      ],
+      "likelyConsequences": [
+        "behavior drift",
+        "hard-to-reproduce bugs",
+        "expensive change coordination"
+      ],
+      "antiPatterns": [
+        "fixing the visible instance of the rule without tracing all copies",
+        "calling boundary validation a domain model"
+      ],
+      "falseFriends": [
+        "every repeated check is bad duplication"
+      ],
+      "ownerMostLikelyToNotice": [
+        "senior engineers",
+        "QA",
+        "support during inconsistent bugs"
+      ],
+      "ownerBestPlacedToAct": [
+        "tech lead",
+        "architect"
+      ],
+      "timeHorizon": "medium-term",
+      "aiAmplifies": "AI often continues the nearest local pattern, spreading copied business rules across layers faster.",
+      "aiMasks": "Generated consistency in syntax hides inconsistency in actual source of truth.",
+      "aiSpecificVariant": "AI-assisted teams copy rules into adapters and UI surfaces because it is locally convenient.",
+      "relatedFailureModes": [
+        "dependency-fog",
+        "ownership-drift"
+      ],
+      "relatedTechDecisions": [
+        "edge-logic-vs-centralized-backend-logic",
+        "strong-ownership-vs-shared-ownership"
+      ],
+      "relatedPlaybooks": [
+        "centralize-business-rules-by-behavior"
+      ],
+      "relatedRedFlags": [
+        "changes-always-touch-too-many-places",
+        "integration-contracts-are-implicit"
+      ],
+      "exampleSignals": [
+        "The UI validates it one way, the API another, and the batch job a third.",
+        "We need to update this rule in three repositories."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "tests-are-hard-to-write-for-normal-changes",
+      "title": "Tests are hard to write for normal changes",
+      "layer": "code",
+      "signalType": "delivery",
+      "summary": "Ordinary work feels harder to test than it should, even when the change itself is not unusual.",
+      "decisionHeuristic": "If normal changes are painful to test, your design is already taxing delivery.",
+      "whatYouNotice": "Developers avoid adding tests, require huge setup, or rely on manual verification for routine changes.",
+      "whyItMatters": "Poor testability is usually a proxy for poor design, excessive coupling, or hidden runtime assumptions.",
+      "whatItUsuallyIndicates": [
+        "tight coupling",
+        "side-effect-heavy design",
+        "missing seams",
+        "environment-dependent behavior"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "you are testing an unusually integration-heavy legacy surface during an explicitly temporary transition"
+      ],
+      "commonContexts": [
+        "legacy monoliths",
+        "controller-heavy service code",
+        "systems with hidden external dependencies"
+      ],
+      "severity": "high",
+      "frequency": "very common",
+      "detectability": "visible-if-you-look",
+      "leadingIndicators": [
+        "test setup is larger than the change",
+        "developers skip tests for speed",
+        "the team depends heavily on QA or staging confidence"
+      ],
+      "diagnosticQuestions": [
+        "What makes this change hard to test?",
+        "Is the pain from tooling, or from structure?",
+        "Where are the missing seams?"
+      ],
+      "whatToCheckNext": [
+        "test setup complexity",
+        "dependency injection or seam quality",
+        "external dependency map"
+      ],
+      "commonRootCauses": [
+        "bad modularity",
+        "global state",
+        "heavy side effects",
+        "unclear boundaries"
+      ],
+      "likelyConsequences": [
+        "low confidence",
+        "manual regression burden",
+        "slower delivery"
+      ],
+      "antiPatterns": [
+        "accepting low testability as normal for the codebase",
+        "adding only high-level tests to compensate for poor design"
+      ],
+      "falseFriends": [
+        "testing is just always expensive in serious systems"
+      ],
+      "ownerMostLikelyToNotice": [
+        "developers",
+        "tech leads",
+        "QA"
+      ],
+      "ownerBestPlacedToAct": [
+        "tech lead",
+        "module owner"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "AI can generate tests that compile but do not reduce the real pain of a poorly testable structure.",
+      "aiMasks": "Test count rises while true confidence does not.",
+      "aiSpecificVariant": "Teams use AI to generate brittle tests around bad design instead of improving the design.",
+      "relatedFailureModes": [
+        "synthetic-velocity",
+        "dependency-fog"
+      ],
+      "relatedTechDecisions": [
+        "test-pyramid-vs-heavy-end-to-end",
+        "manual-review-depth-vs-automation-dependence"
+      ],
+      "relatedPlaybooks": [
+        "improve-test-seams",
+        "refactor-for-testability"
+      ],
+      "relatedRedFlags": [
+        "end-to-end-tests-carry-all-the-confidence",
+        "one-file-does-too-much"
+      ],
+      "exampleSignals": [
+        "This is a small fix, but I cannot write a sane test for it.",
+        "We will validate this manually in staging."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "end-to-end-tests-carry-all-the-confidence",
+      "title": "End-to-end tests carry all the confidence",
+      "layer": "code",
+      "signalType": "delivery",
+      "summary": "The team relies mainly on slow, broad tests because lower-level confidence is weak or absent.",
+      "decisionHeuristic": "If end-to-end tests are your only safety net, they are probably covering for missing design and test seams.",
+      "whatYouNotice": "Pipeline trust depends mostly on large system tests while unit, component, or contract tests are thin or untrusted.",
+      "whyItMatters": "Confidence becomes slow, expensive, flaky, and difficult to localize.",
+      "whatItUsuallyIndicates": [
+        "poor testability",
+        "weak lower-level coverage",
+        "integration-heavy system design",
+        "late confidence strategy"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "a small system is intentionally tested mainly through a few stable end-to-end flows and this remains affordable"
+      ],
+      "commonContexts": [
+        "legacy systems",
+        "UI-heavy products",
+        "integration-dense platforms"
+      ],
+      "severity": "medium-high",
+      "frequency": "common",
+      "detectability": "obvious",
+      "leadingIndicators": [
+        "long pipelines",
+        "flake anxiety",
+        "developers cannot tell where a failure originates"
+      ],
+      "diagnosticQuestions": [
+        "What lower-level confidence is missing?",
+        "Which key behaviors could be proven earlier and cheaper?",
+        "Do end-to-end tests verify product reality or substitute for missing seams?"
+      ],
+      "whatToCheckNext": [
+        "pipeline timing",
+        "flake rates",
+        "test distribution by layer"
+      ],
+      "commonRootCauses": [
+        "design not testable in smaller scopes",
+        "late QA strategy",
+        "integration-first confidence model"
+      ],
+      "likelyConsequences": [
+        "slow feedback",
+        "flake fatigue",
+        "expensive troubleshooting"
+      ],
+      "antiPatterns": [
+        "solving all quality concerns by adding more end-to-end tests",
+        "treating pipeline duration as the unavoidable cost of confidence"
+      ],
+      "falseFriends": [
+        "end-to-end tests are more real, so they should dominate"
+      ],
+      "ownerMostLikelyToNotice": [
+        "developers",
+        "QA",
+        "platform engineers"
+      ],
+      "ownerBestPlacedToAct": [
+        "tech lead",
+        "quality lead"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "AI can generate more broad tests quickly, increasing volume without fixing confidence distribution.",
+      "aiMasks": "Large test suites can look like maturity while actually signaling design weakness.",
+      "aiSpecificVariant": "AI-generated end-to-end tests inflate coverage dashboards while lower-level trust remains weak.",
+      "relatedFailureModes": [
+        "synthetic-velocity"
+      ],
+      "relatedTechDecisions": [
+        "test-pyramid-vs-heavy-end-to-end"
+      ],
+      "relatedPlaybooks": [
+        "rebalance-confidence-by-layer"
+      ],
+      "relatedRedFlags": [
+        "tests-are-hard-to-write-for-normal-changes",
+        "release-confidence-depends-on-luck-and-timing"
+      ],
+      "exampleSignals": [
+        "If the browser suite passes, we ship.",
+        "We do not really trust the unit tests."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "shared-utility-layer-grows-faster-than-products",
+      "title": "Shared utility layer grows faster than products",
+      "layer": "code",
+      "signalType": "structural",
+      "summary": "The common or shared layer expands aggressively while real product or domain code remains less stable or less clear.",
+      "decisionHeuristic": "When shared code grows faster than concrete needs, abstraction is probably outrunning reality.",
+      "whatYouNotice": "Common, shared, platform, core, or util packages grow rapidly and become the default destination for new logic.",
+      "whyItMatters": "Shared layers often become dumping grounds that increase coupling and reduce local clarity.",
+      "whatItUsuallyIndicates": [
+        "premature reuse",
+        "weak local ownership",
+        "platform-before-product thinking"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "a proven platform capability is being intentionally built for multiple active consumers"
+      ],
+      "commonContexts": [
+        "internal platforms",
+        "framework-heavy teams",
+        "large shared libraries"
+      ],
+      "severity": "medium-high",
+      "frequency": "common",
+      "detectability": "visible-if-you-look",
+      "leadingIndicators": [
+        "teams add to shared layers before local implementation proves the pattern",
+        "common code has many optional paths and flags"
+      ],
+      "diagnosticQuestions": [
+        "How many real consumers does this shared layer have?",
+        "Would this code be clearer if it stayed local longer?",
+        "Is reuse proven or merely hoped for?"
+      ],
+      "whatToCheckNext": [
+        "consumer count",
+        "change history of shared packages",
+        "adoption versus output ratio"
+      ],
+      "commonRootCauses": [
+        "premature abstraction",
+        "status bias toward reusable code",
+        "central platform prestige"
+      ],
+      "likelyConsequences": [
+        "abstraction addiction",
+        "cross-team coupling",
+        "unclear local ownership"
+      ],
+      "antiPatterns": [
+        "moving local code into shared space after one use",
+        "treating shared code volume as leverage"
+      ],
+      "falseFriends": [
+        "more shared code means more maturity"
+      ],
+      "ownerMostLikelyToNotice": [
+        "staff engineers",
+        "platform teams",
+        "new adopters"
+      ],
+      "ownerBestPlacedToAct": [
+        "architect",
+        "platform lead",
+        "tech lead"
+      ],
+      "timeHorizon": "medium-term",
+      "aiAmplifies": "AI makes packaging reusable-looking helpers cheap, increasing shared-layer sprawl.",
+      "aiMasks": "Generated abstractions look clean and coherent enough to evade skepticism.",
+      "aiSpecificVariant": "AI-assisted teams extract shared helpers before the second real consumer exists.",
+      "relatedFailureModes": [
+        "abstraction-addiction",
+        "platform-before-product"
+      ],
+      "relatedTechDecisions": [
+        "generic-solution-vs-case-specific-solution",
+        "platform-first-vs-product-first"
+      ],
+      "relatedPlaybooks": [
+        "wait-for-second-real-consumer",
+        "audit-shared-layer-usage"
+      ],
+      "relatedRedFlags": [
+        "naming-is-generic-where-understanding-is-weak",
+        "nobody-can-explain-this-module-simply"
+      ],
+      "exampleSignals": [
+        "Let us put it in common so other teams can use it later.",
+        "Most of our changes are in shared-core now."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "integration-contracts-are-implicit",
+      "title": "Integration contracts are implicit",
+      "layer": "code",
+      "signalType": "architectural",
+      "summary": "Systems depend on each other through assumptions that are not clearly documented, versioned, or enforced.",
+      "decisionHeuristic": "If the contract only lives in working code and tribal memory, it is not stable enough.",
+      "whatYouNotice": "Consumers and producers rely on behavior that is assumed, inferred, or learned through incidents rather than explicit agreements.",
+      "whyItMatters": "Implicit contracts break silently, make upgrades risky, and create expensive coordination failures.",
+      "whatItUsuallyIndicates": [
+        "weak API or event governance",
+        "hidden dependency on implementation details",
+        "poor ownership of integration surfaces"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "a short-lived internal prototype is intentionally informal and low-risk"
+      ],
+      "commonContexts": [
+        "service integrations",
+        "batch exchanges",
+        "event-driven systems",
+        "frontend-backend boundaries"
+      ],
+      "severity": "high",
+      "frequency": "very common",
+      "detectability": "subtle",
+      "leadingIndicators": [
+        "breaking changes are found late",
+        "consumer teams discover assumptions through production behavior",
+        "versioning is ad hoc"
+      ],
+      "diagnosticQuestions": [
+        "What exactly is guaranteed here?",
+        "Which behaviors are consumers relying on informally?",
+        "How would a new team know the contract?"
+      ],
+      "whatToCheckNext": [
+        "API specs",
+        "contract tests",
+        "consumer dependency inventory",
+        "incident history"
+      ],
+      "commonRootCauses": [
+        "fast-moving teams",
+        "missing producer-consumer governance",
+        "weak documentation and versioning"
+      ],
+      "likelyConsequences": [
+        "fragile integrations",
+        "late-stage failures",
+        "coordination churn"
+      ],
+      "antiPatterns": [
+        "calling it internal so it does not need a contract",
+        "assuming tests in one repo prove a contract across repos"
+      ],
+      "falseFriends": [
+        "it works now, so the contract is effectively clear"
+      ],
+      "ownerMostLikelyToNotice": [
+        "integration teams",
+        "consumers",
+        "support during breakages"
+      ],
+      "ownerBestPlacedToAct": [
+        "producer owner",
+        "API/event governance owner"
+      ],
+      "timeHorizon": "near-to-medium-term",
+      "aiAmplifies": "AI can generate consumers quickly against inferred contracts, increasing hidden dependence on unstated behavior.",
+      "aiMasks": "Generated client code makes implicit contracts feel official.",
+      "aiSpecificVariant": "AI-assisted consumers lock onto examples rather than guarantees.",
+      "relatedFailureModes": [
+        "dependency-fog",
+        "ownership-drift"
+      ],
+      "relatedTechDecisions": [
+        "rest-vs-graphql",
+        "sync-vs-event-driven",
+        "backward-compatibility-vs-faster-evolution"
+      ],
+      "relatedPlaybooks": [
+        "make-contracts-explicit",
+        "add-consumer-driven-contract-tests"
+      ],
+      "relatedRedFlags": [
+        "changes-always-touch-too-many-places",
+        "dependencies-are-discovered-late-every-cycle"
+      ],
+      "exampleSignals": [
+        "Do not change that field, another team might rely on it.",
+        "We never documented that, but yes, consumers expect it."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "generated-code-is-merged-without-deep-review",
+      "title": "Generated code is merged without deep review",
+      "layer": "code",
+      "signalType": "ai-quality",
+      "summary": "Code enters production mainly because it looks plausible, not because reviewers truly understand it.",
+      "decisionHeuristic": "Generated code still needs accountable human understanding, not just approval.",
+      "whatYouNotice": "Review speed rises, diff size grows, and explanations of the change get thinner.",
+      "whyItMatters": "AI can accelerate delivery and accelerate misunderstanding at the same time.",
+      "whatItUsuallyIndicates": [
+        "review overload",
+        "tooling enthusiasm outrunning controls",
+        "weak ownership of generated changes"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "the generated output is trivial, low-risk, and bounded by strong automated checks"
+      ],
+      "commonContexts": [
+        "AI-assisted development",
+        "scaffolding-heavy work",
+        "large refactors",
+        "test generation"
+      ],
+      "severity": "high",
+      "frequency": "increasing",
+      "detectability": "easy-to-normalize",
+      "leadingIndicators": [
+        "reviewers ask fewer conceptual questions",
+        "authors cannot explain major sections of the diff",
+        "code style looks clean but design intent is fuzzy"
+      ],
+      "diagnosticQuestions": [
+        "Who truly understands this change?",
+        "Could the author explain the failure modes of this code?",
+        "What verification exists beyond readability?"
+      ],
+      "whatToCheckNext": [
+        "review comments",
+        "test quality",
+        "ownership of changed area",
+        "incident patterns after AI-heavy merges"
+      ],
+      "commonRootCauses": [
+        "speed pressure",
+        "novelty bias",
+        "insufficient review norms for AI-assisted work"
+      ],
+      "likelyConsequences": [
+        "synthetic velocity",
+        "conceptual drift",
+        "hard-to-maintain code"
+      ],
+      "antiPatterns": [
+        "merging because the code compiles and tests pass",
+        "treating generated code as lower-effort review because the style looks consistent"
+      ],
+      "falseFriends": [
+        "clean syntax means the design is sound",
+        "passing tests prove the author understood the code"
+      ],
+      "ownerMostLikelyToNotice": [
+        "reviewers",
+        "staff engineers",
+        "incident responders"
+      ],
+      "ownerBestPlacedToAct": [
+        "engineering lead",
+        "reviewers",
+        "AI tooling policy owner"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "This is itself an AI-amplified red flag.",
+      "aiMasks": "Uniform style and fluent comments make weakly understood code feel trustworthy.",
+      "aiSpecificVariant": "Review becomes approval-shaped because the generator already did the hard-looking part.",
+      "relatedFailureModes": [
+        "synthetic-velocity",
+        "autocomplete-architecture"
+      ],
+      "relatedTechDecisions": [
+        "ai-assisted-development-vs-manual-only-development",
+        "manual-review-depth-vs-automation-dependence"
+      ],
+      "relatedPlaybooks": [
+        "upgrade-review-for-ai-assisted-work",
+        "require-authorship-accountability"
+      ],
+      "relatedRedFlags": [
+        "prs-are-approved-faster-than-they-are-understood",
+        "more-output-less-certainty"
+      ],
+      "exampleSignals": [
+        "Looks good to me.",
+        "The AI generated most of it but tests are green.",
+        "I have not read every path, but it seems fine."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "everyone-asks-the-same-person",
+      "title": "Everyone asks the same person",
+      "layer": "team",
+      "signalType": "behavioral",
+      "summary": "One person becomes the default source of truth, escalation path, or decision gateway for too many important areas.",
+      "decisionHeuristic": "Repeated dependence on one person is not efficiency; it is usually concentrated risk.",
+      "whatYouNotice": "Questions, approvals, incidents, design clarification, and tribal knowledge all converge on the same individual.",
+      "whyItMatters": "The team becomes fragile, slower, and more dependent on personal availability than shared capability.",
+      "whatItUsuallyIndicates": [
+        "hero dependency",
+        "weak knowledge distribution",
+        "unclear ownership boundaries",
+        "under-documented systems"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "a temporary deep-dive subject matter expert is assisting during a short-lived transition and transfer is already planned"
+      ],
+      "commonContexts": [
+        "legacy systems",
+        "fast-growing teams",
+        "platform bottlenecks",
+        "high-stress delivery periods"
+      ],
+      "severity": "high",
+      "frequency": "universal",
+      "detectability": "obvious",
+      "leadingIndicators": [
+        "people wait for one person's approval",
+        "vacations slow delivery noticeably",
+        "questions route to the same individual regardless of domain"
+      ],
+      "diagnosticQuestions": [
+        "What knowledge or authority is concentrated here?",
+        "Would the team still function well if this person were unavailable for two weeks?",
+        "Is the dependency technical, social, or managerial?"
+      ],
+      "whatToCheckNext": [
+        "ownership map",
+        "documentation quality",
+        "review and escalation patterns"
+      ],
+      "commonRootCauses": [
+        "hero culture",
+        "unclear ownership",
+        "missing handover discipline",
+        "low investment in team-level knowledge"
+      ],
+      "likelyConsequences": [
+        "burnout",
+        "delivery bottlenecks",
+        "slow onboarding",
+        "operational fragility"
+      ],
+      "antiPatterns": [
+        "celebrating indispensability",
+        "treating individual heroics as evidence of strong culture"
+      ],
+      "falseFriends": [
+        "they are just very experienced",
+        "it is faster to ask them"
+      ],
+      "ownerMostLikelyToNotice": [
+        "the whole team",
+        "new joiners",
+        "engineering manager"
+      ],
+      "ownerBestPlacedToAct": [
+        "engineering manager",
+        "tech lead"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "AI can reduce obvious knowledge bottlenecks in some areas, but can also deepen the dependency if only one person knows how to use the tools safely.",
+      "aiMasks": "AI summaries can make expertise look more distributed than it is.",
+      "aiSpecificVariant": "One person becomes the AI whisperer everyone depends on for prompt, tooling, and policy interpretation.",
+      "relatedFailureModes": [
+        "hero-trap",
+        "ownership-drift"
+      ],
+      "relatedTechDecisions": [
+        "strong-ownership-vs-shared-ownership",
+        "specialist-teams-vs-cross-functional-teams"
+      ],
+      "relatedPlaybooks": [
+        "rotate-critical-ownership",
+        "capture-team-knowledge-in-artifacts"
+      ],
+      "relatedRedFlags": [
+        "critical-knowledge-lives-in-chat-and-memory",
+        "people-avoid-touching-certain-areas"
+      ],
+      "exampleSignals": [
+        "Ask Alex.",
+        "They are the only one who really knows that part.",
+        "We cannot deploy until they look at it."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "critical-knowledge-lives-in-chat-and-memory",
+      "title": "Critical knowledge lives in chat and memory",
+      "layer": "team",
+      "signalType": "communication",
+      "summary": "Important operational or architectural knowledge exists mainly in people's heads or scattered chat history.",
+      "decisionHeuristic": "If the team cannot recover a decision without asking a person, the team is depending on memory instead of systems.",
+      "whatYouNotice": "Questions are answered from memory, and prior decisions are rediscovered through private history rather than shared artifacts.",
+      "whyItMatters": "Institutional memory becomes fragile, onboarding slows, and incidents become harder to resolve.",
+      "whatItUsuallyIndicates": [
+        "weak documentation habits",
+        "high delivery pressure crowding out knowledge capture",
+        "culture that values speed over durable memory"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "the topic is genuinely ephemeral and low-risk"
+      ],
+      "commonContexts": [
+        "distributed teams",
+        "fast-growing orgs",
+        "incident-heavy environments"
+      ],
+      "severity": "high",
+      "frequency": "very common",
+      "detectability": "easy-to-normalize",
+      "leadingIndicators": [
+        "onboarding depends heavily on shadowing",
+        "same questions recur",
+        "people search chat before looking for docs because docs are not trusted"
+      ],
+      "diagnosticQuestions": [
+        "What decisions would we lose if key people left?",
+        "Which operational steps are recoverable without direct human recall?",
+        "Are docs missing, stale, or ignored?"
+      ],
+      "whatToCheckNext": [
+        "runbooks",
+        "ADRs",
+        "handover docs",
+        "doc trust patterns"
+      ],
+      "commonRootCauses": [
+        "underinvestment in documentation",
+        "hero culture",
+        "weak ownership of memory artifacts"
+      ],
+      "likelyConsequences": [
+        "slow onboarding",
+        "repeat mistakes",
+        "incident confusion",
+        "hero dependency"
+      ],
+      "antiPatterns": [
+        "assuming chat history is good enough as system memory",
+        "writing docs after every crisis and never maintaining them"
+      ],
+      "falseFriends": [
+        "our team is small, so we do not need durable memory"
+      ],
+      "ownerMostLikelyToNotice": [
+        "new joiners",
+        "incident responders",
+        "engineering manager"
+      ],
+      "ownerBestPlacedToAct": [
+        "tech lead",
+        "engineering manager"
+      ],
+      "timeHorizon": "medium-term",
+      "aiAmplifies": "AI can summarize chat history, which helps temporarily, but also reduces pressure to create authoritative shared artifacts.",
+      "aiMasks": "Summaries can make fragmented memory look organized without fixing source truth.",
+      "aiSpecificVariant": "Teams ask AI for context instead of repairing the actual knowledge system.",
+      "relatedFailureModes": [
+        "hero-trap",
+        "ownership-drift"
+      ],
+      "relatedTechDecisions": [
+        "documentation-first-vs-tacit-coordination",
+        "synchronous-collaboration-vs-async-first"
+      ],
+      "relatedPlaybooks": [
+        "capture-decisions-in-shared-memory",
+        "turn-chat-knowledge-into-runbooks"
+      ],
+      "relatedRedFlags": [
+        "everyone-asks-the-same-person",
+        "new-joiners-take-too-long-to-become-useful"
+      ],
+      "exampleSignals": [
+        "I think we decided that in Slack.",
+        "It is somewhere in Teams.",
+        "I remember why we did this, but it is not written down."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "people-avoid-touching-certain-areas",
+      "title": "People avoid touching certain areas",
+      "layer": "team",
+      "signalType": "behavioral",
+      "summary": "Parts of the system become socially dangerous, so engineers avoid them unless forced.",
+      "decisionHeuristic": "When fear shapes code ownership, the system is already signaling design or knowledge debt.",
+      "whatYouNotice": "Certain modules, services, or workflows are approached reluctantly and only by a small subset of the team.",
+      "whyItMatters": "Avoidance reduces shared ownership, increases risk concentration, and turns ordinary changes into escalations.",
+      "whatItUsuallyIndicates": [
+        "fragile code",
+        "hero dependency",
+        "poor observability",
+        "past negative reinforcement from incidents"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "the area is intentionally restricted for high-risk operational reasons and ownership is still healthy"
+      ],
+      "commonContexts": [
+        "legacy code",
+        "critical data paths",
+        "poorly documented services"
+      ],
+      "severity": "high",
+      "frequency": "common",
+      "detectability": "visible-if-you-look",
+      "leadingIndicators": [
+        "people warn others away from an area",
+        "refactors are postponed repeatedly",
+        "only one or two people volunteer for changes there"
+      ],
+      "diagnosticQuestions": [
+        "What are people afraid of exactly?",
+        "Is the fear about complexity, blast radius, or missing knowledge?",
+        "What would make the area safer to touch?"
+      ],
+      "whatToCheckNext": [
+        "incident history",
+        "test coverage quality",
+        "observability and rollback capability",
+        "knowledge concentration"
+      ],
+      "commonRootCauses": [
+        "painful incident history",
+        "low testability",
+        "weak runbooks",
+        "hero ownership"
+      ],
+      "likelyConsequences": [
+        "stagnation",
+        "localized technical debt growth",
+        "knowledge monopolies"
+      ],
+      "antiPatterns": [
+        "declaring an area scary instead of improving it",
+        "routing all risk to the same expert"
+      ],
+      "falseFriends": [
+        "respect for complexity automatically means healthy caution"
+      ],
+      "ownerMostLikelyToNotice": [
+        "engineers",
+        "team leads",
+        "new joiners"
+      ],
+      "ownerBestPlacedToAct": [
+        "tech lead",
+        "engineering manager"
+      ],
+      "timeHorizon": "medium-term",
+      "aiAmplifies": "AI can make people feel bolder temporarily, but without understanding it can also increase risky edits in feared areas.",
+      "aiMasks": "AI help can hide how weak real ownership still is.",
+      "aiSpecificVariant": "Teams use AI to touch feared code without improving understanding or safety nets.",
+      "relatedFailureModes": [
+        "hero-trap",
+        "dependency-fog"
+      ],
+      "relatedTechDecisions": [
+        "ai-assisted-development-vs-manual-only-development"
+      ],
+      "relatedPlaybooks": [
+        "de-risk-scary-areas",
+        "pair-rotate-document-high-risk-zones"
+      ],
+      "relatedRedFlags": [
+        "everyone-asks-the-same-person",
+        "tests-are-hard-to-write-for-normal-changes"
+      ],
+      "exampleSignals": [
+        "Nobody wants to touch billing.",
+        "Only Chris edits that part.",
+        "Let us not risk it before release."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "prs-are-approved-faster-than-they-are-understood",
+      "title": "PRs are approved faster than they are understood",
+      "layer": "team",
+      "signalType": "behavioral",
+      "summary": "Review speed outruns review depth, so approvals become a workflow ritual rather than a quality mechanism.",
+      "decisionHeuristic": "Fast approval is only healthy if understanding remains visible and real.",
+      "whatYouNotice": "Large or subtle changes get approved quickly with low-substance comments or only superficial review.",
+      "whyItMatters": "Review stops serving learning, safety, and design scrutiny, especially under AI-assisted development.",
+      "whatItUsuallyIndicates": [
+        "review overload",
+        "delivery pressure",
+        "status-driven review behavior",
+        "weak review norms"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "the change is tiny, low-risk, and well-covered by strong automation"
+      ],
+      "commonContexts": [
+        "high-volume teams",
+        "AI-assisted coding environments",
+        "deadline pressure"
+      ],
+      "severity": "high",
+      "frequency": "increasing",
+      "detectability": "easy-to-normalize",
+      "leadingIndicators": [
+        "LGTM dominates review culture",
+        "review comments rarely question design intent",
+        "review duration drops while change size rises"
+      ],
+      "diagnosticQuestions": [
+        "What evidence shows the reviewer understood the change?",
+        "Are reviewers overloaded or disengaged?",
+        "What types of changes are slipping through shallow review?"
+      ],
+      "whatToCheckNext": [
+        "review comment quality",
+        "review turnaround versus diff size",
+        "post-merge incidents tied to reviewed code"
+      ],
+      "commonRootCauses": [
+        "speed pressure",
+        "weak review expectations",
+        "too much change volume",
+        "AI-generated diff inflation"
+      ],
+      "likelyConsequences": [
+        "conceptual errors",
+        "design decay",
+        "lower team learning"
+      ],
+      "antiPatterns": [
+        "measuring review health by speed alone",
+        "assuming tests replace conceptual review"
+      ],
+      "falseFriends": [
+        "fast review equals good team velocity",
+        "clean-looking code needs less review"
+      ],
+      "ownerMostLikelyToNotice": [
+        "staff engineers",
+        "reviewers",
+        "engineering manager"
+      ],
+      "ownerBestPlacedToAct": [
+        "engineering lead",
+        "review culture owners"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "AI expands diff size and apparent fluency, making shallow review even more dangerous.",
+      "aiMasks": "Generated code style reduces visual signals that something is conceptually wrong.",
+      "aiSpecificVariant": "Review becomes approval-shaped because generated code looks orderly and complete.",
+      "relatedFailureModes": [
+        "synthetic-velocity",
+        "autocomplete-architecture"
+      ],
+      "relatedTechDecisions": [
+        "manual-review-depth-vs-automation-dependence",
+        "ai-assisted-development-vs-manual-only-development"
+      ],
+      "relatedPlaybooks": [
+        "review-for-understanding-not-approval",
+        "change-review-expectations-by-risk"
+      ],
+      "relatedRedFlags": [
+        "generated-code-is-merged-without-deep-review",
+        "more-output-less-certainty"
+      ],
+      "exampleSignals": [
+        "Looks good.",
+        "Approved, did not read every path.",
+        "Green checks, so I merged it."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "ownership-is-claimed-but-not-visible",
+      "title": "Ownership is claimed but not visible",
+      "layer": "team",
+      "signalType": "behavioral",
+      "summary": "People say an area is owned, but ownership is not observable in decisions, maintenance, documentation, or response patterns.",
+      "decisionHeuristic": "Real ownership should be visible in behavior, not just in org charts or service catalogs.",
+      "whatYouNotice": "Named owners exist, but issue triage, roadmap choices, docs, and incident response do not reflect clear stewardship.",
+      "whyItMatters": "Invisible ownership creates diffuse accountability and slow action when things go wrong.",
+      "whatItUsuallyIndicates": [
+        "ownership theater",
+        "mismatched authority and accountability",
+        "weak stewardship discipline"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "ownership transfer is actively in progress and explicitly communicated"
+      ],
+      "commonContexts": [
+        "platform teams",
+        "legacy services",
+        "large team reorganizations"
+      ],
+      "severity": "high",
+      "frequency": "common",
+      "detectability": "subtle",
+      "leadingIndicators": [
+        "owners are unclear during incidents",
+        "documentation has no accountable maintainer",
+        "backlog and roadmap decisions are made elsewhere"
+      ],
+      "diagnosticQuestions": [
+        "What decisions can the owner actually make?",
+        "What maintenance signals show stewardship?",
+        "Who updates docs, runbooks, and dependencies here?"
+      ],
+      "whatToCheckNext": [
+        "service ownership registry",
+        "incident response patterns",
+        "documentation freshness",
+        "dependency update behavior"
+      ],
+      "commonRootCauses": [
+        "authority mismatch",
+        "shared ownership ambiguity",
+        "organizational change without follow-through"
+      ],
+      "likelyConsequences": [
+        "slow incident response",
+        "rot in unglamorous areas",
+        "escalation confusion"
+      ],
+      "antiPatterns": [
+        "assigning ownership in tooling without stewardship expectations",
+        "using 'owned' as a label rather than an operational reality"
+      ],
+      "falseFriends": [
+        "it is in the service catalog, so it must be owned"
+      ],
+      "ownerMostLikelyToNotice": [
+        "incident managers",
+        "architects",
+        "staff engineers"
+      ],
+      "ownerBestPlacedToAct": [
+        "engineering manager",
+        "director",
+        "tech lead"
+      ],
+      "timeHorizon": "medium-term",
+      "aiAmplifies": "AI can make routine maintenance tasks easier, which may temporarily hide weak ownership until higher-stakes decisions are needed.",
+      "aiMasks": "Generated docs and summaries can make stewardship look healthier than it is.",
+      "aiSpecificVariant": "AI-maintained artifacts stay current while real decision ownership remains unclear.",
+      "relatedFailureModes": [
+        "ownership-drift",
+        "hero-trap"
+      ],
+      "relatedTechDecisions": [
+        "strong-ownership-vs-shared-ownership",
+        "local-autonomy-vs-central-governance"
+      ],
+      "relatedPlaybooks": [
+        "make-ownership-observable",
+        "align-authority-with-accountability"
+      ],
+      "relatedRedFlags": [
+        "everyone-asks-the-same-person",
+        "critical-knowledge-lives-in-chat-and-memory"
+      ],
+      "exampleSignals": [
+        "Team X owns it, but they need approval from three other groups.",
+        "There is an owner, but nobody knows who updates the runbook."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "no-one-disagrees-in-meetings-everyone-complains-later",
+      "title": "No one disagrees in meetings, everyone complains later",
+      "layer": "team",
+      "signalType": "communication",
+      "summary": "Visible consensus in formal settings hides real disagreement that emerges only afterward in side channels.",
+      "decisionHeuristic": "Silence in decision rooms is not alignment unless concerns are truly surfaced and resolved.",
+      "whatYouNotice": "Meetings appear smooth, but objections surface later in private chats, hallway conversations, or passive resistance.",
+      "whyItMatters": "Fake alignment produces poor decisions, weak commitment, and repeated reopening of issues.",
+      "whatItUsuallyIndicates": [
+        "low psychological safety",
+        "status pressure",
+        "meeting norms that reward smoothness over truth"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "the topic was already debated deeply beforehand and the meeting is only formal closure"
+      ],
+      "commonContexts": [
+        "architecture reviews",
+        "leadership forums",
+        "cross-team planning"
+      ],
+      "severity": "medium-high",
+      "frequency": "common",
+      "detectability": "easy-to-normalize",
+      "leadingIndicators": [
+        "side conversations are more candid than formal ones",
+        "decisions get quietly undermined later",
+        "same concerns recur after 'alignment'"
+      ],
+      "diagnosticQuestions": [
+        "Where does real disagreement surface?",
+        "Who does not feel safe to disagree in the room?",
+        "Do meetings reward honesty or smooth closure?"
+      ],
+      "whatToCheckNext": [
+        "decision follow-through",
+        "private escalation patterns",
+        "retrospective themes"
+      ],
+      "commonRootCauses": [
+        "status dynamics",
+        "fear of conflict",
+        "weak meeting facilitation"
+      ],
+      "likelyConsequences": [
+        "hidden misalignment",
+        "slow execution",
+        "reopened decisions"
+      ],
+      "antiPatterns": [
+        "treating visible calm as proof of alignment",
+        "penalizing dissent implicitly"
+      ],
+      "falseFriends": [
+        "we are aligned because nobody objected"
+      ],
+      "ownerMostLikelyToNotice": [
+        "team members",
+        "facilitators",
+        "good managers"
+      ],
+      "ownerBestPlacedToAct": [
+        "manager",
+        "meeting facilitator",
+        "tech lead"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "AI meeting summaries can flatten disagreement and make tension appear resolved.",
+      "aiMasks": "Polished summaries can erase nuance and unresolved objections.",
+      "aiSpecificVariant": "Decision records reflect summary consensus while real disagreement remains off-record.",
+      "relatedFailureModes": [
+        "consensus-trap",
+        "stakeholder-capture"
+      ],
+      "relatedTechDecisions": [
+        "synchronous-collaboration-vs-async-first"
+      ],
+      "relatedPlaybooks": [
+        "facilitate-explicit-dissent",
+        "record-open-objections"
+      ],
+      "relatedRedFlags": [
+        "the-loudest-person-wins-architecture-discussions",
+        "we-are-aligned-is-said-more-than-alignment-is-demonstrated"
+      ],
+      "exampleSignals": [
+        "No objections? Great, we are aligned.",
+        "After the meeting, three people said they never agreed."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "the-loudest-person-wins-architecture-discussions",
+      "title": "The loudest person wins architecture discussions",
+      "layer": "team",
+      "signalType": "behavioral",
+      "summary": "Architecture outcomes follow assertiveness, seniority, or force of personality more than evidence and context.",
+      "decisionHeuristic": "If the decision quality tracks status more than evidence, the room is already biased.",
+      "whatYouNotice": "Certain people dominate design outcomes regardless of preparation quality, domain fit, or opposing evidence.",
+      "whyItMatters": "Decision quality degrades, dissent goes underground, and design becomes political rather than empirical.",
+      "whatItUsuallyIndicates": [
+        "weak decision process",
+        "status-driven culture",
+        "low safety for dissent"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "a strong opinion is also the strongest evidence-based position and the process still allows real challenge"
+      ],
+      "commonContexts": [
+        "architecture boards",
+        "cross-team design reviews",
+        "high-pressure planning sessions"
+      ],
+      "severity": "medium-high",
+      "frequency": "common",
+      "detectability": "visible-if-you-look",
+      "leadingIndicators": [
+        "the same people always frame the choice space",
+        "counterarguments are dismissed quickly",
+        "decisions align with authority gradients"
+      ],
+      "diagnosticQuestions": [
+        "What evidence changed the decision?",
+        "Would the outcome be different if names were removed?",
+        "Who speaks least and why?"
+      ],
+      "whatToCheckNext": [
+        "review meeting norms",
+        "decision records",
+        "who gets to define trade-offs"
+      ],
+      "commonRootCauses": [
+        "status bias",
+        "weak facilitation",
+        "missing decision framework"
+      ],
+      "likelyConsequences": [
+        "bad trade-offs",
+        "low buy-in",
+        "hidden resentment",
+        "reopened architecture debates"
+      ],
+      "antiPatterns": [
+        "confusing confidence with correctness",
+        "using seniority as a shortcut for decision quality"
+      ],
+      "falseFriends": [
+        "strong opinions from experts are always the most efficient way to decide"
+      ],
+      "ownerMostLikelyToNotice": [
+        "quiet participants",
+        "facilitators",
+        "good managers"
+      ],
+      "ownerBestPlacedToAct": [
+        "architect",
+        "engineering manager",
+        "director"
+      ],
+      "timeHorizon": "medium-term",
+      "aiAmplifies": "AI-generated decks and summaries can arm dominant voices with polished but weakly grounded arguments.",
+      "aiMasks": "High-quality presentation can make shaky reasoning look rigorous.",
+      "aiSpecificVariant": "The winning argument is the best AI-polished one, not the best evidenced one.",
+      "relatedFailureModes": [
+        "consensus-trap",
+        "stakeholder-capture"
+      ],
+      "relatedTechDecisions": [
+        "build-vs-buy",
+        "monolith-vs-microservices"
+      ],
+      "relatedPlaybooks": [
+        "run-evidence-first-design-reviews"
+      ],
+      "relatedRedFlags": [
+        "no-one-disagrees-in-meetings-everyone-complains-later"
+      ],
+      "exampleSignals": [
+        "We are doing this because leadership likes the direction.",
+        "Nobody challenged the strongest voice in the room."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "ai-use-is-widespread-but-norms-are-unclear",
+      "title": "AI use is widespread but norms are unclear",
+      "layer": "team",
+      "signalType": "ai-quality",
+      "summary": "People use AI heavily, but the team lacks shared rules about where it is safe, expected, or dangerous.",
+      "decisionHeuristic": "Broad tool usage without shared norms creates invisible quality variance.",
+      "whatYouNotice": "Some people use AI constantly, some avoid it, and nobody can clearly explain the team’s expectations.",
+      "whyItMatters": "Quality, authorship, review depth, and risk exposure start to vary by individual habit rather than team design.",
+      "whatItUsuallyIndicates": [
+        "immature AI adoption",
+        "weak leadership on usage boundaries",
+        "social rather than policy-based tool norms"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "the team is in an explicit short experimentation phase and is actively turning observations into norms"
+      ],
+      "commonContexts": [
+        "engineering teams adopting copilots",
+        "AI-heavy documentation or support workflows",
+        "mixed-seniority teams"
+      ],
+      "severity": "medium-high",
+      "frequency": "increasing",
+      "detectability": "easy-to-normalize",
+      "leadingIndicators": [
+        "different reviewers expect different standards",
+        "AI use is disclosed inconsistently",
+        "mistakes reveal uneven assumptions about safe use"
+      ],
+      "diagnosticQuestions": [
+        "Where do we allow AI use and why?",
+        "What work still requires direct human authorship or deeper review?",
+        "How do we review AI-assisted changes differently?"
+      ],
+      "whatToCheckNext": [
+        "team norms",
+        "review practices",
+        "incident examples tied to AI usage"
+      ],
+      "commonRootCauses": [
+        "adoption speed outrunning governance",
+        "novelty bias",
+        "lack of explicit local policy"
+      ],
+      "likelyConsequences": [
+        "inconsistent quality",
+        "conflict in reviews",
+        "hidden risk concentration"
+      ],
+      "antiPatterns": [
+        "letting each engineer invent their own AI safety model",
+        "pretending everyone is already aligned because usage is common"
+      ],
+      "falseFriends": [
+        "tool ubiquity means healthy adoption maturity"
+      ],
+      "ownerMostLikelyToNotice": [
+        "reviewers",
+        "engineering manager",
+        "staff engineers"
+      ],
+      "ownerBestPlacedToAct": [
+        "engineering lead",
+        "AI policy owner",
+        "manager"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "This red flag is itself AI-driven.",
+      "aiMasks": "High output and clean style can make uneven usage quality harder to notice.",
+      "aiSpecificVariant": "Different team members operate under incompatible assumptions about AI disclosure, verification, and acceptable use.",
+      "relatedFailureModes": [
+        "synthetic-velocity",
+        "autocomplete-architecture"
+      ],
+      "relatedTechDecisions": [
+        "ai-assisted-development-vs-manual-only-development",
+        "broad-ai-enablement-vs-restricted-high-trust-use"
+      ],
+      "relatedPlaybooks": [
+        "define-local-ai-usage-norms"
+      ],
+      "relatedRedFlags": [
+        "generated-code-is-merged-without-deep-review",
+        "more-output-less-certainty"
+      ],
+      "exampleSignals": [
+        "Everyone uses it differently.",
+        "I did not know we were supposed to disclose AI-generated sections.",
+        "Our review bar depends on who wrote it."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "work-enters-faster-than-it-leaves",
+      "title": "Work enters faster than it leaves",
+      "layer": "process",
+      "signalType": "delivery",
+      "summary": "Incoming work volume consistently outpaces completion, so queues, context switching, and churn grow silently.",
+      "decisionHeuristic": "If intake exceeds throughput for long enough, the system is already degrading even if dashboards still look busy.",
+      "whatYouNotice": "Backlogs expand, WIP grows, priorities churn, and teams feel busy without feeling done.",
+      "whyItMatters": "Unbounded intake creates hidden delay, quality erosion, and loss of focus.",
+      "whatItUsuallyIndicates": [
+        "weak intake discipline",
+        "too many priorities",
+        "underestimated dependency cost",
+        "work decomposition problems"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "a deliberate short-term surge is being buffered and explicitly managed"
+      ],
+      "commonContexts": [
+        "growing teams",
+        "matrixed organizations",
+        "stakeholder-heavy environments"
+      ],
+      "severity": "high",
+      "frequency": "very common",
+      "detectability": "visible-if-you-look",
+      "leadingIndicators": [
+        "backlog grows despite strong effort",
+        "people carry too much WIP",
+        "interruptions routinely displace in-flight work"
+      ],
+      "diagnosticQuestions": [
+        "Who controls intake?",
+        "Which work is entering without displacing other work?",
+        "Are we underestimating how long work truly stays open?"
+      ],
+      "whatToCheckNext": [
+        "WIP levels",
+        "cycle time trends",
+        "queue age",
+        "intake paths"
+      ],
+      "commonRootCauses": [
+        "weak prioritization",
+        "stakeholder overload",
+        "poor work slicing",
+        "hidden dependency costs"
+      ],
+      "likelyConsequences": [
+        "delays",
+        "burnout",
+        "quality drops",
+        "ticket theater"
+      ],
+      "antiPatterns": [
+        "adding capacity targets without reducing intake",
+        "treating backlog growth as normal demand capture"
+      ],
+      "falseFriends": [
+        "a bigger backlog means stronger demand and therefore health"
+      ],
+      "ownerMostLikelyToNotice": [
+        "delivery lead",
+        "engineering manager",
+        "scrum master or equivalent"
+      ],
+      "ownerBestPlacedToAct": [
+        "manager",
+        "product lead",
+        "portfolio owner"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "AI can make work creation easier than work completion, increasing ticket and artifact inflow.",
+      "aiMasks": "Productivity-looking output can hide queue expansion.",
+      "aiSpecificVariant": "AI speeds specification and ticket generation without improving the system’s actual exit rate.",
+      "relatedFailureModes": [
+        "invisible-deadline",
+        "ticket-theater"
+      ],
+      "relatedTechDecisions": [
+        "scope-flexibility-vs-date-certainty"
+      ],
+      "relatedPlaybooks": [
+        "cap-intake",
+        "make-work-exit-rate-visible"
+      ],
+      "relatedRedFlags": [
+        "everything-is-urgent",
+        "teams-cannot-explain-what-done-means"
+      ],
+      "exampleSignals": [
+        "We finished a lot, but the board still looks worse.",
+        "We keep adding work faster than we can close it."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "everything-is-urgent",
+      "title": "Everything is urgent",
+      "layer": "process",
+      "signalType": "delivery",
+      "summary": "Priority loses meaning because too many items are treated as immediate and exceptional at the same time.",
+      "decisionHeuristic": "When everything is urgent, nothing is prioritized—only interrupted.",
+      "whatYouNotice": "Teams switch rapidly, deadlines multiply, and ordinary planning cannot survive incoming escalation.",
+      "whyItMatters": "Constant urgency destroys focus, hides trade-offs, and corrodes delivery predictability.",
+      "whatItUsuallyIndicates": [
+        "weak portfolio discipline",
+        "unpriced dependency or risk work",
+        "incentives that reward escalation"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "a real incident window or crisis period is explicitly declared and time-bounded"
+      ],
+      "commonContexts": [
+        "stakeholder-heavy orgs",
+        "high-interruption teams",
+        "reactive product environments"
+      ],
+      "severity": "high",
+      "frequency": "very common",
+      "detectability": "obvious",
+      "leadingIndicators": [
+        "priority labels lose meaning",
+        "planned work is routinely displaced",
+        "people stop trusting sprint or plan commitments"
+      ],
+      "diagnosticQuestions": [
+        "Who benefits from calling work urgent?",
+        "What criteria distinguish urgent from important?",
+        "What work is suffering because urgency is inflated?"
+      ],
+      "whatToCheckNext": [
+        "priority definitions",
+        "planned versus interrupted work ratio",
+        "stakeholder escalation patterns"
+      ],
+      "commonRootCauses": [
+        "poor prioritization governance",
+        "risk not surfaced early",
+        "misaligned stakeholder incentives"
+      ],
+      "likelyConsequences": [
+        "context switching",
+        "low morale",
+        "unreliable planning",
+        "more hidden debt"
+      ],
+      "antiPatterns": [
+        "solving urgency overload with better status reporting alone",
+        "using urgency language as a negotiation tool"
+      ],
+      "falseFriends": [
+        "high urgency means the team is working on important things"
+      ],
+      "ownerMostLikelyToNotice": [
+        "everyone",
+        "delivery lead",
+        "manager"
+      ],
+      "ownerBestPlacedToAct": [
+        "leadership",
+        "product lead",
+        "engineering manager"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "AI can accelerate escalation artifacts, making it even easier to create apparently urgent work quickly.",
+      "aiMasks": "Fast summaries can make interruption patterns look well-managed rather than pathological.",
+      "aiSpecificVariant": "AI-generated briefs increase the number of polished 'urgent' asks without improving prioritization quality.",
+      "relatedFailureModes": [
+        "invisible-deadline",
+        "ticket-theater"
+      ],
+      "relatedTechDecisions": [
+        "scope-flexibility-vs-date-certainty",
+        "speed-vs-robustness"
+      ],
+      "relatedPlaybooks": [
+        "restore-priority-meaning",
+        "make-interruptions-explicit"
+      ],
+      "relatedRedFlags": [
+        "work-enters-faster-than-it-leaves",
+        "dates-are-fixed-but-trade-offs-are-implicit"
+      ],
+      "exampleSignals": [
+        "Can you just do this quickly today?",
+        "Everything is P0 this quarter."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "scope-changes-without-decision-records",
+      "title": "Scope changes without decision records",
+      "layer": "process",
+      "signalType": "communication",
+      "summary": "Meaningful scope shifts happen, but nobody captures who decided, why, or what trade-off was accepted.",
+      "decisionHeuristic": "If the scope changed and nobody can reconstruct the decision, the risk has been displaced, not managed.",
+      "whatYouNotice": "Features expand, shrink, or morph through chat, meetings, or habit rather than explicit recorded decisions.",
+      "whyItMatters": "Teams lose traceability for trade-offs, which makes conflict, rework, and blame more likely later.",
+      "whatItUsuallyIndicates": [
+        "weak decision hygiene",
+        "status-driven planning",
+        "fast-moving but low-memory process"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "the change is genuinely trivial and local"
+      ],
+      "commonContexts": [
+        "project delivery",
+        "cross-functional product work",
+        "deadline pressure"
+      ],
+      "severity": "medium-high",
+      "frequency": "common",
+      "detectability": "subtle",
+      "leadingIndicators": [
+        "people disagree later about what was agreed",
+        "scope loss or expansion surprises stakeholders",
+        "the team cannot explain why something was cut"
+      ],
+      "diagnosticQuestions": [
+        "Who changed the scope?",
+        "What constraint forced the trade-off?",
+        "Where is that decision visible to the team?"
+      ],
+      "whatToCheckNext": [
+        "decision logs",
+        "sprint or milestone history",
+        "stakeholder communications"
+      ],
+      "commonRootCauses": [
+        "weak operating cadence",
+        "fear of making trade-offs explicit",
+        "informal coordination culture"
+      ],
+      "likelyConsequences": [
+        "misalignment",
+        "scope drift",
+        "hidden disappointment",
+        "repeated debates"
+      ],
+      "antiPatterns": [
+        "using ticket edits as a substitute for decision records",
+        "assuming everyone remembers why the scope moved"
+      ],
+      "falseFriends": [
+        "moving scope quickly means the team is agile"
+      ],
+      "ownerMostLikelyToNotice": [
+        "product manager",
+        "delivery lead",
+        "engineering manager"
+      ],
+      "ownerBestPlacedToAct": [
+        "product lead",
+        "delivery lead"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "AI summaries can compress scope discussions into neat outputs while dropping important trade-off nuance.",
+      "aiMasks": "Generated meeting notes can look complete without capturing real decisions.",
+      "aiSpecificVariant": "AI-generated recap says 'aligned on revised scope' when the actual trade-offs were never made explicit.",
+      "relatedFailureModes": [
+        "invisible-deadline",
+        "ticket-theater"
+      ],
+      "relatedTechDecisions": [
+        "scope-flexibility-vs-date-certainty"
+      ],
+      "relatedPlaybooks": [
+        "record-scope-trade-offs-lightly-but-explicitly"
+      ],
+      "relatedRedFlags": [
+        "dates-are-fixed-but-trade-offs-are-implicit",
+        "teams-cannot-explain-what-done-means"
+      ],
+      "exampleSignals": [
+        "I thought that was out of scope now.",
+        "We agreed to cut that, but I cannot find where."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "dates-are-fixed-but-trade-offs-are-implicit",
+      "title": "Dates are fixed but trade-offs are implicit",
+      "layer": "process",
+      "signalType": "delivery",
+      "summary": "A delivery date is treated as immovable, but the corresponding trade-offs in scope, quality, or risk are not stated openly.",
+      "decisionHeuristic": "A fixed date without explicit flexibility elsewhere is usually just concealed risk.",
+      "whatYouNotice": "Teams speak as if the date is certain, but nobody says what becomes flexible to preserve it.",
+      "whyItMatters": "Invisible trade-offs do not disappear; they move into quality, scope ambiguity, or team stress.",
+      "whatItUsuallyIndicates": [
+        "deadline theater",
+        "weak planning honesty",
+        "fear of explicit trade-offs"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "the constraints are genuinely documented and accepted even if the date is externally fixed"
+      ],
+      "commonContexts": [
+        "project delivery",
+        "leadership milestones",
+        "client commitments"
+      ],
+      "severity": "high",
+      "frequency": "very common",
+      "detectability": "easy-to-normalize",
+      "leadingIndicators": [
+        "quality language gets vaguer as the date approaches",
+        "scope quietly changes",
+        "teams say we will make it work without naming how"
+      ],
+      "diagnosticQuestions": [
+        "What exactly is flexible if the date is not?",
+        "Who approved the trade-off?",
+        "What risk is being priced into the plan?"
+      ],
+      "whatToCheckNext": [
+        "scope history",
+        "quality concessions",
+        "risk logs",
+        "stakeholder alignment notes"
+      ],
+      "commonRootCauses": [
+        "deadline-first culture",
+        "status pressure",
+        "weak portfolio discipline"
+      ],
+      "likelyConsequences": [
+        "hidden quality erosion",
+        "surprise scope loss",
+        "burnout",
+        "trust decay"
+      ],
+      "antiPatterns": [
+        "talking about confidence without naming trade-offs",
+        "letting quality absorb the schedule truth silently"
+      ],
+      "falseFriends": [
+        "confidence language means the plan is credible"
+      ],
+      "ownerMostLikelyToNotice": [
+        "delivery lead",
+        "engineering manager",
+        "senior ICs"
+      ],
+      "ownerBestPlacedToAct": [
+        "product lead",
+        "engineering manager",
+        "leadership sponsor"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "AI can help produce polished status reporting that conceals unresolved trade-offs.",
+      "aiMasks": "Summaries and dashboards can preserve the fiction of certainty longer.",
+      "aiSpecificVariant": "AI-generated plans become more articulate while remaining under-specified on what is actually flexible.",
+      "relatedFailureModes": [
+        "invisible-deadline"
+      ],
+      "relatedTechDecisions": [
+        "scope-flexibility-vs-date-certainty",
+        "speed-vs-robustness"
+      ],
+      "relatedPlaybooks": [
+        "make-scope-time-quality-explicit"
+      ],
+      "relatedRedFlags": [
+        "everything-is-urgent",
+        "scope-changes-without-decision-records"
+      ],
+      "exampleSignals": [
+        "The date is fixed, we will figure out the rest.",
+        "We are still on track, but details are evolving."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "tickets-substitute-for-thinking",
+      "title": "Tickets substitute for thinking",
+      "layer": "process",
+      "signalType": "delivery",
+      "summary": "The organization mistakes ticket flow for real design clarity, prioritization, and problem understanding.",
+      "decisionHeuristic": "A well-structured backlog cannot substitute for clear thinking about the problem.",
+      "whatYouNotice": "Work gets decomposed into many tickets, but important assumptions, trade-offs, and system consequences remain unclear.",
+      "whyItMatters": "Process visibility increases while actual shared understanding stays thin.",
+      "whatItUsuallyIndicates": [
+        "operationalized ambiguity",
+        "workflow theater",
+        "planning without reasoning depth"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "tickets are deliberately lightweight pointers to already well-understood work"
+      ],
+      "commonContexts": [
+        "scaled delivery",
+        "tool-driven organizations",
+        "high-reporting cultures"
+      ],
+      "severity": "medium-high",
+      "frequency": "common",
+      "detectability": "easy-to-normalize",
+      "leadingIndicators": [
+        "ticket count grows faster than clarity",
+        "teams discover key assumptions during implementation",
+        "stakeholders trust ticket structure more than technical reasoning"
+      ],
+      "diagnosticQuestions": [
+        "Does the ticket capture a solved problem or just a task shell?",
+        "What assumptions are still unstated?",
+        "What decision is this ticket pretending not to contain?"
+      ],
+      "whatToCheckNext": [
+        "ticket quality",
+        "ADR and design doc usage",
+        "implementation surprises"
+      ],
+      "commonRootCauses": [
+        "tool worship",
+        "delivery reporting pressure",
+        "weak design hygiene"
+      ],
+      "likelyConsequences": [
+        "misalignment",
+        "rework",
+        "false predictability",
+        "ticket theater"
+      ],
+      "antiPatterns": [
+        "splitting unclear work into smaller unclear work",
+        "measuring preparedness by backlog granularity"
+      ],
+      "falseFriends": [
+        "everything is in Jira so everyone is aligned"
+      ],
+      "ownerMostLikelyToNotice": [
+        "senior engineers",
+        "delivery leads",
+        "product managers"
+      ],
+      "ownerBestPlacedToAct": [
+        "delivery lead",
+        "product lead",
+        "engineering manager"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "AI can generate neat tickets and acceptance criteria rapidly, increasing the illusion of readiness.",
+      "aiMasks": "Polished ticket text makes underthinking harder to notice.",
+      "aiSpecificVariant": "AI-created tickets look complete while hiding that the problem framing is still weak.",
+      "relatedFailureModes": [
+        "ticket-theater",
+        "consensus-trap"
+      ],
+      "relatedTechDecisions": [
+        "documentation-first-vs-tacit-coordination"
+      ],
+      "relatedPlaybooks": [
+        "separate-problem-framing-from-ticketing"
+      ],
+      "relatedRedFlags": [
+        "metrics-are-visible-but-not-trusted",
+        "teams-cannot-explain-what-done-means"
+      ],
+      "exampleSignals": [
+        "We have all the tickets, so we are ready.",
+        "Let us just create subtasks for the unknowns."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "metrics-are-visible-but-not-trusted",
+      "title": "Metrics are visible but not trusted",
+      "layer": "process",
+      "signalType": "operational",
+      "summary": "Dashboards, KPIs, and delivery metrics exist, but people do not believe they reflect reality well enough to act on them confidently.",
+      "decisionHeuristic": "If no one trusts the metric, the visibility is cosmetic.",
+      "whatYouNotice": "Teams still ask people for reality even though dashboards exist, or interpret dashboards defensively instead of operationally.",
+      "whyItMatters": "Measurement without trust creates reporting theater rather than better decisions.",
+      "whatItUsuallyIndicates": [
+        "poor metric design",
+        "bad data quality",
+        "incentives distorting reporting",
+        "metrics misaligned with lived reality"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "a new metric is still being calibrated openly and trust-building is active"
+      ],
+      "commonContexts": [
+        "engineering management",
+        "delivery reporting",
+        "platform dashboards",
+        "AI evaluation reporting"
+      ],
+      "severity": "medium-high",
+      "frequency": "common",
+      "detectability": "visible-if-you-look",
+      "leadingIndicators": [
+        "teams caveat every dashboard discussion",
+        "manual spreadsheets or side channels are used to explain the truth",
+        "leaders ask for alternate numbers"
+      ],
+      "diagnosticQuestions": [
+        "What reality does this metric fail to capture?",
+        "Who trusts it least, and why?",
+        "What behavior is the metric incentivizing?"
+      ],
+      "whatToCheckNext": [
+        "metric definitions",
+        "data quality",
+        "decision use cases",
+        "local workarounds"
+      ],
+      "commonRootCauses": [
+        "measurement divorced from practice",
+        "status incentives",
+        "poor instrumentation"
+      ],
+      "likelyConsequences": [
+        "bad decisions",
+        "defensive reporting",
+        "reporting inflation"
+      ],
+      "antiPatterns": [
+        "adding more dashboards instead of repairing trust",
+        "using disputed metrics for judgment-heavy performance conversations"
+      ],
+      "falseFriends": [
+        "if it is measured, it is under control"
+      ],
+      "ownerMostLikelyToNotice": [
+        "managers",
+        "team leads",
+        "analysts"
+      ],
+      "ownerBestPlacedToAct": [
+        "metric owner",
+        "engineering leadership",
+        "platform/data owners"
+      ],
+      "timeHorizon": "medium-term",
+      "aiAmplifies": "AI can make reporting easier to produce, which can increase the volume of low-trust metrics quickly.",
+      "aiMasks": "AI-generated narrative around a dashboard can make weak metrics feel more legitimate.",
+      "aiSpecificVariant": "Evaluation dashboards look rigorous while task-ground truth remains thin.",
+      "relatedFailureModes": [
+        "metric-myopia",
+        "ticket-theater"
+      ],
+      "relatedTechDecisions": [
+        "synthetic-evaluation-vs-real-world-evaluation"
+      ],
+      "relatedPlaybooks": [
+        "repair-metric-trust-by-usage"
+      ],
+      "relatedRedFlags": [
+        "reporting-looks-healthier-than-delivery-feels",
+        "benchmarks-are-discussed-more-than-real-user-outcomes"
+      ],
+      "exampleSignals": [
+        "The dashboard says green, but everyone knows we are not green.",
+        "We do not use that metric for real decisions."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "retrospectives-repeat-the-same-outputs",
+      "title": "Retrospectives repeat the same outputs",
+      "layer": "process",
+      "signalType": "behavioral",
+      "summary": "Teams keep naming the same problems in retros, but little structural change follows.",
+      "decisionHeuristic": "If retros only re-diagnose the same pain, they are becoming emotional ventilation instead of improvement.",
+      "whatYouNotice": "Themes repeat quarter after quarter: communication, dependencies, too much work, unclear priorities.",
+      "whyItMatters": "The team starts to lose faith that reflection changes reality.",
+      "whatItUsuallyIndicates": [
+        "lack of authority to address root causes",
+        "too many local actions for systemic problems",
+        "retro theater"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "the problem is genuinely systemic and the team is actively escalating it with evidence"
+      ],
+      "commonContexts": [
+        "delivery teams",
+        "multi-team programs",
+        "high-dependency environments"
+      ],
+      "severity": "medium",
+      "frequency": "common",
+      "detectability": "obvious",
+      "leadingIndicators": [
+        "same sticky notes every cycle",
+        "actions are small but causes are structural",
+        "team cynicism rises"
+      ],
+      "diagnosticQuestions": [
+        "What changed after the last three retros?",
+        "Are we naming a team problem or an organizational one?",
+        "Does the team have the authority to act on the real cause?"
+      ],
+      "whatToCheckNext": [
+        "retro action follow-through",
+        "root cause category",
+        "escalation mechanisms"
+      ],
+      "commonRootCauses": [
+        "local process theater",
+        "managerial avoidance",
+        "systemic issues outside team control"
+      ],
+      "likelyConsequences": [
+        "cynicism",
+        "ritual fatigue",
+        "stagnation"
+      ],
+      "antiPatterns": [
+        "assigning small local actions to structural constraints",
+        "running retros without reviewing previous action outcomes"
+      ],
+      "falseFriends": [
+        "the team is reflective because the same issues keep surfacing"
+      ],
+      "ownerMostLikelyToNotice": [
+        "facilitator",
+        "team members",
+        "manager"
+      ],
+      "ownerBestPlacedToAct": [
+        "manager",
+        "scrum master or facilitator",
+        "director if issue is structural"
+      ],
+      "timeHorizon": "medium-term",
+      "aiAmplifies": "AI can generate polished retro summaries and action items that create the feeling of progress without changing underlying authority or structure.",
+      "aiMasks": "Well-written retro artifacts can hide repeated non-action.",
+      "aiSpecificVariant": "AI keeps suggesting similar generic actions while the real blocker remains systemic.",
+      "relatedFailureModes": [
+        "ticket-theater",
+        "stakeholder-capture"
+      ],
+      "relatedTechDecisions": [],
+      "relatedPlaybooks": [
+        "separate-team-actions-from-system-escalations"
+      ],
+      "relatedRedFlags": [
+        "governance-exists-mainly-as-ceremony",
+        "ownership-and-authority-do-not-match"
+      ],
+      "exampleSignals": [
+        "We said the same thing last sprint.",
+        "Action: improve communication."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "release-confidence-depends-on-luck-and-timing",
+      "title": "Release confidence depends on luck and timing",
+      "layer": "process",
+      "signalType": "operational",
+      "summary": "Teams ship when the stars align rather than because the release process gives genuine confidence.",
+      "decisionHeuristic": "If confidence depends on timing, people, or low traffic windows more than repeatable controls, release safety is weak.",
+      "whatYouNotice": "Releases feel risky unless done at special times, with special people, or after manual checks and rituals.",
+      "whyItMatters": "Release quality becomes personality- and circumstance-dependent instead of system-dependent.",
+      "whatItUsuallyIndicates": [
+        "weak automation",
+        "poor rollback design",
+        "low observability",
+        "fragile release process"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "a deliberately unusual high-risk migration is happening with exceptional controls"
+      ],
+      "commonContexts": [
+        "legacy deployments",
+        "operations-heavy systems",
+        "low-automation teams"
+      ],
+      "severity": "high",
+      "frequency": "common",
+      "detectability": "visible-if-you-look",
+      "leadingIndicators": [
+        "release windows are chosen around fear rather than policy",
+        "manual checklists dominate",
+        "rollback confidence is weak"
+      ],
+      "diagnosticQuestions": [
+        "Why do we feel safe shipping at this time but not another?",
+        "What part of confidence is automation, and what part is ritual?",
+        "Can we roll back fast and safely?"
+      ],
+      "whatToCheckNext": [
+        "release pipeline quality",
+        "rollback procedures",
+        "observability around deploys",
+        "incident history after release"
+      ],
+      "commonRootCauses": [
+        "under-automated release process",
+        "weak release engineering",
+        "fear-based norms"
+      ],
+      "likelyConsequences": [
+        "slow delivery",
+        "release anxiety",
+        "manual heroics"
+      ],
+      "antiPatterns": [
+        "normalizing special release rituals",
+        "trusting release folklore more than system design"
+      ],
+      "falseFriends": [
+        "our careful rituals prove we are disciplined"
+      ],
+      "ownerMostLikelyToNotice": [
+        "release engineers",
+        "ops",
+        "delivery leads"
+      ],
+      "ownerBestPlacedToAct": [
+        "platform team",
+        "release owner",
+        "engineering manager"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "AI can generate release checklists and summaries, but cannot replace weak rollback or observability foundations.",
+      "aiMasks": "Operational polish in release notes can hide unreliable release mechanics.",
+      "aiSpecificVariant": "AI-generated release coordination looks smooth while underlying deployment confidence remains shaky.",
+      "relatedFailureModes": [
+        "invisible-deadline",
+        "hero-trap"
+      ],
+      "relatedTechDecisions": [
+        "feature-flags-vs-branch-based-release-isolation",
+        "one-way-door-vs-two-way-door-rollout"
+      ],
+      "relatedPlaybooks": [
+        "increase-release-safety-through-repeatable-controls"
+      ],
+      "relatedRedFlags": [
+        "end-to-end-tests-carry-all-the-confidence",
+        "everything-is-urgent"
+      ],
+      "exampleSignals": [
+        "We should deploy only when Dana is online.",
+        "If traffic is low enough, it is usually okay."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "dependencies-are-discovered-late-every-cycle",
+      "title": "Dependencies are discovered late every cycle",
+      "layer": "process",
+      "signalType": "delivery",
+      "summary": "Important cross-team or cross-system dependencies are found after work is already underway, not during planning or framing.",
+      "decisionHeuristic": "Repeated late dependency discovery usually means the system of work is under-mapped, not just unlucky.",
+      "whatYouNotice": "Teams start work confidently, then uncover blockers, approvals, or integration needs late in execution.",
+      "whyItMatters": "Late dependency discovery ruins predictability and creates avoidable re-planning.",
+      "whatItUsuallyIndicates": [
+        "weak planning visibility",
+        "poor system mapping",
+        "cross-team ownership opacity"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "a genuinely novel initiative is exploring unknown terrain and the uncertainty is explicit"
+      ],
+      "commonContexts": [
+        "large programs",
+        "distributed ownership models",
+        "service-heavy architectures"
+      ],
+      "severity": "high",
+      "frequency": "common",
+      "detectability": "visible-if-you-look",
+      "leadingIndicators": [
+        "planning confidence is high until implementation starts",
+        "blocked states appear late",
+        "cross-team meetings multiply mid-cycle"
+      ],
+      "diagnosticQuestions": [
+        "What did planning fail to reveal?",
+        "Are dependencies hidden technically, organizationally, or both?",
+        "Who knows the dependency graph best?"
+      ],
+      "whatToCheckNext": [
+        "dependency mapping practices",
+        "cross-team planning quality",
+        "integration contract visibility"
+      ],
+      "commonRootCauses": [
+        "weak system understanding",
+        "poor dependency mapping",
+        "siloed teams"
+      ],
+      "likelyConsequences": [
+        "delivery slips",
+        "coordination overload",
+        "scope churn"
+      ],
+      "antiPatterns": [
+        "treating every late dependency as a one-off surprise",
+        "planning detailed tasks without mapping the dependency surface"
+      ],
+      "falseFriends": [
+        "this always happens in complex environments"
+      ],
+      "ownerMostLikelyToNotice": [
+        "delivery lead",
+        "program manager",
+        "senior ICs"
+      ],
+      "ownerBestPlacedToAct": [
+        "architect",
+        "program lead",
+        "engineering manager"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "AI can speed up plan creation without improving actual dependency discovery.",
+      "aiMasks": "Generated plans may look complete even when dependency mapping is shallow.",
+      "aiSpecificVariant": "AI-generated delivery plans omit hidden team and system dependencies because they are not well represented in the source material.",
+      "relatedFailureModes": [
+        "dependency-fog",
+        "invisible-deadline"
+      ],
+      "relatedTechDecisions": [
+        "sync-vs-event-driven",
+        "shared-database-vs-service-owned-data"
+      ],
+      "relatedPlaybooks": [
+        "map-dependencies-before-commitment"
+      ],
+      "relatedRedFlags": [
+        "integration-contracts-are-implicit",
+        "work-enters-faster-than-it-leaves"
+      ],
+      "exampleSignals": [
+        "We did not realize we needed platform support.",
+        "That dependency was only discovered during testing."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "teams-cannot-explain-what-done-means",
+      "title": "Teams cannot explain what done means",
+      "layer": "process",
+      "signalType": "delivery",
+      "summary": "Completion criteria are vague enough that teams, stakeholders, and reviewers mean different things by 'done.'",
+      "decisionHeuristic": "If done is fuzzy, delivery confidence is performative.",
+      "whatYouNotice": "Work moves through states, but completion criteria are inconsistent, local, or only implicit.",
+      "whyItMatters": "Vague done definitions create hidden rework, surprise quality gaps, and endless near-completion.",
+      "whatItUsuallyIndicates": [
+        "weak acceptance criteria",
+        "misaligned stakeholders",
+        "quality and operations not integrated into delivery definition"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "exploratory discovery work is explicitly marked as learning rather than delivery"
+      ],
+      "commonContexts": [
+        "complex delivery programs",
+        "cross-functional teams",
+        "stakeholder-heavy initiatives"
+      ],
+      "severity": "high",
+      "frequency": "common",
+      "detectability": "visible-if-you-look",
+      "leadingIndicators": [
+        "items appear done then reopen",
+        "handoffs reveal missing assumptions",
+        "teams talk about development done, QA done, release done separately without shared definition"
+      ],
+      "diagnosticQuestions": [
+        "What must be true for this to count as done?",
+        "Does done include rollout, observability, docs, and support readiness?",
+        "Who would disagree with our definition of done?"
+      ],
+      "whatToCheckNext": [
+        "acceptance criteria quality",
+        "handoff friction",
+        "reopen rates",
+        "release readiness checklist"
+      ],
+      "commonRootCauses": [
+        "weak cross-functional alignment",
+        "delivery pressure",
+        "role-siloed definitions of completion"
+      ],
+      "likelyConsequences": [
+        "rework",
+        "misalignment",
+        "hidden quality debt",
+        "date slippage"
+      ],
+      "antiPatterns": [
+        "tracking status with multiple incompatible done states",
+        "calling code-complete done"
+      ],
+      "falseFriends": [
+        "everyone knows what done means"
+      ],
+      "ownerMostLikelyToNotice": [
+        "delivery lead",
+        "QA",
+        "support",
+        "product manager"
+      ],
+      "ownerBestPlacedToAct": [
+        "delivery lead",
+        "product and engineering leads together"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "AI can write polished acceptance criteria that still avoid the real operational meaning of done.",
+      "aiMasks": "Documentation quality can make incomplete readiness look complete.",
+      "aiSpecificVariant": "AI-generated test or ticket artifacts create the illusion of completeness without operational closure.",
+      "relatedFailureModes": [
+        "invisible-deadline",
+        "ticket-theater"
+      ],
+      "relatedTechDecisions": [
+        "scope-flexibility-vs-date-certainty"
+      ],
+      "relatedPlaybooks": [
+        "define-done-with-operational-reality"
+      ],
+      "relatedRedFlags": [
+        "scope-changes-without-decision-records",
+        "release-confidence-depends-on-luck-and-timing"
+      ],
+      "exampleSignals": [
+        "It is done for engineering.",
+        "We are basically done."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "reporting-looks-healthier-than-delivery-feels",
+      "title": "Reporting looks healthier than delivery feels",
+      "layer": "leadership",
+      "signalType": "communication",
+      "summary": "Dashboards, status updates, and leadership narratives stay calm and positive while the teams doing the work feel far more fragility and risk.",
+      "decisionHeuristic": "When reporting and lived reality diverge consistently, the reporting system is becoming fiction.",
+      "whatYouNotice": "Status is green-ish, but delivery teams describe churn, risk, ambiguity, and weak confidence.",
+      "whyItMatters": "Leaders make decisions against a polished abstraction instead of operational truth.",
+      "whatItUsuallyIndicates": [
+        "status pressure",
+        "fear of escalation",
+        "metric distortion",
+        "organizational optimism bias"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "teams are temporarily more anxious than the underlying data justifies, and this is examined openly"
+      ],
+      "commonContexts": [
+        "large programs",
+        "executive reporting environments",
+        "client-facing delivery"
+      ],
+      "severity": "high",
+      "frequency": "common",
+      "detectability": "subtle",
+      "leadingIndicators": [
+        "teams use caveats that disappear in higher-level reporting",
+        "escalations feel socially expensive",
+        "leaders are surprised by issues that were visible locally"
+      ],
+      "diagnosticQuestions": [
+        "What gets lost as status moves upward?",
+        "Which risks are being softened or translated away?",
+        "Do teams believe escalation is safe and useful?"
+      ],
+      "whatToCheckNext": [
+        "status translation chain",
+        "metric trust",
+        "risk log quality",
+        "team sentiment versus dashboard state"
+      ],
+      "commonRootCauses": [
+        "status incentives",
+        "fear-based culture",
+        "reporting structures that reward calm over truth"
+      ],
+      "likelyConsequences": [
+        "late surprises",
+        "poor leadership decisions",
+        "trust erosion"
+      ],
+      "antiPatterns": [
+        "polishing risk language for leadership consumption",
+        "using green status as an expected norm rather than a real signal"
+      ],
+      "falseFriends": [
+        "leaders just need simpler status views"
+      ],
+      "ownerMostLikelyToNotice": [
+        "middle managers",
+        "delivery leads",
+        "staff engineers"
+      ],
+      "ownerBestPlacedToAct": [
+        "leadership",
+        "directors",
+        "program sponsors"
+      ],
+      "timeHorizon": "medium-term",
+      "aiAmplifies": "AI can polish status summaries and make divergence between narrative and reality harder to notice.",
+      "aiMasks": "Summaries become more articulate even when truth quality falls.",
+      "aiSpecificVariant": "AI-generated executive updates compress uncertainty into optimism-shaped prose.",
+      "relatedFailureModes": [
+        "invisible-deadline",
+        "stakeholder-capture"
+      ],
+      "relatedTechDecisions": [],
+      "relatedPlaybooks": [
+        "restore-truthful-status-reporting"
+      ],
+      "relatedRedFlags": [
+        "metrics-are-visible-but-not-trusted",
+        "risks-are-acknowledged-but-never-priced-into-plans"
+      ],
+      "exampleSignals": [
+        "The slides say green, but nobody on the team believes green.",
+        "Leadership was surprised by something the team has worried about for weeks."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "teams-are-measured-on-output-not-outcome",
+      "title": "Teams are measured on output, not outcome",
+      "layer": "leadership",
+      "signalType": "behavioral",
+      "summary": "Success is tracked through activity volume, ticket throughput, or artifact production more than through user, business, or system outcomes.",
+      "decisionHeuristic": "When the score rewards motion more than impact, motion will dominate.",
+      "whatYouNotice": "Teams optimize for visible delivery counts, not for whether the work improved the situation it was meant to change.",
+      "whyItMatters": "Output-oriented measurement often creates local optimization and synthetic velocity.",
+      "whatItUsuallyIndicates": [
+        "weak product measurement",
+        "leadership demand for controllable metrics",
+        "status-driven incentives"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "output is being used as a temporary proxy in an area where outcome signals genuinely lag and this is acknowledged"
+      ],
+      "commonContexts": [
+        "delivery organizations",
+        "platform teams",
+        "transformation programs"
+      ],
+      "severity": "high",
+      "frequency": "very common",
+      "detectability": "easy-to-normalize",
+      "leadingIndicators": [
+        "throughput is celebrated more than effect",
+        "teams close lots of work but core pain remains",
+        "measurement discussions avoid user or operational reality"
+      ],
+      "diagnosticQuestions": [
+        "What real problem improved because of this work?",
+        "Would the team make different choices if measured on outcome?",
+        "What is easy to count that is crowding out what matters?"
+      ],
+      "whatToCheckNext": [
+        "KPI structure",
+        "team OKRs",
+        "work selection incentives"
+      ],
+      "commonRootCauses": [
+        "measurement convenience",
+        "weak product strategy",
+        "leadership comfort with controllable numbers"
+      ],
+      "likelyConsequences": [
+        "ticket theater",
+        "synthetic velocity",
+        "platform-before-product"
+      ],
+      "antiPatterns": [
+        "mistaking utilization and throughput for impact",
+        "managing by volume because outcomes are harder to discuss"
+      ],
+      "falseFriends": [
+        "high output proves execution excellence"
+      ],
+      "ownerMostLikelyToNotice": [
+        "staff engineers",
+        "product leaders",
+        "good managers"
+      ],
+      "ownerBestPlacedToAct": [
+        "leadership",
+        "product leadership",
+        "directors"
+      ],
+      "timeHorizon": "medium-to-long-term",
+      "aiAmplifies": "AI makes outputs cheaper to generate, which can worsen output-biased measurement rapidly.",
+      "aiMasks": "High artifact volume can look like progress even when underlying complexity is unsolved.",
+      "aiSpecificVariant": "AI-generated tickets, docs, code, and summaries inflate visible output without equivalent outcome movement.",
+      "relatedFailureModes": [
+        "synthetic-velocity",
+        "platform-before-product"
+      ],
+      "relatedTechDecisions": [
+        "platform-first-vs-product-first",
+        "ai-assisted-development-vs-manual-only-development"
+      ],
+      "relatedPlaybooks": [
+        "shift-measurement-toward-real-effects"
+      ],
+      "relatedRedFlags": [
+        "more-output-less-certainty",
+        "metrics-are-visible-but-not-trusted"
+      ],
+      "exampleSignals": [
+        "We delivered 400 story points.",
+        "The question is how much we shipped, not what changed."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "ownership-and-authority-do-not-match",
+      "title": "Ownership and authority do not match",
+      "layer": "leadership",
+      "signalType": "behavioral",
+      "summary": "Teams or individuals are held accountable for outcomes they do not have enough control to influence.",
+      "decisionHeuristic": "Accountability without authority is usually deferred blame, not ownership.",
+      "whatYouNotice": "Owners need approval from several other parties to make the changes they are responsible for delivering.",
+      "whyItMatters": "This creates frustration, delays, and weak stewardship because responsibility and control are split.",
+      "whatItUsuallyIndicates": [
+        "organizational misdesign",
+        "governance overload",
+        "matrix ambiguity"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "a temporary transition is underway and the mismatch is actively being resolved"
+      ],
+      "commonContexts": [
+        "platform governance",
+        "regulated orgs",
+        "large enterprise matrix structures"
+      ],
+      "severity": "high",
+      "frequency": "common",
+      "detectability": "subtle",
+      "leadingIndicators": [
+        "owners escalate constantly",
+        "decision latency is high",
+        "people are blamed for issues they cannot directly change"
+      ],
+      "diagnosticQuestions": [
+        "What decisions can the owner make without permission?",
+        "Who controls the actual bottlenecks?",
+        "Where is accountability being assigned symbolically?"
+      ],
+      "whatToCheckNext": [
+        "decision rights map",
+        "approval chain",
+        "incident response patterns"
+      ],
+      "commonRootCauses": [
+        "matrix sprawl",
+        "weak org design",
+        "governance accretion"
+      ],
+      "likelyConsequences": [
+        "slow execution",
+        "learned helplessness",
+        "ownership drift"
+      ],
+      "antiPatterns": [
+        "solving mismatch with better communication alone",
+        "assigning owners without changing decision rights"
+      ],
+      "falseFriends": [
+        "clear accountability labels mean authority is clear too"
+      ],
+      "ownerMostLikelyToNotice": [
+        "managers",
+        "team leads",
+        "frustrated owners"
+      ],
+      "ownerBestPlacedToAct": [
+        "directors",
+        "VPs",
+        "org designers"
+      ],
+      "timeHorizon": "medium-term",
+      "aiAmplifies": "AI can make teams appear more self-sufficient on paper while approval bottlenecks remain unchanged.",
+      "aiMasks": "Better reporting does not fix missing authority.",
+      "aiSpecificVariant": "Teams are expected to adopt AI quickly but lack authority over tools, policies, or supporting workflows.",
+      "relatedFailureModes": [
+        "ownership-drift",
+        "stakeholder-capture"
+      ],
+      "relatedTechDecisions": [
+        "strong-ownership-vs-shared-ownership",
+        "local-autonomy-vs-central-governance"
+      ],
+      "relatedPlaybooks": [
+        "align-authority-with-accountability"
+      ],
+      "relatedRedFlags": [
+        "ownership-is-claimed-but-not-visible",
+        "governance-exists-mainly-as-ceremony"
+      ],
+      "exampleSignals": [
+        "The team owns the service, but cannot change the deployment path.",
+        "They are accountable for reliability but do not control key dependencies."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "platform-work-has-no-users-only-sponsors",
+      "title": "Platform work has no users, only sponsors",
+      "layer": "leadership",
+      "signalType": "behavioral",
+      "summary": "Internal platform or foundation work is funded and praised politically, but lacks real, visible, engaged adopters.",
+      "decisionHeuristic": "A platform without real users is usually an organizational aspiration, not a product.",
+      "whatYouNotice": "The work is justified upward, but actual consumer pull, adoption pain, or real product fit remains vague.",
+      "whyItMatters": "Internal systems become elegant artifacts without operational leverage.",
+      "whatItUsuallyIndicates": [
+        "platform-before-product",
+        "prestige infrastructure",
+        "weak consumer discovery"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "the platform is pre-launch but has explicit waiting adopters and adoption milestones"
+      ],
+      "commonContexts": [
+        "developer platform teams",
+        "internal tooling initiatives",
+        "transformation programs"
+      ],
+      "severity": "medium-high",
+      "frequency": "common",
+      "detectability": "visible-if-you-look",
+      "leadingIndicators": [
+        "success is reported through capabilities built, not adoption gained",
+        "consumer feedback is sparse",
+        "roadmap is driven more by leadership narrative than user need"
+      ],
+      "diagnosticQuestions": [
+        "Who are the active users?",
+        "What real pain is being removed today?",
+        "How is adoption measured?"
+      ],
+      "whatToCheckNext": [
+        "adoption data",
+        "consumer interviews",
+        "support requests",
+        "platform roadmap origins"
+      ],
+      "commonRootCauses": [
+        "sponsor-driven planning",
+        "weak product mindset",
+        "premature platform investment"
+      ],
+      "likelyConsequences": [
+        "wasted effort",
+        "weak trust in platform teams",
+        "repeated local workarounds"
+      ],
+      "antiPatterns": [
+        "measuring platform success by features delivered",
+        "building reusability in search of demand"
+      ],
+      "falseFriends": [
+        "leadership support means market fit is internalized"
+      ],
+      "ownerMostLikelyToNotice": [
+        "consumer teams",
+        "staff engineers",
+        "product-minded platform leaders"
+      ],
+      "ownerBestPlacedToAct": [
+        "platform leader",
+        "engineering director",
+        "architect"
+      ],
+      "timeHorizon": "medium-to-long-term",
+      "aiAmplifies": "AI makes internal tooling and platform surfaces easier to build, which increases the risk of building them before demand is real.",
+      "aiMasks": "AI-generated prototypes look polished enough to attract sponsor excitement without consumer validation.",
+      "aiSpecificVariant": "AI platform initiatives are celebrated before a durable internal use case exists.",
+      "relatedFailureModes": [
+        "platform-before-product",
+        "abstraction-addiction"
+      ],
+      "relatedTechDecisions": [
+        "platform-first-vs-product-first",
+        "generic-solution-vs-case-specific-solution"
+      ],
+      "relatedPlaybooks": [
+        "validate-internal-platform-demand"
+      ],
+      "relatedRedFlags": [
+        "shared-utility-layer-grows-faster-than-products",
+        "teams-are-measured-on-output-not-outcome"
+      ],
+      "exampleSignals": [
+        "Leadership is excited, but no team is waiting to adopt it.",
+        "We built the platform; adoption will come later."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "risks-are-acknowledged-but-never-priced-into-plans",
+      "title": "Risks are acknowledged but never priced into plans",
+      "layer": "leadership",
+      "signalType": "delivery",
+      "summary": "People discuss risks intelligently, but schedules, scope, staffing, and commitments do not change to reflect them.",
+      "decisionHeuristic": "A risk that does not affect the plan is usually only being narrated, not managed.",
+      "whatYouNotice": "Risks appear in logs, updates, and caveats, but commitments remain unchanged as if those risks were free.",
+      "whyItMatters": "The organization performs awareness without absorbing consequence.",
+      "whatItUsuallyIndicates": [
+        "status culture",
+        "leadership optimism bias",
+        "fear of explicit trade-offs"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "a risk is low probability and a deliberate conscious decision is documented"
+      ],
+      "commonContexts": [
+        "portfolio planning",
+        "program delivery",
+        "executive steering"
+      ],
+      "severity": "high",
+      "frequency": "common",
+      "detectability": "subtle",
+      "leadingIndicators": [
+        "risks are repeated every update",
+        "plans stay constant despite worsening evidence",
+        "mitigations are shallow or symbolic"
+      ],
+      "diagnosticQuestions": [
+        "What changed in the plan because of this risk?",
+        "What budget, time, or scope was reserved for it?",
+        "Who accepted the cost if the risk lands?"
+      ],
+      "whatToCheckNext": [
+        "risk logs",
+        "capacity plans",
+        "timeline adjustments",
+        "mitigation ownership"
+      ],
+      "commonRootCauses": [
+        "leadership denial",
+        "political pressure",
+        "portfolio overcommitment"
+      ],
+      "likelyConsequences": [
+        "surprise delays",
+        "burnout",
+        "quality compromises"
+      ],
+      "antiPatterns": [
+        "treating risk discussion as mitigation",
+        "keeping risk registers detached from resource planning"
+      ],
+      "falseFriends": [
+        "we have identified the risk, so we are managing it"
+      ],
+      "ownerMostLikelyToNotice": [
+        "delivery leads",
+        "senior engineers",
+        "honest managers"
+      ],
+      "ownerBestPlacedToAct": [
+        "sponsor",
+        "director",
+        "portfolio owner"
+      ],
+      "timeHorizon": "medium-term",
+      "aiAmplifies": "AI can generate higher-quality risk summaries that still do nothing to force real trade-offs.",
+      "aiMasks": "More articulate risk reporting can create false comfort.",
+      "aiSpecificVariant": "AI-related risks are documented elegantly while rollout pace and controls remain unchanged.",
+      "relatedFailureModes": [
+        "invisible-deadline",
+        "stakeholder-capture"
+      ],
+      "relatedTechDecisions": [
+        "scope-flexibility-vs-date-certainty",
+        "fast-ai-adoption-vs-governance-first"
+      ],
+      "relatedPlaybooks": [
+        "price-risk-into-plan"
+      ],
+      "relatedRedFlags": [
+        "reporting-looks-healthier-than-delivery-feels",
+        "dates-are-fixed-but-trade-offs-are-implicit"
+      ],
+      "exampleSignals": [
+        "Yes, that is a major risk, but the timeline is unchanged.",
+        "We are tracking the risk closely."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "governance-exists-mainly-as-ceremony",
+      "title": "Governance exists mainly as ceremony",
+      "layer": "leadership",
+      "signalType": "behavioral",
+      "summary": "Governance structures consume time and artifacts but have weak effect on actual risk, quality, or decision quality.",
+      "decisionHeuristic": "If governance adds friction without changing outcomes, it is drifting toward ceremony.",
+      "whatYouNotice": "Reviews, forums, sign-offs, and process steps are performed because they are expected, not because they meaningfully improve choices.",
+      "whyItMatters": "Ceremonial governance reduces trust, slows work, and encourages workarounds.",
+      "whatItUsuallyIndicates": [
+        "institutional accretion",
+        "risk theater",
+        "unclear governance purpose"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "lightweight recurring reviews are intentionally maintaining shared visibility and do change behavior"
+      ],
+      "commonContexts": [
+        "architecture boards",
+        "change management",
+        "regulated organizations",
+        "security review processes"
+      ],
+      "severity": "medium-high",
+      "frequency": "common",
+      "detectability": "easy-to-normalize",
+      "leadingIndicators": [
+        "same approvals recur with low information value",
+        "teams prepare artifacts mainly to get through the process",
+        "decisions are often made before the governance step"
+      ],
+      "diagnosticQuestions": [
+        "What concrete decision quality or risk reduction comes from this forum?",
+        "Would outcomes worsen measurably if this step disappeared?",
+        "Who trusts this process and why?"
+      ],
+      "whatToCheckNext": [
+        "governance outcomes",
+        "rework caused by governance",
+        "bypass behavior",
+        "cycle time impact"
+      ],
+      "commonRootCauses": [
+        "process accumulation",
+        "weak ownership of governance design",
+        "fear-based controls"
+      ],
+      "likelyConsequences": [
+        "slow delivery",
+        "performative compliance",
+        "shadow processes"
+      ],
+      "antiPatterns": [
+        "adding more sign-offs after every incident",
+        "judging governance success by participation rather than outcomes"
+      ],
+      "falseFriends": [
+        "high attendance means the governance is valuable"
+      ],
+      "ownerMostLikelyToNotice": [
+        "teams subject to the process",
+        "architects",
+        "managers"
+      ],
+      "ownerBestPlacedToAct": [
+        "governance owner",
+        "director",
+        "executive sponsor"
+      ],
+      "timeHorizon": "medium-term",
+      "aiAmplifies": "AI can make governance artifacts faster to generate, increasing ceremonial throughput without improving substance.",
+      "aiMasks": "Well-formatted AI-generated evidence can make weak governance look rigorous.",
+      "aiSpecificVariant": "AI governance produces many forms and guidelines, but local practice remains unchanged.",
+      "relatedFailureModes": [
+        "ticket-theater",
+        "stakeholder-capture"
+      ],
+      "relatedTechDecisions": [
+        "local-autonomy-vs-central-governance",
+        "fast-ai-adoption-vs-governance-first"
+      ],
+      "relatedPlaybooks": [
+        "reduce-governance-to-controls-that-change-outcomes"
+      ],
+      "relatedRedFlags": [
+        "ownership-and-authority-do-not-match",
+        "retrospectives-repeat-the-same-outputs"
+      ],
+      "exampleSignals": [
+        "We need the document because the board expects it.",
+        "The review happened, but nobody changed anything."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "nobody-can-say-what-the-company-will-stop-doing",
+      "title": "Nobody can say what the company will stop doing",
+      "layer": "leadership",
+      "signalType": "behavioral",
+      "summary": "Priorities accumulate, but explicit stopping decisions are rare or absent.",
+      "decisionHeuristic": "An organization that only adds priorities is usually hiding its real trade-offs in people’s capacity and burnout.",
+      "whatYouNotice": "New initiatives, expectations, and standards appear, but old ones rarely leave formally.",
+      "whyItMatters": "Strategic focus degrades, teams overcommit, and every new priority becomes somebody’s invisible burden.",
+      "whatItUsuallyIndicates": [
+        "strategy sprawl",
+        "avoidance of trade-offs",
+        "leadership discomfort with stopping"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "the organization is in a short-term expansion phase and has explicitly funded the extra load"
+      ],
+      "commonContexts": [
+        "rapid growth",
+        "transformation programs",
+        "large portfolios"
+      ],
+      "severity": "high",
+      "frequency": "common",
+      "detectability": "subtle",
+      "leadingIndicators": [
+        "teams inherit more priorities than capacity",
+        "everything remains important quarter after quarter",
+        "sunset conversations rarely happen"
+      ],
+      "diagnosticQuestions": [
+        "What work was intentionally stopped this quarter?",
+        "What priorities displaced which other priorities?",
+        "Where is the cost of not stopping absorbed?"
+      ],
+      "whatToCheckNext": [
+        "portfolio changes",
+        "sunset decisions",
+        "capacity versus initiative count"
+      ],
+      "commonRootCauses": [
+        "strategy avoidance",
+        "political sponsorship of too many initiatives",
+        "weak portfolio discipline"
+      ],
+      "likelyConsequences": [
+        "overload",
+        "thin execution",
+        "priority cynicism"
+      ],
+      "antiPatterns": [
+        "adding 'focus' language without removing commitments",
+        "treating stopping as failure rather than portfolio hygiene"
+      ],
+      "falseFriends": [
+        "we can just work smarter across all priorities"
+      ],
+      "ownerMostLikelyToNotice": [
+        "engineering managers",
+        "portfolio leads",
+        "teams on the receiving end"
+      ],
+      "ownerBestPlacedToAct": [
+        "executive leadership",
+        "portfolio owners"
+      ],
+      "timeHorizon": "medium-to-long-term",
+      "aiAmplifies": "AI can make expansion look more manageable by increasing artifact and planning throughput without increasing actual human capacity.",
+      "aiMasks": "Better summaries and plans can hide strategic overcommitment.",
+      "aiSpecificVariant": "AI adoption becomes one more priority layer without retiring anything else.",
+      "relatedFailureModes": [
+        "invisible-deadline",
+        "stakeholder-capture"
+      ],
+      "relatedTechDecisions": [
+        "platform-first-vs-product-first",
+        "fast-ai-adoption-vs-governance-first"
+      ],
+      "relatedPlaybooks": [
+        "make-stopping-visible"
+      ],
+      "relatedRedFlags": [
+        "everything-is-urgent",
+        "teams-are-measured-on-output-not-outcome"
+      ],
+      "exampleSignals": [
+        "We need to do all of this.",
+        "Nothing is coming off the list."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "more-output-less-certainty",
+      "title": "More output, less certainty",
+      "layer": "ai",
+      "signalType": "ai-quality",
+      "summary": "The volume of produced artifacts increases, but confidence in correctness, design quality, or shared understanding does not keep pace.",
+      "decisionHeuristic": "If output rises faster than certainty, the system is probably borrowing confidence from appearance.",
+      "whatYouNotice": "More code, docs, tickets, or analyses appear quickly, but reviewers, owners, or users feel less sure what is actually trustworthy.",
+      "whyItMatters": "This is one of the clearest signals of synthetic velocity.",
+      "whatItUsuallyIndicates": [
+        "AI leverage outrunning verification",
+        "approval-shaped review",
+        "weak evaluation discipline"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "the team is in a bounded experimentation phase and is explicitly studying this gap"
+      ],
+      "commonContexts": [
+        "AI-assisted coding",
+        "AI-generated docs",
+        "AI-assisted planning and analysis"
+      ],
+      "severity": "high",
+      "frequency": "increasing",
+      "detectability": "visible-if-you-look",
+      "leadingIndicators": [
+        "authors hedge more despite faster production",
+        "reviewers rely on green checks over understanding",
+        "teams reopen work more often after 'faster delivery'"
+      ],
+      "diagnosticQuestions": [
+        "What confidence mechanism kept pace with the output increase?",
+        "Who actually trusts the new artifacts?",
+        "What got faster without getting safer?"
+      ],
+      "whatToCheckNext": [
+        "review depth",
+        "reopen rates",
+        "bug and incident patterns",
+        "evaluation quality"
+      ],
+      "commonRootCauses": [
+        "tool enthusiasm",
+        "weak verification design",
+        "output-biased incentives"
+      ],
+      "likelyConsequences": [
+        "synthetic velocity",
+        "review fatigue",
+        "hard-to-maintain systems"
+      ],
+      "antiPatterns": [
+        "celebrating throughput without confidence evidence",
+        "assuming more generated artifacts equals more solved work"
+      ],
+      "falseFriends": [
+        "we are more productive because we produced more"
+      ],
+      "ownerMostLikelyToNotice": [
+        "reviewers",
+        "staff engineers",
+        "engineering manager"
+      ],
+      "ownerBestPlacedToAct": [
+        "engineering lead",
+        "AI tooling owner"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "This is the core AI-amplified pattern itself.",
+      "aiMasks": "High polish and volume obscure falling confidence.",
+      "aiSpecificVariant": "AI-generated artifacts create a productivity narrative while shared certainty actually declines.",
+      "relatedFailureModes": [
+        "synthetic-velocity",
+        "autocomplete-architecture"
+      ],
+      "relatedTechDecisions": [
+        "ai-assisted-development-vs-manual-only-development",
+        "manual-review-depth-vs-automation-dependence"
+      ],
+      "relatedPlaybooks": [
+        "measure-confidence-not-just-output"
+      ],
+      "relatedRedFlags": [
+        "generated-code-is-merged-without-deep-review",
+        "teams-are-measured-on-output-not-outcome"
+      ],
+      "exampleSignals": [
+        "We shipped much more, but I trust it less.",
+        "The deck looks great, but I do not know if the system is healthier."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "ai-generated-artifacts-are-trusted-more-than-source-material",
+      "title": "AI-generated artifacts are trusted more than source material",
+      "layer": "ai",
+      "signalType": "ai-quality",
+      "summary": "Summaries, synthesized docs, or generated analyses start becoming the operational truth instead of pointers back to real sources.",
+      "decisionHeuristic": "Generated synthesis should accelerate source access, not replace it in high-stakes contexts.",
+      "whatYouNotice": "Teams quote the summary rather than checking the doc, the code, the log, or the transcript it came from.",
+      "whyItMatters": "Compression improves convenience while increasing the chance of subtle but important distortion.",
+      "whatItUsuallyIndicates": [
+        "source fatigue",
+        "over-trust in synthesis",
+        "weak source discipline"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "the source is trivial and the summary is purely convenience for low-risk use"
+      ],
+      "commonContexts": [
+        "documentation",
+        "incident review",
+        "meeting summaries",
+        "design review"
+      ],
+      "severity": "high",
+      "frequency": "increasing",
+      "detectability": "easy-to-normalize",
+      "leadingIndicators": [
+        "people cannot point to source evidence behind important claims",
+        "generated summaries get reused without verification",
+        "nuance disappears from decisions"
+      ],
+      "diagnosticQuestions": [
+        "What is the source of this claim?",
+        "Was the underlying material checked by a human?",
+        "Would the conclusion change if we read the source directly?"
+      ],
+      "whatToCheckNext": [
+        "citation quality",
+        "source accessibility",
+        "decision records tied to evidence"
+      ],
+      "commonRootCauses": [
+        "time pressure",
+        "over-trust in AI synthesis",
+        "low source discipline"
+      ],
+      "likelyConsequences": [
+        "decision distortion",
+        "false confidence",
+        "knowledge drift"
+      ],
+      "antiPatterns": [
+        "replacing primary-source review with AI digest review",
+        "using summaries in place of logs, code, or data inspection"
+      ],
+      "falseFriends": [
+        "the summary is probably accurate enough"
+      ],
+      "ownerMostLikelyToNotice": [
+        "careful reviewers",
+        "staff engineers",
+        "incident leads"
+      ],
+      "ownerBestPlacedToAct": [
+        "team lead",
+        "AI policy owner",
+        "documentation owner"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "This red flag is directly AI-amplified.",
+      "aiMasks": "High-quality prose can make weak synthesis feel authoritative.",
+      "aiSpecificVariant": "AI-generated architecture or incident summaries become the shared memory instead of source-linked interpretation.",
+      "relatedFailureModes": [
+        "benchmark-mirage",
+        "prompt-ops-chaos"
+      ],
+      "relatedTechDecisions": [
+        "synthetic-evaluation-vs-real-world-evaluation"
+      ],
+      "relatedPlaybooks": [
+        "treat-summaries-as-entry-points-not-evidence"
+      ],
+      "relatedRedFlags": [
+        "critical-knowledge-lives-in-chat-and-memory",
+        "benchmarks-are-discussed-more-than-real-user-outcomes"
+      ],
+      "exampleSignals": [
+        "The summary said that was already decided.",
+        "I did not read the source doc; the AI recap was enough."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "prompt-changes-replace-system-thinking",
+      "title": "Prompt changes replace system thinking",
+      "layer": "ai",
+      "signalType": "ai-quality",
+      "summary": "Teams keep tuning prompts when the real problem is workflow design, source quality, evaluation, or tool structure.",
+      "decisionHeuristic": "If prompt editing is your main response to repeated failure, you may be solving the wrong layer.",
+      "whatYouNotice": "Behavior issues trigger more prompt iterations, while data, retrieval, tool use, and workflow design remain weak.",
+      "whyItMatters": "Prompt iteration can create local improvements while system quality remains fundamentally unstable.",
+      "whatItUsuallyIndicates": [
+        "missing workflow structure",
+        "unclear problem decomposition",
+        "overreliance on language-layer fixes"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "the task is genuinely small and prompt tuning is the right local control surface"
+      ],
+      "commonContexts": [
+        "early AI products",
+        "agent workflows",
+        "RAG systems"
+      ],
+      "severity": "medium-high",
+      "frequency": "increasing",
+      "detectability": "visible-if-you-look",
+      "leadingIndicators": [
+        "prompts keep getting longer",
+        "failure categories recur despite prompt edits",
+        "workflow and tool design stays static"
+      ],
+      "diagnosticQuestions": [
+        "Is this a prompt problem or a system problem?",
+        "What evidence says the prompt is the right lever?",
+        "What does the model lack besides wording?"
+      ],
+      "whatToCheckNext": [
+        "failure taxonomy",
+        "source quality",
+        "tooling and orchestration design",
+        "evaluation harness"
+      ],
+      "commonRootCauses": [
+        "prompt-layer overfocus",
+        "underinvestment in system design",
+        "low observability"
+      ],
+      "likelyConsequences": [
+        "fragile behavior",
+        "prompt ops chaos",
+        "false local wins"
+      ],
+      "antiPatterns": [
+        "solving every failure with another paragraph in the prompt",
+        "avoiding instrumentation by over-editing wording"
+      ],
+      "falseFriends": [
+        "a better prompt is always the fastest correct fix"
+      ],
+      "ownerMostLikelyToNotice": [
+        "AI engineers",
+        "product builders",
+        "staff engineers"
+      ],
+      "ownerBestPlacedToAct": [
+        "AI system owner",
+        "architect"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "This red flag is AI-native.",
+      "aiMasks": "Prompt tweaks can create enough visible improvement to delay deeper fixes.",
+      "aiSpecificVariant": "Teams grow elaborate system prompts instead of repairing retrieval, tool use, or evaluation design.",
+      "relatedFailureModes": [
+        "prompt-ops-chaos"
+      ],
+      "relatedTechDecisions": [
+        "prompt-layer-vs-workflow-tooling-layer",
+        "rag-vs-fine-tuning"
+      ],
+      "relatedPlaybooks": [
+        "separate-prompt-problems-from-system-problems"
+      ],
+      "relatedRedFlags": [
+        "rag-uses-sources-nobody-actually-trusts",
+        "benchmarks-are-discussed-more-than-real-user-outcomes"
+      ],
+      "exampleSignals": [
+        "Let us just add one more instruction.",
+        "The prompt is now 3 pages long, but quality is still unstable."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "benchmarks-are-discussed-more-than-real-user-outcomes",
+      "title": "Benchmarks are discussed more than real user outcomes",
+      "layer": "ai",
+      "signalType": "ai-quality",
+      "summary": "Teams spend more time on benchmark scores and synthetic eval wins than on whether the system helps real users in real tasks.",
+      "decisionHeuristic": "Benchmarks are useful only if they stay subordinate to task reality.",
+      "whatYouNotice": "Model or system discussions center on scores, leaderboards, or eval deltas more than real-world workflow quality.",
+      "whyItMatters": "Proxy success can become a substitute for product truth.",
+      "whatItUsuallyIndicates": [
+        "benchmark mirage",
+        "evaluation convenience bias",
+        "weak real-world measurement"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "the team is still pre-launch and explicitly using benchmarks as temporary screening proxies"
+      ],
+      "commonContexts": [
+        "LLM product teams",
+        "model selection",
+        "research-to-product transitions"
+      ],
+      "severity": "high",
+      "frequency": "increasing",
+      "detectability": "visible-if-you-look",
+      "leadingIndicators": [
+        "user outcomes are harder to state than eval scores",
+        "decisions are made from benchmark deltas alone",
+        "real-world incidents do not change benchmark enthusiasm"
+      ],
+      "diagnosticQuestions": [
+        "What user task got better?",
+        "Which benchmark result actually predicts user value here?",
+        "Where do our benchmarks diverge from production?"
+      ],
+      "whatToCheckNext": [
+        "real task evaluations",
+        "user complaints",
+        "shadow-mode results",
+        "failure clusters"
+      ],
+      "commonRootCauses": [
+        "measurement convenience",
+        "research culture carryover",
+        "missing product-grounded eval design"
+      ],
+      "likelyConsequences": [
+        "benchmark mirage",
+        "misallocated effort",
+        "user disappointment"
+      ],
+      "antiPatterns": [
+        "shipping because the benchmark improved",
+        "tuning to evaluation sets rather than user tasks"
+      ],
+      "falseFriends": [
+        "if the benchmark is strong, the product must be strong"
+      ],
+      "ownerMostLikelyToNotice": [
+        "AI product lead",
+        "evaluators",
+        "careful users"
+      ],
+      "ownerBestPlacedToAct": [
+        "AI lead",
+        "product lead"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "AI product culture is especially vulnerable to proxy overfocus.",
+      "aiMasks": "Quantitative eval gains can feel more solid than messy real-world evidence.",
+      "aiSpecificVariant": "The team argues about eval deltas while users still fail at the job to be done.",
+      "relatedFailureModes": [
+        "benchmark-mirage",
+        "silent-model-drift"
+      ],
+      "relatedTechDecisions": [
+        "synthetic-evaluation-vs-real-world-evaluation",
+        "rag-vs-fine-tuning"
+      ],
+      "relatedPlaybooks": [
+        "anchor-evaluations-in-real-tasks"
+      ],
+      "relatedRedFlags": [
+        "metrics-are-visible-but-not-trusted",
+        "ai-generated-artifacts-are-trusted-more-than-source-material"
+      ],
+      "exampleSignals": [
+        "The benchmark is up 4 points, so we are clearly better.",
+        "We do not yet have real user data, but the evals look strong."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "humans-in-the-loop-are-rubber-stamps",
+      "title": "Humans in the loop are rubber stamps",
+      "layer": "ai",
+      "signalType": "ai-quality",
+      "summary": "Human review exists in the workflow, but the review step does not preserve meaningful judgment.",
+      "decisionHeuristic": "A human checkpoint only matters if it still changes outcomes.",
+      "whatYouNotice": "Reviewers approve quickly, trust the system by default, or lack enough context and time to challenge outputs meaningfully.",
+      "whyItMatters": "This creates the appearance of safety without the actual benefit of human oversight.",
+      "whatItUsuallyIndicates": [
+        "throughput pressure",
+        "poor review UX",
+        "misdesigned human-in-the-loop process"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "the review step is intentionally lightweight because the risk is genuinely low"
+      ],
+      "commonContexts": [
+        "AI-assisted moderation",
+        "AI-assisted support",
+        "document review and approval workflows"
+      ],
+      "severity": "high",
+      "frequency": "increasing",
+      "detectability": "subtle",
+      "leadingIndicators": [
+        "approval rates are near-total",
+        "review times are extremely short",
+        "reviewers cannot explain what they are meant to catch"
+      ],
+      "diagnosticQuestions": [
+        "What decisions do reviewers meaningfully alter?",
+        "Do reviewers have the context to challenge the output?",
+        "Is the process optimized for judgment or throughput?"
+      ],
+      "whatToCheckNext": [
+        "override rates",
+        "review timing",
+        "review instructions",
+        "error rates after approval"
+      ],
+      "commonRootCauses": [
+        "bad workflow design",
+        "throughput targets",
+        "misplaced trust in the AI"
+      ],
+      "likelyConsequences": [
+        "unsafe automation theater",
+        "false confidence",
+        "slow but not safer systems"
+      ],
+      "antiPatterns": [
+        "adding humans as a comfort layer without redesigning the task",
+        "measuring human review mainly by speed"
+      ],
+      "falseFriends": [
+        "a human touched it, so it is safe"
+      ],
+      "ownerMostLikelyToNotice": [
+        "reviewers",
+        "quality leads",
+        "risk owners"
+      ],
+      "ownerBestPlacedToAct": [
+        "workflow owner",
+        "AI product lead",
+        "risk owner"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "AI systems invite this red flag whenever autonomy pressure rises faster than review design quality.",
+      "aiMasks": "Human presence in the workflow reassures stakeholders even when the review is ineffective.",
+      "aiSpecificVariant": "Reviewers become final-click operators for model outputs they do not deeply inspect.",
+      "relatedFailureModes": [
+        "benchmark-mirage",
+        "silent-model-drift"
+      ],
+      "relatedTechDecisions": [
+        "human-in-the-loop-vs-full-automation"
+      ],
+      "relatedPlaybooks": [
+        "design-human-review-for-real-judgment"
+      ],
+      "relatedRedFlags": [
+        "more-output-less-certainty",
+        "generated-code-is-merged-without-deep-review"
+      ],
+      "exampleSignals": [
+        "Humans are still in the loop, so it is safe.",
+        "Reviewers approve almost everything anyway."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "rag-uses-sources-nobody-actually-trusts",
+      "title": "RAG uses sources nobody actually trusts",
+      "layer": "ai",
+      "signalType": "ai-quality",
+      "summary": "Retrieval-based systems cite or use sources that are stale, low quality, politically loaded, or not actually treated as authoritative by humans.",
+      "decisionHeuristic": "A grounded answer is only as trustworthy as the sources it grounds to.",
+      "whatYouNotice": "The system cites documents that people would not use as authoritative in serious work.",
+      "whyItMatters": "RAG can look responsible while still grounding to bad truth.",
+      "whatItUsuallyIndicates": [
+        "weak source curation",
+        "index-all-the-things mentality",
+        "no source trust model"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "the system is explicitly exploratory and not treated as authoritative"
+      ],
+      "commonContexts": [
+        "enterprise assistants",
+        "internal knowledge bots",
+        "support copilots"
+      ],
+      "severity": "high",
+      "frequency": "increasing",
+      "detectability": "subtle",
+      "leadingIndicators": [
+        "users say the citations are technically relevant but not reliable",
+        "important docs and casual notes are treated similarly",
+        "stale sources keep appearing"
+      ],
+      "diagnosticQuestions": [
+        "Would a human trust this source for a real decision?",
+        "What signals determine source authority?",
+        "Do we distinguish between accessible and authoritative?"
+      ],
+      "whatToCheckNext": [
+        "source inclusion rules",
+        "ranking logic",
+        "freshness controls",
+        "authority model"
+      ],
+      "commonRootCauses": [
+        "unfiltered corpus expansion",
+        "weak governance of sources",
+        "ranking based on recall over trust"
+      ],
+      "likelyConsequences": [
+        "plausible but wrong answers",
+        "erosion of trust in the assistant",
+        "hidden misinformation"
+      ],
+      "antiPatterns": [
+        "assuming citation equals correctness",
+        "indexing everything because more data feels safer"
+      ],
+      "falseFriends": [
+        "it cited sources, so it is grounded",
+        "the source is available, so it is trustworthy"
+      ],
+      "ownerMostLikelyToNotice": [
+        "domain experts",
+        "users",
+        "AI evaluators"
+      ],
+      "ownerBestPlacedToAct": [
+        "AI engineer",
+        "knowledge system owner",
+        "domain owner"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "This is a core AI-specific red flag.",
+      "aiMasks": "Citations make low-trust sources feel authoritative.",
+      "aiSpecificVariant": "The assistant becomes confidently wrong with references.",
+      "relatedFailureModes": [
+        "rag-without-ground-truth",
+        "benchmark-mirage"
+      ],
+      "relatedTechDecisions": [
+        "rag-vs-fine-tuning",
+        "synthetic-evaluation-vs-real-world-evaluation"
+      ],
+      "relatedPlaybooks": [
+        "define-source-trust-model",
+        "curate-authoritative-corpus"
+      ],
+      "relatedRedFlags": [
+        "ai-generated-artifacts-are-trusted-more-than-source-material",
+        "model-drift-is-noticed-informally-not-measured"
+      ],
+      "exampleSignals": [
+        "It cited a document nobody would trust in an actual review.",
+        "The source exists, but it is outdated and unofficial."
+      ],
+      "patternConfidence": "high"
+    },
+    {
+      "slug": "model-drift-is-noticed-informally-not-measured",
+      "title": "Model drift is noticed informally, not measured",
+      "layer": "ai",
+      "signalType": "ai-quality",
+      "summary": "People sense that model or system behavior changed, but the organization lacks reliable measurement, alerts, or structured comparison.",
+      "decisionHeuristic": "If drift is discovered by vibes first, monitoring is underpowered.",
+      "whatYouNotice": "Users say the system feels different or worse, but the team cannot quantify when, how, or why behavior shifted.",
+      "whyItMatters": "Unmeasured drift weakens trust and delays corrective action.",
+      "whatItUsuallyIndicates": [
+        "weak eval monitoring",
+        "provider drift exposure",
+        "poor baseline comparison"
+      ],
+      "notNecessarilyAProblemWhen": [
+        "a temporary exploratory prototype is explicitly not treated as stable"
+      ],
+      "commonContexts": [
+        "vendor model APIs",
+        "RAG systems",
+        "prompt-evolving copilots"
+      ],
+      "severity": "high",
+      "frequency": "increasing",
+      "detectability": "subtle",
+      "leadingIndicators": [
+        "user anecdotes drive concern before metrics do",
+        "qualitative complaints recur without quantified evidence",
+        "provider or prompt changes are poorly tracked"
+      ],
+      "diagnosticQuestions": [
+        "What baseline behavior are we comparing against?",
+        "What changed in prompt, model, retrieval, or tooling?",
+        "Which task slices are most vulnerable to drift?"
+      ],
+      "whatToCheckNext": [
+        "eval time series",
+        "provider change logs",
+        "prompt and workflow version history",
+        "user complaint clusters"
+      ],
+      "commonRootCauses": [
+        "weak evaluation harness",
+        "poor version tracking",
+        "insufficient monitoring"
+      ],
+      "likelyConsequences": [
+        "trust erosion",
+        "slow issue response",
+        "benchmark mirage"
+      ],
+      "antiPatterns": [
+        "relying on anecdote without building drift measurement",
+        "treating provider updates as invisible infrastructure changes"
+      ],
+      "falseFriends": [
+        "we would know if the model meaningfully changed"
+      ],
+      "ownerMostLikelyToNotice": [
+        "users",
+        "support teams",
+        "AI evaluators"
+      ],
+      "ownerBestPlacedToAct": [
+        "AI engineer",
+        "evaluation owner",
+        "product owner"
+      ],
+      "timeHorizon": "near-term",
+      "aiAmplifies": "This is an AI-specific operating risk.",
+      "aiMasks": "General system success can hide slice-specific degradation until users complain loudly enough.",
+      "aiSpecificVariant": "Provider or pipeline changes alter behavior while the team lacks a living baseline.",
+      "relatedFailureModes": [
+        "silent-model-drift",
+        "benchmark-mirage"
+      ],
+      "relatedTechDecisions": [
+        "model-api-vs-self-hosted-model",
+        "synthetic-evaluation-vs-real-world-evaluation"
+      ],
+      "relatedPlaybooks": [
+        "monitor-drift-with-task-based-evals"
+      ],
+      "relatedRedFlags": [
+        "benchmarks-are-discussed-more-than-real-user-outcomes",
+        "rag-uses-sources-nobody-actually-trusts"
+      ],
+      "exampleSignals": [
+        "It feels worse lately, but we do not know why.",
+        "Users noticed the change before our monitoring did."
+      ],
+      "patternConfidence": "high"
+    }
+  ]
+}

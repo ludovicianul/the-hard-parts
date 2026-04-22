@@ -1,0 +1,25 @@
+{
+  "name": "nosilverbullet-dev",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "nosilverbullet.dev — static-first editorial reference site. Phase 1 scaffold.",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "validate": "tsx scripts/validate-content.ts",
+    "typecheck": "astro check"
+  },
+  "dependencies": {
+    "astro": "^5.1.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

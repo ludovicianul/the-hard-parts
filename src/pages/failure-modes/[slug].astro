@@ -1,0 +1,30 @@
+---
+import DetailLayout from "@/layouts/DetailLayout.astro";
+import { findEntry, listEntries } from "@/lib/load";
+import { ensureValidated } from "@/lib/validate";
+
+export async function getStaticPaths() {
+  ensureValidated();
+  return listEntries("FM").map((e) => ({ params: { slug: e.slug } }));
+}
+
+const { slug } = Astro.params;
+const entry = slug ? findEntry("FM", slug) : undefined;
+if (!entry) {
+  throw new Error(`Failure Mode not found for slug "${slug}"`);
+}
+---
+<DetailLayout
+  code="FM"
+  title={entry.title}
+  summary={entry.summary}
+  subcategory={entry.category}
+>
+  <div class="nsb-placeholder">
+    Phase 1 placeholder · Failure Mode detail page for "{entry.slug}".
+    The real body — FailureModeSnapshot / FailureModeStoryArc /
+    WarningSignsByStage / FailureModeCauses / FailureModeResponse /
+    RelatedEntriesBlock / AiImpactBlock / FailureModeFieldNotes — lands in
+    Phase 2.
+  </div>
+</DetailLayout>

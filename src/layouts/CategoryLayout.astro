@@ -1,0 +1,70 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import type { CategoryCode } from "@/content/schemas/shared";
+import { categoryByCode } from "@/lib/categories";
+import { categoryBlock } from "@/lib/load";
+
+export interface Props {
+  code: CategoryCode;
+}
+
+const { code } = Astro.props;
+const desc = categoryByCode(code);
+const meta = categoryBlock(code);
+const accent = code.toLowerCase() as "fm" | "td" | "rf" | "ep";
+---
+<BaseLayout title={desc.name} description={meta.summary} accent={accent}>
+  <div class="nsb-container">
+    <header class="nsb-cat-hero">
+      <p class="nsb-eyebrow">Category · {desc.shortLabel}</p>
+      <hr class="nsb-accent-rule" />
+      <h1 class="nsb-cat-hero__title">{meta.name}</h1>
+      <p class="nsb-cat-hero__summary">{meta.summary}</p>
+      <dl class="nsb-cat-hero__meta">
+        <div>
+          <dt>Subcategories</dt>
+          <dd>{meta.subcategories.join(" · ")}</dd>
+        </div>
+      </dl>
+    </header>
+
+    <section class="nsb-cat-body">
+      <slot />
+    </section>
+  </div>
+
+  <style is:global>
+    .nsb-cat-hero {
+      padding-block: var(--space-6) var(--space-7);
+      border-bottom: var(--rule);
+      margin-bottom: var(--space-7);
+    }
+    .nsb-cat-hero__title {
+      font-size: var(--text-4xl);
+      margin: 0 0 var(--space-3) 0;
+      letter-spacing: var(--tracking-tight);
+    }
+    .nsb-cat-hero__summary {
+      font-size: var(--text-lg);
+      color: var(--color-ink-dim);
+      max-width: var(--reading-max);
+      margin: 0 0 var(--space-5) 0;
+    }
+    .nsb-cat-hero__meta {
+      display: flex;
+      gap: var(--space-6);
+      margin: 0;
+      font-family: var(--font-sans);
+      font-size: var(--text-sm);
+    }
+    .nsb-cat-hero__meta dt {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-ink-faint);
+      margin-bottom: var(--space-1);
+    }
+    .nsb-cat-hero__meta dd { margin: 0; color: var(--color-ink-dim); }
+  </style>
+</BaseLayout>

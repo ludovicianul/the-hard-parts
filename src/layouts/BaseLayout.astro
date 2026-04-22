@@ -1,0 +1,133 @@
+---
+import "@/styles/globals.css";
+import { CATEGORIES, CATEGORY_ORDER } from "@/lib/categories";
+
+export interface Props {
+  title: string;
+  description?: string;
+  /** One of "fm" | "td" | "rf" | "ep" — sets the current page accent. */
+  accent?: "fm" | "td" | "rf" | "ep";
+}
+
+const { title, description, accent } = Astro.props;
+const fullTitle =
+  title === "nosilverbullet.dev" ? title : `${title} · nosilverbullet.dev`;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    {description && <meta name="description" content={description} />}
+    <meta name="robots" content="index,follow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body data-accent={accent ?? null}>
+    <header class="nsb-header">
+      <div class="nsb-container nsb-header__inner">
+        <a href="/" class="nsb-brand">
+          <span class="nsb-brand__dot" aria-hidden="true"></span>
+          <span class="nsb-brand__text">nosilverbullet<span class="nsb-brand__tld">.dev</span></span>
+        </a>
+        <nav class="nsb-nav" aria-label="Primary">
+          <ul>
+            {CATEGORY_ORDER.map((code) => (
+              <li>
+                <a
+                  href={`/${CATEGORIES[code].route}`}
+                  data-accent-link={code.toLowerCase()}
+                >
+                  <span class="nsb-nav__code">{CATEGORIES[code].shortLabel}</span>
+                  <span class="nsb-nav__name">{CATEGORIES[code].name}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main class="nsb-main">
+      <slot />
+    </main>
+
+    <footer class="nsb-footer">
+      <div class="nsb-container nsb-footer__inner">
+        <p class="nsb-footer__line">
+          nosilverbullet.dev · a reference-first field guide for software people.
+        </p>
+      </div>
+    </footer>
+
+    <style is:global>
+      .nsb-header {
+        border-bottom: var(--rule);
+        background: var(--color-surface);
+      }
+      .nsb-header__inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--space-6);
+        padding-block: var(--space-4);
+      }
+      .nsb-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        font-family: var(--font-sans);
+        font-weight: 600;
+        text-decoration: none;
+        letter-spacing: var(--tracking-tight);
+      }
+      .nsb-brand__dot {
+        width: 0.55rem;
+        height: 0.55rem;
+        background: var(--accent-current);
+        display: inline-block;
+      }
+      .nsb-brand__tld { color: var(--color-ink-faint); }
+      .nsb-nav ul {
+        list-style: none;
+        display: flex;
+        gap: var(--space-5);
+        margin: 0;
+        padding: 0;
+      }
+      .nsb-nav a {
+        font-family: var(--font-sans);
+        font-size: var(--text-sm);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: baseline;
+        gap: var(--space-2);
+      }
+      .nsb-nav__code {
+        font-family: var(--font-mono);
+        font-size: var(--text-xs);
+        letter-spacing: var(--tracking-label);
+        color: var(--color-ink-faint);
+      }
+      .nsb-main {
+        flex: 1 0 auto;
+        padding-block: var(--space-7) var(--space-9);
+      }
+      .nsb-footer {
+        border-top: var(--rule);
+        padding-block: var(--space-5);
+      }
+      .nsb-footer__line {
+        font-family: var(--font-sans);
+        font-size: var(--text-sm);
+        color: var(--color-ink-soft);
+        margin: 0;
+      }
+      @media (max-width: 640px) {
+        .nsb-header__inner { flex-direction: column; align-items: flex-start; }
+        .nsb-nav ul { flex-wrap: wrap; gap: var(--space-3) var(--space-5); }
+        .nsb-nav__name { display: none; }
+      }
+    </style>
+  </body>
+</html>

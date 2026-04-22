@@ -1,0 +1,24 @@
+---
+import CategoryLayout from "@/layouts/CategoryLayout.astro";
+import { listEntries } from "@/lib/load";
+import { ensureValidated } from "@/lib/validate";
+import { hrefForEntry } from "@/lib/categories";
+
+ensureValidated();
+const entries = listEntries("TD");
+---
+<CategoryLayout code="TD">
+  <div class="nsb-placeholder">
+    Phase 1 placeholder · /tech-decisions landing page.
+    Real comparison-oriented index with filters by family arrives later.
+  </div>
+
+  <ul class="nsb-index-list">
+    {entries.map((e) => (
+      <li>
+        <a href={hrefForEntry("TD", e.slug)}>{e.title}</a>
+        <span class="nsb-index-sub"> · {(e as any).family}</span>
+      </li>
+    ))}
+  </ul>
+</CategoryLayout>

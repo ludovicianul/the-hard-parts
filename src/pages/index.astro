@@ -1,0 +1,110 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { CATEGORIES, CATEGORY_ORDER } from "@/lib/categories";
+import { categoryBlock, listEntries } from "@/lib/load";
+import { ensureValidated } from "@/lib/validate";
+
+// Fail the build if content integrity is broken (strict checks only).
+ensureValidated();
+
+const cards = CATEGORY_ORDER.map((code) => {
+  const meta = categoryBlock(code);
+  const count = listEntries(code).length;
+  return {
+    code,
+    route: CATEGORIES[code].route,
+    name: meta.name,
+    summary: meta.summary,
+    count,
+    accent: code.toLowerCase() as "fm" | "td" | "rf" | "ep",
+  };
+});
+---
+<BaseLayout
+  title="nosilverbullet.dev"
+  description="A reference-first field guide for software people. Failure Modes, Tech Decisions, Red Flags, and the Engineering Playbook."
+>
+  <div class="nsb-container nsb-home">
+    <header class="nsb-home__hero">
+      <p class="nsb-eyebrow">nosilverbullet.dev — phase 1 scaffold</p>
+      <h1 class="nsb-home__title">
+        Software is hard. That’s the point.
+      </h1>
+      <p class="nsb-home__summary">
+        A reference-first field guide to how software work goes wrong, how
+        engineers make trade-offs, what to watch for early, and what good
+        looks like when things are hard.
+      </p>
+    </header>
+
+    <section class="nsb-home__grid" aria-label="Categories">
+      {cards.map((c) => (
+        <a class="nsb-home__card" href={`/${c.route}`} data-accent={c.accent}>
+          <p class="nsb-eyebrow">{c.code}</p>
+          <h2 class="nsb-home__card-title">{c.name}</h2>
+          <p class="nsb-home__card-summary">{c.summary}</p>
+          <p class="nsb-home__card-count">{c.count} entries</p>
+        </a>
+      ))}
+    </section>
+
+    <aside class="nsb-placeholder" aria-label="Scaffold notice">
+      Phase 1 scaffold. Real UI, cards, section components, and detail
+      bodies land in Phase 2 (Failure Modes vertical slice). Until then
+      these pages render structured placeholders to verify that routing,
+      loaders, and static generation are wired correctly.
+    </aside>
+  </div>
+
+  <style is:global>
+    .nsb-home { padding-block: var(--space-6) var(--space-8); }
+    .nsb-home__hero { margin-bottom: var(--space-8); }
+    .nsb-home__title {
+      font-size: clamp(var(--text-3xl), 5vw, var(--text-4xl));
+      max-width: 18ch;
+      margin-top: var(--space-3);
+      letter-spacing: var(--tracking-tight);
+    }
+    .nsb-home__summary {
+      font-size: var(--text-lg);
+      color: var(--color-ink-dim);
+      max-width: var(--reading-max);
+    }
+    .nsb-home__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+      gap: 0;
+      border-top: var(--rule);
+      border-left: var(--rule);
+      margin-bottom: var(--space-7);
+    }
+    .nsb-home__card {
+      display: block;
+      padding: var(--space-6);
+      border-right: var(--rule);
+      border-bottom: var(--rule);
+      text-decoration: none;
+      color: inherit;
+      background: var(--color-surface);
+      transition: background var(--dur-fast) var(--ease);
+    }
+    .nsb-home__card:hover { background: var(--color-paper-alt); }
+    .nsb-home__card-title {
+      font-size: var(--text-2xl);
+      margin-top: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+    .nsb-home__card-summary {
+      color: var(--color-ink-dim);
+      margin-bottom: var(--space-4);
+    }
+    .nsb-home__card-count {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-ink-faint);
+      margin: 0;
+    }
+  </style>
+</BaseLayout>
