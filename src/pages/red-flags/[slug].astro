@@ -36,6 +36,7 @@
  * FM/TD layouts.
  */
 import DetailLayout from "@/layouts/DetailLayout.astro";
+import AtAGlance from "@/components/AtAGlance.astro";
 import MetaRail from "@/components/MetaRail.astro";
 import SectionHeader from "@/components/SectionHeader.astro";
 import SectionIndex from "@/components/SectionIndex.astro";
@@ -190,6 +191,30 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         value: entry.patternConfidence,
         scale: barCounts(CONFIDENCE_SCALE, entry.patternConfidence),
       },
+    ]}
+  />
+
+  {/* AT A GLANCE — shared blue-fill identity panel. Surfaces the
+      "quickly-did-I-land-on-the-right-signal" fields ABOVE the
+      SignalQuote hero so a reader calibrates context before reading
+      the quoted observation:
+        · Where you see this     — `commonContexts`
+        · Time horizon           — `timeHorizon`
+        · Often mistaken for     — first of `falseFriends` (full list
+                                   still has its own section below)
+        · Best placed to act     — `ownerBestPlacedToAct` (the "who
+                                   actually moves on it" role; the
+                                   "first-noticed-by" role is already
+                                   on the MetaRail above, so we don't
+                                   duplicate it here).
+      Empty rows drop out silently via the component. */}
+  <AtAGlance
+    refCode={refCode}
+    rows={[
+      { label: "Where you see this", value: entry.commonContexts },
+      { label: "Time horizon",       value: entry.timeHorizon },
+      { label: "Often mistaken for", value: entry.falseFriends && entry.falseFriends.length > 0 ? entry.falseFriends[0] : undefined },
+      { label: "Best placed to act", value: entry.ownerBestPlacedToAct },
     ]}
   />
 

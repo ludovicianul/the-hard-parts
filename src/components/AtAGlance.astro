@@ -1,0 +1,209 @@
+---
+/**
+ * AtAGlance — shared blue-fill orientation panel.
+ *
+ * Extracted from the FM detail page so every category can open with the
+ * same "identity at a glance" ritual: a black title bar with the panel
+ * name (and the entry's refCode on the right), above a row-grid of
+ * short {label, value} pairs. The panel lives between the detail page's
+ * MetaRail (ordinal attributes: severity, frequency, …) and the first
+ * body section — MetaRail carries ladder-backed numerics, AtAGlance
+ * carries short editorial identity strings the ladders can't express.
+ *
+ * Visual contract:
+ *   · 3px heavy black frame on a saturated blue ground (the category-
+ *     neutral "signal blue" token, not any per-category accent).
+ *   · Black title bar with yellow eyebrow on the left and mono refCode
+ *     pill on the right.
+ *   · Grid of row cells: 1-col mobile, 3-col at ≥640px. First row/col
+ *     internal dividers are suppressed so the outer frame is always
+ *     the single heavy rule (no doubled-up 2px edges).
+ *   · Yellow `dt` labels over white `dd` values. `dd` strings render
+ *     uppercase sans; string-array `dd` values render as KeywordList
+ *     (same dot-separated tag row the rest of the site uses).
+ *
+ * Empty rows are silently dropped — the panel itself renders nothing
+ * when every row is empty, so a detail page can pass a superset of
+ * fields without producing stub panels.
+ *
+ * The class namespace is `nsb-glance__*` (not `fm-glance__*`) because
+ * this component is shared across FM, TD, RF, and EP. FM's old
+ * `fm-glance__*` styles were moved here verbatim.
+ */
+
+import KeywordList from "./KeywordList.astro";
+
+export interface GlanceRow {
+  /** Short uppercase field label, e.g. "Also known as", "Really about". */
+  label: string;
+  /**
+   * Field value. One of:
+   *   · string               — rendered as-is (uppercase sans).
+   *   · readonly string[]    — rendered via KeywordList (dot-separated tags).
+   *   · null | undefined | "" — row skipped entirely.
+   */
+  value: string | readonly string[] | number | null | undefined;
+}
+
+export interface Props {
+  /** Short title bar label. Defaults to "At a glance". */
+  title?: string;
+  /** Entry refCode shown on the right of the title bar, e.g. "FM-05". */
+  refCode?: string;
+  /** Rows to render. Empty / undefined rows are silently skipped. */
+  rows: readonly GlanceRow[];
+  /** Optional aria-label override. Defaults to the title. */
+  ariaLabel?: string;
+}
+
+const { title = "At a glance", refCode, rows, ariaLabel } = Astro.props;
+
+type VisibleRow =
+  | { kind: "text"; label: string; text: string }
+  | { kind: "list"; label: string; items: readonly string[] };
+
+/**
+ * Normalize each row to a renderable shape, dropping rows whose value
+ * is null / undefined / empty-string / empty-array. Keeps label text
+ * as authored by the caller; no prettification here.
+ */
+const visible: readonly VisibleRow[] = rows
+  .map((row): VisibleRow | null => {
+    const v = row.value;
+    if (v === null || v === undefined) return null;
+    if (Array.isArray(v)) {
+      const clean = (v as readonly string[]).filter(
+        (s) => typeof s === "string" && s.trim().length > 0,
+      );
+      if (clean.length === 0) return null;
+      return { kind: "list", label: row.label, items: clean };
+    }
+    if (typeof v === "number") {
+      return { kind: "text", label: row.label, text: String(v) };
+    }
+    const s = String(v).trim();
+    return s.length > 0 ? { kind: "text", label: row.label, text: s } : null;
+  })
+  .filter((r): r is VisibleRow => r !== null);
+---
+{visible.length > 0 && (
+  <section
+    class="nsb-glance nsb-frame nsb-frame--heavy nsb-frame--blue"
+    aria-label={ariaLabel ?? title}
+  >
+    <div class="nsb-glance__bar">
+      <span>{title}</span>
+      {refCode && <span class="nsb-glance__bar-ref">{refCode}</span>}
+    </div>
+    <dl class="nsb-glance__rows">
+      {visible.map((row) => (
+        <div class="nsb-glance__row">
+          <dt>{row.label}</dt>
+          <dd>
+            {row.kind === "list"
+              ? <KeywordList items={row.items} />
+              : row.text}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+)}
+
+<style>
+  /* Saturated-blue identity panel. The outer frame comes from
+     `.nsb-frame--heavy` + `.nsb-frame--blue`; the internal cell
+     dividers are drawn here. */
+  .nsb-glance {
+    margin-bottom: var(--space-7);
+  }
+
+  /* ---- Black title bar — entry name badge + refCode ---------------- */
+  .nsb-glance__bar {
+    padding: var(--space-3) var(--space-5);
+    border-bottom: 3px solid var(--color-frame);
+    background: var(--color-blue-deep);
+    color: var(--color-yellow);
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+  .nsb-glance__bar-ref {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    opacity: 0.9;
+    color: var(--color-surface);
+  }
+
+  /* ---- Row grid ---------------------------------------------------
+     1-col mobile, 3-col at ≥640px. Internal dividers are drawn with
+     `border-top` + `border-left` on each cell, with the first row /
+     first column suppressed — so the panel's outer frame is always
+     the heavy 3px parent border with no doubled-up 2px edges bleeding
+     into it. If the last cell is alone on its row, it spans the
+     remaining columns so the blue panel fills out. */
+  .nsb-glance__rows {
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    background: var(--color-blue);
+  }
+  @media (min-width: 640px) {
+    .nsb-glance__rows {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .nsb-glance__row {
+    padding: var(--space-4) var(--space-5);
+    color: var(--color-surface);
+    border-top: 2px solid var(--color-frame);
+    border-left: 2px solid var(--color-frame);
+  }
+  /* Single column at mobile — only the top divider is needed. */
+  .nsb-glance__row { border-left: 0; }
+  .nsb-glance__row:first-child { border-top: 0; }
+  @media (min-width: 640px) {
+    .nsb-glance__row {
+      /* Left divider is drawn on columns 2 and 3 only. */
+      border-left: 2px solid var(--color-frame);
+    }
+    /* First-column cells (1st, 4th, 7th, …): no left divider. */
+    .nsb-glance__row:nth-child(3n + 1) { border-left: 0; }
+    /* First-row cells (cells 1–3): no top divider. */
+    .nsb-glance__row:nth-child(-n + 3) { border-top: 0; }
+    /* If the LAST cell is alone on its row, span the remaining
+       columns so the blue panel fills out and the divider pattern
+       stays consistent — no empty trailing tracks. */
+    .nsb-glance__row:last-child:nth-child(3n + 1) { grid-column: span 3; }
+    .nsb-glance__row:last-child:nth-child(3n + 2) { grid-column: span 2; }
+  }
+
+  /* ---- Cell typography — yellow dt on white dd ------------------- */
+  .nsb-glance__row dt {
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    margin: 0 0 var(--space-2) 0;
+    color: var(--color-yellow);
+  }
+  .nsb-glance__row dd {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--color-surface);
+    line-height: var(--leading-snug);
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+  }
+</style>

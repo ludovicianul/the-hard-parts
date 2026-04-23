@@ -1,8 +1,8 @@
 ---
 import DetailLayout from "@/layouts/DetailLayout.astro";
+import AtAGlance from "@/components/AtAGlance.astro";
 import CalloutBand from "@/components/CalloutBand.astro";
 import HeardInTheWild from "@/components/HeardInTheWild.astro";
-import KeywordList from "@/components/KeywordList.astro";
 import MetaRail from "@/components/MetaRail.astro";
 import OperatorNotes from "@/components/OperatorNotes.astro";
 import RelatedEntries from "@/components/RelatedEntries.astro";
@@ -159,43 +159,19 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     ]}
   />
 
-  {/* 2. AT A GLANCE — blue-fill framed panel with black-bordered row cells.
-      Mirrors the reference image's blue panel; hosts identity fields that
-      orient a reader fast: alt names, who notices first, mistaken-for. */}
-  {(entry.alternativeNames?.length || entry.mistakenFor || entry.oftenMistakenAs || entry.whoNoticesFirst?.length) && (
-    <section class="fm-glance nsb-frame nsb-frame--heavy nsb-frame--blue" aria-label="At a glance">
-      <div class="fm-glance__bar">
-        <span>At a glance</span>
-        <span class="fm-glance__bar-ref">{refCode}</span>
-      </div>
-      <dl class="fm-glance__rows">
-        {entry.alternativeNames && entry.alternativeNames.length > 0 && (
-          <div class="fm-glance__row">
-            <dt>Also known as</dt>
-            <dd><KeywordList items={entry.alternativeNames} /></dd>
-          </div>
-        )}
-        {entry.whoNoticesFirst && entry.whoNoticesFirst.length > 0 && (
-          <div class="fm-glance__row">
-            <dt>First noticed by</dt>
-            <dd><KeywordList items={entry.whoNoticesFirst} /></dd>
-          </div>
-        )}
-        {entry.mistakenFor && (
-          <div class="fm-glance__row">
-            <dt>Mistaken for</dt>
-            <dd>{entry.mistakenFor}</dd>
-          </div>
-        )}
-        {entry.oftenMistakenAs && (
-          <div class="fm-glance__row">
-            <dt>Often mistaken as</dt>
-            <dd>{entry.oftenMistakenAs}</dd>
-          </div>
-        )}
-      </dl>
-    </section>
-  )}
+  {/* 2. AT A GLANCE — shared blue-fill identity panel. See
+      `@/components/AtAGlance.astro` for the visual contract; this page
+      just passes the FM-specific identity fields. Empty rows are
+      silently dropped by the component, so no outer guard is needed. */}
+  <AtAGlance
+    refCode={refCode}
+    rows={[
+      { label: "Also known as",     value: entry.alternativeNames },
+      { label: "First noticed by",  value: entry.whoNoticesFirst },
+      { label: "Mistaken for",      value: entry.mistakenFor },
+      { label: "Often mistaken as", value: entry.oftenMistakenAs },
+    ]}
+  />
 
   {/* 3. What it is — definition */}
   <SectionHeader
@@ -447,96 +423,10 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
      TABLOID BODY STYLES FOR THE FM DETAIL PAGE
      --------------------------------------------------------------------- */
 
-  /* ---- AT A GLANCE blue panel ------------------------------------- */
-  .fm-glance {
-    margin-bottom: var(--space-7);
-  }
-  .fm-glance__bar {
-    padding: var(--space-3) var(--space-5);
-    border-bottom: 3px solid var(--color-frame);
-    background: var(--color-blue-deep);
-    color: var(--color-surface);
-    font-family: var(--font-sans);
-    font-weight: 900;
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    font-size: var(--text-sm);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-3);
-  }
-  .fm-glance__bar-ref {
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    opacity: 0.9;
-  }
-  /* Grid of identity cells. Locked to 3 columns at tablet+ so the
-     layout is predictable regardless of how many cells a given entry
-     actually has (alternativeNames / whoNoticesFirst / mistakenFor /
-     oftenMistakenAs are each optional, producing anywhere from 1 to
-     4 cells). Borders are drawn as INTERNAL dividers only — top/left
-     on each cell, with the first row/column suppressed — so the
-     panel's outer frame is always the heavy 3px parent border with
-     no doubled-up 2px edges bleeding into it. */
-  .fm-glance__rows {
-    margin: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0;
-    background: var(--color-blue);
-  }
-  @media (min-width: 640px) {
-    .fm-glance__rows {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-  }
-  .fm-glance__row {
-    padding: var(--space-4) var(--space-5);
-    color: var(--color-surface);
-    /* Internal dividers only — top+left. First row/col suppressed
-       below. Parent's heavy frame owns the outer edge. */
-    border-top: 2px solid var(--color-frame);
-    border-left: 2px solid var(--color-frame);
-  }
-  /* Single column at mobile — only the top divider is needed. */
-  .fm-glance__row { border-left: 0; }
-  .fm-glance__row:first-child { border-top: 0; }
-  @media (min-width: 640px) {
-    .fm-glance__row {
-      /* Left divider is drawn on columns 2 and 3 only. */
-      border-left: 2px solid var(--color-frame);
-    }
-    /* First-column cells (1st, 4th, 7th, …): no left divider. */
-    .fm-glance__row:nth-child(3n + 1) { border-left: 0; }
-    /* First-row cells (cells 1–3): no top divider. */
-    .fm-glance__row:nth-child(-n + 3) { border-top: 0; }
-    /* If the LAST cell is alone on its row, span the remaining
-       columns so the blue panel fills out and the divider pattern
-       stays consistent — no empty trailing tracks. */
-    .fm-glance__row:last-child:nth-child(3n + 1) { grid-column: span 3; }
-    .fm-glance__row:last-child:nth-child(3n + 2) { grid-column: span 2; }
-  }
-  .fm-glance__row dt {
-    font-family: var(--font-sans);
-    font-weight: 900;
-    font-size: var(--text-xs);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    margin: 0 0 var(--space-2) 0;
-    color: var(--color-yellow);
-  }
-  .fm-glance__row dd {
-    margin: 0;
-    font-family: var(--font-sans);
-    font-size: var(--text-sm);
-    font-weight: 600;
-    color: var(--color-surface);
-    line-height: var(--leading-snug);
-    text-transform: uppercase;
-    letter-spacing: 0.01em;
-  }
+  /* AT A GLANCE blue panel moved to `@/components/AtAGlance.astro`
+     (shared with TD and RF). The component owns all `nsb-glance__*`
+     styles; no FM-local CSS is needed for that block. */
+
   /* ---- prose body text in sections --------------------------------
      Short reference-style paragraphs (1–3 sentences). NO `max-width`
      cap here — the detail content column is ~800px, and any prose

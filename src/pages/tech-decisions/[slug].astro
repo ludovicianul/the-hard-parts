@@ -27,6 +27,7 @@
  */
 
 import DetailLayout from "@/layouts/DetailLayout.astro";
+import AtAGlance from "@/components/AtAGlance.astro";
 import CalloutBand from "@/components/CalloutBand.astro";
 import LabeledList from "@/components/LabeledList.astro";
 import MetaRail from "@/components/MetaRail.astro";
@@ -64,9 +65,11 @@ if (!entry) {
 // Section visibility — each evaluated against the real content of this
 // entry. Section numbering recomputes positionally so a skipped AI block
 // (say) doesn't leave a gap in the `01 · 02 · 03…` sequence.
-const hasFraming = Boolean(
-  entry.whatThisIsReallyAbout || entry.notActuallyAbout || entry.whyItFeelsHard,
-);
+// Note: whatThisIsReallyAbout / notActuallyAbout / whyItFeelsHard used
+// to drive a dedicated "sec-framing" section below sec-decision. They
+// are now surfaced at the top of the page via the shared AtAGlance
+// panel (blue-fill identity strip), so sec-framing has been retired
+// entirely and the section numbering collapses accordingly.
 const hasCostTime = Boolean(entry.costBearer || entry.timeHorizonNotes);
 const hasSignals = Boolean(
   (entry.commonBadReasons && entry.commonBadReasons.length > 0) ||
@@ -111,7 +114,6 @@ const prettifySub = (s: string): string =>
 
 const sectionSpecs: Array<{ id: string; label: string; shown: boolean }> = [
   { id: "sec-decision",      label: "The decision",             shown: true },
-  { id: "sec-framing",       label: "What it's really about",   shown: hasFraming },
   { id: "sec-options",       label: "Options on the table",     shown: true },
   { id: "sec-cost-time",     label: "Cost and time",            shown: hasCostTime },
   { id: "sec-how-to-decide", label: "How to decide",            shown: true },
@@ -201,6 +203,25 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     ]}
   />
 
+  {/* AT A GLANCE — shared blue-fill identity panel. TD's orienting fields
+      (what this is really about / what it isn't / why it feels hard /
+      who the call belongs to) used to live as a "Beneath the surface"
+      body section further down the page. Promoting them up here — into
+      the same blue at-a-glance ritual FM uses — lets a reader calibrate
+      what the decision IS before reading "The decision" question below,
+      and removes a whole body section whose content was really identity
+      metadata masquerading as prose. Section 2 in the old numbering is
+      gone; sec-decision is now section 1. */}
+  <AtAGlance
+    refCode={refCode}
+    rows={[
+      { label: "Really about",      value: entry.whatThisIsReallyAbout },
+      { label: "Not actually about", value: entry.notActuallyAbout },
+      { label: "Why it feels hard", value: entry.whyItFeelsHard },
+      { label: "Audiences",         value: entry.audiences },
+    ]}
+  />
+
   {/* 1. THE DECISION — the whole reason this page exists. `decisionQuestion`
         is a REQUIRED field in the TD schema; it deserves to read as the
         opening editorial beat, not as a dt/dd buried in the metadata. */}
@@ -218,40 +239,6 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
       </CalloutBand>
     )}
   </div>
-
-  {/* 2. WHAT IT'S REALLY ABOUT — reframing block. Shown only if at least one
-        of the three reframe fields is present. */}
-  {hasFraming && (
-    <>
-      <SectionHeader
-        id="sec-framing"
-        step={stepFor("sec-framing")}
-        eyebrow="Beneath the surface"
-        title="What it's really about"
-        note="Three short reframes that strip the decision down to what it actually turns on."
-      />
-      <dl class="td-framing">
-        {entry.whatThisIsReallyAbout && (
-          <div class="td-framing__row">
-            <dt>Really about</dt>
-            <dd>{entry.whatThisIsReallyAbout}</dd>
-          </div>
-        )}
-        {entry.notActuallyAbout && (
-          <div class="td-framing__row td-framing__row--negative">
-            <dt>Not actually about</dt>
-            <dd>{entry.notActuallyAbout}</dd>
-          </div>
-        )}
-        {entry.whyItFeelsHard && (
-          <div class="td-framing__row">
-            <dt>Why it feels hard</dt>
-            <dd>{entry.whyItFeelsHard}</dd>
-          </div>
-        )}
-      </dl>
-    </>
-  )}
 
   {/* 3. OPTIONS ON THE TABLE — the site's signature TD visual. */}
   <SectionHeader
@@ -485,58 +472,12 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     gap: var(--space-4);
   }
 
-  /* ---- 2. Framing block — three labelled rows, each with a mono label
-        on the left and serif body on the right. The "not actually about"
-        row picks up a subtle inverse treatment so the negation reads
-        visually as negation. */
-  .td-framing {
-    margin: var(--space-4) 0 0 0;
-    padding: 0;
-    background: var(--color-surface);
-    border: 3px solid var(--color-frame);
-  }
-  .td-framing__row {
-    display: grid;
-    grid-template-columns: minmax(10rem, 13rem) 1fr;
-    gap: var(--space-5);
-    padding: var(--space-4) var(--space-5);
-    border-top: 2px solid var(--color-frame);
-    align-items: start;
-  }
-  .td-framing__row:first-child { border-top: 0; }
-  .td-framing__row dt {
-    font-family: var(--font-sans);
-    font-weight: 900;
-    font-size: var(--text-xs);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    color: var(--color-ink);
-    margin: 0;
-  }
-  .td-framing__row dd {
-    margin: 0;
-    font-family: var(--font-serif);
-    font-size: var(--text-md);
-    line-height: var(--leading-snug);
-    color: var(--color-ink);
-  }
-  /* "Not actually about" — inverse treatment, reads as an explicit
-     negation of common framings. Dark background, light ink, the
-     `dt` label flipped to yellow. Deliberate visual hit. */
-  .td-framing__row--negative {
-    background: var(--color-frame);
-    color: var(--color-surface);
-  }
-  .td-framing__row--negative dt { color: var(--color-yellow); }
-  .td-framing__row--negative dd { color: var(--color-surface); }
-  @media (max-width: 640px) {
-    .td-framing__row {
-      grid-template-columns: 1fr;
-      gap: var(--space-2);
-    }
-  }
+  /* The legacy `.td-framing*` styles are gone — the three reframe
+     fields (whatThisIsReallyAbout / notActuallyAbout / whyItFeelsHard)
+     now render inside the shared AtAGlance blue panel at the top of
+     the page and carry no TD-local styling. */
 
-  /* ---- 4. Cost / time pair panels. Two small framed panels in a row
+  /* ---- Cost / time pair panels. Two small framed panels in a row
         at desktop, stacked on narrow. Each panel has a black masthead
         and a 2-col body (option A | option B). */
   .td-pairs {
