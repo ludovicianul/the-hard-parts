@@ -382,15 +382,25 @@ This expresses how damaging the pattern tends to be if allowed to develop.
 
 How commonly the failure mode appears in software organizations.
 
-Allowed values (tight, controlled enum — no other values permitted):
+The enum accepts **two kinds of values** — five ordered ladder positions, plus one trend flag. They are mutually exclusive per entry.
+
+#### Ladder positions (ordered, rare → universal)
 
 * `rare`
-* `uncommon`
 * `occasional`
 * `common`
 * `very common`
 * `universal`
+
+These are positions on a how-often-does-this-show-up axis. The UI renders them as a 5-step bar ladder on the FM landing reading-guide card and on every detail page's MetaRail cell.
+
+#### Trend flag
+
 * `increasing`
+
+This is **not a point on the ladder** — it flags a pattern whose prevalence is rising (typically AI-era content). Rendering: a trend chevron (↗) replaces the bar ladder in the MetaRail cell, and the FM landing reading-guide surfaces it as a separate sub-row explainer. Using the same visual for "how common" and "which way it's moving" was tried and rejected — it collapsed two orthogonal ideas into one ambiguous ladder.
+
+> The previous schema included `uncommon` as a ladder position. It was removed because nothing in the content used it and the gap between `rare` and `occasional` was already small enough to not need a third notch. Do not reintroduce it.
 
 ### Meaning
 
@@ -407,6 +417,8 @@ Do not introduce contextual variants such as `"common in AI work"`, `"common in 
 * Audience specificity → narrative fields (`starts`, `feelsReasonableBecause`, etc.)
 
 Keeping this enum narrow is what makes cross-entry comparison and filtering meaningful.
+
+The canonical lists live in `src/lib/attribute-scales.ts` (`FREQUENCY_SCALE` for ladder, `FREQUENCY_TRENDS` for trend values) and the Zod enum in `src/content/schemas/shared.ts` (`FrequencyEnum`). Keep these three in lockstep when extending.
 
 ---
 

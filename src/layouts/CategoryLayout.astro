@@ -10,13 +10,24 @@ export interface Props {
   /** Optional editorial tagline rendered under the category title. */
   tagline?: string;
   /**
+   * Optional override for the big display headline in the hero. Defaults
+   * to the category's canonical `name` from the content file (e.g.
+   * "Failure Modes"). Pages can pass a shorter punchier label here when
+   * the canonical name is too long to wrap gracefully at hero scale
+   * (e.g. "Tech Decision Trade-offs" → "Tech Decisions"). The filter
+   * band chip row still shows the canonical name implicitly via
+   * subcategories, so this override is purely a visual shortening and
+   * doesn't hide information from the reader.
+   */
+  heroTitle?: string;
+  /**
    * Optional stat cards shown as a column on the hero. If omitted, a default
    * set (Entries + Subcategories) is rendered.
    */
   dataStrip?: ReadonlyArray<{ label: string; value: string; variant?: "yellow" | "blue" | "outline" | "black" }>;
 }
 
-const { code, tagline, dataStrip } = Astro.props;
+const { code, tagline, heroTitle, dataStrip } = Astro.props;
 const desc = categoryByCode(code);
 const meta = categoryBlock(code);
 const accent = code.toLowerCase() as "fm" | "td" | "rf" | "ep";
@@ -45,7 +56,7 @@ const strip = dataStrip ?? defaultStrip;
 
       <div class="nsb-cat-hero__main">
         <div class="nsb-cat-hero__title-col">
-          <h1 class="nsb-display nsb-display--xl nsb-cat-hero__title">{meta.name}</h1>
+          <h1 class="nsb-display nsb-display--xl nsb-cat-hero__title">{heroTitle ?? meta.name}</h1>
           <p class="nsb-cat-hero__summary">{tagline ?? meta.summary}</p>
         </div>
         <div class="nsb-cat-hero__stats" aria-label="Catalog stats">

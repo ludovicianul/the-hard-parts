@@ -178,21 +178,26 @@ Should support:
 
 May need variants per category.
 
-### `EntryMetaRail`
+### `MetaRail`
+
+(Implemented as `src/components/MetaRail.astro`. Earlier drafts of this doc called it `EntryMetaRail` — the final name drops the `Entry` prefix.)
 
 Purpose:
 
-* structured metadata block on detail pages
+* structured metadata block on detail pages, rendered as a framed horizontal strip at the top of the entry
 
 Useful for:
 
-* severity
-* frequency
-* category
-* owner
-* stage
-* confidence
-* related quick facts
+* severity (with color-tinted cell and bar ladder)
+* frequency (bar ladder for ladder values, trend chevron for `increasing`)
+* lifecycle (list, no bar ladder — intentionally, because it's not an ordinal)
+* recovery and pattern confidence (bar ladders)
+
+Each cell may optionally carry:
+
+* `severity` — tints the cell with the matching `--sev-*` token from the grayscale severity ramp
+* `scale: { total, filled }` — renders a rising-bar indicator under the value, driven by the shared `FREQUENCY_SCALE` / `RECOVERY_SCALE` / etc. in `src/lib/attribute-scales.ts`
+* `trend: "increasing"` — renders the trend chevron in place of the bar ladder for frequency values that are trajectories rather than ladder positions
 
 Should not be hardcoded to one category only.
 
@@ -238,17 +243,21 @@ Useful for:
 * story arcs
 * explanation sections
 
-### `RelatedEntriesBlock`
+### `RelatedEntries`
+
+(Implemented as `src/components/RelatedEntries.astro`. Earlier drafts of this doc called it `RelatedEntriesBlock` — the final name drops the `Block` suffix.)
 
 Purpose:
 
-* show related content links across categories
+* show related content links across categories, using the shared cross-reference resolver so every link is either real + resolved or explicitly marked as a pending editorial placeholder
 
-Should support:
+Supports:
 
-* category-aware rendering
-* list of resolved references
-* optional grouping by category
+* `refs` — raw slug array from content (mixed resolved / pending allowed)
+* `expectCategory` — category that should be primary; resolved refs outside this category are still rendered, but in a visually-grouped "Also relevant" subhead
+* `dense` — tighter treatment when multiple related blocks stack
+
+Each link renders the target entry's catalog reference code (e.g. `FM-05`, `TD-045`) as a two-span "cat · num" prefix. **These numbers are the target entry's own catalog index**, not a locally-reset counter, so the `FM-05` you see in a related block on one page is the same `FM-05` stamped on that target entry's own masthead. See `docs/content-schema.md#catalog-reference-codes`.
 
 ### `AiImpactBlock`
 
@@ -271,6 +280,128 @@ Purpose:
 
 Use carefully.
 Do not let the site drift into pill overload.
+
+---
+
+## 3b. Implemented shared components (current snapshot)
+
+This section catalogs components that exist in `src/components/` today but were not in the original aspirational inventory above. They emerged during the first vertical slice (Failure Modes) and should be reused by the remaining three categories rather than reinvented.
+
+### `SectionIndex`
+
+(`src/components/SectionIndex.astro`)
+
+Purpose:
+
+* local navigation rail for long detail pages, rendered as:
+  * a sticky left-hand rail at ≥1080px
+  * a compact collapsible `<details>` jump menu at narrower widths
+
+Features:
+
+* static-first — works fully without JavaScript
+* progressive-enhancement **scroll-spy** — an inline `IntersectionObserver` module highlights the currently-visible section as the reader scrolls, mirroring the highlight in both the mobile menu and desktop rail
+
+> **Implementation gotcha:** Astro compiles `<script>` tags to ES modules by default, and `document.currentScript` is `null` inside modules. The original version of this component's scroll-spy used `currentScript?.previousElementSibling` to find the nav and silently no-op'd in production for weeks. The current version uses `document.querySelectorAll('.nsb-section-index')` and iterates. Any future progressive-enhancement script in this codebase should do the same — do not rely on `currentScript`.
+
+### `SectionHeader`
+
+(`src/components/SectionHeader.astro`)
+
+Purpose:
+
+* numbered section header for detail pages (`01 · DEFINITION`, `02 · HOW IT UNFOLDS`)
+* stamps the `id` that `SectionIndex`'s anchors target and that the scroll-spy observes
+
+### `OperatorNotes`
+
+(`src/components/OperatorNotes.astro`)
+
+Purpose:
+
+* FM-specific "things an operator learns after the third incident" panel
+* hosts `bestMomentToIntervene`, `counterMove`, `falsePositive` as a typed register of hard-won annotations
+* two-column layout: mono label (with optional italic hint) on the left, serif body on the right
+
+### `HeardInTheWild`
+
+(`src/components/HeardInTheWild.astro`)
+
+Purpose:
+
+* surface a representative `commonQuote` from an entry as a field-recording-style voice panel
+* dark plate variant for dramatic contrast with the surrounding prose
+
+### `WarningSignsByStage`
+
+(`src/components/WarningSignsByStage.astro`)
+
+Purpose:
+
+* render `warningSigns.{early,mid,late}` arrays as a three-stage editorial block
+* each stage gets its own column/row with escalating visual weight
+
+### `KeywordList`
+
+(`src/components/KeywordList.astro`)
+
+Purpose:
+
+* compact dot-separated list of short phrases (alternative names, first noticers, etc.)
+* used inside `AT A GLANCE` cells on FM detail pages
+
+### `CalloutBand`
+
+(`src/components/CalloutBand.astro`)
+
+Purpose:
+
+* horizontal callout strip with a colored label band + prose slot
+* used for `mistakenFor` / `oftenMistakenAs` / AI synthesis notes and homepage special-section markers
+
+### `Tag`
+
+(`src/components/Tag.astro`)
+
+Purpose:
+
+* small framed label with category / severity / status variants
+* used in masthead pill rows, eyebrow rows, and meta-bits on cards
+
+### `NumberCard`
+
+(`src/components/NumberCard.astro`)
+
+Purpose:
+
+* stat card — label above a giant zero-padded numeral (`ENTRIES / 32`)
+* used on category landing hero strips
+
+> The homepage hero rail no longer uses `NumberCard`; it renders the two hero stats (`Sections`, `Entries`) as bespoke cells inside `.nsb-home__hero-stats` so their padding aligns with the adjacent columns' shared `.nsb-home__hero-col` padding. Category landing pages still use `NumberCard` for their hero strips.
+
+### `Stamp`
+
+(`src/components/Stamp.astro`)
+
+Purpose:
+
+* rubber-stamp-style label (e.g. `AT A GLANCE`)
+* used where a label needs a tactile, field-manual-index feel
+
+### `AttrGlyph`
+
+(`src/components/AttrGlyph.astro`)
+
+Purpose:
+
+* single-source inline SVG component for the site's small mono-line glyphs
+* currently used only for the `increasing` trend chevron (↗) on the Frequency attribute
+
+> A wider set of attribute-type glyphs (severity triangle, frequency tally marks, recovery staircase, confidence bullseye) was prototyped and rejected: per-attribute icons on label cells read as dashboard decoration rather than editorial signal. The `AttrGlyph` component retains the full glyph set in its frontmatter in case a future use case needs one, but only the trend chevron is rendered today. If reaching for an attribute-type icon in future work, reread the rationale before shipping.
+
+### `Pending` (status)
+
+Not a component — a shared convention. Cross-references that point to entries not yet authored are rendered by `RelatedEntries` with a `PEND` marker in the same list structure as resolved entries. The placeholder slot stays honest rather than hidden, matching the catalog-first voice of the site.
 
 ---
 
@@ -597,7 +728,7 @@ Build components in this order:
 * `PageContainer`
 * `SectionHero`
 * `EntryCard`
-* `EntryMetaRail`
+* `MetaRail`
 * `SectionBlock`
 
 ### Second priority
@@ -606,7 +737,7 @@ Build components in this order:
 
 ### Third priority
 
-* `RelatedEntriesBlock`
+* `RelatedEntries`
 * `AiImpactBlock`
 * category-specific blocks for Tech Decisions
 

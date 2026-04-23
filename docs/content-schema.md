@@ -342,6 +342,51 @@ These should contain arrays of slugs pointing to entries in the corresponding ca
 
 ---
 
+## Catalog Reference Codes
+
+Every entry in every category is stamped with a short **catalog reference code** that serves two jobs:
+
+* it appears as the black pill on the entry's own detail masthead and in its "At a glance" bar (e.g. `FM-05`)
+* it appears **everywhere else that links to the entry** — cross-reference blocks on other detail pages, future search results, future print exports — always using the same string, so "FM-05" always means *this same entry* no matter where you encounter the reference
+
+### Format
+
+```
+<CATEGORY-CODE>-<ZERO-PADDED-NUMBER>
+```
+
+Examples:
+
+```
+FM-05     (5th Failure Mode,  category has <100 entries)
+TD-045    (45th Tech Decision, category has ≥100 entries)
+RF-012    (12th Red Flag)
+EP-003    (3rd  Engineering Playbook)
+```
+
+### Padding rule
+
+Padding width is `max(2, digits(totalEntriesInCategory))`.
+
+* Small categories (< 100 entries) → 2-digit numbers (`FM-05`, not `FM-5`).
+* Large categories (≥ 100 entries) → 3-digit numbers (`TD-045`).
+* Padding never drops below 2 — even a 3-entry category uses `FM-01/02/03`, not `FM-1/2/3`. This keeps the visual rhythm consistent whether you're looking at a single category in isolation or a cross-category related-entries block.
+
+The numbering comes from each entry's **position in its category's canonical JSON file order**. It is a *catalog index*, not a stable ID — if entries are reordered in the JSON file, their codes shift. Slugs remain the stable identifier for cross-linking.
+
+### Single source of truth
+
+The function that computes these codes is `formatRefCode(code, indexInCategory, totalInCategory)` in `src/lib/resolve.ts`. It is called in exactly two places:
+
+1. The cross-reference resolver (`buildIndex`) stamps every `ResolvedRef` with its `refNum` and `refCode` at build time, so `RelatedEntries` and any future component that resolves a slug sees the correct code automatically.
+2. Each category's detail page (`src/pages/<category>/[slug].astro`) calls `formatRefCode` directly to produce the masthead pill.
+
+Do **not** hand-roll `padStart` calls for these codes in new detail pages. The FM page originally did this and drifted; the shared helper prevents the drift.
+
+When TD, RF, and EP detail pages are built, they should use the same helper so their masthead pills and the incoming cross-references from other pages stay in lockstep.
+
+---
+
 ## Category/Subcategory Rules
 
 Each entry may belong to a category-specific subcategory.

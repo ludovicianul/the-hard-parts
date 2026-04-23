@@ -1,0 +1,145 @@
+---
+/**
+ * LabeledList — a small editorial primitive for rendering a short uppercase
+ * label above a list of strings. Used heavily on Tech Decisions detail pages
+ * where the schema carries many `string[]` fields (keyFactors, questionsToAsk,
+ * evidenceNeeded, antiPatterns, commonBadReasons, goodSignalsForA, …) that
+ * would otherwise require a dozen bespoke bits of markup + CSS.
+ *
+ * Also usable by any other category that has the same "label + short bullet
+ * list" rhythm. Deliberately small-surface: one label, one list, optional
+ * caption beneath the label, one visual variant toggle.
+ *
+ * Design decisions:
+ *   · Label is a small uppercase sans eyebrow, not a full heading. The
+ *     parent section header owns the hierarchy — LabeledList is a field,
+ *     not a section.
+ *   · List items use solid black square bullets (▪) in a narrow gutter,
+ *     never soft dots or checkmarks. Checkmarks would read as "this is
+ *     the good option" on Tech Decisions, which is exactly the bias the
+ *     category is built to avoid.
+ *   · Serif body, black ink. Dim ink would make short list items feel
+ *     dismissed; these are load-bearing content.
+ *   · `variant="framed"` adds a thin accent rule above the label. Used
+ *     when several LabeledLists stack inside one panel and need mild
+ *     separation without boxing every one in a frame.
+ */
+
+export interface Props {
+  /** Short uppercase label (e.g. "KEY FACTORS", "QUESTIONS TO ASK"). */
+  label: string;
+  /** List of short strings. Empty / undefined renders nothing. */
+  items: readonly string[] | undefined | null;
+  /** Optional italic-serif clarifier shown under the label. */
+  caption?: string;
+  /**
+   * Visual treatment:
+   *   · "plain" (default) — no framing, just the label + list
+   *   · "framed"          — thin accent rule above the label, 1.5× label spacing
+   */
+  variant?: "plain" | "framed";
+  /** Tighter vertical rhythm for dense clusters. */
+  dense?: boolean;
+}
+
+const {
+  label,
+  items,
+  caption,
+  variant = "plain",
+  dense = false,
+} = Astro.props;
+
+const visible =
+  Array.isArray(items)
+    ? items.filter((s): s is string => typeof s === "string" && s.trim().length > 0)
+    : [];
+---
+{visible.length > 0 && (
+  <div
+    class:list={[
+      "nsb-labeled-list",
+      `nsb-labeled-list--${variant}`,
+      { "nsb-labeled-list--dense": dense },
+    ]}
+  >
+    <p class="nsb-labeled-list__label">{label}</p>
+    {caption && <p class="nsb-labeled-list__caption">{caption}</p>}
+    <ul class="nsb-labeled-list__items">
+      {visible.map((item) => (
+        <li class="nsb-labeled-list__item">{item}</li>
+      ))}
+    </ul>
+  </div>
+)}
+
+<style>
+  .nsb-labeled-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .nsb-labeled-list--framed {
+    padding-top: var(--space-3);
+    border-top: 1.5px solid var(--color-rule);
+  }
+  .nsb-labeled-list--dense { gap: 6px; }
+
+  .nsb-labeled-list__label {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink);
+  }
+  .nsb-labeled-list__caption {
+    margin: -2px 0 0 0;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 0.78rem;
+    line-height: var(--leading-snug);
+    color: var(--color-ink-dim);
+  }
+
+  .nsb-labeled-list__items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .nsb-labeled-list--dense .nsb-labeled-list__items { gap: 4px; }
+
+  .nsb-labeled-list__item {
+    font-family: var(--font-serif);
+    font-size: var(--text-base);
+    line-height: var(--leading-snug);
+    color: var(--color-ink);
+    padding-left: 1.1em;
+    position: relative;
+  }
+  .nsb-labeled-list__item::before {
+    /* Solid black square bullet. Deliberately not a round dot — the
+       square reads as "field-manual index marker" rather than generic
+       UI list item. Never a checkmark: the site never ranks options
+       as winners/losers. */
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 6px;
+    height: 6px;
+    background: var(--color-frame);
+  }
+  .nsb-labeled-list--dense .nsb-labeled-list__item {
+    font-size: var(--text-sm);
+  }
+  .nsb-labeled-list--dense .nsb-labeled-list__item::before {
+    top: 0.5em;
+    width: 5px;
+    height: 5px;
+  }
+</style>

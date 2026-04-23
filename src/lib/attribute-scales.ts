@@ -64,6 +64,26 @@ export const RECOVERY_SCALE = [
   "very hard",
 ] as const;
 
+/**
+ * Five-step ordered reversibility scale for Tech Decisions. The TD
+ * schema keeps `reversibility` as a free `string` (content occasionally
+ * carries nuanced values like "depends on surface"), but nearly all
+ * entries use one of these five canonical tokens — so we surface them
+ * as a ladder in the landing reading guide and on the detail MetaRail.
+ *
+ * Rendering contract: when a value is one of the five, components
+ * should render N/5 bars via `barCounts()`. For the rare off-scale
+ * values, render the string without a bar ladder — see
+ * `isReversibilityLevel()`.
+ */
+export const REVERSIBILITY_SCALE = [
+  "easy",
+  "easy-moderate",
+  "moderate",
+  "moderate-hard",
+  "hard",
+] as const;
+
 export const CONFIDENCE_SCALE = [
   "low",
   "medium",
@@ -71,10 +91,16 @@ export const CONFIDENCE_SCALE = [
   "high",
 ] as const;
 
-export type SeverityLevel   = (typeof SEVERITY_SCALE)[number];
-export type FrequencyLevel  = (typeof FREQUENCY_SCALE)[number];
-export type RecoveryLevel   = (typeof RECOVERY_SCALE)[number];
-export type ConfidenceLevel = (typeof CONFIDENCE_SCALE)[number];
+export type SeverityLevel      = (typeof SEVERITY_SCALE)[number];
+export type FrequencyLevel     = (typeof FREQUENCY_SCALE)[number];
+export type RecoveryLevel      = (typeof RECOVERY_SCALE)[number];
+export type ReversibilityLevel = (typeof REVERSIBILITY_SCALE)[number];
+export type ConfidenceLevel    = (typeof CONFIDENCE_SCALE)[number];
+
+/** True if a reversibility value is one of the five canonical ladder steps. */
+export function isReversibilityLevel(value: string): value is ReversibilityLevel {
+  return (REVERSIBILITY_SCALE as readonly string[]).includes(value);
+}
 
 /**
  * Find the 1-indexed position of `value` inside `scale`. Returns the

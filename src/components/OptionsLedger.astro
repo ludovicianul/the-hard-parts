@@ -1,0 +1,279 @@
+---
+/**
+ * OptionsLedger — the side-by-side A/B option comparison block for a
+ * Tech Decision detail page.
+ *
+ * This is the category's signature visual. The point is to render the two
+ * options **structurally parallel** so a reader can scan one facet (e.g.
+ * HIDDEN COSTS) across both options quickly, while still reading as a
+ * field report rather than a pricing table.
+ *
+ * Anti-references (what this is NOT):
+ *   · no feature table with checkmarks — the site never declares a winner
+ *   · no green/red coloring — color belongs to category identity, not
+ *     evaluative signal
+ *   · no sparkline / meter / icon row — editorial typography carries it
+ *   · no "recommended" badge, ever
+ *
+ * What it IS:
+ *   · two framed columns at desktop (≥860px), stacked at narrow widths
+ *   · each column has a black masthead carrying "OPTION A/B" eyebrow +
+ *     the option's name in display type
+ *   · each column then stacks labeled facets: BEST WHEN, STRENGTHS, COSTS,
+ *     HIDDEN COSTS (highlighted band), FAILURE MODES WHEN MISUSED, REAL-
+ *     WORLD FITS
+ *   · the two columns share a single internal grid so equivalent facets
+ *     line up horizontally at the same y-offset on both sides — structural
+ *     parallelism is the whole point
+ *
+ * HIDDEN COSTS gets a distinctive yellow band treatment because it is the
+ * most load-bearing facet of a Tech Decision (the site's editorial voice
+ * treats hidden costs as the thing novices miss most), and because the
+ * source schema calls it out with its own field name distinct from `costs`.
+ */
+
+import LabeledList from "./LabeledList.astro";
+
+export interface TechDecisionOption {
+  name: string;
+  bestWhen?: readonly string[];
+  strengths?: readonly string[];
+  costs?: readonly string[];
+  hiddenCosts?: readonly string[];
+  failureModesWhenMisused?: readonly string[];
+  realWorldFits?: readonly string[];
+}
+
+export interface Props {
+  optionA: TechDecisionOption;
+  optionB: TechDecisionOption;
+}
+
+const { optionA, optionB } = Astro.props;
+
+// Facet rows — label + caption + key on each option. Rendering loops over
+// this list twice (once per option column) so the two columns never drift
+// out of alignment when a facet is added or renamed. Facets with no content
+// on a given option render nothing (LabeledList handles empty arrays).
+type FacetKey = Exclude<keyof TechDecisionOption, "name">;
+const facets: Array<{ key: FacetKey; label: string; caption?: string; highlight?: boolean }> = [
+  { key: "bestWhen",                 label: "Best when",                  caption: "Conditions where this option is a natural fit." },
+  { key: "strengths",                label: "Strengths",                  caption: "What this option does well on its own terms." },
+  { key: "costs",                    label: "Costs",                      caption: "What you accept to get those strengths." },
+  { key: "hiddenCosts",              label: "Hidden costs",
+    caption: "Costs that surface later than expected — the main thing novices miss.",
+    highlight: true },
+  { key: "failureModesWhenMisused",  label: "Failure modes when misused", caption: "How this option breaks when applied to the wrong context." },
+  { key: "realWorldFits",            label: "Real-world fits",            caption: "Concrete environments where this option has worked." },
+];
+---
+<section class="td-ledger" aria-label="Options on the table">
+  <div class="td-ledger__grid">
+    {[
+      { side: "A" as const, option: optionA },
+      { side: "B" as const, option: optionB },
+    ].map(({ side, option }) => (
+      <article
+        class:list={["td-ledger__col", `td-ledger__col--${side.toLowerCase()}`]}
+        aria-label={`Option ${side}: ${option.name}`}
+      >
+        <header class="td-ledger__col-head">
+          <p class="td-ledger__col-eyebrow">Option {side}</p>
+          <h3 class="td-ledger__col-name">{option.name}</h3>
+        </header>
+
+        <div class="td-ledger__col-body">
+          {facets.map((f) => {
+            const items = option[f.key];
+            const hasItems =
+              Array.isArray(items) &&
+              items.filter((s): s is string => typeof s === "string" && s.trim().length > 0).length > 0;
+            return (
+              <div class:list={[
+                "td-ledger__facet",
+                { "td-ledger__facet--highlight": f.highlight },
+                { "td-ledger__facet--empty": !hasItems },
+              ]}>
+                {hasItems ? (
+                  <LabeledList label={f.label} items={items} caption={f.caption} dense />
+                ) : (
+                  /* Placeholder keeps equivalent rows at the same y-offset
+                     in both columns even when one option omits a facet.
+                     Muted "—" reads as "not recorded", not missing. */
+                  <div class="td-ledger__facet-empty">
+                    <p class="td-ledger__facet-label">{f.label}</p>
+                    <p class="td-ledger__facet-missing">—</p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .td-ledger {
+    margin-top: var(--space-5);
+  }
+  /* Two columns at desktop, single column stacked at narrow widths.
+     Gap between columns is the full outer frame width (3px) drawn as
+     a middle divider via border-right on the A column — so the two
+     ledgers read as halves of ONE strip, not as two detached cards.
+
+     At desktop we use CSS subgrid (two nested levels) so each facet
+     on Option A aligns row-by-row with the same facet on Option B.
+     Without subgrid, each column flows independently and the HIDDEN
+     COSTS band lands at different Y-offsets when the surrounding
+     facets have different content lengths. With subgrid, equivalent
+     facets share an outer grid row → same height → HIDDEN COSTS
+     rules up across both columns as a single horizontal band.
+
+     Narrow widths keep the original flex stack; subgrid only activates
+     at ≥860px when the two option columns are actually side by side. */
+  .td-ledger__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    background: var(--color-surface);
+    border: 3px solid var(--color-frame);
+  }
+  @media (min-width: 860px) {
+    .td-ledger__grid {
+      grid-template-columns: 1fr 1fr;
+      /* 7 tracks: 1 option-head row + 6 facet rows. Heights are
+         auto-sized to max(A, B) content per row. */
+      grid-template-rows: auto repeat(6, auto);
+      row-gap: 0;
+    }
+    .td-ledger__col--a { border-right: 3px solid var(--color-frame); }
+  }
+  @media (max-width: 859px) {
+    .td-ledger__col--a { border-bottom: 3px solid var(--color-frame); }
+  }
+
+  /* Narrow-width base: original flex stack. */
+  .td-ledger__col {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  @media (min-width: 860px) {
+    /* Wide: each column becomes a subgrid of the outer grid, spanning
+       all 7 outer rows (head + 6 facets). The col's direct children
+       (header + body) occupy outer rows 1 and the span 2–7 respectively. */
+    .td-ledger__col {
+      display: grid;
+      grid-template-rows: subgrid;
+      grid-row: 1 / span 7;
+    }
+  }
+
+  /* Option head — black masthead with yellow eyebrow + white display name.
+     Mirrors the detail-page masthead treatment so the two columns read
+     as mini-mastheads for their respective options. */
+  .td-ledger__col-head {
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-frame);
+    color: var(--color-surface);
+    border-bottom: 3px solid var(--color-frame);
+  }
+  .td-ledger__col-eyebrow {
+    margin: 0 0 var(--space-2) 0;
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-yellow);
+  }
+  .td-ledger__col-name {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: clamp(1.5rem, 2.6vw, 1.9rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--color-surface);
+  }
+
+  /* Narrow-width body: flex stack (no alignment across options needed
+     because the two options are already stacked vertically). */
+  .td-ledger__col-body {
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    flex: 1;
+  }
+  @media (min-width: 860px) {
+    /* Wide: body becomes the INNER subgrid. It inherits outer rows 2–7
+       (the 6 facet rows) so Option A's facet 1 and Option B's facet 1
+       land in the same outer-grid row → same height; ditto for facets
+       2 through 6. `row-gap` set on the subgrid overrides the outer
+       grid's 0 row-gap and provides the breathing room between facets. */
+    .td-ledger__col-body {
+      display: grid;
+      grid-template-rows: subgrid;
+      grid-row: 2 / span 6;
+      row-gap: var(--space-5);
+      /* Lateral padding stays so HIDDEN COSTS can break out via negative
+         margin; vertical padding drops to 0 so subgrid rows align cleanly
+         (the head's border-bottom provides the top rule, the outer frame
+         provides the bottom rule; first/last facets inherit row-gap's
+         breathing room from the rows on either side). */
+      padding: var(--space-5) var(--space-5) var(--space-5);
+    }
+  }
+
+  /* Individual facet wrapper — most facets are plain; HIDDEN COSTS gets
+     a yellow band treatment because the source schema and the editorial
+     voice both single it out as the most load-bearing facet. */
+  .td-ledger__facet { min-width: 0; }
+  .td-ledger__facet--highlight {
+    margin: 0 calc(-1 * var(--space-5));
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-yellow);
+    color: var(--color-yellow-ink);
+    border-top: 3px solid var(--color-frame);
+    border-bottom: 3px solid var(--color-frame);
+  }
+  /* When the facet is highlighted, the LabeledList's bullets and label
+     should sit on the yellow background in black ink (already the case
+     via currentColor fallbacks). No additional overrides needed. */
+
+  /* Empty-facet placeholder — keeps the two columns' facets row-aligned
+     even when one option has nothing recorded for a given facet. */
+  .td-ledger__facet-empty {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .td-ledger__facet-label {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+  }
+  .td-ledger__facet-missing {
+    margin: 0;
+    font-family: var(--font-sans);
+    color: var(--color-ink-soft);
+    font-size: var(--text-sm);
+  }
+
+  /* When a highlighted facet is empty it would draw an empty yellow band.
+     Collapse its band treatment in that case. */
+  .td-ledger__facet--highlight.td-ledger__facet--empty {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    border: 0;
+  }
+</style>

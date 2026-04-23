@@ -441,15 +441,21 @@ This expresses how dangerous the signal tends to be **if it is real and persiste
 
 How commonly the signal appears in real software environments. Uses the site-wide canonical frequency enum.
 
-Allowed values:
+The enum accepts **two kinds of values** — five ordered ladder positions, plus one trend flag. See `docs/schema-failure-modes.md#frequency` for the full rationale; the discipline is shared across every category that uses `FrequencyEnum`.
+
+Ladder positions (ordered, rare → universal):
 
 * `rare`
-* `uncommon`
 * `occasional`
 * `common`
 * `very common`
 * `universal`
-* `increasing`
+
+Trend flag (not a ladder position):
+
+* `increasing` — flags patterns whose prevalence is rising. Rendered as a trend chevron (↗), not a bar ladder.
+
+> `uncommon` has been removed from the enum. Do not reintroduce it.
 
 ### `detectability`
 

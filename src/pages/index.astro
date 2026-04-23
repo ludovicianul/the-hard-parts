@@ -4,8 +4,10 @@ import EntryCard from "@/components/EntryCard.astro";
 import CalloutBand from "@/components/CalloutBand.astro";
 import Tag from "@/components/Tag.astro";
 import { CATEGORIES, CATEGORY_ORDER } from "@/lib/categories";
-import { categoryBlock, listEntries, loadFailureModes } from "@/lib/load";
+import { categoryBlock, listEntries, loadFailureModes, loadTechDecisions } from "@/lib/load";
+import { formatRefCode } from "@/lib/resolve";
 import { ensureValidated } from "@/lib/validate";
+import type { SeverityLevel } from "@/lib/attribute-scales";
 
 // Fail the build if content integrity is broken (strict checks only).
 ensureValidated();
@@ -41,6 +43,27 @@ const featuredSlugs = [
 const fmFeatured = featuredSlugs
   .map((slug) => fmEntries.find((e) => e.slug === slug))
   .filter((e): e is (typeof fmEntries)[number] => e !== undefined);
+
+// Tech Decisions preview — six decisions, one per TD subcategory, same
+// editorial intent as the FM preview: show the *breadth* of the axes
+// this category spans, not a top-10. Severity-if-wrong drives the card
+// weight so a reader can compare FM severity and TD severity-if-wrong
+// visually as the same gravity scale.
+const tdEntries = loadTechDecisions().entries;
+const featuredTdSlugs = [
+  "monolith-vs-microservices",            // architecture
+  "build-vs-buy",                         // product-delivery
+  "specialist-teams-vs-cross-functional-teams", // team-operations
+  "test-pyramid-vs-heavy-end-to-end",     // quality-delivery
+  "rag-vs-fine-tuning",                   // ai-systems
+  "human-in-the-loop-vs-full-automation", // ai-systems (second — highest-signal)
+];
+const tdFeatured = featuredTdSlugs
+  .map((slug) => tdEntries.find((e) => e.slug === slug))
+  .filter((e): e is (typeof tdEntries)[number] => e !== undefined);
+const tdTotal = tdEntries.length;
+const tdRefBySlug = new Map<string, string>();
+tdEntries.forEach((e, i) => tdRefBySlug.set(e.slug, formatRefCode("TD", i, tdTotal).refNum));
 ---
 <BaseLayout
   title="nosilverbullet.dev"
@@ -189,13 +212,66 @@ const fmFeatured = featuredSlugs
       </section>
     )}
 
+    {tdFeatured.length > 0 && (
+      /* TD preview mirrors the FM preview's shape — same CalloutBand
+         header, same preview-grid card layout, same "Browse all …" tail
+         link — so the two categories read as siblings of the same
+         editorial system. `data-accent="td"` scopes --accent-current
+         to burnt orange for this whole section: any child that reads
+         `var(--accent-current)` (card hover underline, link hover
+         state, etc.) picks up TD's hue without extra wiring. */
+      <section class="nsb-home__preview" aria-label="From Tech Decisions" data-accent="td">
+        <CalloutBand label="Special section" variant="yellow">
+          <p>Tech Decisions &mdash; structured trade-off references for consequential engineering calls.</p>
+        </CalloutBand>
+
+        <header class="nsb-home__preview-header">
+          <h2 class="nsb-display nsb-home__preview-title">From Tech Decisions</h2>
+          <p class="nsb-home__preview-note">
+            One decision per axis the catalog covers &mdash; architecture,
+            delivery, team, quality, and AI systems. Each entry lays out
+            two concrete options with their real conditions, costs,
+            hidden costs, and failure modes when misapplied.
+          </p>
+        </header>
+
+        <div class="nsb-home__preview-grid">
+          {tdFeatured.map((e) => (
+            <EntryCard
+              code="TD"
+              slug={e.slug}
+              title={e.title}
+              summary={e.summary}
+              subcategory={e.category}
+              severity={(e.severityIfWrong ?? "medium") as SeverityLevel}
+              refNum={tdRefBySlug.get(e.slug)}
+              fillFromSeverity
+              metaBits={[
+                /* Mirrors the TD landing: Reversibility is surfaced on the
+                   detail MetaRail, not duplicated on the card eyebrow. */
+                e.frequency ? `Freq · ${e.frequency}` : undefined,
+              ].filter((s): s is string => typeof s === "string")}
+            />
+          ))}
+        </div>
+
+        <p class="nsb-home__preview-more">
+          <a href="/tech-decisions" class="nsb-home__preview-link">
+            Browse all {tdEntries.length} Tech Decisions &rarr;
+          </a>
+        </p>
+      </section>
+    )}
+
     <aside class="nsb-home__status nsb-frame" aria-label="Build status">
       <div class="nsb-home__status-bar">Phase status</div>
       <p class="nsb-home__status-text">
-        Failure Modes is the first category wired end-to-end with real
-        detail pages, warning-signs-by-stage rendering, and cross-reference
-        resolution. Tech Decisions, Red Flags, and Engineering Playbook
-        follow the same template in later phases.
+        Failure Modes and Tech Decisions are both wired end-to-end with
+        real detail pages, structured rendering, and cross-reference
+        resolution. Tech Decisions reuses the shared page chassis while
+        carrying its own options-ledger visual and decision-support
+        structure. Red Flags and Engineering Playbook follow in later
+        phases using the same shared primitives.
       </p>
     </aside>
   </div>

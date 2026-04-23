@@ -383,9 +383,9 @@ Visual feel:
 * progression, escalation, signal tracking
 * strong relationship to severity and lifecycle
 
-Suggested accent family:
+Accent (implemented):
 
-* amber / ochre / burnished warning tones
+* **forest green** (`--accent-fm`) — picks up the "diagnostic / structural" tone without pulling in red/amber, which are reserved for severity and hero-signal use respectively
 
 ### Tech Decisions
 
@@ -400,9 +400,9 @@ Visual feel:
 * duality, comparison, structured evaluation
 * less dramatic than Failure Modes
 
-Suggested accent family:
+Accent (implemented):
 
-* blue / steel / cool analytical tones
+* **burnt orange** (`--accent-td`) — a warmer, reference-manual orange, deliberately *not* the pure blue the earlier draft of this doc suggested. Blue is reserved for the homepage `Entries` hero stat; making it a category color would overload it
 
 ### Red Flags
 
@@ -418,9 +418,9 @@ Visual feel:
 * strong scanability
 * urgency without chaos
 
-Suggested accent family:
+Accent (implemented):
 
-* coral / red / rust / vivid warning tones
+* **crimson red** (`--accent-rf`) — saturated but editorial, not emergency-siren. Do not let this bleed into severity rendering: severity is a *grayscale weight ramp*, not a color; RF's crimson is category identity only
 
 ### Engineering Playbook
 
@@ -435,14 +435,82 @@ Visual feel:
 * steps, actions, ownership, outcomes
 * usable and procedural
 
-Suggested accent family:
+Accent (implemented):
 
-* teal / green-blue / operational guidance tones
+* **plum purple** (`--accent-ep`) — distinct from FM's green and TD's orange so the four categories form a clearly separated palette. The earlier teal/green-blue suggestion was dropped because it read too close to FM's forest green at small sizes
 
 ### Important note
 
 These accents should support category recognition.
 They should not fragment the product into four unrelated brands.
+
+**Single source of truth:** the four accent tokens are defined in `src/styles/tokens.css` under the *Category accents* section, and cascade everywhere through the `--accent-current` variable (set by `[data-accent="fm"|"td"|"rf"|"ep"]`). Every place that needs "the current category's color" (homepage card heads, detail masthead edition strip, related-entries frame, etc.) reads `--accent-current` rather than hardcoding a hex. If you change the palette, change `tokens.css` — nowhere else.
+
+---
+
+## Severity encoding
+
+Severity is a cross-cutting attribute that shows up on Failure Modes, Red Flags, and Tech Decisions (as `severityIfWrong`). The site uses a **strict separation of channels**:
+
+* **color = category identity** (FM = green, TD = orange, RF = crimson, EP = plum)
+* **weight = severity** (a grayscale ramp from paper to near-black)
+
+These two channels are kept orthogonal so that a reader can glance at any entry card and tell *which category* and *how heavy* independently, without them ever collapsing into a single hue.
+
+### The severity ramp
+
+Five steps, defined as `--sev-low`, `--sev-medium`, `--sev-medium-high`, `--sev-high`, `--sev-critical` in `tokens.css` along with matching `--sev-*-ink` foregrounds for legibility:
+
+| Level           | Fill                     | Ink          |
+|-----------------|--------------------------|--------------|
+| `low`           | paper (lightest gray)    | near-black   |
+| `medium`        | light gray               | near-black   |
+| `medium-high`   | mid gray                 | near-black   |
+| `high`          | dark gray                | white        |
+| `critical`      | near-black               | white        |
+
+An earlier draft used a sepia ramp; it was replaced with grayscale because sepia clashed with the saturated category accents and blurred the line between "color" and "weight".
+
+### Where the ramp is applied
+
+* **Entry cards** — card fill darkens through the ramp via the `fillFromSeverity` prop on `EntryCard`. "Scan the grid for weight first, then read the names" is the explicit reading order.
+* **Detail masthead severity pill** — uses the matching `--sev-*` token so the pill color matches the card the reader just came from.
+* **MetaRail severity cell** — same tint + ink flip.
+* **FM landing reading-guide "Severity key" panel** — shows the five level chips so readers decode the ramp once.
+
+### What the ramp is *not* for
+
+* Do **not** tint lifecycle, frequency, recovery, or confidence cells with severity color.
+* Do **not** reuse the ramp for any non-severity purpose. If a future field needs a weight-style ramp, define a new ramp with a different visual signature.
+* Do **not** introduce a category-colored severity variant (e.g. "green-to-red for FM"). Color belongs to category identity, full stop.
+
+---
+
+## Reading width
+
+Long-form prose paragraphs on this site are **not capped by a global `max-width`**. Every container that wraps a prose paragraph owns its own reading width.
+
+This was a deliberate reversal. The first draft put `max-width: var(--reading-max)` (~70ch) on the global `p` selector, which produced the well-known "dangling last line" problem — a short closing phrase wrapping alone below a long balanced paragraph, impossible to un-break with `text-wrap: balance` because the cap was narrower than the container. Removing the global cap let `text-wrap: balance` and `pretty` do their job, and let individual containers (detail prose column, FM landing intro panel, operator notes body) choose reading widths appropriate to their own layout.
+
+Practical rule for any new container that hosts prose:
+
+1. Do not set `max-width` on the `<p>` itself.
+2. Set the column width on the **container**, not the paragraph.
+3. Trust `text-wrap: pretty` (and `balance` where supported) to handle widows and awkward breaks.
+
+---
+
+## Attribute glyph decisions
+
+For the record of a decision already made: the site experimented with small mono-line glyphs per ordinal attribute (severity triangle, frequency tally marks, recovery staircase, confidence bullseye) to appear next to labels on the FM landing reading-guide cards and the detail MetaRail cells. They were removed because:
+
+* attribute *types* are already identified by short, high-contrast uppercase labels (`SEVERITY`, `FREQUENCY`, etc.) — the glyphs duplicated, rather than added, signal
+* four small icons on every label cell read as KPI-dashboard decoration rather than editorial annotation
+* the site's existing vocabulary (saturated category color + grayscale severity ramp + bar ladders + catalog numbers) is already dense; adding a fifth layer crossed into noise
+
+The one glyph kept is the **trend chevron** (↗) for `frequency: "increasing"`. It survives because it carries information that no word or color carries: a *direction*. An attribute-type glyph says "this cell is about severity" (redundant with the label); a trend glyph says "this pattern is rising" (a distinct claim).
+
+Before reintroducing per-attribute glyphs for any reason, re-read this rationale and justify the change explicitly.
 
 ---
 

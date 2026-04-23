@@ -1,28 +1,726 @@
 ---
+/**
+ * Tech Decisions detail page.
+ *
+ * Eight-section structure, arranged as a decision-support manual:
+ *
+ *   01  THE DECISION          — question, summary, heuristic
+ *   02  WHAT IT'S REALLY ABOUT — reframes (what it is NOT about; why it feels hard)
+ *   03  OPTIONS ON THE TABLE  — structured A/B options via OptionsLedger
+ *   04  COST AND TIME         — costBearer + timeHorizonNotes structured pairs
+ *   05  HOW TO DECIDE         — key factors, questions, evidence, default bias,
+ *                               reversibility, when to revisit
+ *   06  SIGNALS FROM THE GROUND — common bad reasons, anti-patterns, good signals
+ *   07  AI IMPACT             — aiCanHelpWith / aiCanMakeWorseBy / aiSpecificNotes
+ *   08  CONNECTED DECISIONS   — cross-category cross-references
+ *
+ * Section visibility is driven by whether the underlying fields carry content,
+ * same policy as the FM detail page — never render an empty section or an
+ * orphaned anchor in the SectionIndex.
+ *
+ * Reuses the shared primitives: DetailLayout, SectionHeader, SectionIndex (with
+ * its scroll-spy), MetaRail, RelatedEntries, Tag, CalloutBand, LabeledList
+ * (new for TD but shared), OptionsLedger (new for TD, shared).
+ * FM-specific primitives (WarningSignsByStage, OperatorNotes as wired for FM,
+ * HeardInTheWild) are deliberately not used here — those are category-specific
+ * narrative components, not a universal detail-page chassis.
+ */
+
 import DetailLayout from "@/layouts/DetailLayout.astro";
-import { findEntry, listEntries } from "@/lib/load";
+import CalloutBand from "@/components/CalloutBand.astro";
+import LabeledList from "@/components/LabeledList.astro";
+import MetaRail from "@/components/MetaRail.astro";
+import OptionsLedger from "@/components/OptionsLedger.astro";
+import RelatedEntries from "@/components/RelatedEntries.astro";
+import SectionHeader from "@/components/SectionHeader.astro";
+import SectionIndex from "@/components/SectionIndex.astro";
+import Tag from "@/components/Tag.astro";
+import { loadTechDecisions } from "@/lib/load";
+import { formatRefCode } from "@/lib/resolve";
 import { ensureValidated } from "@/lib/validate";
+import type { TechDecisionEntry } from "@/content/schemas/tech-decision";
+import {
+  SEVERITY_SCALE,
+  FREQUENCY_SCALE,
+  REVERSIBILITY_SCALE,
+  CONFIDENCE_SCALE,
+  barCounts,
+  isFrequencyTrend,
+  isReversibilityLevel,
+} from "@/lib/attribute-scales";
 
 export async function getStaticPaths() {
   ensureValidated();
-  return listEntries("TD").map((e) => ({ params: { slug: e.slug } }));
+  return loadTechDecisions().entries.map((e) => ({ params: { slug: e.slug } }));
 }
 
 const { slug } = Astro.params;
-const entry = slug ? findEntry("TD", slug) : undefined;
+const allTd = loadTechDecisions().entries;
+const entry: TechDecisionEntry | undefined = allTd.find((e) => e.slug === slug);
 if (!entry) {
   throw new Error(`Tech Decision not found for slug "${slug}"`);
 }
-const sub = (entry as any).category as string | undefined;
+
+// Section visibility — each evaluated against the real content of this
+// entry. Section numbering recomputes positionally so a skipped AI block
+// (say) doesn't leave a gap in the `01 · 02 · 03…` sequence.
+const hasFraming = Boolean(
+  entry.whatThisIsReallyAbout || entry.notActuallyAbout || entry.whyItFeelsHard,
+);
+const hasCostTime = Boolean(entry.costBearer || entry.timeHorizonNotes);
+const hasSignals = Boolean(
+  (entry.commonBadReasons && entry.commonBadReasons.length > 0) ||
+  (entry.antiPatterns && entry.antiPatterns.length > 0) ||
+  (entry.goodSignalsForA && entry.goodSignalsForA.length > 0) ||
+  (entry.goodSignalsForB && entry.goodSignalsForB.length > 0),
+);
+const hasAiBlock = Boolean(
+  (entry.aiCanHelpWith && entry.aiCanHelpWith.length > 0) ||
+  (entry.aiCanMakeWorseBy && entry.aiCanMakeWorseBy.length > 0) ||
+  entry.aiSpecificNotes,
+);
+const hasRelationships = Boolean(
+  (entry.oftenLeadsToFailureModes && entry.oftenLeadsToFailureModes.length > 0) ||
+  (entry.adjacentDecisions && entry.adjacentDecisions.length > 0) ||
+  (entry.relatedRedFlags && entry.relatedRedFlags.length > 0) ||
+  (entry.relatedPlaybooks && entry.relatedPlaybooks.length > 0),
+);
+
+// Catalog reference code — shared helper so the masthead pill and every
+// incoming cross-reference stay in lockstep.
+const indexInFile = allTd.findIndex((e) => e.slug === entry.slug);
+const { refCode } = formatRefCode("TD", indexInFile, allTd.length);
+
+// Severity-if-wrong pill variant on the masthead. Uses the same ramp as
+// FM's severity pill so a reader seeing a "high severity" weight on an
+// FM card and a "severityIfWrong: high" pill on a TD card reads them
+// as equivalent gravity, not as two unrelated scales.
+const severityPillVariant = entry.severityIfWrong
+  ? (`sev-${entry.severityIfWrong}` as
+      | "sev-low"
+      | "sev-medium"
+      | "sev-medium-high"
+      | "sev-high"
+      | "sev-critical")
+  : undefined;
+
+// Prettify subcategory slug for display. Kept simple — no i18n needed
+// because the subcategory values are site-canonical english words.
+const prettifySub = (s: string): string =>
+  s.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+
+const sectionSpecs: Array<{ id: string; label: string; shown: boolean }> = [
+  { id: "sec-decision",      label: "The decision",             shown: true },
+  { id: "sec-framing",       label: "What it's really about",   shown: hasFraming },
+  { id: "sec-options",       label: "Options on the table",     shown: true },
+  { id: "sec-cost-time",     label: "Cost and time",            shown: hasCostTime },
+  { id: "sec-how-to-decide", label: "How to decide",            shown: true },
+  { id: "sec-signals",       label: "Signals from the ground",  shown: hasSignals },
+  { id: "sec-ai",            label: "AI impact",                shown: hasAiBlock },
+  { id: "sec-relationships", label: "Connected decisions",      shown: hasRelationships },
+];
+const sections = sectionSpecs
+  .filter((s) => s.shown)
+  .map((s, i) => ({ step: String(i + 1).padStart(2, "0"), id: s.id, label: s.label }));
+const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
 ---
+
 <DetailLayout
   code="TD"
   title={entry.title}
   summary={entry.summary}
-  subcategory={sub}
+  subcategory={prettifySub(entry.category)}
+  refCode={refCode}
 >
-  <div class="nsb-placeholder">
-    Phase 1 placeholder · Tech Decision detail page for "{entry.slug}".
-    Comparison layout lands later.
+  {/* Masthead pill row — severity-if-wrong carries the ramp color,
+      frequency rendered plain. Reversibility is intentionally NOT
+      repeated here because the MetaRail below carries it as a first-
+      class dimension with its own bar ladder; a second pill would be
+      redundant signal. Severity stays pilled because its color is a
+      category-wide gravity cue that also links visually back to the
+      landing-grid card fills. */}
+  <Fragment slot="header-stamp">
+    {entry.severityIfWrong && severityPillVariant && (
+      <Tag label={`Severity if wrong · ${entry.severityIfWrong}`} variant={severityPillVariant} size="sm" />
+    )}
+    {entry.frequency && <Tag label={`Freq · ${entry.frequency}`} variant="outline" size="sm" />}
+  </Fragment>
+
+  <Fragment slot="nav-rail">
+    <SectionIndex items={sections} eyebrow="In this decision" />
+  </Fragment>
+
+  {/* Snapshot metadata rail — cell order mirrors the FM detail MetaRail
+      so readers get the same left-to-right reading rhythm across
+      categories:
+
+        FM  ·  Severity   → Frequency → Lifecycle → Recovery       → Confidence
+        TD  ·  Sev if wrong → Frequency → Audiences → Reversibility → Confidence
+
+      The semantic mapping is deliberate: Lifecycle (FM list-of-stages)
+      corresponds to Audiences (TD list-of-roles) — both are bar-less
+      "who/when" lists. Recovery (FM ladder) corresponds to Reversibility
+      (TD ladder) — both answer "how hard to undo once you're in it".
+
+      Reversibility uses its own five-step scale. Most entries land on
+      one of the five canonical tokens; a handful carry nuanced values
+      ("depends on surface", etc.). For those off-scale values we drop
+      the bar ladder and just render the string — see
+      `isReversibilityLevel`. */}
+  <MetaRail
+    items={[
+      ...(entry.severityIfWrong ? [{
+        label: "Severity if wrong",
+        value: entry.severityIfWrong,
+        severity: entry.severityIfWrong,
+        scale: barCounts(SEVERITY_SCALE, entry.severityIfWrong),
+      }] : []),
+      ...(entry.frequency ? [{
+        label: "Frequency",
+        value: entry.frequency,
+        ...(isFrequencyTrend(entry.frequency)
+          ? { trend: "increasing" as const }
+          : { scale: barCounts(FREQUENCY_SCALE, entry.frequency) }),
+      }] : []),
+      ...(entry.audiences && entry.audiences.length > 0 ? [{
+        label: "Audiences",
+        value: entry.audiences,
+      }] : []),
+      ...(entry.reversibility ? [{
+        label: "Reversibility",
+        value: entry.reversibility,
+        ...(isReversibilityLevel(entry.reversibility)
+          ? { scale: barCounts(REVERSIBILITY_SCALE, entry.reversibility) }
+          : {}),
+      }] : []),
+      {
+        label: "Confidence",
+        value: entry.patternConfidence,
+        scale: barCounts(CONFIDENCE_SCALE, entry.patternConfidence),
+      },
+    ]}
+  />
+
+  {/* 1. THE DECISION — the whole reason this page exists. `decisionQuestion`
+        is a REQUIRED field in the TD schema; it deserves to read as the
+        opening editorial beat, not as a dt/dd buried in the metadata. */}
+  <SectionHeader
+    id="sec-decision"
+    step={stepFor("sec-decision")}
+    eyebrow="The decision"
+    title={entry.decisionQuestion}
+  />
+  <div class="td-prose td-decision__body">
+    <p>{entry.summary}</p>
+    {entry.decisionHeuristic && (
+      <CalloutBand label="Heuristic" variant="yellow" serif>
+        <p>{entry.decisionHeuristic}</p>
+      </CalloutBand>
+    )}
   </div>
+
+  {/* 2. WHAT IT'S REALLY ABOUT — reframing block. Shown only if at least one
+        of the three reframe fields is present. */}
+  {hasFraming && (
+    <>
+      <SectionHeader
+        id="sec-framing"
+        step={stepFor("sec-framing")}
+        eyebrow="Beneath the surface"
+        title="What it's really about"
+        note="Three short reframes that strip the decision down to what it actually turns on."
+      />
+      <dl class="td-framing">
+        {entry.whatThisIsReallyAbout && (
+          <div class="td-framing__row">
+            <dt>Really about</dt>
+            <dd>{entry.whatThisIsReallyAbout}</dd>
+          </div>
+        )}
+        {entry.notActuallyAbout && (
+          <div class="td-framing__row td-framing__row--negative">
+            <dt>Not actually about</dt>
+            <dd>{entry.notActuallyAbout}</dd>
+          </div>
+        )}
+        {entry.whyItFeelsHard && (
+          <div class="td-framing__row">
+            <dt>Why it feels hard</dt>
+            <dd>{entry.whyItFeelsHard}</dd>
+          </div>
+        )}
+      </dl>
+    </>
+  )}
+
+  {/* 3. OPTIONS ON THE TABLE — the site's signature TD visual. */}
+  <SectionHeader
+    id="sec-options"
+    step={stepFor("sec-options")}
+    eyebrow="Options on the table"
+    title="Two poles of the trade-off"
+    note="Neither is the right answer by default. Each option's conditions, strengths, costs, hidden costs, and failure modes when misused are laid out in parallel so you can read across facets."
+  />
+  <OptionsLedger optionA={entry.optionA} optionB={entry.optionB} />
+
+  {/* 4. COST AND TIME — structured A/B carriers. Rendered as two small
+        parallel panels so a reader can see who pays and when each wins. */}
+  {hasCostTime && (
+    <>
+      <SectionHeader
+        id="sec-cost-time"
+        step={stepFor("sec-cost-time")}
+        eyebrow="Cost and time"
+        title="Who bears it, how time changes the answer"
+        note="Trade-offs are rarely zero-sum — usually someone pays, and usually the payoff curve is different on different horizons."
+      />
+      <div class="td-pairs">
+        {entry.costBearer && (
+          <section class="td-pair" aria-label="Cost bearer">
+            <header class="td-pair__head">Cost bearer</header>
+            <div class="td-pair__grid">
+              <div class="td-pair__col">
+                <p class="td-pair__col-head">Option A · {entry.optionA.name}</p>
+                <LabeledList label="Who absorbs the cost" items={entry.costBearer.optionA} dense />
+              </div>
+              <div class="td-pair__col">
+                <p class="td-pair__col-head">Option B · {entry.optionB.name}</p>
+                <LabeledList label="Who absorbs the cost" items={entry.costBearer.optionB} dense />
+              </div>
+            </div>
+          </section>
+        )}
+        {entry.timeHorizonNotes && (
+          <section class="td-pair" aria-label="Time horizon">
+            <header class="td-pair__head">Time horizon</header>
+            <div class="td-pair__grid">
+              <div class="td-pair__col">
+                <p class="td-pair__col-head">Option A · {entry.optionA.name}</p>
+                <p class="td-pair__col-body">{entry.timeHorizonNotes.optionA}</p>
+              </div>
+              <div class="td-pair__col">
+                <p class="td-pair__col-head">Option B · {entry.optionB.name}</p>
+                <p class="td-pair__col-body">{entry.timeHorizonNotes.optionB}</p>
+              </div>
+            </div>
+          </section>
+        )}
+      </div>
+    </>
+  )}
+
+  {/* 5. HOW TO DECIDE — decision support. `questionsToAsk` is REQUIRED; the
+        rest are optional helpers that only render when present. */}
+  <SectionHeader
+    id="sec-how-to-decide"
+    step={stepFor("sec-how-to-decide")}
+    eyebrow="How to decide"
+    title="The work you still have to do"
+    note="The reference can frame the trade-off; only you can weight the factors against your context."
+  />
+  <div class="td-decide">
+    <LabeledList
+      label="Questions to ask"
+      items={entry.questionsToAsk}
+      caption="Open these in the room. Answering them is most of the decision."
+    />
+    <LabeledList
+      label="Key factors"
+      items={entry.keyFactors}
+      caption="The variables that actually move the answer."
+    />
+    <LabeledList
+      label="Evidence needed"
+      items={entry.evidenceNeeded}
+      caption="What to gather before committing — not after."
+    />
+    {entry.defaultBias && (
+      <div class="td-decide__line">
+        <p class="td-decide__line-label">Default bias</p>
+        <p class="td-decide__line-body">{entry.defaultBias}</p>
+      </div>
+    )}
+    {entry.reversibility && (
+      <div class="td-decide__line">
+        <p class="td-decide__line-label">Reversibility</p>
+        <p class="td-decide__line-body">{entry.reversibility}</p>
+      </div>
+    )}
+    <LabeledList
+      label="When to revisit"
+      items={entry.whenToRevisit}
+      caption="Trigger conditions that should force a re-look."
+    />
+  </div>
+
+  {/* 6. SIGNALS FROM THE GROUND — diagnostic evidence from real teams. */}
+  {hasSignals && (
+    <>
+      <SectionHeader
+        id="sec-signals"
+        step={stepFor("sec-signals")}
+        eyebrow="Signals from the ground"
+        title="What's usually pushing the call, and what should"
+        note="Bad reasons and anti-patterns on one side; concrete signals that genuinely point toward each option on the other."
+      />
+      <div class="td-signals">
+        <LabeledList
+          label="Common bad reasons"
+          items={entry.commonBadReasons}
+          caption="Reasoning that feels convincing in the moment but doesn't hold up."
+        />
+        <LabeledList
+          label="Anti-patterns"
+          items={entry.antiPatterns}
+          caption="Shapes of reasoning the reader should recognize and set aside."
+        />
+        <div class="td-signals__good">
+          <LabeledList
+            label={`Good signals for · ${entry.optionA.name}`}
+            items={entry.goodSignalsForA}
+            caption="Concrete observations that genuinely point to Option A."
+          />
+          <LabeledList
+            label={`Good signals for · ${entry.optionB.name}`}
+            items={entry.goodSignalsForB}
+            caption="Concrete observations that genuinely point to Option B."
+          />
+        </div>
+      </div>
+    </>
+  )}
+
+  {/* 7. AI IMPACT — same treatment as FM's AI block: positive leverage +
+        negative distortion + a standalone synthesis note if present. */}
+  {hasAiBlock && (
+    <>
+      <SectionHeader
+        id="sec-ai"
+        step={stepFor("sec-ai")}
+        eyebrow="AI impact"
+        title="How AI bends this decision"
+        note="Where AI accelerates the call, where it introduces new distortions, and anything else worth knowing."
+      />
+      <div class="td-ai">
+        <LabeledList
+          label="AI can help with"
+          items={entry.aiCanHelpWith}
+          caption="Where AI genuinely reduces the cost of making the call."
+        />
+        <LabeledList
+          label="AI can make worse"
+          items={entry.aiCanMakeWorseBy}
+          caption="Distortions AI introduces that didn't exist before."
+        />
+        {entry.aiSpecificNotes && (
+          <CalloutBand label="AI note" variant="blue" serif>
+            <p>{entry.aiSpecificNotes}</p>
+          </CalloutBand>
+        )}
+      </div>
+    </>
+  )}
+
+  {/* 8. CONNECTED DECISIONS AND PATTERNS — directional cross-references. */}
+  {hasRelationships && (
+    <>
+      <SectionHeader
+        id="sec-relationships"
+        step={stepFor("sec-relationships")}
+        eyebrow="Connected decisions"
+        title="Where this touches the rest of the catalog"
+        note="Related failure modes, adjacent decisions that are often entangled with this one, red flags that signal trouble, and playbooks to reach for."
+      />
+      <div class="td-rel-grid">
+        <RelatedEntries
+          eyebrow="Often leads to failure modes"
+          title="Often leads to failure modes"
+          refs={entry.oftenLeadsToFailureModes}
+          expectCategory="FM"
+          dense
+        />
+        <RelatedEntries
+          eyebrow="Adjacent decisions"
+          title="Adjacent decisions"
+          refs={entry.adjacentDecisions}
+          expectCategory="TD"
+          dense
+        />
+        <RelatedEntries
+          eyebrow="Related red flags"
+          title="Related red flags"
+          refs={entry.relatedRedFlags}
+          expectCategory="RF"
+          dense
+        />
+        <RelatedEntries
+          eyebrow="Related playbooks"
+          title="Related playbooks"
+          refs={entry.relatedPlaybooks}
+          expectCategory="EP"
+          dense
+        />
+      </div>
+    </>
+  )}
 </DetailLayout>
+
+<style>
+  /* ---- Prose body text (sections 1, 2 intros, AI note body) ------ */
+  .td-prose {
+    font-family: var(--font-serif);
+    font-size: var(--text-md);
+    line-height: var(--leading-relaxed);
+    color: var(--color-ink);
+    margin: var(--space-4) 0 0 0;
+    text-wrap: pretty;
+    max-width: none;
+  }
+  .td-prose p { margin: 0 0 var(--space-4) 0; }
+  .td-prose p:last-child { margin-bottom: 0; }
+
+  .td-decision__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  /* ---- 2. Framing block — three labelled rows, each with a mono label
+        on the left and serif body on the right. The "not actually about"
+        row picks up a subtle inverse treatment so the negation reads
+        visually as negation. */
+  .td-framing {
+    margin: var(--space-4) 0 0 0;
+    padding: 0;
+    background: var(--color-surface);
+    border: 3px solid var(--color-frame);
+  }
+  .td-framing__row {
+    display: grid;
+    grid-template-columns: minmax(10rem, 13rem) 1fr;
+    gap: var(--space-5);
+    padding: var(--space-4) var(--space-5);
+    border-top: 2px solid var(--color-frame);
+    align-items: start;
+  }
+  .td-framing__row:first-child { border-top: 0; }
+  .td-framing__row dt {
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink);
+    margin: 0;
+  }
+  .td-framing__row dd {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: var(--text-md);
+    line-height: var(--leading-snug);
+    color: var(--color-ink);
+  }
+  /* "Not actually about" — inverse treatment, reads as an explicit
+     negation of common framings. Dark background, light ink, the
+     `dt` label flipped to yellow. Deliberate visual hit. */
+  .td-framing__row--negative {
+    background: var(--color-frame);
+    color: var(--color-surface);
+  }
+  .td-framing__row--negative dt { color: var(--color-yellow); }
+  .td-framing__row--negative dd { color: var(--color-surface); }
+  @media (max-width: 640px) {
+    .td-framing__row {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+    }
+  }
+
+  /* ---- 4. Cost / time pair panels. Two small framed panels in a row
+        at desktop, stacked on narrow. Each panel has a black masthead
+        and a 2-col body (option A | option B). */
+  .td-pairs {
+    margin-top: var(--space-4);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  @media (min-width: 960px) {
+    .td-pairs { grid-template-columns: 1fr 1fr; }
+  }
+  .td-pair {
+    background: var(--color-surface);
+    border: 3px solid var(--color-frame);
+    display: flex;
+    flex-direction: column;
+  }
+  .td-pair__head {
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-frame);
+    color: var(--color-yellow);
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+  /* Sub-grid for Option A / Option B inside a pair panel. Narrow keeps
+     the flex stack; wide uses CSS subgrid so the "Option A · Name"
+     label row and the body row line up horizontally between the two
+     columns — otherwise a long option name like "STANDARDIZATION"
+     wrapping to 2 lines pushes the body down on its side only, and
+     the two bodies start at different Y-offsets. */
+  .td-pair__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  @media (min-width: 540px) {
+    .td-pair__grid {
+      grid-template-columns: 1fr 1fr;
+      /* Row 1 = option-head labels (aligned), row 2 = bodies. */
+      grid-template-rows: auto 1fr;
+      row-gap: 0;
+    }
+    .td-pair__col + .td-pair__col {
+      border-left: 2px solid var(--color-frame);
+    }
+  }
+  @media (max-width: 539px) {
+    .td-pair__col + .td-pair__col {
+      border-top: 2px solid var(--color-frame);
+    }
+  }
+  /* Narrow-width col: flex stack. */
+  .td-pair__col {
+    padding: var(--space-4) var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+  @media (min-width: 540px) {
+    /* Wide-width col: subgrid spanning the 2 pair rows so the head
+       label and the body align horizontally across columns. */
+    .td-pair__col {
+      display: grid;
+      grid-template-rows: subgrid;
+      grid-row: 1 / span 2;
+      row-gap: var(--space-3);
+    }
+  }
+  .td-pair__col-head {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+  }
+  .td-pair__col-body {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: var(--text-md);
+    line-height: var(--leading-snug);
+    color: var(--color-ink);
+  }
+
+  /* ---- 5. How to decide — stacked LabeledLists with thin rules
+        between them; two one-line fields (default bias, reversibility)
+        rendered as inline label+body. */
+  .td-decide {
+    margin-top: var(--space-4);
+    background: var(--color-surface);
+    border: 3px solid var(--color-frame);
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+  .td-decide > * + * {
+    padding-top: var(--space-4);
+    border-top: 1.5px solid var(--color-rule);
+  }
+  .td-decide__line {
+    display: grid;
+    grid-template-columns: minmax(9rem, 11rem) 1fr;
+    gap: var(--space-4);
+    align-items: baseline;
+  }
+  .td-decide__line-label {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink);
+  }
+  .td-decide__line-body {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: var(--text-md);
+    line-height: var(--leading-snug);
+    color: var(--color-ink);
+  }
+  @media (max-width: 640px) {
+    .td-decide__line {
+      grid-template-columns: 1fr;
+      gap: 2px;
+    }
+  }
+
+  /* ---- 6. Signals — mirrors td-decide's stacking but splits the
+        "good signals for A/B" pair into a 2-col sub-grid. */
+  .td-signals {
+    margin-top: var(--space-4);
+    background: var(--color-surface);
+    border: 3px solid var(--color-frame);
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+  .td-signals > * + * {
+    padding-top: var(--space-4);
+    border-top: 1.5px solid var(--color-rule);
+  }
+  .td-signals__good {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+  @media (min-width: 720px) {
+    .td-signals__good {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-6);
+    }
+  }
+
+  /* ---- 7. AI impact — same stacked-panel treatment. */
+  .td-ai {
+    margin-top: var(--space-4);
+    background: var(--color-surface);
+    border: 3px solid var(--color-frame);
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+  .td-ai > * + * {
+    padding-top: var(--space-4);
+    border-top: 1.5px solid var(--color-rule);
+  }
+
+  /* ---- 8. Relationships — same grid approach as FM. */
+  .td-rel-grid {
+    margin-top: var(--space-4);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+  @media (min-width: 760px) {
+    .td-rel-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
