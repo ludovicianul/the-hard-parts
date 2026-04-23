@@ -43,6 +43,14 @@ export interface GlanceRow {
    *   · null | undefined | "" — row skipped entirely.
    */
   value: string | readonly string[] | number | null | undefined;
+  /**
+   * Inverse "negation" treatment — renders this single cell with a
+   * black fill, yellow `dt` label, and white `dd` value, instead of
+   * the default blue cell. Used by TD for the "Not actually about"
+   * row so the negation reads as an explicit visual hit, not a third
+   * equal reframe. Opt-in; defaults to false.
+   */
+  negate?: boolean;
 }
 
 export interface Props {
@@ -59,8 +67,8 @@ export interface Props {
 const { title = "At a glance", refCode, rows, ariaLabel } = Astro.props;
 
 type VisibleRow =
-  | { kind: "text"; label: string; text: string }
-  | { kind: "list"; label: string; items: readonly string[] };
+  | { kind: "text"; label: string; text: string; negate: boolean }
+  | { kind: "list"; label: string; items: readonly string[]; negate: boolean };
 
 /**
  * Normalize each row to a renderable shape, dropping rows whose value
@@ -70,19 +78,20 @@ type VisibleRow =
 const visible: readonly VisibleRow[] = rows
   .map((row): VisibleRow | null => {
     const v = row.value;
+    const negate = row.negate === true;
     if (v === null || v === undefined) return null;
     if (Array.isArray(v)) {
       const clean = (v as readonly string[]).filter(
         (s) => typeof s === "string" && s.trim().length > 0,
       );
       if (clean.length === 0) return null;
-      return { kind: "list", label: row.label, items: clean };
+      return { kind: "list", label: row.label, items: clean, negate };
     }
     if (typeof v === "number") {
-      return { kind: "text", label: row.label, text: String(v) };
+      return { kind: "text", label: row.label, text: String(v), negate };
     }
     const s = String(v).trim();
-    return s.length > 0 ? { kind: "text", label: row.label, text: s } : null;
+    return s.length > 0 ? { kind: "text", label: row.label, text: s, negate } : null;
   })
   .filter((r): r is VisibleRow => r !== null);
 ---
@@ -97,7 +106,10 @@ const visible: readonly VisibleRow[] = rows
     </div>
     <dl class="nsb-glance__rows">
       {visible.map((row) => (
-        <div class="nsb-glance__row">
+        <div class:list={[
+          "nsb-glance__row",
+          { "nsb-glance__row--negate": row.negate },
+        ]}>
           <dt>{row.label}</dt>
           <dd>
             {row.kind === "list"
@@ -205,5 +217,21 @@ const visible: readonly VisibleRow[] = rows
     line-height: var(--leading-snug);
     text-transform: uppercase;
     letter-spacing: 0.01em;
+  }
+
+  /* ---- Inverse "negation" cell ---------------------------------
+     Opt-in via `row.negate === true`. Black background, yellow dt,
+     white dd — reads as an explicit negation hit rather than a third
+     equal reframe. TD uses this on "Not actually about"; FM and RF
+     don't currently set it. The dt uses yellow (same token as the
+     title-bar eyebrow) so the two yellow-on-black elements rhyme. */
+  .nsb-glance__row--negate {
+    background: var(--color-frame);
+  }
+  .nsb-glance__row--negate dt {
+    color: var(--color-yellow);
+  }
+  .nsb-glance__row--negate dd {
+    color: var(--color-surface);
   }
 </style>

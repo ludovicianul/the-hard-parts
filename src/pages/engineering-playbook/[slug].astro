@@ -1,28 +1,607 @@
 ---
+/**
+ * /engineering-playbook/[slug] — Engineering Playbook detail page.
+ *
+ * Narrative structure — "operational manual":
+ *
+ *   1. THE SITUATION               — useWhen (positive) + doNotUseWhen
+ *                                    (calibration, yellow left-rule caveat
+ *                                    panel matching RF's "not necessarily
+ *                                    a problem when" treatment).
+ *   2. WHY THIS MATTERS            — whyThisMatters (short editorial beat).
+ *   3. WHAT GOOD LOOKS LIKE        — whatGoodLooksLike (the quality bar).
+ *   4. BEFORE YOU START            — inputs + prerequisites (two labeled
+ *                                    lists, so a reader can check they
+ *                                    have what they need to proceed).
+ *   5. THE PROCEDURE               — steps, rendered via ProcedureSteps —
+ *                                    the signature EP visual: plum step
+ *                                    badge + title + italic purpose +
+ *                                    actions (square bullets) + outputs
+ *                                    (chevron bullets).
+ *   6. JUDGMENT CALLS AND PITFALLS — decisionPoints + examplePromptsOrQuestions
+ *                                    + commonMistakes + warningSignsYouAreDoingItWrong
+ *                                    (four LabeledLists in a 2×2 grid).
+ *   7. OUTCOMES AND SIGNALS        — artifactsToProduce + successSignals +
+ *                                    followUpActions + metricsOrSignals
+ *                                    (four LabeledLists in a 2×2 grid).
+ *   8. AI EFFECTS                  — aiCanHelpWith + aiCanMakeWorseBy +
+ *                                    aiSpecificNotes (blue serif CalloutBand
+ *                                    for the synthesis, same as FM/TD/RF).
+ *   9. CONNECTED PLAYBOOKS         — RelatedEntries × 4 in a 2×2 grid.
+ *
+ * Shared primitives reused: `DetailLayout`, `AtAGlance`, `MetaRail`,
+ * `SectionHeader`, `SectionIndex`, `LabeledList`, `CalloutBand`,
+ * `RelatedEntries`, `Tag`. EP-specific: `ProcedureSteps`. All EP-only
+ * styling is class-scoped under `ep-*`.
+ */
 import DetailLayout from "@/layouts/DetailLayout.astro";
-import { findEntry, listEntries } from "@/lib/load";
+import AtAGlance from "@/components/AtAGlance.astro";
+import MetaRail from "@/components/MetaRail.astro";
+import SectionHeader from "@/components/SectionHeader.astro";
+import SectionIndex from "@/components/SectionIndex.astro";
+import ProcedureSteps from "@/components/ProcedureSteps.astro";
+import LabeledList from "@/components/LabeledList.astro";
+import CalloutBand from "@/components/CalloutBand.astro";
+import RelatedEntries from "@/components/RelatedEntries.astro";
+import Tag from "@/components/Tag.astro";
+import { loadPlaybooks } from "@/lib/load";
 import { ensureValidated } from "@/lib/validate";
+import { formatRefCode } from "@/lib/resolve";
+import type { PlaybookEntry } from "@/content/schemas/playbook";
+import {
+  DIFFICULTY_SCALE,
+  CONFIDENCE_SCALE,
+  barCounts,
+} from "@/lib/attribute-scales";
 
 export async function getStaticPaths() {
   ensureValidated();
-  return listEntries("EP").map((e) => ({ params: { slug: e.slug } }));
+  return loadPlaybooks().entries.map((e) => ({ params: { slug: e.slug } }));
 }
 
 const { slug } = Astro.params;
-const entry = slug ? findEntry("EP", slug) : undefined;
+const allEp = loadPlaybooks().entries;
+const entry: PlaybookEntry | undefined = allEp.find((e) => e.slug === slug);
 if (!entry) {
   throw new Error(`Playbook not found for slug "${slug}"`);
 }
-const sub = (entry as any).category as string | undefined;
+const index = allEp.findIndex((e) => e.slug === slug);
+const { refCode } = formatRefCode("EP", index, allEp.length);
+
+const prettify = (s: string): string =>
+  s.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+
+// Masthead difficulty pill — reuses the severity-ramp Tag variants
+// (sev-low … sev-high). EP's `difficulty` enum aligns exactly with
+// the first four severity tokens, so the mapping is identity. A
+// value outside the ladder falls through to a safe `sev-medium`.
+// Same pattern FM uses for severity + RF uses for severity.
+type SevVariant = "sev-low" | "sev-medium" | "sev-medium-high" | "sev-high" | "sev-critical";
+const DIFFICULTY_TO_SEV_VARIANT: Record<string, SevVariant> = {
+  low: "sev-low",
+  medium: "sev-medium",
+  "medium-high": "sev-medium-high",
+  high: "sev-high",
+};
+const difficultyPillVariant: SevVariant =
+  (entry.difficulty && DIFFICULTY_TO_SEV_VARIANT[entry.difficulty]) || "sev-medium";
+
+// Section visibility — every current EP entry carries every optional
+// field, but the page must stay honest if a future edit removes one.
+const hasSituation = Boolean(
+  (entry.useWhen && entry.useWhen.length > 0) ||
+  (entry.doNotUseWhen && entry.doNotUseWhen.length > 0),
+);
+const hasWhatGood = Array.isArray(entry.whatGoodLooksLike) && entry.whatGoodLooksLike.length > 0;
+const hasBeforeStart = Boolean(
+  (entry.inputs && entry.inputs.length > 0) ||
+  (entry.prerequisites && entry.prerequisites.length > 0),
+);
+const hasSteps = Array.isArray(entry.steps) && entry.steps.length > 0;
+const hasJudgment = Boolean(
+  (entry.decisionPoints && entry.decisionPoints.length > 0) ||
+  (entry.examplePromptsOrQuestions && entry.examplePromptsOrQuestions.length > 0) ||
+  (entry.commonMistakes && entry.commonMistakes.length > 0) ||
+  (entry.warningSignsYouAreDoingItWrong && entry.warningSignsYouAreDoingItWrong.length > 0),
+);
+const hasOutcomes = Boolean(
+  (entry.artifactsToProduce && entry.artifactsToProduce.length > 0) ||
+  (entry.successSignals && entry.successSignals.length > 0) ||
+  (entry.followUpActions && entry.followUpActions.length > 0) ||
+  (entry.metricsOrSignals && entry.metricsOrSignals.length > 0),
+);
+const hasAi = Boolean(
+  (entry.aiCanHelpWith && entry.aiCanHelpWith.length > 0) ||
+  (entry.aiCanMakeWorseBy && entry.aiCanMakeWorseBy.length > 0) ||
+  (typeof entry.aiSpecificNotes === "string" && entry.aiSpecificNotes.trim().length > 0),
+);
+const hasRelated = Boolean(
+  (entry.relatedFailureModes && entry.relatedFailureModes.length > 0) ||
+  (entry.relatedTechDecisions && entry.relatedTechDecisions.length > 0) ||
+  (entry.relatedPlaybooks && entry.relatedPlaybooks.length > 0) ||
+  (entry.relatedRedFlags && entry.relatedRedFlags.length > 0),
+);
+
+const sectionSpecs = [
+  { id: "sec-situation",   label: "The situation",            shown: hasSituation },
+  { id: "sec-why",         label: "Why this matters",         shown: true },
+  { id: "sec-what-good",   label: "What good looks like",     shown: hasWhatGood },
+  { id: "sec-before",      label: "Before you start",         shown: hasBeforeStart },
+  { id: "sec-procedure",   label: "The procedure",            shown: hasSteps },
+  { id: "sec-judgment",    label: "Judgment calls and pitfalls", shown: hasJudgment },
+  { id: "sec-outcomes",    label: "Outcomes and signals",     shown: hasOutcomes },
+  { id: "sec-ai",          label: "AI effects",               shown: hasAi },
+  { id: "sec-connected",   label: "Connected playbooks",      shown: hasRelated },
+];
+const sections = sectionSpecs
+  .filter((s) => s.shown)
+  .map((s, i) => ({ step: String(i + 1).padStart(2, "0"), id: s.id, label: s.label }));
+const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
 ---
 <DetailLayout
   code="EP"
   title={entry.title}
   summary={entry.summary}
-  subcategory={sub}
+  subcategory={prettify(entry.category)}
+  refCode={refCode}
 >
-  <div class="nsb-placeholder">
-    Phase 1 placeholder · Engineering Playbook detail page for "{entry.slug}".
-    Step-flow layout lands later.
-  </div>
+  {/* Masthead pill row — 2 pills, matching FM/TD/RF detail rhythm.
+      Difficulty carries the severity-ramp color (same ink the landing
+      grid card used, via difficulty → severity token alignment);
+      primary owner rides as a plain outline so the reader sees
+      "whose job is this?" as a first-class orientation cue next
+      to "how hard is it?". Time horizon / roles involved / confidence
+      live on the MetaRail below, not the masthead. */}
+  <Fragment slot="header-stamp">
+    {entry.difficulty && (
+      <Tag label={`Difficulty ${entry.difficulty}`} variant={difficultyPillVariant} size="sm" />
+    )}
+    {entry.primaryOwner && (
+      <Tag label={`Owner · ${entry.primaryOwner}`} variant="outline" size="sm" />
+    )}
+  </Fragment>
+
+  <Fragment slot="nav-rail">
+    <SectionIndex items={sections} eyebrow="In this playbook" />
+  </Fragment>
+
+  {/* Snapshot metadata rail — four ladder / string cells. Difficulty
+      + Confidence are the two ordinal ladders. Time horizon and
+      Primary owner are plain strings (no bars). `rolesInvolved` used
+      to live here as the list-of-strings cell, but moved up to the
+      AtAGlance panel below where the supporting cast is a stronger
+      "is this for me?" orientation cue than buried in the rail. */}
+  <MetaRail
+    items={[
+      ...(entry.difficulty ? [{
+        label: "Difficulty",
+        value: entry.difficulty,
+        scale: barCounts(DIFFICULTY_SCALE, entry.difficulty),
+      }] : []),
+      ...(entry.estimatedTimeHorizon ? [{
+        label: "Time horizon",
+        value: entry.estimatedTimeHorizon,
+      }] : []),
+      ...(entry.primaryOwner ? [{
+        label: "Primary owner",
+        value: entry.primaryOwner,
+      }] : []),
+      {
+        label: "Confidence",
+        value: entry.patternConfidence,
+        scale: barCounts(CONFIDENCE_SCALE, entry.patternConfidence),
+      },
+    ]}
+  />
+
+  {/* AT A GLANCE — shared blue-fill identity panel. Four rows: the
+      scenario the playbook addresses, the outcome it produces, the
+      person driving it, and the full cast of roles it pulls in.
+      `Primary owner` duplicates the MetaRail string-cell because it's
+      the single strongest "is this for me?" orientation signal, and
+      reading it again next to `Roles involved` lets a reader tell
+      driver vs. cast at a glance. `Roles involved` moved here from
+      the MetaRail so the rail stays compact and the supporting cast
+      gets editorial space to wrap. */}
+  <AtAGlance
+    refCode={refCode}
+    rows={[
+      { label: "Situation",      value: entry.situation },
+      { label: "Goal",           value: entry.goal },
+      { label: "Primary owner",  value: entry.primaryOwner },
+      { label: "Roles involved", value: entry.rolesInvolved },
+    ]}
+  />
+
+  {/* 1. THE SITUATION — useWhen + doNotUseWhen as paired calibration
+        lists. Same pattern RF uses for "what it usually indicates" +
+        "not necessarily a problem when": the positive list on the
+        left, the negation panel (yellow left rule, paper-alt fill)
+        on the right, so a reader decides in one scan whether this
+        playbook fits their context. Both render through the shared
+        `LabeledList` primitive (square bullets, site-wide). */}
+  {hasSituation && (
+    <>
+      <SectionHeader
+        id="sec-situation"
+        step={stepFor("sec-situation")}
+        eyebrow="Context"
+        title="The situation"
+        note="Deciding whether to reach for this playbook — when it fits, and when it doesn't."
+      />
+      <div class="ep-situation">
+        {entry.useWhen && entry.useWhen.length > 0 && (
+          <LabeledList
+            label="Use when"
+            caption="Conditions where this playbook is the right tool."
+            items={entry.useWhen}
+          />
+        )}
+        {entry.doNotUseWhen && entry.doNotUseWhen.length > 0 && (
+          <aside class="ep-situation__caveat" aria-label="Do not use when">
+            <LabeledList
+              label="Do not use when"
+              caption="Contexts where this playbook will waste effort or make things worse."
+              items={entry.doNotUseWhen}
+              dense
+            />
+          </aside>
+        )}
+      </div>
+    </>
+  )}
+
+  {/* 2. WHY THIS MATTERS — short editorial beat. No heuristic band
+        here: EP doesn't have a dedicated single-line heuristic field.
+        `goal` (which would be the closest) is already on AtAGlance. */}
+  <SectionHeader
+    id="sec-why"
+    step={stepFor("sec-why")}
+    eyebrow="Stakes"
+    title="Why this matters"
+  />
+  <p class="ep-prose">{entry.whyThisMatters}</p>
+
+  {/* 3. WHAT GOOD LOOKS LIKE — the quality bar for this playbook.
+        Rendered as a single LabeledList; deliberately NOT a numbered
+        list (would conflict visually with the ProcedureSteps below). */}
+  {hasWhatGood && (
+    <>
+      <SectionHeader
+        id="sec-what-good"
+        step={stepFor("sec-what-good")}
+        eyebrow="Quality bar"
+        title="What good looks like"
+        note="The observable qualities of a team or system that is actually doing this well — not just going through the motions."
+      />
+      <div class="ep-what-good">
+        <LabeledList
+          label="Signs of the playbook done well"
+          items={entry.whatGoodLooksLike}
+        />
+      </div>
+    </>
+  )}
+
+  {/* 4. BEFORE YOU START — inputs + prerequisites. Inputs = material
+        you'll want on hand; prerequisites = conditions that must be
+        true for the playbook to land. Two-column layout. */}
+  {hasBeforeStart && (
+    <>
+      <SectionHeader
+        id="sec-before"
+        step={stepFor("sec-before")}
+        eyebrow="Preparation"
+        title="Before you start"
+        note="What you need available and true before running the procedure — skipping this is the most common reason playbooks fail."
+      />
+      <div class="ep-before">
+        {entry.inputs && entry.inputs.length > 0 && (
+          <LabeledList
+            label="Inputs"
+            caption="Material you'll want to gather first."
+            items={entry.inputs}
+          />
+        )}
+        {entry.prerequisites && entry.prerequisites.length > 0 && (
+          <LabeledList
+            label="Prerequisites"
+            caption="Conditions that should be true for this to work."
+            items={entry.prerequisites}
+          />
+        )}
+      </div>
+    </>
+  )}
+
+  {/* 5. THE PROCEDURE — the signature EP visual. ProcedureSteps owns
+        its own visual contract (see @/components/ProcedureSteps.astro);
+        this page just hands the raw steps array in. */}
+  {hasSteps && (
+    <>
+      <SectionHeader
+        id="sec-procedure"
+        step={stepFor("sec-procedure")}
+        eyebrow="Procedure"
+        title="The procedure"
+        note="Each step carries its purpose (why it exists), its actions (what you do), and its outputs (what you produce). Read the purpose — it's what keeps the step from degenerating into checklist theatre."
+      />
+      <ProcedureSteps steps={entry.steps} />
+    </>
+  )}
+
+  {/* 6. JUDGMENT CALLS AND PITFALLS — four labeled lists arranged as
+        a 2×2. Left column: "where judgment matters" (decisionPoints +
+        examplePromptsOrQuestions). Right column: "where things go
+        wrong" (commonMistakes + warningSignsYouAreDoingItWrong). */}
+  {hasJudgment && (
+    <>
+      <SectionHeader
+        id="sec-judgment"
+        step={stepFor("sec-judgment")}
+        eyebrow="Judgment"
+        title="Judgment calls and pitfalls"
+        note="The places where execution actually diverges: decisions that need thought, questions worth asking, and mistakes that recur regardless of good intent."
+      />
+      <div class="ep-judgment">
+        {entry.decisionPoints && entry.decisionPoints.length > 0 && (
+          <LabeledList
+            label="Decision points"
+            caption="Moments where judgment and trade-offs matter more than procedure."
+            items={entry.decisionPoints}
+          />
+        )}
+        {entry.examplePromptsOrQuestions && entry.examplePromptsOrQuestions.length > 0 && (
+          <LabeledList
+            label="Questions worth asking"
+            caption="Prompts to use on yourself, the team, or an AI assistant while running the procedure."
+            items={entry.examplePromptsOrQuestions}
+          />
+        )}
+        {entry.commonMistakes && entry.commonMistakes.length > 0 && (
+          <LabeledList
+            label="Common mistakes"
+            caption="Patterns that surface across teams running this playbook."
+            items={entry.commonMistakes}
+          />
+        )}
+        {entry.warningSignsYouAreDoingItWrong && entry.warningSignsYouAreDoingItWrong.length > 0 && (
+          <LabeledList
+            label="Warning signs you are doing it wrong"
+            caption="Signals that the playbook is being executed but not landing."
+            items={entry.warningSignsYouAreDoingItWrong}
+          />
+        )}
+      </div>
+    </>
+  )}
+
+  {/* 7. OUTCOMES AND SIGNALS — artifacts, success signals, follow-up
+        actions, metrics. 2×2 grid of labeled lists. */}
+  {hasOutcomes && (
+    <>
+      <SectionHeader
+        id="sec-outcomes"
+        step={stepFor("sec-outcomes")}
+        eyebrow="Outcomes"
+        title="Outcomes and signals"
+        note="What should exist after the playbook runs, how you'll know it worked, and what to watch for over time."
+      />
+      <div class="ep-outcomes">
+        {entry.artifactsToProduce && entry.artifactsToProduce.length > 0 && (
+          <LabeledList
+            label="Artifacts to produce"
+            caption="Durable outputs the playbook should leave behind."
+            items={entry.artifactsToProduce}
+          />
+        )}
+        {entry.successSignals && entry.successSignals.length > 0 && (
+          <LabeledList
+            label="Success signals"
+            caption="Observable changes that mean the playbook landed."
+            items={entry.successSignals}
+          />
+        )}
+        {entry.followUpActions && entry.followUpActions.length > 0 && (
+          <LabeledList
+            label="Follow-up actions"
+            caption="Moves that keep the playbook's effects compounding after it finishes."
+            items={entry.followUpActions}
+          />
+        )}
+        {entry.metricsOrSignals && entry.metricsOrSignals.length > 0 && (
+          <LabeledList
+            label="Metrics or signals to watch"
+            caption="Longer-horizon indicators that the underlying problem is receding."
+            items={entry.metricsOrSignals}
+          />
+        )}
+      </div>
+    </>
+  )}
+
+  {/* 8. AI EFFECTS — two labeled lists side-by-side (can help with /
+        can make worse) + optional blue-serif synthesis CalloutBand.
+        Identical pattern to FM/TD/RF: yellow = heuristic / takeaway,
+        blue = synthesis / summary position. */}
+  {hasAi && (
+    <>
+      <SectionHeader
+        id="sec-ai"
+        step={stepFor("sec-ai")}
+        eyebrow="AI impact"
+        title="AI effects on this playbook"
+        note="How AI-assisted and AI-driven workflows help execution, and the ways they can make it worse."
+      />
+      <div class="ep-ai">
+        {entry.aiCanHelpWith && entry.aiCanHelpWith.length > 0 && (
+          <LabeledList
+            label="AI can help with"
+            caption="Where AI tooling genuinely reduces the cost of running this playbook well."
+            items={entry.aiCanHelpWith}
+          />
+        )}
+        {entry.aiCanMakeWorseBy && entry.aiCanMakeWorseBy.length > 0 && (
+          <LabeledList
+            label="AI can make worse by"
+            caption="Distortions AI introduces that make the underlying problem harder to see."
+            items={entry.aiCanMakeWorseBy}
+          />
+        )}
+      </div>
+      {entry.aiSpecificNotes && (
+        <CalloutBand label="AI synthesis" variant="blue" serif>
+          <p>{entry.aiSpecificNotes}</p>
+        </CalloutBand>
+      )}
+    </>
+  )}
+
+  {/* 9. CONNECTED PLAYBOOKS — cross-references into the other three
+        categories plus adjacent playbooks. Uses the shared grid with
+        row-aligned heights so two unequal panels share an outer frame. */}
+  {hasRelated && (
+    <>
+      <SectionHeader
+        id="sec-connected"
+        step={stepFor("sec-connected")}
+        eyebrow="Relationships"
+        title="Connected playbooks"
+        note="Failure modes this playbook tends to address, decisions behind the situation, red flags that motivate running it, and neighboring playbooks."
+      />
+      <div class="ep-related">
+        <RelatedEntries
+          title="Related failure modes"
+          refs={entry.relatedFailureModes}
+          expectCategory="FM"
+        />
+        <RelatedEntries
+          title="Related tech decisions"
+          refs={entry.relatedTechDecisions}
+          expectCategory="TD"
+        />
+        <RelatedEntries
+          title="Related red flags"
+          refs={entry.relatedRedFlags}
+          expectCategory="RF"
+        />
+        <RelatedEntries
+          title="Adjacent playbooks"
+          refs={entry.relatedPlaybooks}
+          expectCategory="EP"
+        />
+      </div>
+    </>
+  )}
 </DetailLayout>
+
+<style>
+  /* ============================================================
+     EP-specific detail-page styles. All classes scoped under `ep-*`
+     so they can't leak into FM/TD/RF layouts. Shared primitives
+     (ProcedureSteps, AtAGlance, MetaRail, LabeledList, CalloutBand,
+     RelatedEntries) own their own visuals; this stylesheet only
+     handles the section-body grids around them.
+     ============================================================ */
+
+  .ep-prose {
+    font-family: var(--font-serif);
+    font-size: var(--text-md);
+    line-height: var(--leading-snug);
+    color: var(--color-ink);
+    margin: var(--space-4) 0;
+  }
+
+  /* Section 1 — situation + caveat. Same 2-col layout + yellow-rule
+     caveat as RF's primary-reading section, so the two categories'
+     "when to reach for this / when not to" calibration pairs render
+     in the same visual idiom. */
+  .ep-situation {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    margin: var(--space-4) 0;
+  }
+  @media (min-width: 820px) {
+    .ep-situation { grid-template-columns: 1.3fr 1fr; align-items: start; }
+  }
+  .ep-situation__caveat {
+    background: var(--color-paper-alt);
+    border: 2px solid var(--color-frame);
+    border-left-width: 6px;
+    border-left-color: var(--color-yellow);
+    padding: var(--space-4) var(--space-5);
+  }
+
+  /* Section 3 — what-good, single LabeledList in its own wrapper so
+     section margins behave. */
+  .ep-what-good { margin: var(--space-4) 0; }
+
+  /* Section 4 — Before you start. 2-col at desktop so inputs and
+     prerequisites read side-by-side (equal editorial weight). */
+  .ep-before {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    margin: var(--space-4) 0;
+  }
+  @media (min-width: 820px) {
+    .ep-before { grid-template-columns: 1fr 1fr; align-items: start; }
+  }
+
+  /* Section 6 — judgment calls and pitfalls. 2×2 grid of LabeledLists.
+     Decision points / questions / mistakes / warning signs all render
+     at equal weight; the reader's eye travels left-to-right, top-to-
+     bottom: "what to think about" then "what goes wrong". */
+  .ep-judgment {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5) var(--space-6);
+    margin: var(--space-4) 0;
+  }
+  @media (min-width: 820px) {
+    .ep-judgment { grid-template-columns: 1fr 1fr; align-items: start; }
+  }
+
+  /* Section 7 — outcomes and signals. Same 2×2 pattern as Section 6. */
+  .ep-outcomes {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5) var(--space-6);
+    margin: var(--space-4) 0;
+  }
+  @media (min-width: 820px) {
+    .ep-outcomes { grid-template-columns: 1fr 1fr; align-items: start; }
+  }
+
+  /* Section 8 — AI effects. Two labeled lists side-by-side, identical
+     shape to FM/TD/RF AI sections. */
+  .ep-ai {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    margin: var(--space-4) 0;
+  }
+  @media (min-width: 820px) {
+    .ep-ai { grid-template-columns: 1fr 1fr; align-items: start; }
+  }
+
+  /* Section 9 — cross-refs. 2-col grid with row-aligned heights. Same
+     treatment as FM/TD/RF related sections. */
+  .ep-related {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    margin: var(--space-4) 0;
+  }
+  @media (min-width: 820px) {
+    .ep-related {
+      grid-template-columns: 1fr 1fr;
+      grid-auto-rows: 1fr;
+    }
+  }
+  .ep-related > :global(.nsb-related) {
+    margin-top: 0;
+    height: 100%;
+  }
+</style>

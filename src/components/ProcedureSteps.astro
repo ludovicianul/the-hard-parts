@@ -1,0 +1,236 @@
+---
+/**
+ * ProcedureSteps — Engineering Playbook's signature section visual.
+ *
+ * Each playbook entry carries an ordered `steps[]` array where every
+ * step has:
+ *   · step   — 1-indexed numeric position
+ *   · title  — short imperative name of the step
+ *   · purpose — one-line editorial "why this step exists"
+ *   · actions — bullet list of concrete things to do
+ *   · outputs — bullet list of artifacts / decisions produced
+ *
+ * This component renders them as a single framed container holding
+ * N step cards, each with:
+ *   · big plum-purple step-number badge on the left
+ *   · sans-uppercase title + italic-serif purpose on the right
+ *   · two labeled sub-lists below: "ACTIONS" (square bullets) and
+ *     "OUTPUTS" (square bullets, but prefixed with an arrow glyph
+ *      to distinguish "things you do" from "things you produce")
+ *
+ * Voice target: a page from a technical field manual or a standard
+ * operating procedure — editorial, not a todo-app checklist. No
+ * checkboxes, no completed / in-progress states, no progress bar.
+ * The reader is not tracking progress; they are reading a reference.
+ *
+ * Class namespace is `ep-proc__*`. No other category uses this
+ * component; no risk of leaking styles.
+ */
+
+import type { PlaybookEntry } from "@/content/schemas/playbook";
+type PlaybookStep = PlaybookEntry["steps"][number];
+
+export interface Props {
+  steps: readonly PlaybookStep[];
+}
+
+const { steps } = Astro.props;
+
+// Defensive: drop any step whose required fields are missing. Schema
+// enforces presence but we stay honest so a half-authored entry
+// doesn't break the whole page.
+const visible = steps.filter(
+  (s) =>
+    typeof s.title === "string" &&
+    s.title.trim().length > 0 &&
+    Array.isArray(s.actions) &&
+    s.actions.length > 0,
+);
+
+// Pad step numbers to 2 digits so small playbooks (4 steps) and
+// larger ones (8+ steps) share the same badge visual weight.
+const width = Math.max(2, String(visible.length).length);
+const padNum = (n: number) => String(n).padStart(width, "0");
+---
+{visible.length > 0 && (
+  <ol class="ep-proc" aria-label="Procedure">
+    {visible.map((s) => (
+      <li class="ep-proc__step">
+        <div class="ep-proc__num" aria-hidden="true">
+          {padNum(s.step)}
+        </div>
+        <div class="ep-proc__body">
+          <header class="ep-proc__head">
+            <h3 class="ep-proc__title">{s.title}</h3>
+            {s.purpose && <p class="ep-proc__purpose">{s.purpose}</p>}
+          </header>
+
+          <div class="ep-proc__grid">
+            {s.actions && s.actions.length > 0 && (
+              <section class="ep-proc__block" aria-label="Actions">
+                <p class="ep-proc__block-label">Actions</p>
+                <ul class="ep-proc__list ep-proc__list--actions">
+                  {s.actions.map((a) => <li>{a}</li>)}
+                </ul>
+              </section>
+            )}
+
+            {s.outputs && s.outputs.length > 0 && (
+              <section class="ep-proc__block" aria-label="Outputs">
+                <p class="ep-proc__block-label">Outputs</p>
+                <ul class="ep-proc__list ep-proc__list--outputs">
+                  {s.outputs.map((o) => <li>{o}</li>)}
+                </ul>
+              </section>
+            )}
+          </div>
+        </div>
+      </li>
+    ))}
+  </ol>
+)}
+
+<style>
+  /* Outer container — one heavy frame holds the whole procedure, with
+     internal dividers between steps so the run reads as a continuous
+     ordered list, not as disconnected cards. Same editorial intent as
+     RF's inspection list and TD's OptionsLedger — one bounded thing
+     with internal structure. */
+  .ep-proc {
+    list-style: none;
+    margin: var(--space-4) 0;
+    padding: 0;
+    border: 3px solid var(--color-frame);
+    background: var(--color-surface);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ep-proc__step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0;
+    border-bottom: 1.5px solid var(--color-rule);
+    min-width: 0;
+  }
+  .ep-proc__step:last-child { border-bottom: 0; }
+
+  /* Plum step badge — identical visual weight to RF's crimson step
+     badges on the inspection list, but in EP's accent color so the
+     same badge shape reads as "procedure step" across categories. */
+  .ep-proc__num {
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: 1.4rem;
+    font-feature-settings: "tnum";
+    color: var(--color-surface);
+    background: var(--accent-ep);
+    padding: var(--space-4) var(--space-4);
+    min-width: 4.25rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    border-right: 3px solid var(--color-frame);
+    line-height: 1;
+  }
+
+  .ep-proc__body {
+    padding: var(--space-4) var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+  .ep-proc__head { display: flex; flex-direction: column; gap: var(--space-2); }
+  .ep-proc__title {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: clamp(var(--text-lg), 2vw, 1.3rem);
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    color: var(--color-ink);
+    line-height: 1.1;
+  }
+  .ep-proc__purpose {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: var(--text-sm);
+    line-height: var(--leading-snug);
+    color: var(--color-ink-dim);
+  }
+
+  /* Actions / Outputs two-column body. Actions on the left, outputs
+     on the right. Stacks at narrow widths. */
+  .ep-proc__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  @media (min-width: 720px) {
+    .ep-proc__grid { grid-template-columns: 1.1fr 1fr; gap: var(--space-5); }
+  }
+  .ep-proc__block { min-width: 0; }
+  .ep-proc__block-label {
+    margin: 0 0 var(--space-2) 0;
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink);
+  }
+  .ep-proc__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .ep-proc__list li {
+    font-family: var(--font-serif);
+    font-size: var(--text-sm);
+    line-height: var(--leading-snug);
+    color: var(--color-ink);
+    padding-left: 1.1em;
+    position: relative;
+  }
+
+  /* Actions — solid square bullet, matches LabeledList site-wide. */
+  .ep-proc__list--actions li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 5px;
+    height: 5px;
+    background: var(--color-frame);
+  }
+  /* Outputs — plum chevron to distinguish "what you produce" from
+     "what you do", without switching off the square-bullet vocabulary
+     for the whole list (both are structured lists). */
+  .ep-proc__list--outputs li::before {
+    content: "\203A"; /* single right-pointing angle quote */
+    position: absolute;
+    left: 0;
+    top: 0.05em;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--accent-ep);
+    font-size: 1em;
+    line-height: 1;
+  }
+
+  @media (max-width: 540px) {
+    .ep-proc__step { grid-template-columns: 1fr; }
+    .ep-proc__num {
+      min-width: 0;
+      border-right: 0;
+      border-bottom: 3px solid var(--color-frame);
+      padding: var(--space-3);
+      justify-content: flex-start;
+    }
+  }
+</style>

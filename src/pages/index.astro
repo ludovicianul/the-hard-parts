@@ -4,7 +4,7 @@ import EntryCard from "@/components/EntryCard.astro";
 import CalloutBand from "@/components/CalloutBand.astro";
 import Tag from "@/components/Tag.astro";
 import { CATEGORIES, CATEGORY_ORDER } from "@/lib/categories";
-import { categoryBlock, listEntries, loadFailureModes, loadTechDecisions, loadRedFlags } from "@/lib/load";
+import { categoryBlock, listEntries, loadFailureModes, loadTechDecisions, loadRedFlags, loadPlaybooks } from "@/lib/load";
 import { formatRefCode } from "@/lib/resolve";
 import { ensureValidated } from "@/lib/validate";
 import type { SeverityLevel } from "@/lib/attribute-scales";
@@ -87,6 +87,43 @@ const rfRefBySlug = new Map<string, string>();
 rfEntries.forEach((e, i) => rfRefBySlug.set(e.slug, formatRefCode("RF", i, rfEntries.length).refNum));
 
 const prettifyRf = (s: string): string =>
+  s.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+
+// Engineering Playbook preview — one entry per subcategory (delivery,
+// team, architecture, operations, ai) so the 3×2 grid spans the full
+// subcategory axis the catalog covers. Same editorial shape as FM/TD/RF
+// previews. Card weight reflects `difficulty` via the shared severity
+// ramp (mapping is identity for low/medium/medium-high/high). The 6th
+// slot adds a 2nd AI playbook since AI is the densest and most timely
+// subcategory right now.
+const epEntries = loadPlaybooks().entries;
+const featuredEpSlugs = [
+  "run-a-phased-migration",                        // delivery
+  "repair-trust-after-a-painful-incident",         // team
+  "refactor-a-dangerous-hotspot",                  // architecture
+  "run-an-incident-review-that-actually-helps",    // operations
+  "upgrade-code-review-for-ai-assisted-work",      // ai
+  "evaluate-an-ai-feature-against-real-tasks",     // ai (2nd)
+];
+const epFeatured = featuredEpSlugs
+  .map((slug) => epEntries.find((e) => e.slug === slug))
+  .filter((e): e is (typeof epEntries)[number] => e !== undefined);
+const epRefBySlug = new Map<string, string>();
+epEntries.forEach((e, i) => epRefBySlug.set(e.slug, formatRefCode("EP", i, epEntries.length).refNum));
+
+// Same difficulty → severity-ramp identity mapping the EP landing uses
+// so the homepage preview cards carry the same card-fill weight the
+// reader will see on the EP landing grid.
+const epDifficultyToSev: Record<string, SeverityLevel> = {
+  low: "low",
+  medium: "medium",
+  "medium-high": "medium-high",
+  high: "high",
+};
+const epSeverityFor = (d: string | undefined): SeverityLevel =>
+  (d && epDifficultyToSev[d]) || "medium";
+
+const prettifyEp = (s: string): string =>
   s.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 ---
 <BaseLayout
@@ -340,16 +377,65 @@ const prettifyRf = (s: string): string =>
       </section>
     )}
 
+    {epFeatured.length > 0 && (
+      /* Engineering Playbook preview — sibling of the FM/TD/RF preview
+         sections. `data-accent="ep"` scopes --accent-current to plum
+         purple so anything reading `var(--accent-current)` inside this
+         block (card hover underlines, link hovers) picks up EP's
+         identity hue. Card meta carries `Owner · …` — same "is this
+         for me?" signal the EP landing cards use — so the homepage
+         preview and the landing grid read as one continuous catalog. */
+      <section class="nsb-home__preview" aria-label="From Engineering Playbook" data-accent="ep">
+        <CalloutBand label="Operating manual" variant="yellow">
+          <p>Engineering Playbook &mdash; structured procedures for recurring engineering situations.</p>
+        </CalloutBand>
+
+        <header class="nsb-home__preview-header">
+          <h2 class="nsb-display nsb-home__preview-title">From Engineering Playbook</h2>
+          <p class="nsb-home__preview-note">
+            One playbook per subcategory the catalog covers &mdash;
+            delivery, team, architecture, operations, and AI adoption.
+            Each entry opens with <em>when to use it</em>,
+            <em>when not to</em>, and walks you through the steps,
+            common mistakes, and signals that it actually landed.
+          </p>
+        </header>
+
+        <div class="nsb-home__preview-grid">
+          {epFeatured.map((e) => (
+            <EntryCard
+              code="EP"
+              slug={e.slug}
+              title={e.title}
+              summary={e.summary}
+              subcategory={prettifyEp(e.category)}
+              severity={epSeverityFor(e.difficulty)}
+              refNum={epRefBySlug.get(e.slug)}
+              fillFromSeverity
+              metaBits={[
+                e.primaryOwner ? `Owner · ${e.primaryOwner}` : undefined,
+              ].filter((s): s is string => typeof s === "string")}
+            />
+          ))}
+        </div>
+
+        <p class="nsb-home__preview-more">
+          <a href="/engineering-playbook" class="nsb-home__preview-link">
+            Browse all {epEntries.length} Playbooks &rarr;
+          </a>
+        </p>
+      </section>
+    )}
+
     <aside class="nsb-home__status nsb-frame" aria-label="Build status">
       <div class="nsb-home__status-bar">Phase status</div>
       <p class="nsb-home__status-text">
-        Failure Modes, Tech Decisions, and Red Flags are all wired
-        end-to-end with real detail pages, structured rendering, and
-        cross-reference resolution. Each category reuses the shared page
-        chassis while carrying its own category-distinct visual — the
-        severity atlas (FM), the options ledger (TD), the two-axis signal
-        chart (RF). Engineering Playbook follows in a later phase using
-        the same shared primitives.
+        All four categories are wired end-to-end with real detail pages,
+        structured rendering, and cross-reference resolution. Each one
+        reuses the shared page chassis while carrying its own
+        category-distinct visual &mdash; the severity atlas (FM), the
+        options ledger (TD), the two-axis signal chart (RF), and the
+        procedure-step manual (EP).
       </p>
     </aside>
   </div>

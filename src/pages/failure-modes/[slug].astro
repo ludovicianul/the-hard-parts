@@ -106,14 +106,15 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
   subcategory={entry.category}
   refCode={refCode}
 >
-  {/* Header meta-bar — tabloid pill row. Severity (color-coded), frequency,
-      and lifecycle surface the three highest-signal metrics next to the title. */}
+  {/* Header meta-bar — tabloid pill row. Severity (color-coded) +
+      frequency (outline), matching the TD and RF detail mastheads so
+      all three categories carry the same two-pill rhythm at the top.
+      Lifecycle is NOT repeated here — it lives on the MetaRail below
+      as a first-class dimension, and a masthead pill would duplicate
+      the same information the reader sees immediately after. */}
   <Fragment slot="header-stamp">
     <Tag label={`Severity ${entry.severity}`} variant={severityPillVariant} size="sm" />
     {entry.frequency && <Tag label={`Freq ${entry.frequency}`} variant="outline" size="sm" />}
-    {entry.lifecycleStages && entry.lifecycleStages.length > 0 && (
-      <Tag label={entry.lifecycleStages.join(" · ")} variant="outline" size="sm" />
-    )}
   </Fragment>
 
   {/* Local navigation rail (sticky on desktop, collapsible on mobile) */}
@@ -302,7 +303,12 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         )}
       </div>
       {entry.aiSpecificNotes && (
-        <CalloutBand label="AI stance" variant="yellow">
+        /* Blue serif synthesis band — matches TD and RF. Site-wide
+           visual vocabulary: yellow = heuristic / imperative takeaway,
+           blue = synthesis / summary position. aiSpecificNotes is the
+           editorial synthesis of the two AI-effect lists above, so it
+           belongs in the blue-serif treatment, not the yellow one. */
+        <CalloutBand label="AI synthesis" variant="blue" serif>
           <p>{entry.aiSpecificNotes}</p>
         </CalloutBand>
       )}
@@ -606,11 +612,34 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     .fm-ai__col:last-child { border-bottom: 0; }
   }
 
-  /* ---- Relationships -------------------------------------------- */
+  /* ---- Relationships --------------------------------------------
+     2-col grid at ≥760px with row-aligned heights, matching TD and
+     RF's cross-ref layouts. `grid-auto-rows: 1fr` stretches each
+     implicit row to the tallest child in it, and `height: 100%` on
+     the child forces `.nsb-related`'s frame to follow — otherwise
+     its block flow would leave an empty gap between the content and
+     the grid-cell's bottom edge.
+
+     FM tends to render more panels here than TD/RF (oftenLeadsTo,
+     oftenCausedBy, relatedRedFlags, relatedTechDecisions,
+     relatedPlaybooks, and sometimes relatedFailureModes), so the
+     grid naturally produces a 2×3 at desktop instead of a 2×2.
+     That's fine — the alignment rules apply per row regardless of
+     how many rows the content generates. */
   .fm-rel-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--space-4);
     margin-top: var(--space-5);
+  }
+  @media (min-width: 760px) {
+    .fm-rel-grid {
+      grid-template-columns: 1fr 1fr;
+      grid-auto-rows: 1fr;
+    }
+  }
+  .fm-rel-grid > :global(.nsb-related) {
+    margin-top: 0;
+    height: 100%;
   }
 </style>

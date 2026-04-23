@@ -289,7 +289,11 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
   />
   <p class="rf-prose">{entry.whyItMatters}</p>
   {entry.decisionHeuristic && (
-    <CalloutBand label="Heuristic" variant="yellow">
+    /* Italic serif body — matches TD's Heuristic band. The field is a
+       prose sentence ("If a module cannot be explained simply…"),
+       which reads as an aphorism, not a headline; the default
+       uppercase-sans treatment would shout it. */
+    <CalloutBand label="Heuristic" variant="yellow" serif>
       <p>{entry.decisionHeuristic}</p>
     </CalloutBand>
   )}
@@ -549,8 +553,8 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
       <SectionHeader
         id="sec-connected"
         step={stepFor("sec-connected")}
-        eyebrow="Connected"
-        title="Where this signal leads"
+        eyebrow="Relationships"
+        title="Connected signals"
         note="Related failure modes, decisions behind the signal, response playbooks, and neighboring red flags."
       />
       <div class="rf-related">
@@ -599,7 +603,11 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     line-height: var(--leading-snug);
     color: var(--color-ink);
     margin: var(--space-4) 0;
-    max-width: 44rem;
+    /* No max-width cap — the detail content column is already a
+       reading-comfortable width (~800px via DetailLayout); adding a
+       narrower cap here made line lengths differ from FM/TD without
+       editorial reason. Drops RF prose into the same rhythm as FM
+       and TD body copy. */
   }
 
   /* Section 2 — primary reading + calibration caveat. Two columns at

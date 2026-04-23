@@ -92,6 +92,29 @@ export const CONFIDENCE_SCALE = [
 ] as const;
 
 /**
+ * Four-step ordered difficulty scale for Engineering Playbook entries.
+ * Ordering: low → high, same shape as `CONFIDENCE_SCALE`. Schema
+ * keeps `difficulty` as a free string but the canonical values all
+ * live on this ladder (medium, medium-high, high are what current
+ * content uses; `low` is reserved). A full bar reads "this is hard
+ * to execute well", which is exactly how the reader should feel
+ * when a 4/4 difficulty bar appears next to a playbook title.
+ *
+ * Rendered both:
+ *   · as a card-fill severity-ramp weight on the landing grid
+ *     (difficulty → sev variant, via identity mapping since the
+ *     tokens align)
+ *   · as a bar ladder on the detail MetaRail (via `barCounts`)
+ */
+export const DIFFICULTY_SCALE = [
+  "low",
+  "medium",
+  "medium-high",
+  "high",
+] as const;
+export type DifficultyLevel = (typeof DIFFICULTY_SCALE)[number];
+
+/**
  * Four-step ordered detectability scale for Red Flags. Ordering goes
  * from "hardest to miss" → "easiest to miss / rationalize":
  *

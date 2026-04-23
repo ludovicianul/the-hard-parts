@@ -215,8 +215,12 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
   <AtAGlance
     refCode={refCode}
     rows={[
-      { label: "Really about",      value: entry.whatThisIsReallyAbout },
-      { label: "Not actually about", value: entry.notActuallyAbout },
+      { label: "Really about",       value: entry.whatThisIsReallyAbout },
+      /* `negate` flips this cell to the black-fill / yellow-label
+         inverse treatment — preserves the deliberate "negation" hit
+         the old td-framing__row--negative treatment carried before
+         the AtAGlance migration. No other page uses this flag today. */
+      { label: "Not actually about", value: entry.notActuallyAbout, negate: true },
       { label: "Why it feels hard", value: entry.whyItFeelsHard },
       { label: "Audiences",         value: entry.audiences },
     ]}
@@ -400,7 +404,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
           caption="Distortions AI introduces that didn't exist before."
         />
         {entry.aiSpecificNotes && (
-          <CalloutBand label="AI note" variant="blue" serif>
+          <CalloutBand label="AI synthesis" variant="blue" serif>
             <p>{entry.aiSpecificNotes}</p>
           </CalloutBand>
         )}
@@ -414,8 +418,8 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
       <SectionHeader
         id="sec-relationships"
         step={stepFor("sec-relationships")}
-        eyebrow="Connected decisions"
-        title="Where this touches the rest of the catalog"
+        eyebrow="Relationships"
+        title="Connected decisions"
         note="Related failure modes, adjacent decisions that are often entangled with this one, red flags that signal trouble, and playbooks to reach for."
       />
       <div class="td-rel-grid">
@@ -654,7 +658,10 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     border-top: 1.5px solid var(--color-rule);
   }
 
-  /* ---- 8. Relationships — same grid approach as FM. */
+  /* ---- 8. Relationships — same grid approach as FM and RF. Row-
+     aligned heights so two unequal RelatedEntries panels in the same
+     row share an outer frame height (see `.rf-related` / `.fm-rel-grid`
+     for the same treatment). */
   .td-rel-grid {
     margin-top: var(--space-4);
     display: grid;
@@ -662,6 +669,13 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     gap: var(--space-5);
   }
   @media (min-width: 760px) {
-    .td-rel-grid { grid-template-columns: 1fr 1fr; }
+    .td-rel-grid {
+      grid-template-columns: 1fr 1fr;
+      grid-auto-rows: 1fr;
+    }
+  }
+  .td-rel-grid > :global(.nsb-related) {
+    margin-top: 0;
+    height: 100%;
   }
 </style>

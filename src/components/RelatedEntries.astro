@@ -24,9 +24,15 @@ import { CATEGORIES } from "@/lib/categories";
 import type { CategoryCode } from "@/content/schemas/shared";
 
 export interface Props {
-  /** Small mono label, e.g. "OFTEN LEADS TO" or "RELATED RED FLAGS". */
-  eyebrow: string;
-  /** Section title, e.g. "Often leads to". */
+  /**
+   * Deprecated / unused visually — kept optional so existing callers
+   * that still pass it don't break. The panel only renders `title`
+   * in its black title bar; any categorical eyebrow-as-small-label
+   * would be redundant with that title in this catalog's vocabulary.
+   * Future callers should omit it.
+   */
+  eyebrow?: string;
+  /** Section title, e.g. "Often leads to". Rendered as the panel head. */
   title: string;
   /** Raw reference array from content. Mixed slugs / phrases allowed. */
   refs: readonly string[] | undefined;
@@ -40,7 +46,7 @@ export interface Props {
   dense?: boolean;
 }
 
-const { eyebrow, title, refs, expectCategory, dense = false } = Astro.props;
+const { title, refs, expectCategory, dense = false } = Astro.props;
 const { resolved, unresolved } = partitionRefs(refs);
 
 // Nothing to show — render nothing (rather than an empty section).
