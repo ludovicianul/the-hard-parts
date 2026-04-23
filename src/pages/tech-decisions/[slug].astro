@@ -389,11 +389,13 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         note="Where AI accelerates the call, where it introduces new distortions, and anything else worth knowing."
       />
       {/* AI section — unified site-wide treatment: two boxed
-          LabeledLists side-by-side + blue-serif synthesis band
-          below. Matches FM / RF / EP (see docs/launch-readiness.md
-          §1). The synthesis band deliberately lives OUTSIDE the
-          two-col grid so it spans full width, not one column. */}
-      <div class="nsb-two-col">
+          LabeledLists side-by-side with equal row heights + blue-
+          serif synthesis band below. Matches FM / RF / EP (see
+          docs/launch-readiness.md §1). The synthesis band
+          deliberately lives OUTSIDE the two-col grid so it spans
+          full width. `--equal` aligns bottom edges when one list
+          is longer than the other. */}
+      <div class="nsb-two-col nsb-two-col--equal">
         <LabeledList
           variant="boxed"
           label="AI can help with"

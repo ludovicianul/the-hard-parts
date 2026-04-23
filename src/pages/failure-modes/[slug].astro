@@ -282,9 +282,12 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         note="Where AI-assisted workflows accelerate, hide, or help with this failure mode."
       />
       {/* AI section — unified site-wide treatment: two boxed
-          LabeledLists side-by-side + blue-serif synthesis band.
-          See docs/launch-readiness.md §1 (shared primitives). */}
-      <div class="nsb-two-col">
+          LabeledLists side-by-side with equal row heights + blue-
+          serif synthesis band below. See docs/launch-readiness.md
+          §1 (shared primitives). `--equal` aligns the bottom edges
+          of the two boxes even when one list is longer than the
+          other. */}
+      <div class="nsb-two-col nsb-two-col--equal">
         <LabeledList
           variant="boxed"
           label="AI can help with"

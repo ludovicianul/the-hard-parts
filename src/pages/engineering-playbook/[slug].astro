@@ -427,9 +427,10 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         note="How AI-assisted and AI-driven workflows help execution, and the ways they can make it worse."
       />
       {/* AI section — unified site-wide treatment: two boxed
-          LabeledLists side-by-side + blue-serif synthesis band
-          below. Matches FM / TD / RF. */}
-      <div class="nsb-two-col">
+          LabeledLists side-by-side with equal row heights + blue-
+          serif synthesis band below. Matches FM / TD / RF.
+          `--equal` aligns bottom edges when one list is longer. */}
+      <div class="nsb-two-col nsb-two-col--equal">
         {entry.aiCanHelpWith && entry.aiCanHelpWith.length > 0 && (
           <LabeledList
             variant="boxed"
