@@ -217,7 +217,130 @@ code, pre, .mono {
   white-space: pre-wrap;
 }
 
+/* =======================================================================
+ * LAYOUT UTILITIES
+ * -----------------------------------------------------------------------
+ * Small, well-named grid utilities used on detail pages and landings so
+ * callers don't re-declare the same breakpoint grid over and over in
+ * scoped styles. Extracted after the four vertical slices shipped — do
+ * NOT treat these as the start of a tailwind-style utility layer.
+ *
+ *   · nsb-landing-prelude — landing-page intro header: flex column that
+ *     holds a LandingIntroPanel above a ReadingGuide
+ *   · nsb-two-col        — 1 column at narrow widths, 2 equal columns
+ *                           at ≥820px. The default layout for paired
+ *                           LabeledLists in detail sections
+ *                           (inputs + prerequisites, decisionPoints +
+ *                           commonMistakes, aiCanHelp + aiCanMakeWorse)
+ *   · nsb-two-col--equal — same, plus `grid-auto-rows: 1fr` so row-
+ *                           aligned heights hold. Used when two panels
+ *                           need to share a visual bottom edge (the
+ *                           Connected-X cross-reference grids)
+ * =====================================================================*/
+.nsb-landing-prelude {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  margin: 0 0 var(--space-7) 0;
+}
+
+.nsb-two-col {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+  margin: var(--space-4) 0;
+}
+@media (min-width: 820px) {
+  .nsb-two-col {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+.nsb-two-col--wide-gap {
+  gap: var(--space-5) var(--space-6);
+}
+/* `--equal` only applies once we cross the 2-col breakpoint; at narrow
+   widths the grid is 1-col and auto-rows don't matter. */
+@media (min-width: 820px) {
+  .nsb-two-col--equal {
+    grid-auto-rows: 1fr;
+  }
+}
+/* `grid-auto-rows: 1fr` stretches each grid *cell* to the tallest
+   sibling in the same row, but a child with natural content-height
+   (like `.nsb-related`, which has its own block flow) won't fill that
+   cell unless it is explicitly told to. Without this, the Connected-X
+   2×2 on detail pages renders with uneven bottom edges when paired
+   panels carry different numbers of links. `margin-top: 0` cancels
+   the default top-margin the RelatedEntries component applies when
+   it sits under body prose (which it isn't, inside this grid). */
+.nsb-two-col--equal > .nsb-related {
+  margin-top: 0;
+  height: 100%;
+}
+
 :focus-visible {
   outline: 2px solid var(--accent-current);
   outline-offset: 2px;
+}
+
+/* Skip link — visually hidden until focused. Rendered inside BaseLayout
+   so keyboard users can jump straight past the header nav to the main
+   content on every page. See docs/design-direction.md §Accessibility. */
+.nsb-skip-link {
+  position: absolute;
+  top: -100px;
+  left: var(--gutter);
+  z-index: 100;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-frame);
+  color: var(--color-yellow);
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: top var(--dur-fast) var(--ease);
+}
+.nsb-skip-link:focus-visible {
+  top: var(--space-3);
+  outline: 2px solid var(--color-yellow);
+  outline-offset: 2px;
+}
+
+/* Print — keep the reference usable when a reader prints or saves a
+   detail page as PDF. Strip the nav/footer, flatten accent color to
+   ink, and let all framed panels survive page breaks. */
+@media print {
+  :root {
+    --color-paper:     #fff;
+    --color-surface:   #fff;
+    --color-paper-alt: #fff;
+  }
+  body {
+    background: #fff;
+    color: #000;
+  }
+  .nsb-header,
+  .nsb-footer,
+  .nsb-skip-link,
+  .nsb-section-index,
+  .nsb-detail-shell__rail {
+    display: none !important;
+  }
+  .nsb-detail-shell__grid {
+    grid-template-columns: 1fr !important;
+  }
+  a {
+    color: #000;
+    text-decoration: underline;
+  }
+  .nsb-frame,
+  .nsb-related,
+  .nsb-glance,
+  .nsb-landing-group__head,
+  .nsb-meta-rail {
+    break-inside: avoid;
+  }
 }

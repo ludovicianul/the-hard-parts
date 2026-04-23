@@ -1,0 +1,138 @@
+---
+/**
+ * AttributeLegend — the three-band legend panel (black title bar +
+ * white body with bar/chip rows + yellow footer note) used as the
+ * "SEVERITY KEY" / "DIFFICULTY KEY" tile on every category landing.
+ *
+ * Extracted from per-category `.xx-landing__legend*` rules. Every
+ * category rendered this pixel-identically; the only variation was
+ * the scale length (5-step for FM/TD/RF severity, 4-step for EP
+ * difficulty) and the chip-token prefix (`--sev-*` for all four,
+ * since EP's difficulty aligns with severity tokens by design).
+ *
+ * The panel has three bands:
+ *
+ *   1. Black title bar — yellow uppercase eyebrow (e.g. "SEVERITY KEY")
+ *   2. White body — rows of [bars · level label · color chip]
+ *   3. Yellow footer — short explanation of what the chip means
+ *
+ * A 4th variant intentionally not built: a per-category "tint" mode.
+ * Category accent color is for identity, severity/difficulty is the
+ * grayscale weight ramp — keeping these channels orthogonal is a
+ * documented invariant (see docs/design-direction.md §Severity
+ * encoding). This component stays strictly monochrome.
+ */
+
+export interface Props {
+  /** Black-bar eyebrow text, e.g. "Severity key" or "Difficulty key". */
+  title: string;
+  /** Ordered scale values rendered as rows, lowest → highest. */
+  scale: readonly string[];
+  /**
+   * Prefix used to pick the chip background variable. Must be one of
+   * the defined ramp prefixes in `tokens.css` — today only `sev` is
+   * defined (the difficulty ladder piggybacks on --sev-* tokens since
+   * the two ladders align).
+   */
+  chipTokenPrefix?: "sev";
+  /** Small uppercase note rendered in the yellow footer band. */
+  footerNote: string;
+}
+
+const { title, scale, chipTokenPrefix = "sev", footerNote } = Astro.props;
+---
+<li class="nsb-attr-legend">
+  <p class="nsb-attr-legend__head">{title}</p>
+  <ul class="nsb-attr-legend__list">
+    {scale.map((level, i) => (
+      <li class="nsb-attr-legend__item">
+        <span class="nsb-attr-legend__bars" aria-hidden="true">
+          {scale.map((_, j) => (
+            <span class:list={["nsb-attr-legend__bar", { "is-on": j <= i }]} />
+          ))}
+        </span>
+        <span class="nsb-attr-legend__label">{level}</span>
+        <span
+          class="nsb-attr-legend__chip"
+          aria-hidden="true"
+          title={`card fill for ${level}`}
+          style={`background: var(--${chipTokenPrefix}-${level});`}
+        />
+      </li>
+    ))}
+  </ul>
+  <p class="nsb-attr-legend__foot">{footerNote}</p>
+</li>
+
+<style>
+  /* Three-band panel — matches the FM/TD/RF/EP landing legends that
+     existed before extraction, byte for byte. */
+  .nsb-attr-legend {
+    background: var(--color-surface);
+    color: var(--color-ink);
+    border: 3px solid var(--color-frame);
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .nsb-attr-legend__head {
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-frame);
+    color: var(--color-yellow);
+    font-family: var(--font-sans);
+    font-weight: 900;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    font-size: var(--text-xs);
+  }
+  .nsb-attr-legend__list {
+    list-style: none;
+    padding: var(--space-4);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    flex: 1;
+  }
+  .nsb-attr-legend__item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    font-weight: 800;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+  .nsb-attr-legend__bars { display: inline-flex; gap: 2px; }
+  .nsb-attr-legend__bar {
+    width: 12px;
+    height: 8px;
+    background: var(--color-frame);
+    opacity: 0.18;
+    display: inline-block;
+  }
+  .nsb-attr-legend__bar.is-on { opacity: 1; }
+  .nsb-attr-legend__chip {
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid var(--color-frame);
+    display: inline-block;
+  }
+  /* Yellow footer — same saturated yellow used across the editorial
+     language (header brand dot, callout bands, section eyebrows). */
+  .nsb-attr-legend__foot {
+    margin: 0;
+    padding: var(--space-2) var(--space-4) var(--space-3);
+    border-top: 2px solid var(--color-frame);
+    background: var(--color-yellow);
+    color: var(--color-yellow-ink);
+    font-family: var(--font-sans);
+    font-weight: 800;
+    font-size: 0.7rem;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+</style>

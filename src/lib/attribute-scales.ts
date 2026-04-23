@@ -175,3 +175,58 @@ export function barCounts(
     filled: scalePosition(scale, value),
   };
 }
+
+/**
+ * Map a severity or difficulty value to the corresponding `Tag`
+ * variant name used on detail-page masthead pills.
+ *
+ * Extracted from detail-page-inlined `sev-${entry.severity}` template
+ * snippets scattered across FM / TD / RF / EP detail pages. Keeping
+ * the mapping here so a future Tag variant rename (e.g. `sev-*` →
+ * `weight-*`) happens in one place.
+ *
+ * Values outside the severity ramp (including `undefined`) return
+ * `sev-medium` so a masthead pill never renders colorless or breaks
+ * the page layout for an off-scale content value.
+ */
+export type SeverityTagVariant =
+  | "sev-low"
+  | "sev-medium"
+  | "sev-medium-high"
+  | "sev-high"
+  | "sev-critical";
+
+export function severityTagVariant(
+  value: string | undefined | null,
+): SeverityTagVariant {
+  switch (value) {
+    case "low":          return "sev-low";
+    case "medium":       return "sev-medium";
+    case "medium-high":  return "sev-medium-high";
+    case "high":         return "sev-high";
+    case "critical":     return "sev-critical";
+    default:             return "sev-medium";
+  }
+}
+
+/**
+ * Map a severity or difficulty value to the card-fill `severity` prop
+ * accepted by `<EntryCard fillFromSeverity>`. This is the identity
+ * mapping for values on the ramp, with a `medium` fallback. Extracted
+ * from landing-page-inlined fallback expressions — same rationale
+ * as `severityTagVariant`.
+ */
+export function severityCardFill(
+  value: string | undefined | null,
+): SeverityLevel {
+  switch (value) {
+    case "low":
+    case "medium":
+    case "medium-high":
+    case "high":
+    case "critical":
+      return value;
+    default:
+      return "medium";
+  }
+}

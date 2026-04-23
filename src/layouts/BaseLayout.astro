@@ -10,8 +10,21 @@ export interface Props {
 }
 
 const { title, description, accent } = Astro.props;
-const fullTitle =
-  title === "nosilverbullet.dev" ? title : `${title} · nosilverbullet.dev`;
+
+// Canonical product strings used in <title>, <meta>, OG cards. Keeping
+// them here so every route gets the same editorial framing without
+// each page reinventing it.
+const SITE_NAME = "nosilverbullet.dev";
+const SITE_TAGLINE =
+  "A reference-first field guide for software people. Failure Modes, Tech Decisions, Red Flags, and the Engineering Playbook.";
+const fullTitle = title === SITE_NAME ? title : `${title} · ${SITE_NAME}`;
+const metaDescription = description ?? SITE_TAGLINE;
+
+// Canonical URL computed from the build-time origin + the current
+// request path. Safe even when the origin is a file:// build (Astro
+// returns a valid URL for local static builds), and lets the site
+// expose `og:url` / canonical without hardcoding a production domain.
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).toString();
 ---
 <!doctype html>
 <html lang="en">
@@ -19,11 +32,32 @@ const fullTitle =
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
-    {description && <meta name="description" content={description} />}
+    <meta name="description" content={metaDescription} />
     <meta name="robots" content="index,follow" />
+    <meta name="theme-color" content="#1a1a1a" />
+    <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    {/* OpenGraph — social / link-preview card. No image yet (pending
+        editorial art); the fields below are sufficient for text-first
+        previews and won't emit a broken image placeholder when shared. */}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:url" content={canonicalUrl} />
+
+    {/* Twitter — text card. Same reasoning as OG above. */}
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={metaDescription} />
   </head>
   <body data-accent={accent ?? null}>
+    {/* Skip link — visually hidden until focused. Lets keyboard /
+        screen-reader users jump past the header nav to the main
+        content area. See docs/design-direction.md §Accessibility. */}
+    <a href="#nsb-main" class="nsb-skip-link">Skip to main content</a>
+
     <header class="nsb-header">
       <div class="nsb-container nsb-header__inner">
         <a href="/" class="nsb-brand">
@@ -48,7 +82,7 @@ const fullTitle =
       </div>
     </header>
 
-    <main class="nsb-main">
+    <main class="nsb-main" id="nsb-main">
       <slot />
     </main>
 

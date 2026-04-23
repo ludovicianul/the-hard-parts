@@ -1,0 +1,167 @@
+---
+/**
+ * 404 — "page not in the catalog" fallback.
+ *
+ * Static 404 emitted so Cloudflare Pages serves a proper branded
+ * not-found page for any URL that doesn't match a built route.
+ * Tabloid voice: no sad-puppy illustration, no "oops". This is a
+ * reference catalog; a missing entry reads as "no such call
+ * number", and the page offers four routes back into the catalog.
+ *
+ * Rendered through BaseLayout so it picks up the header/nav, OG
+ * tags, and accent framework automatically. No detail-page chrome
+ * (no crumbs, no masthead, no meta-rail) — a 404 doesn't need
+ * reference apparatus of its own.
+ */
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { CATEGORIES, CATEGORY_ORDER } from "@/lib/categories";
+---
+<BaseLayout
+  title="Not in the catalog"
+  description="Nothing filed at this call number. Four ways back into the reference are below."
+>
+  <div class="nsb-container nsb-notfound">
+    <header class="nsb-notfound__head">
+      <span class="nsb-notfound__code">NSB · 404</span>
+      <h1 class="nsb-display nsb-notfound__title">
+        No such<br />call number.
+      </h1>
+      <p class="nsb-notfound__lede">
+        The URL you followed doesn&rsquo;t resolve to a catalog entry.
+        The reference is organised by four sections &mdash; try one
+        of them.
+      </p>
+    </header>
+
+    {/* Four category shortcuts, same accent / data-accent vocabulary
+        the homepage category map uses so a reader bounces off the
+        404 into the reference in one click. */}
+    <ul class="nsb-notfound__routes" aria-label="Ways back in">
+      {CATEGORY_ORDER.map((code) => (
+        <li class="nsb-notfound__route" data-accent={code.toLowerCase()}>
+          <a href={`/${CATEGORIES[code].route}`} class="nsb-notfound__route-link">
+            <span class="nsb-notfound__route-code">{CATEGORIES[code].shortLabel}</span>
+            <span class="nsb-notfound__route-name">{CATEGORIES[code].name}</span>
+            <span class="nsb-notfound__route-arrow" aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <p class="nsb-notfound__foot">
+      Or <a href="/" class="nsb-notfound__home-link">go back to the front page</a>.
+    </p>
+  </div>
+
+  <style>
+    .nsb-notfound {
+      padding-block: var(--space-8) var(--space-9);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+      max-width: 44rem;
+    }
+    .nsb-notfound__head {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+    .nsb-notfound__code {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-ink-dim);
+      font-feature-settings: "tnum";
+    }
+    .nsb-notfound__title {
+      margin: 0;
+      font-size: clamp(var(--text-3xl), 7vw, 5rem);
+      line-height: 0.95;
+    }
+    .nsb-notfound__lede {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: clamp(var(--text-md), 1.6vw, var(--text-lg));
+      line-height: var(--leading-snug);
+      color: var(--color-ink-dim);
+      max-width: 36rem;
+    }
+
+    /* 4 category shortcuts — same editorial voice as the homepage's
+       "Pick your way in" panel, minus the Q/A framing: a 404 reader
+       already knows they want to go somewhere, so just list the
+       destinations. */
+    .nsb-notfound__routes {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      border: 3px solid var(--color-frame);
+      background: var(--color-surface);
+    }
+    .nsb-notfound__route + .nsb-notfound__route {
+      border-top: 2px solid var(--color-frame);
+    }
+    .nsb-notfound__route-link {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: var(--space-4);
+      align-items: center;
+      padding: var(--space-3) var(--space-5);
+      text-decoration: none;
+      color: var(--color-ink);
+      background: var(--color-surface);
+      transition: background var(--dur-fast) var(--ease);
+    }
+    .nsb-notfound__route-link:hover {
+      background: var(--color-yellow);
+      color: var(--color-yellow-ink);
+    }
+    .nsb-notfound__route-code {
+      display: inline-block;
+      padding: 4px 8px;
+      background: var(--accent-current);
+      color: var(--color-surface);
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      font-feature-settings: "tnum";
+    }
+    .nsb-notfound__route-link:hover .nsb-notfound__route-code {
+      background: var(--color-frame);
+      color: var(--color-yellow);
+    }
+    .nsb-notfound__route-name {
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: var(--text-base);
+      letter-spacing: -0.01em;
+      color: inherit;
+    }
+    .nsb-notfound__route-arrow {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-lg);
+      transition: transform var(--dur-fast) var(--ease);
+    }
+    .nsb-notfound__route-link:hover .nsb-notfound__route-arrow {
+      transform: translateX(3px);
+    }
+
+    .nsb-notfound__foot {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: var(--text-sm);
+      color: var(--color-ink-dim);
+    }
+    .nsb-notfound__home-link {
+      color: var(--color-ink);
+      text-decoration-color: var(--color-rule);
+    }
+    .nsb-notfound__home-link:hover {
+      text-decoration-color: var(--color-ink);
+    }
+  </style>
+</BaseLayout>

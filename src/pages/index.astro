@@ -231,9 +231,66 @@ const prettifyEp = (s: string): string =>
       ))}
     </section>
 
+    {/* --------- PICK YOUR WAY IN ---------
+        First-time visitors need a fast "which section matches what I'm
+        feeling right now" cue. Four one-line prompts keyed to the four
+        categories, rendered as a compact yellow-eyebrow panel. Each
+        prompt is a link straight to that category's landing page, so
+        "I've seen this go wrong before" lands the reader on FM in one
+        click. Explicit editorial voice: no persona pitches, no badges,
+        no onboarding cards — just four question/answer pairs. */}
+    <section class="nsb-home__orient" aria-label="Pick your way in">
+      <header class="nsb-home__orient-head">
+        <span class="nsb-home__orient-eyebrow">Pick your way in</span>
+        <h2 class="nsb-home__orient-title">Start from the question you have</h2>
+      </header>
+      <ul class="nsb-home__orient-list">
+        <li class="nsb-home__orient-item" data-accent="fm">
+          <a href="/failure-modes" class="nsb-home__orient-link">
+            <span class="nsb-home__orient-q">I&rsquo;ve seen this project go wrong before &mdash; what am I looking at?</span>
+            <span class="nsb-home__orient-a">
+              <span class="nsb-home__orient-code">FM</span>
+              <span class="nsb-home__orient-name">Failure Modes</span>
+              <span class="nsb-home__orient-arrow" aria-hidden="true">&rarr;</span>
+            </span>
+          </a>
+        </li>
+        <li class="nsb-home__orient-item" data-accent="td">
+          <a href="/tech-decisions" class="nsb-home__orient-link">
+            <span class="nsb-home__orient-q">What trade-off am I actually making here, and on what?</span>
+            <span class="nsb-home__orient-a">
+              <span class="nsb-home__orient-code">TD</span>
+              <span class="nsb-home__orient-name">Tech Decisions</span>
+              <span class="nsb-home__orient-arrow" aria-hidden="true">&rarr;</span>
+            </span>
+          </a>
+        </li>
+        <li class="nsb-home__orient-item" data-accent="rf">
+          <a href="/red-flags" class="nsb-home__orient-link">
+            <span class="nsb-home__orient-q">Something about this feels off &mdash; what am I noticing?</span>
+            <span class="nsb-home__orient-a">
+              <span class="nsb-home__orient-code">RF</span>
+              <span class="nsb-home__orient-name">Red Flags</span>
+              <span class="nsb-home__orient-arrow" aria-hidden="true">&rarr;</span>
+            </span>
+          </a>
+        </li>
+        <li class="nsb-home__orient-item" data-accent="ep">
+          <a href="/engineering-playbook" class="nsb-home__orient-link">
+            <span class="nsb-home__orient-q">I know the situation &mdash; what&rsquo;s the right way to run it?</span>
+            <span class="nsb-home__orient-a">
+              <span class="nsb-home__orient-code">EP</span>
+              <span class="nsb-home__orient-name">Engineering Playbook</span>
+              <span class="nsb-home__orient-arrow" aria-hidden="true">&rarr;</span>
+            </span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
     {fmFeatured.length > 0 && (
       <section class="nsb-home__preview" aria-label="From Failure Modes" data-accent="fm">
-        <CalloutBand label="Special section" variant="yellow">
+        <CalloutBand label="Field guide" variant="yellow">
           <p>Failure Modes &mdash; named patterns that recur in software teams.</p>
         </CalloutBand>
 
@@ -282,7 +339,7 @@ const prettifyEp = (s: string): string =>
          `var(--accent-current)` (card hover underline, link hover
          state, etc.) picks up TD's hue without extra wiring. */
       <section class="nsb-home__preview" aria-label="From Tech Decisions" data-accent="td">
-        <CalloutBand label="Special section" variant="yellow">
+        <CalloutBand label="Decision ledger" variant="yellow">
           <p>Tech Decisions &mdash; structured trade-off references for consequential engineering calls.</p>
         </CalloutBand>
 
@@ -427,16 +484,25 @@ const prettifyEp = (s: string): string =>
       </section>
     )}
 
-    <aside class="nsb-home__status nsb-frame" aria-label="Build status">
-      <div class="nsb-home__status-bar">Phase status</div>
-      <p class="nsb-home__status-text">
-        All four categories are wired end-to-end with real detail pages,
-        structured rendering, and cross-reference resolution. Each one
-        reuses the shared page chassis while carrying its own
-        category-distinct visual &mdash; the severity atlas (FM), the
-        options ledger (TD), the two-axis signal chart (RF), and the
-        procedure-step manual (EP).
-      </p>
+    {/* Closer — replaces the earlier dev-framing "Phase status" aside.
+        A three-beat working motto panel that echoes the product brief
+        without sliding into marketing copy. Left column is the framed
+        black ID strip the rest of the site uses (see section mastheads,
+        related-entry heads); right column is the motto pair in serif. */}
+    <aside class="nsb-home__closer" aria-label="Working motto">
+      <div class="nsb-home__closer-code">
+        <span class="nsb-home__closer-code-cat">N S B</span>
+        <span class="nsb-home__closer-code-num">&middot; 01</span>
+      </div>
+      <div class="nsb-home__closer-body">
+        <p class="nsb-home__closer-lede">
+          Software is hard. That&rsquo;s the point.
+        </p>
+        <p class="nsb-home__closer-motto">
+          Name the patterns. Show the trade-offs.<br />
+          Surface the signals. Make the useful path visible.
+        </p>
+      </div>
     </aside>
   </div>
 
@@ -817,26 +883,196 @@ const prettifyEp = (s: string): string =>
     }
 
     /* ================================================================
-       STATUS ASIDE
+       PICK YOUR WAY IN — orientation panel between the category map
+       and the per-category preview strips. Four question/answer rows
+       in a single framed panel. Each row's left side is the editorial
+       question a reader might arrive with; the right side is the
+       shortcut into that category. On hover, the accent-colored code
+       box flips to yellow so the four categories' identity hues are
+       still visible in their resting state. Matches the tabloid
+       "black frame, yellow signal" vocabulary used elsewhere.
        ================================================================ */
-    .nsb-home__status { background: var(--color-surface); }
-    .nsb-home__status-bar {
-      padding: var(--space-3) var(--space-5);
+    .nsb-home__orient {
+      margin-top: var(--space-7);
+      margin-bottom: var(--space-7);
+      background: var(--color-surface);
+      border: 3px solid var(--color-frame);
+    }
+    .nsb-home__orient-head {
+      padding: var(--space-4) var(--space-5) var(--space-3);
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: var(--space-3);
+      align-items: baseline;
       background: var(--color-frame);
       color: var(--color-surface);
+    }
+    .nsb-home__orient-eyebrow {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-yellow);
+    }
+    .nsb-home__orient-title {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      font-size: clamp(var(--text-lg), 2.2vw, var(--text-xl));
+      line-height: 1.1;
+      color: var(--color-surface);
+      margin: 0;
+    }
+    .nsb-home__orient-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .nsb-home__orient-item {
+      border-top: 2px solid var(--color-frame);
+    }
+    .nsb-home__orient-item:first-child {
+      border-top: 0;
+    }
+    .nsb-home__orient-link {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: var(--space-4);
+      align-items: center;
+      padding: var(--space-4) var(--space-5);
+      text-decoration: none;
+      color: var(--color-ink);
+      background: var(--color-surface);
+      transition: background var(--dur-fast) var(--ease);
+    }
+    .nsb-home__orient-link:hover {
+      background: var(--color-yellow);
+      color: var(--color-yellow-ink);
+    }
+    .nsb-home__orient-q {
+      font-family: var(--font-serif);
+      font-size: var(--text-md);
+      font-style: italic;
+      line-height: var(--leading-snug);
+      color: inherit;
+    }
+    .nsb-home__orient-a {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-3);
       font-family: var(--font-sans);
       font-weight: 900;
       letter-spacing: var(--tracking-label);
       text-transform: uppercase;
       font-size: var(--text-xs);
+      color: inherit;
+      white-space: nowrap;
     }
-    .nsb-home__status-text {
-      padding: var(--space-5);
-      font-family: var(--font-serif);
+    .nsb-home__orient-code {
+      display: inline-block;
+      padding: 4px 8px;
+      background: var(--accent-current);
+      color: var(--color-surface);
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-feature-settings: "tnum";
+      letter-spacing: var(--tracking-label);
+    }
+    .nsb-home__orient-link:hover .nsb-home__orient-code {
+      background: var(--color-frame);
+      color: var(--color-yellow);
+    }
+    .nsb-home__orient-name {
+      color: inherit;
+    }
+    .nsb-home__orient-arrow {
+      font-family: var(--font-sans);
+      font-weight: 900;
       font-size: var(--text-base);
-      color: var(--color-ink-dim);
+      color: inherit;
+      transition: transform var(--dur-fast) var(--ease);
+    }
+    .nsb-home__orient-link:hover .nsb-home__orient-arrow {
+      transform: translateX(3px);
+    }
+    @media (max-width: 640px) {
+      .nsb-home__orient-head {
+        grid-template-columns: 1fr;
+        gap: var(--space-2);
+      }
+      .nsb-home__orient-link {
+        grid-template-columns: 1fr;
+        gap: var(--space-2);
+        align-items: start;
+      }
+      .nsb-home__orient-a {
+        justify-content: flex-end;
+      }
+    }
+
+    /* ================================================================
+       CLOSER — replaces the earlier dev "Phase status" aside. A
+       two-part strip: the reference code plate on the left, the
+       working motto serif pair on the right. Short, editorial,
+       deliberately not a marketing banner.
+       ================================================================ */
+    .nsb-home__closer {
+      margin-top: var(--space-7);
+      background: var(--color-surface);
+      border: 3px solid var(--color-frame);
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: stretch;
+    }
+    .nsb-home__closer-code {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-4) var(--space-5);
+      background: var(--color-frame);
+      color: var(--color-yellow);
+      font-family: var(--font-sans);
+      font-weight: 900;
+      letter-spacing: var(--tracking-label);
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .nsb-home__closer-code-cat { color: var(--color-yellow); }
+    .nsb-home__closer-code-num {
+      color: var(--color-surface);
+      opacity: 0.7;
+      font-feature-settings: "tnum";
+    }
+    .nsb-home__closer-body {
+      padding: var(--space-4) var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+    .nsb-home__closer-lede {
       margin: 0;
+      font-family: var(--font-sans);
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      font-size: clamp(var(--text-base), 1.6vw, var(--text-lg));
+      color: var(--color-ink);
+      line-height: 1.1;
+    }
+    .nsb-home__closer-motto {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: var(--text-sm);
       line-height: var(--leading-snug);
+      color: var(--color-ink-dim);
+    }
+    @media (max-width: 640px) {
+      .nsb-home__closer {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </BaseLayout>

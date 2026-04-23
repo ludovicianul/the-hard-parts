@@ -52,6 +52,7 @@ import {
   DIFFICULTY_SCALE,
   CONFIDENCE_SCALE,
   barCounts,
+  severityTagVariant,
 } from "@/lib/attribute-scales";
 
 export async function getStaticPaths() {
@@ -72,19 +73,11 @@ const prettify = (s: string): string =>
   s.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 
 // Masthead difficulty pill — reuses the severity-ramp Tag variants
-// (sev-low … sev-high). EP's `difficulty` enum aligns exactly with
-// the first four severity tokens, so the mapping is identity. A
-// value outside the ladder falls through to a safe `sev-medium`.
-// Same pattern FM uses for severity + RF uses for severity.
-type SevVariant = "sev-low" | "sev-medium" | "sev-medium-high" | "sev-high" | "sev-critical";
-const DIFFICULTY_TO_SEV_VARIANT: Record<string, SevVariant> = {
-  low: "sev-low",
-  medium: "sev-medium",
-  "medium-high": "sev-medium-high",
-  high: "sev-high",
-};
-const difficultyPillVariant: SevVariant =
-  (entry.difficulty && DIFFICULTY_TO_SEV_VARIANT[entry.difficulty]) || "sev-medium";
+// via the shared `severityTagVariant` helper. EP's `difficulty` enum
+// aligns exactly with the first four severity tokens, so the mapping
+// is identity; values outside the ladder fall through to a safe
+// `sev-medium` inside the helper.
+const difficultyPillVariant = severityTagVariant(entry.difficulty);
 
 // Section visibility — every current EP entry carries every optional
 // field, but the page must stay honest if a future edit removes one.
@@ -229,7 +222,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         title="The situation"
         note="Deciding whether to reach for this playbook — when it fits, and when it doesn't."
       />
-      <div class="ep-situation">
+      <div class="nsb-two-col ep-situation">
         {entry.useWhen && entry.useWhen.length > 0 && (
           <LabeledList
             label="Use when"
@@ -295,7 +288,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         title="Before you start"
         note="What you need available and true before running the procedure — skipping this is the most common reason playbooks fail."
       />
-      <div class="ep-before">
+      <div class="nsb-two-col">
         {entry.inputs && entry.inputs.length > 0 && (
           <LabeledList
             label="Inputs"
@@ -343,7 +336,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         title="Judgment calls and pitfalls"
         note="The places where execution actually diverges: decisions that need thought, questions worth asking, and mistakes that recur regardless of good intent."
       />
-      <div class="ep-judgment">
+      <div class="nsb-two-col nsb-two-col--wide-gap">
         {entry.decisionPoints && entry.decisionPoints.length > 0 && (
           <LabeledList
             label="Decision points"
@@ -387,7 +380,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         title="Outcomes and signals"
         note="What should exist after the playbook runs, how you'll know it worked, and what to watch for over time."
       />
-      <div class="ep-outcomes">
+      <div class="nsb-two-col nsb-two-col--wide-gap">
         {entry.artifactsToProduce && entry.artifactsToProduce.length > 0 && (
           <LabeledList
             label="Artifacts to produce"
@@ -433,9 +426,13 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         title="AI effects on this playbook"
         note="How AI-assisted and AI-driven workflows help execution, and the ways they can make it worse."
       />
-      <div class="ep-ai">
+      {/* AI section — unified site-wide treatment: two boxed
+          LabeledLists side-by-side + blue-serif synthesis band
+          below. Matches FM / TD / RF. */}
+      <div class="nsb-two-col">
         {entry.aiCanHelpWith && entry.aiCanHelpWith.length > 0 && (
           <LabeledList
+            variant="boxed"
             label="AI can help with"
             caption="Where AI tooling genuinely reduces the cost of running this playbook well."
             items={entry.aiCanHelpWith}
@@ -443,6 +440,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         )}
         {entry.aiCanMakeWorseBy && entry.aiCanMakeWorseBy.length > 0 && (
           <LabeledList
+            variant="boxed"
             label="AI can make worse by"
             caption="Distortions AI introduces that make the underlying problem harder to see."
             items={entry.aiCanMakeWorseBy}
@@ -469,7 +467,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         title="Connected playbooks"
         note="Failure modes this playbook tends to address, decisions behind the situation, red flags that motivate running it, and neighboring playbooks."
       />
-      <div class="ep-related">
+      <div class="nsb-two-col nsb-two-col--equal">
         <RelatedEntries
           title="Related failure modes"
           refs={entry.relatedFailureModes}
@@ -512,18 +510,12 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     margin: var(--space-4) 0;
   }
 
-  /* Section 1 — situation + caveat. Same 2-col layout + yellow-rule
-     caveat as RF's primary-reading section, so the two categories'
-     "when to reach for this / when not to" calibration pairs render
-     in the same visual idiom. */
-  .ep-situation {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-5);
-    margin: var(--space-4) 0;
-  }
+  /* Section 1 — situation + caveat. Uses the shared `.nsb-two-col`
+     utility for the base grid; `.ep-situation` only overrides the
+     desktop column ratio (1.3fr/1fr instead of 1fr/1fr) so the
+     caveat panel reads as a sibling, not a half-width peer. */
   @media (min-width: 820px) {
-    .ep-situation { grid-template-columns: 1.3fr 1fr; align-items: start; }
+    .ep-situation { grid-template-columns: 1.3fr 1fr; }
   }
   .ep-situation__caveat {
     background: var(--color-paper-alt);
@@ -537,71 +529,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
      section margins behave. */
   .ep-what-good { margin: var(--space-4) 0; }
 
-  /* Section 4 — Before you start. 2-col at desktop so inputs and
-     prerequisites read side-by-side (equal editorial weight). */
-  .ep-before {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-5);
-    margin: var(--space-4) 0;
-  }
-  @media (min-width: 820px) {
-    .ep-before { grid-template-columns: 1fr 1fr; align-items: start; }
-  }
-
-  /* Section 6 — judgment calls and pitfalls. 2×2 grid of LabeledLists.
-     Decision points / questions / mistakes / warning signs all render
-     at equal weight; the reader's eye travels left-to-right, top-to-
-     bottom: "what to think about" then "what goes wrong". */
-  .ep-judgment {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-5) var(--space-6);
-    margin: var(--space-4) 0;
-  }
-  @media (min-width: 820px) {
-    .ep-judgment { grid-template-columns: 1fr 1fr; align-items: start; }
-  }
-
-  /* Section 7 — outcomes and signals. Same 2×2 pattern as Section 6. */
-  .ep-outcomes {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-5) var(--space-6);
-    margin: var(--space-4) 0;
-  }
-  @media (min-width: 820px) {
-    .ep-outcomes { grid-template-columns: 1fr 1fr; align-items: start; }
-  }
-
-  /* Section 8 — AI effects. Two labeled lists side-by-side, identical
-     shape to FM/TD/RF AI sections. */
-  .ep-ai {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-5);
-    margin: var(--space-4) 0;
-  }
-  @media (min-width: 820px) {
-    .ep-ai { grid-template-columns: 1fr 1fr; align-items: start; }
-  }
-
-  /* Section 9 — cross-refs. 2-col grid with row-aligned heights. Same
-     treatment as FM/TD/RF related sections. */
-  .ep-related {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-5);
-    margin: var(--space-4) 0;
-  }
-  @media (min-width: 820px) {
-    .ep-related {
-      grid-template-columns: 1fr 1fr;
-      grid-auto-rows: 1fr;
-    }
-  }
-  .ep-related > :global(.nsb-related) {
-    margin-top: 0;
-    height: 100%;
-  }
+  /* Section 9 — cross-refs. Uses `.nsb-two-col--equal` from
+     globals.css; the `.nsb-related` `height: 100%` child rule lives
+     there so all four detail pages share one source of truth. */
 </style>

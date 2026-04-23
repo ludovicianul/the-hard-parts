@@ -1,0 +1,41 @@
+---
+/**
+ * LandingIntroPanel — the framed serif paragraph that opens every
+ * category landing page.
+ *
+ * Extracted from per-category `.xx-landing__intro-text` rules that
+ * were pixel-identical across FM, TD, RF, and EP. All four read:
+ *
+ *   · serif face at clamp(md, 1.4vw, lg)
+ *   · snug line-height
+ *   · text-wrap: pretty (no global reading-max; the panel owns its
+ *     own reading width — see docs/design-direction.md §Reading width)
+ *   · 3px black frame on white surface
+ *   · padding: --space-5
+ *
+ * Takes a default slot so callers can use inline <strong>, <em>, etc.
+ * without having to pass HTML through props. Intentionally has no
+ * props — the visual contract is fixed so the four categories stay
+ * in lockstep.
+ */
+---
+<p class="nsb-landing-intro">
+  <slot />
+</p>
+
+<style>
+  .nsb-landing-intro {
+    font-family: var(--font-serif);
+    font-size: clamp(var(--text-md), 1.4vw, var(--text-lg));
+    line-height: var(--leading-snug);
+    text-wrap: pretty;
+    color: var(--color-ink);
+    margin: 0;
+    padding: var(--space-5);
+    background: var(--color-surface);
+    border: 3px solid var(--color-frame);
+    /* No reading-max cap — the panel itself owns its own reading
+       width. See docs/design-direction.md §Reading width. */
+    max-width: none;
+  }
+</style>

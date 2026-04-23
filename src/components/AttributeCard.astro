@@ -1,0 +1,194 @@
+---
+/**
+ * AttributeCard — the white-body reading-guide tile that describes
+ * one ordinal attribute (Frequency, Recovery, Reversibility,
+ * Detectability, Confidence, …) with a title, serif description, and
+ * a bar-ladder legend on the right.
+ *
+ * Extracted from per-category `.xx-landing__attr*` rules. All four
+ * categories rendered this pixel-identically; the only variation was
+ * which scale each card carried and whether a trend note sat under
+ * the description (only FM/TD Frequency cards used one, for the
+ * "increasing ↗" trajectory value).
+ *
+ * Internal layout:
+ *   · Text column on the left (title + description + optional trend)
+ *   · Bar-ladder column on the right, auto-sized so text absorbs
+ *     remaining width
+ *   · At <420px the split collapses to stacked (text on top, bars
+ *     below) so the card stays readable on narrow phones
+ */
+
+import AttrGlyph from "@/components/AttrGlyph.astro";
+
+export interface Props {
+  /** Card title — uppercase short label, e.g. "Frequency". */
+  title: string;
+  /** Serif one-sentence description. */
+  description: string;
+  /** Ordered scale, lowest → highest. Rendered as a bar ladder. */
+  scale: readonly string[];
+  /**
+   * Optional trend note rendered as a footer row inside the text
+   * column, separated by a thin rule. Used only by cards where the
+   * attribute has a trajectory value that isn't on the ladder
+   * (today: Frequency's `increasing`). The glyph is always the same
+   * up-right chevron AttrGlyph supports; pass `glyphKind` explicitly
+   * to avoid coupling this card to any single glyph.
+   */
+  trendNote?: {
+    label: string;
+    caption: string;
+    glyphKind?: "increasing";
+  };
+}
+
+const { title, description, scale, trendNote } = Astro.props;
+---
+<li class="nsb-attr-card">
+  <div class="nsb-attr-card__text">
+    <h3 class="nsb-attr-card__title">{title}</h3>
+    <p class="nsb-attr-card__desc">{description}</p>
+    {trendNote && (
+      <p class="nsb-attr-card__trend">
+        <span class="nsb-attr-card__trend-glyph" aria-hidden="true">
+          <AttrGlyph kind={trendNote.glyphKind ?? "increasing"} size={14} />
+        </span>
+        <span class="nsb-attr-card__trend-body">
+          <span class="nsb-attr-card__trend-label">{trendNote.label}</span>
+          <span class="nsb-attr-card__trend-caption">{trendNote.caption}</span>
+        </span>
+      </p>
+    )}
+  </div>
+  <ul class="nsb-attr-card__scale">
+    {scale.map((level, i) => (
+      <li class="nsb-attr-card__level">
+        <span class="nsb-attr-card__bars" aria-hidden="true">
+          {scale.map((_, j) => (
+            <span class:list={["nsb-attr-card__bar", { "is-on": j <= i }]} />
+          ))}
+        </span>
+        <span class="nsb-attr-card__level-label">{level}</span>
+      </li>
+    ))}
+  </ul>
+</li>
+
+<style>
+  .nsb-attr-card {
+    background: var(--color-surface);
+    border: 3px solid var(--color-frame);
+    padding: var(--space-4) var(--space-5);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    min-width: 0;
+    align-items: start;
+  }
+  @media (min-width: 420px) {
+    .nsb-attr-card {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: var(--space-5);
+    }
+  }
+  .nsb-attr-card__text {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .nsb-attr-card__title {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    font-size: var(--text-sm);
+    color: var(--color-ink);
+  }
+  .nsb-attr-card__desc {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: var(--text-sm);
+    line-height: var(--leading-snug);
+    color: var(--color-ink-dim);
+  }
+  /* Trend sub-row — rule-above separator, glyph in a filled square,
+     label + caption stacked on the right. */
+  .nsb-attr-card__trend {
+    margin: 0;
+    padding-top: var(--space-3);
+    border-top: 1.5px solid var(--color-rule);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2) var(--space-3);
+    align-items: start;
+    color: var(--color-ink);
+  }
+  .nsb-attr-card__trend-glyph {
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-frame);
+    color: var(--color-yellow);
+    flex-shrink: 0;
+  }
+  .nsb-attr-card__trend-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .nsb-attr-card__trend-label {
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink);
+  }
+  .nsb-attr-card__trend-caption {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 0.78rem;
+    line-height: var(--leading-snug);
+    color: var(--color-ink-dim);
+  }
+  .nsb-attr-card__scale {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .nsb-attr-card__level {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink-dim);
+  }
+  .nsb-attr-card__bars { display: inline-flex; gap: 2px; }
+  .nsb-attr-card__bar {
+    width: 10px;
+    height: 7px;
+    background: var(--color-frame);
+    opacity: 0.18;
+    display: inline-block;
+  }
+  .nsb-attr-card__bar.is-on { opacity: 1; }
+  .nsb-attr-card__level-label {
+    color: var(--color-ink);
+    white-space: nowrap;
+  }
+</style>

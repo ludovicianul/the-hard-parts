@@ -2,37 +2,33 @@
 /**
  * /engineering-playbook — catalog landing page.
  *
- * EP entries are structured procedures for recurring engineering
- * situations. The landing's job:
+ * Migrated onto the shared landing primitives:
+ *   · <LandingIntroPanel>  — the serif framed intro paragraph
+ *   · <ReadingGuide>       — the 2-col grid wrapper
+ *   · <AttributeLegend>    — the Difficulty legend tile
+ *   · <AttributeCard>      — the Confidence attribute tile
+ *   · <LandingGroup>       — black masthead bar + auto-fit card grid
+ *   · `.nsb-landing-prelude` — the flex-column outer header wrapper
  *
- *   1. Intro paragraph — explains the category voice in one beat.
- *   2. Reading guide — two tiles:
- *        · Difficulty legend panel (card-fill ramp mapped to the
- *          same severity ramp FM/TD/RF use, so "how hard is this
- *          to execute well" reads as darkening card weight).
- *        · Confidence attribute card (ladder).
- *      EP has fewer ordinal dimensions than FM/TD/RF (only 2 ladders
- *      vs 3-4), so the guide is a 2-tile row rather than a 2×2.
- *   3. Grouped catalog — one section per subcategory (delivery, team,
- *      architecture, operations, ai) with EntryCards. Card fill is
- *      driven by difficulty via the shared severity ramp, so the
- *      grid scans "gravity-first" the same way the other categories
- *      do — just with "hardness of execution" instead of "severity".
- *
- * Shared primitives reused: `CategoryLayout`, `EntryCard`. No EP-
- * specific landing visuals (the signature visual — procedure steps
- * — lives on the detail page). Class namespace is `ep-landing__*`.
+ * No category-scoped landing CSS remains here; everything visual now
+ * flows from the shared primitives. The page's job is editorial
+ * orientation + data glue only.
  */
 import CategoryLayout from "@/layouts/CategoryLayout.astro";
 import EntryCard from "@/components/EntryCard.astro";
+import LandingIntroPanel from "@/components/LandingIntroPanel.astro";
+import ReadingGuide from "@/components/ReadingGuide.astro";
+import AttributeLegend from "@/components/AttributeLegend.astro";
+import AttributeCard from "@/components/AttributeCard.astro";
+import LandingGroup from "@/components/LandingGroup.astro";
 import { loadPlaybooks } from "@/lib/load";
 import { ensureValidated } from "@/lib/validate";
 import { formatRefCode } from "@/lib/resolve";
 import {
   DIFFICULTY_SCALE,
   CONFIDENCE_SCALE,
+  severityCardFill,
 } from "@/lib/attribute-scales";
-import type { SeverityLevel } from "@/lib/attribute-scales";
 
 ensureValidated();
 
@@ -48,10 +44,9 @@ entries.forEach((e, i) => {
   refBySlug.set(e.slug, formatRefCode("EP", i, entries.length).refNum);
 });
 
-// Group by the subcategory (`category`) field in declared order so the
-// narrative matches the schema's authorial ordering. Any orphan falls
-// into a trailing "other" group — defensive only, `ensureValidated()`
-// already rejects unknown subcategories.
+// Group entries by their subcategory field in the schema's declared
+// order. Orphans fall into a trailing "other" bucket — defensive only,
+// `ensureValidated()` already rejects unknown subcategory values.
 type Group = { key: string; entries: typeof entries };
 const groups: Group[] = declaredSubcategories.map((sub) => ({
   key: sub,
@@ -59,19 +54,6 @@ const groups: Group[] = declaredSubcategories.map((sub) => ({
 }));
 const orphaned = entries.filter((e) => !declaredSubcategories.includes(e.category));
 if (orphaned.length > 0) groups.push({ key: "other", entries: orphaned });
-
-// Card fill severity mapping. EP's `difficulty` values align with the
-// severity ramp tokens (`low`, `medium`, `medium-high`, `high`); if a
-// value is not on the ladder, fall back to `medium` so the card never
-// renders an undefined fill.
-const DIFFICULTY_TO_SEV: Record<string, SeverityLevel> = {
-  low: "low",
-  medium: "medium",
-  "medium-high": "medium-high",
-  high: "high",
-};
-const severityFor = (d: string): SeverityLevel =>
-  DIFFICULTY_TO_SEV[d] ?? "medium";
 
 const prettify = (s: string): string =>
   s.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
@@ -81,355 +63,57 @@ const prettify = (s: string): string =>
   heroTitle="Playbooks"
   tagline="Practical playbooks for recurring engineering situations — delivery, architecture, operations, team work, and AI adoption. Operational references you can actually execute, not motivational posts."
 >
-  <header class="ep-landing__intro" aria-label="About this reference">
-    <p class="ep-landing__intro-text">
+  <header class="nsb-landing-prelude" aria-label="About this reference">
+    <LandingIntroPanel>
       Every entry is a <strong>structured procedure</strong> for a
       named situation: when to use it, when not to, what good looks
       like, the actual steps (with their purpose and outputs), common
       mistakes, artifacts, and success signals. Card weight reflects
       <strong>difficulty</strong> &mdash; harder playbooks darken the
       card.
-    </p>
+    </LandingIntroPanel>
 
-    {/* Reading guide — two tiles at ≥640px. Same visual vocabulary as
-        FM/TD/RF (black-bar + yellow eyebrow legend + white-body
-        attribute card), but only two tiles because EP has two
-        ladder-backed dimensions (Difficulty + Confidence). The other
-        EP metadata — time horizon, primary owner, roles — is
-        editorial strings with no ladder, so they belong on the detail
-        page MetaRail, not in a reading-guide tile. */}
-    <ul class="ep-landing__attr-row" aria-label="Reading guide">
-      <li class="ep-landing__legend">
-        <p class="ep-landing__legend-head">Difficulty key</p>
-        <ul class="ep-landing__legend-list">
-          {DIFFICULTY_SCALE.map((level, i) => (
-            <li class="ep-landing__legend-item">
-              <span class="ep-landing__legend-bars" aria-hidden="true">
-                {DIFFICULTY_SCALE.map((_, j) => (
-                  <span class:list={["ep-landing__legend-bar", { "is-on": j <= i }]} />
-                ))}
-              </span>
-              <span class="ep-landing__legend-label">{level}</span>
-              <span
-                class:list={["ep-landing__legend-chip", `ep-landing__legend-chip--${level}`]}
-                aria-hidden="true"
-                title={`card fill for ${level}`}
-              />
-            </li>
-          ))}
-        </ul>
-        <p class="ep-landing__legend-foot">
-          Chip = card fill on the grid.
-        </p>
-      </li>
-
-      <li class="ep-landing__attr">
-        <div class="ep-landing__attr-text">
-          <p class="ep-landing__attr-title">Confidence</p>
-          <p class="ep-landing__attr-desc">
-            How sure we are the playbook works as written across teams
-            and contexts &mdash; provisional vs. repeatedly validated
-            in real engineering work.
-          </p>
-        </div>
-        <ul class="ep-landing__attr-scale">
-          {CONFIDENCE_SCALE.map((level, i) => (
-            <li class="ep-landing__attr-level">
-              <span class="ep-landing__attr-bars" aria-hidden="true">
-                {CONFIDENCE_SCALE.map((_, j) => (
-                  <span class:list={["ep-landing__attr-bar", { "is-on": j <= i }]} />
-                ))}
-              </span>
-              <span class="ep-landing__attr-level-label">{level}</span>
-            </li>
-          ))}
-        </ul>
-      </li>
-    </ul>
+    <ReadingGuide>
+      <AttributeLegend
+        title="Difficulty key"
+        scale={DIFFICULTY_SCALE}
+        footerNote="Chip = card fill on the grid."
+      />
+      <AttributeCard
+        title="Confidence"
+        description="How sure we are the playbook works as written across teams and contexts — provisional vs. repeatedly validated in real engineering work."
+        scale={CONFIDENCE_SCALE}
+      />
+    </ReadingGuide>
   </header>
 
   {groups.map((group, gi) => group.entries.length > 0 && (
-    <section
-      class="ep-landing__group"
-      aria-label={`Engineering Playbook · ${group.key}`}
+    <LandingGroup
       id={`subcat-${group.key}`}
+      ariaLabel={`Engineering Playbook · ${group.key}`}
+      eyebrow={`Playbook set ${String(gi + 1).padStart(2, "0")}`}
+      title={prettify(group.key)}
+      countLabel={`${String(group.entries.length).padStart(2, "0")} ${group.entries.length === 1 ? "playbook" : "playbooks"}`}
     >
-      <header class="ep-landing__group-head">
-        <span class="ep-landing__group-code">Playbook set {String(gi + 1).padStart(2, "0")}</span>
-        <h2 class="nsb-display ep-landing__group-title">{prettify(group.key)}</h2>
-        <span class="ep-landing__group-count">
-          {String(group.entries.length).padStart(2, "0")} {group.entries.length === 1 ? "playbook" : "playbooks"}
-        </span>
-      </header>
-
-      <div class="ep-landing__grid">
-        {group.entries.map((e) => (
-          /* Card meta carries `Owner · {primaryOwner}` — the single
-             most useful "is this for me?" scan signal for EP. Time
-             horizon + difficulty + roles all live on the detail
-             MetaRail. */
-          <EntryCard
-            code="EP"
-            slug={e.slug}
-            title={e.title}
-            summary={e.summary}
-            subcategory={prettify(e.category)}
-            severity={severityFor(e.difficulty ?? "medium")}
-            refNum={refBySlug.get(e.slug)}
-            fillFromSeverity
-            metaBits={[
-              e.primaryOwner ? `Owner · ${e.primaryOwner}` : undefined,
-            ].filter((s): s is string => typeof s === "string")}
-          />
-        ))}
-      </div>
-    </section>
+      {group.entries.map((e) => (
+        /* Card meta carries `Owner · {primaryOwner}` — the single
+           most useful "is this for me?" scan signal for EP. Time
+           horizon + difficulty + roles all live on the detail
+           MetaRail / AtAGlance. */
+        <EntryCard
+          code="EP"
+          slug={e.slug}
+          title={e.title}
+          summary={e.summary}
+          subcategory={prettify(e.category)}
+          severity={severityCardFill(e.difficulty)}
+          refNum={refBySlug.get(e.slug)}
+          fillFromSeverity
+          metaBits={[
+            e.primaryOwner ? `Owner · ${e.primaryOwner}` : undefined,
+          ].filter((s): s is string => typeof s === "string")}
+        />
+      ))}
+    </LandingGroup>
   ))}
 </CategoryLayout>
-
-<style>
-  /* ---- Intro block — same rhythm as FM/TD/RF landings: wide serif
-     paragraph above a reading-guide row. Scoped `ep-landing__*` so
-     tweaks don't leak into sibling categories. */
-  .ep-landing__intro {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-5);
-    margin: 0 0 var(--space-7) 0;
-  }
-  .ep-landing__intro-text {
-    font-family: var(--font-serif);
-    font-size: clamp(var(--text-md), 1.4vw, var(--text-lg));
-    line-height: var(--leading-snug);
-    text-wrap: pretty;
-    color: var(--color-ink);
-    margin: 0;
-    padding: var(--space-5);
-    background: var(--color-surface);
-    border: 3px solid var(--color-frame);
-    max-width: none;
-  }
-
-  /* ---- Reading guide row (2-tile, 1-col mobile / 2-col desktop) --
-     Mirrors FM's `.fm-landing__attr-row` sizing exactly so the two
-     reading guides render at the same visual weight; EP just has
-     fewer tiles. */
-  .ep-landing__attr-row {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-4);
-  }
-  @media (min-width: 640px) {
-    .ep-landing__attr-row {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  /* ---- Difficulty legend panel — same three-band anatomy as FM/RF
-     severity legend (black title bar + white body + yellow footer). */
-  .ep-landing__legend {
-    background: var(--color-surface);
-    color: var(--color-ink);
-    border: 3px solid var(--color-frame);
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-  }
-  .ep-landing__legend-head {
-    margin: 0;
-    padding: var(--space-3) var(--space-4);
-    background: var(--color-frame);
-    color: var(--color-yellow);
-    font-family: var(--font-sans);
-    font-weight: 900;
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    font-size: var(--text-xs);
-  }
-  .ep-landing__legend-list {
-    list-style: none;
-    padding: var(--space-4);
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    flex: 1;
-  }
-  .ep-landing__legend-item {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: var(--space-3);
-    font-family: var(--font-sans);
-    font-size: var(--text-xs);
-    font-weight: 800;
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-  }
-  .ep-landing__legend-bars { display: inline-flex; gap: 2px; }
-  .ep-landing__legend-bar {
-    width: 12px;
-    height: 8px;
-    background: var(--color-frame);
-    opacity: 0.18;
-    display: inline-block;
-  }
-  .ep-landing__legend-bar.is-on { opacity: 1; }
-  .ep-landing__legend-chip {
-    width: 14px;
-    height: 14px;
-    border: 1.5px solid var(--color-frame);
-    display: inline-block;
-  }
-  /* Difficulty chips share the severity-ramp tokens by design (low
-     → low, medium → medium, etc.). */
-  .ep-landing__legend-chip--low          { background: var(--sev-low); }
-  .ep-landing__legend-chip--medium       { background: var(--sev-medium); }
-  .ep-landing__legend-chip--medium-high  { background: var(--sev-medium-high); }
-  .ep-landing__legend-chip--high         { background: var(--sev-high); }
-  .ep-landing__legend-foot {
-    margin: 0;
-    padding: var(--space-2) var(--space-4) var(--space-3);
-    border-top: 2px solid var(--color-frame);
-    background: var(--color-yellow);
-    color: var(--color-yellow-ink);
-    font-family: var(--font-sans);
-    font-weight: 800;
-    font-size: 0.7rem;
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-  }
-
-  /* ---- Confidence attribute card — sizing/breakpoint identical to
-     FM/RF attribute cards. */
-  .ep-landing__attr {
-    background: var(--color-surface);
-    border: 3px solid var(--color-frame);
-    padding: var(--space-4) var(--space-5);
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-4);
-    min-width: 0;
-    align-items: start;
-  }
-  @media (min-width: 420px) {
-    .ep-landing__attr {
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: var(--space-5);
-    }
-  }
-  .ep-landing__attr-text {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-  }
-  .ep-landing__attr-title {
-    margin: 0;
-    font-family: var(--font-sans);
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-label);
-    font-size: var(--text-sm);
-    color: var(--color-ink);
-  }
-  .ep-landing__attr-desc {
-    margin: 0;
-    font-family: var(--font-serif);
-    font-size: var(--text-sm);
-    line-height: var(--leading-snug);
-    color: var(--color-ink-dim);
-  }
-  .ep-landing__attr-scale {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    min-width: 0;
-  }
-  .ep-landing__attr-level {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    gap: var(--space-2);
-    font-family: var(--font-sans);
-    font-weight: 700;
-    font-size: 0.7rem;
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    color: var(--color-ink-dim);
-  }
-  .ep-landing__attr-bars { display: inline-flex; gap: 2px; }
-  .ep-landing__attr-bar {
-    width: 10px;
-    height: 7px;
-    background: var(--color-frame);
-    opacity: 0.18;
-    display: inline-block;
-  }
-  .ep-landing__attr-bar.is-on { opacity: 1; }
-  .ep-landing__attr-level-label {
-    color: var(--color-ink);
-    white-space: nowrap;
-  }
-
-  /* ---- Subcategory groups — full-width black masthead bar, same
-     treatment as FM / RF landing group heads. */
-  .ep-landing__group {
-    margin-top: var(--space-9);
-    scroll-margin-top: var(--space-6);
-  }
-  .ep-landing__group-head {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: var(--space-4);
-    align-items: baseline;
-    padding: var(--space-4) var(--space-5);
-    margin-bottom: var(--space-5);
-    background: var(--color-frame);
-    color: var(--color-surface);
-  }
-  .ep-landing__group-code {
-    font-family: var(--font-sans);
-    font-weight: 900;
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    font-size: var(--text-xs);
-    color: var(--color-yellow);
-    font-feature-settings: "tnum";
-  }
-  .ep-landing__group-title {
-    color: var(--color-surface);
-    font-size: clamp(var(--text-3xl), 5vw, 3.5rem);
-    line-height: 0.95;
-    margin: 0;
-  }
-  .ep-landing__group-count {
-    font-family: var(--font-sans);
-    font-size: var(--text-xs);
-    font-weight: 900;
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    color: var(--color-yellow);
-    font-feature-settings: "tnum";
-    white-space: nowrap;
-  }
-  @media (max-width: 640px) {
-    .ep-landing__group-head {
-      grid-template-columns: 1fr;
-      gap: var(--space-2);
-    }
-  }
-
-  /* ---- Entry card grid — same auto-fit shape as FM/RF. */
-  .ep-landing__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
-    gap: var(--space-4);
-  }
-</style>

@@ -1,0 +1,46 @@
+---
+/**
+ * ReadingGuide — the grid container that holds the 2–4 reading-guide
+ * tiles (one `AttributeLegend` plus N `AttributeCard`s) on every
+ * category landing page.
+ *
+ * Extracted from per-category `.xx-landing__attr-row` rules. All four
+ * categories share the exact same layout contract:
+ *
+ *   · 1 column on narrow viewports
+ *   · 2 columns at ≥640px
+ *   · `--space-4` gap
+ *
+ * FM, TD, RF fill 4 tiles (2×2); EP fills 2 tiles (single row at
+ * desktop). Both fit the same grid without special-casing.
+ *
+ * Takes a default slot. Renders as a semantic `<ul>` so the tiles
+ * are announced as a list by assistive tech.
+ */
+
+export interface Props {
+  /** Optional accessible label — defaults to "Reading guide". */
+  ariaLabel?: string;
+}
+
+const { ariaLabel = "Reading guide" } = Astro.props;
+---
+<ul class="nsb-reading-guide" aria-label={ariaLabel}>
+  <slot />
+</ul>
+
+<style>
+  .nsb-reading-guide {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  @media (min-width: 640px) {
+    .nsb-reading-guide {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

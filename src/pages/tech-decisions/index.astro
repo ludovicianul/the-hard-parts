@@ -1,24 +1,27 @@
 ---
 /**
- * Tech Decisions landing page.
+ * /tech-decisions — catalog landing page.
  *
- * Same outer chrome as Failure Modes (CategoryLayout), same entry-card
- * grid per subcategory, same severity-weight-encoded card fills. What
- * differs is tone: TD's reading guide emphasizes "cost if you pick
- * wrong" + "how certain the trade-off framing is" rather than the
- * FM arc of severity + frequency + recovery + confidence. Recovery
- * is not a TD attribute; `reversibility` is a single descriptive
- * string per entry and lives on the detail page.
+ * Migrated onto the shared landing primitives. See EP/FM/RF landings
+ * for equivalent structure. TD-specific notes:
  *
- * The whole page inherits `--accent-current = --accent-td` (burnt
- * orange) through `data-accent="td"` set by CategoryLayout → BaseLayout,
- * so every band that reads `var(--accent-current)` here picks up TD's
- * hue automatically. No TD-specific accent wiring needed on this page.
+ *   · Card fill uses `severityIfWrong`, not a plain severity —
+ *     the reader's scan question here is "how bad if I pick the
+ *     wrong side of this trade-off", not "how serious is this by
+ *     itself". Mapping goes through `severityCardFill` which
+ *     defaults unmapped values to `medium`.
+ *   · `reversibility` is surfaced as a reading-guide ladder even
+ *     though a few entries carry free-form values (e.g. "depends on
+ *     surface") — the off-scale values just render as plain text on
+ *     the detail MetaRail.
  */
-
 import CategoryLayout from "@/layouts/CategoryLayout.astro";
 import EntryCard from "@/components/EntryCard.astro";
-import AttrGlyph from "@/components/AttrGlyph.astro";
+import LandingIntroPanel from "@/components/LandingIntroPanel.astro";
+import ReadingGuide from "@/components/ReadingGuide.astro";
+import AttributeLegend from "@/components/AttributeLegend.astro";
+import AttributeCard from "@/components/AttributeCard.astro";
+import LandingGroup from "@/components/LandingGroup.astro";
 import { loadTechDecisions } from "@/lib/load";
 import { ensureValidated } from "@/lib/validate";
 import { formatRefCode } from "@/lib/resolve";
@@ -27,8 +30,8 @@ import {
   FREQUENCY_SCALE,
   REVERSIBILITY_SCALE,
   CONFIDENCE_SCALE,
+  severityCardFill,
 } from "@/lib/attribute-scales";
-import type { SeverityLevel } from "@/lib/attribute-scales";
 
 ensureValidated();
 
@@ -36,467 +39,103 @@ const file = loadTechDecisions();
 const entries = file.entries;
 const declaredSubcategories = file.category.categories;
 
-// Group entries by subcategory in the declared order. Subcategory names
-// in the TD schema are slugs (e.g. "product-delivery") — prettify them
-// for display but keep the original in the data.
-type Group = { key: string; label: string; entries: typeof entries };
+// Group entries by subcategory in the declared order. TD subcategory
+// values are slug-cased (e.g. "product-delivery") — prettify for
+// display but keep the original in the data.
+type Group = { key: string; entries: typeof entries };
 const groups: Group[] = declaredSubcategories.map((key) => ({
   key,
-  label: key,
   entries: entries.filter((e) => e.category === key),
 }));
 const orphaned = entries.filter((e) => !declaredSubcategories.includes(e.category));
-if (orphaned.length > 0) groups.push({ key: "other", label: "other", entries: orphaned });
+if (orphaned.length > 0) groups.push({ key: "other", entries: orphaned });
 
 const prettifySub = (s: string): string =>
   s.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 
-// Catalog refcodes via the shared resolver so each card's little
-// reference number matches what that entry's own masthead pill shows.
+// Catalog refcodes via the shared resolver so each card's mono
+// reference number matches the target entry's own masthead pill.
 const total = entries.length;
 const refBySlug = new Map<string, string>();
 entries.forEach((e, i) => {
   refBySlug.set(e.slug, formatRefCode("TD", i, total).refNum);
 });
-
-// Reading-guide cards for the intro. Same visual language as FM
-// (framed card with description on the left and a rising-bar ladder
-// on the right). Four tiles total, arranged 2×2 at desktop:
-//   · Severity key  — the legend panel (rendered separately below)
-//   · Frequency     — rare → universal, with an "increasing" trend note
-//   · Reversibility — easy → hard, i.e. how hard it is to undo this call
-//   · Confidence    — how sure we are the framing holds up
-//
-// `reversibility` is a free-form string in the TD schema because a few
-// entries carry nuanced values (e.g. "depends on surface"). Nearly all
-// entries use one of the five canonical tokens in REVERSIBILITY_SCALE,
-// so we surface it as a ladder here and fall back to plain text on the
-// detail MetaRail for off-scale values.
-const attributeKeys: readonly {
-  title: string;
-  description: string;
-  scale: readonly string[];
-  trendNote?: { label: string; caption: string };
-}[] = [
-  {
-    title: "Frequency",
-    description: "How often this decision actually shows up in real engineering work — from rare architectural bets to universal team questions.",
-    scale: FREQUENCY_SCALE,
-    trendNote: {
-      label: "increasing",
-      caption: "Not a point on the scale — a trend. Flags decisions whose prevalence is rising (often AI-era).",
-    },
-  },
-  {
-    title: "Reversibility",
-    description: "How hard it is to undo this decision once taken — from cheap to walk back, to a one-way door you'll live with for years.",
-    scale: REVERSIBILITY_SCALE,
-  },
-  {
-    title: "Confidence",
-    description: "How sure we are the framing here holds up across teams — provisional vs. repeatedly observed trade-offs.",
-    scale: CONFIDENCE_SCALE,
-  },
-];
 ---
-
 <CategoryLayout
   code="TD"
   heroTitle="Tech Decisions"
   tagline="Structured trade-off references for consequential engineering and product decisions — the kind where context matters more than ideology, and where the honest answer is almost always 'it depends, and here's on what'."
 >
-  <header class="td-landing__intro" aria-label="About this catalog">
-    <p class="td-landing__intro-text">
+  <header class="nsb-landing-prelude" aria-label="About this catalog">
+    <LandingIntroPanel>
       Each entry in this catalog is a <strong>trade-off</strong>, not a
       recommendation. Two concrete options are laid out side by side with
       their real conditions, costs, hidden costs, and the failure modes
       each invites when misapplied. The grid below groups decisions by
-      the <em>axis</em> of the call — architecture shape, delivery
-      posture, team model, quality bar, AI systems — not by the kind of
-      team making it. Card weight reflects <strong>severity if wrong</strong>
-      on a five-step grayscale ramp &mdash; paper at <em>low</em>, near-black
-      at <em>critical</em>.
-    </p>
+      the <em>axis</em> of the call &mdash; architecture shape, delivery
+      posture, team model, quality bar, AI systems &mdash; not by the
+      kind of team making it. Card weight reflects
+      <strong>severity if wrong</strong> on a five-step grayscale ramp
+      &mdash; paper at <em>low</em>, near-black at <em>critical</em>.
+    </LandingIntroPanel>
 
-    {/* Reading guide — severity legend panel + three attribute cards
-        (Frequency, Reversibility, Confidence). Four tiles total, so:
-        1-col on narrow, 2×2 at tablet and up. Matches the FM landing's
-        reading-guide layout so readers recognize the shape across
-        categories. */}
-    <ul class="td-landing__attr-row" aria-label="Reading guide">
-      <li class="td-landing__legend">
-        <p class="td-landing__legend-head">Severity if wrong</p>
-        <ul class="td-landing__legend-list">
-          {SEVERITY_SCALE.map((level, i) => (
-            <li class="td-landing__legend-item">
-              <span class="td-landing__legend-bars" aria-hidden="true">
-                {SEVERITY_SCALE.map((_, j) => (
-                  <span class:list={["td-landing__legend-bar", { "is-on": j <= i }]} />
-                ))}
-              </span>
-              <span class="td-landing__legend-label">{level}</span>
-              <span
-                class:list={["td-landing__legend-chip", `td-landing__legend-chip--${level}`]}
-                aria-hidden="true"
-                title={`card fill for ${level}`}
-              />
-            </li>
-          ))}
-        </ul>
-        <p class="td-landing__legend-foot">Chip = card fill on the grid.</p>
-      </li>
-
-      {attributeKeys.map((a) => (
-        <li class="td-landing__attr">
-          <div class="td-landing__attr-text">
-            <h3 class="td-landing__attr-title">{a.title}</h3>
-            <p class="td-landing__attr-desc">{a.description}</p>
-            {a.trendNote && (
-              <p class="td-landing__attr-trend">
-                <span class="td-landing__attr-trend-glyph" aria-hidden="true">
-                  <AttrGlyph kind="increasing" size={14} />
-                </span>
-                <span class="td-landing__attr-trend-body">
-                  <span class="td-landing__attr-trend-label">{a.trendNote.label}</span>
-                  <span class="td-landing__attr-trend-caption">{a.trendNote.caption}</span>
-                </span>
-              </p>
-            )}
-          </div>
-          <ul class="td-landing__attr-scale">
-            {a.scale.map((level, i) => (
-              <li class="td-landing__attr-level">
-                <span class="td-landing__attr-bars" aria-hidden="true">
-                  {a.scale.map((_, j) => (
-                    <span class:list={["td-landing__attr-bar", { "is-on": j <= i }]} />
-                  ))}
-                </span>
-                <span class="td-landing__attr-level-label">{level}</span>
-              </li>
-            ))}
-          </ul>
-        </li>
-      ))}
-    </ul>
+    <ReadingGuide>
+      <AttributeLegend
+        title="Severity if wrong"
+        scale={SEVERITY_SCALE}
+        footerNote="Chip = card fill on the grid."
+      />
+      <AttributeCard
+        title="Frequency"
+        description="How often this decision actually shows up in real engineering work — from rare architectural bets to universal team questions."
+        scale={FREQUENCY_SCALE}
+        trendNote={{
+          label: "increasing",
+          caption: "Not a point on the scale — a trend. Flags decisions whose prevalence is rising (often AI-era).",
+        }}
+      />
+      <AttributeCard
+        title="Reversibility"
+        description="How hard it is to undo this decision once taken — from cheap to walk back, to a one-way door you'll live with for years."
+        scale={REVERSIBILITY_SCALE}
+      />
+      <AttributeCard
+        title="Confidence"
+        description="How sure we are the framing here holds up across teams — provisional vs. repeatedly observed trade-offs."
+        scale={CONFIDENCE_SCALE}
+      />
+    </ReadingGuide>
   </header>
 
   {groups.map((group, gi) => group.entries.length > 0 && (
-    <section class="td-landing__group" aria-label={`Tech Decisions · ${group.label}`}>
-      <header class="td-landing__group-head">
-        <span class="td-landing__group-code">CLASS {String(gi + 1).padStart(2, "0")}</span>
-        <h2 class="nsb-display td-landing__group-title">{prettifySub(group.label)}</h2>
-        <span class="td-landing__group-count">
-          {String(group.entries.length).padStart(2, "0")} {group.entries.length === 1 ? "decision" : "decisions"}
-        </span>
-      </header>
-
-      <div class="td-landing__grid">
-        {group.entries.map((e) => (
-          /* Severity-weight fill mirrors the FM landing. `severityIfWrong`
-             is optional in the TD schema, so fall back to `medium` when
-             absent — keeps the grid visually balanced and never blank. */
-          <EntryCard
-            code="TD"
-            slug={e.slug}
-            title={e.title}
-            summary={e.summary}
-            subcategory={prettifySub(e.category)}
-            severity={(e.severityIfWrong ?? "medium") as SeverityLevel}
-            refNum={refBySlug.get(e.slug)}
-            fillFromSeverity
-            metaBits={[
-              /* Reversibility is deliberately NOT duplicated here —
-                 it is a first-class dimension on the detail page's
-                 MetaRail. Keeping it on the card would clutter the
-                 eyebrow line with two attribute tokens. Frequency
-                 stays because it's the single most useful "should
-                 I open this entry now?" signal on the grid. */
-              e.frequency ? `Freq · ${e.frequency}` : undefined,
-            ].filter((s): s is string => typeof s === "string")}
-          />
-        ))}
-      </div>
-    </section>
+    <LandingGroup
+      id={`subcat-${group.key}`}
+      ariaLabel={`Tech Decisions · ${group.key}`}
+      eyebrow={`Class ${String(gi + 1).padStart(2, "0")}`}
+      title={prettifySub(group.key)}
+      countLabel={`${String(group.entries.length).padStart(2, "0")} ${group.entries.length === 1 ? "decision" : "decisions"}`}
+    >
+      {group.entries.map((e) => (
+        /* Severity-weight fill via `severityIfWrong`. Falls back to
+           `medium` when absent so the grid never renders a blank card. */
+        <EntryCard
+          code="TD"
+          slug={e.slug}
+          title={e.title}
+          summary={e.summary}
+          subcategory={prettifySub(e.category)}
+          severity={severityCardFill(e.severityIfWrong)}
+          refNum={refBySlug.get(e.slug)}
+          fillFromSeverity
+          metaBits={[
+            /* Reversibility is deliberately NOT duplicated here — it's
+               a first-class dimension on the detail page's MetaRail.
+               Frequency stays because it's the single most useful
+               "should I open this entry now?" signal on the grid. */
+            e.frequency ? `Freq · ${e.frequency}` : undefined,
+          ].filter((s): s is string => typeof s === "string")}
+        />
+      ))}
+    </LandingGroup>
   ))}
 </CategoryLayout>
-
-<style>
-  /* ---- intro block -----------------------------------------------
-     Parallels the FM landing intro: a wide serif paragraph above a
-     framed reading-guide row. Uses the `td-landing__*` class namespace
-     so TD-specific tweaks (e.g. 3-column guide instead of FM's 2x2)
-     don't bleed back into the FM layout. */
-  .td-landing__intro {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-5);
-    margin: 0 0 var(--space-7) 0;
-  }
-  .td-landing__intro-text {
-    font-family: var(--font-serif);
-    font-size: var(--text-lg);
-    line-height: var(--leading-snug);
-    text-wrap: pretty;
-    color: var(--color-ink);
-    margin: 0;
-    padding: var(--space-5);
-    background: var(--color-surface);
-    border: 3px solid var(--color-frame);
-    max-width: none;
-  }
-
-  /* ---- Reading guide row: 4 tiles in 2×2 at tablet and up, stacked
-     1-col on narrow viewports. Matches FM landing's guide layout. */
-  .td-landing__attr-row {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-4);
-  }
-  @media (min-width: 640px) {
-    .td-landing__attr-row {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  /* Attribute card (Frequency / Confidence). Same text-left / bars-right
-     anatomy as the FM landing attribute cards. */
-  .td-landing__attr {
-    background: var(--color-surface);
-    border: 3px solid var(--color-frame);
-    padding: var(--space-4) var(--space-5);
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-4);
-    min-width: 0;
-    align-items: start;
-  }
-  @media (min-width: 420px) {
-    .td-landing__attr {
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: var(--space-5);
-    }
-  }
-  .td-landing__attr-text {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-  }
-  .td-landing__attr-title {
-    margin: 0;
-    font-family: var(--font-sans);
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-label);
-    font-size: var(--text-sm);
-    color: var(--color-ink);
-  }
-  .td-landing__attr-desc {
-    margin: 0;
-    font-family: var(--font-serif);
-    font-size: var(--text-sm);
-    line-height: var(--leading-snug);
-    color: var(--color-ink-dim);
-  }
-
-  /* Trend note (Frequency card — the "increasing ↗" sub-row). */
-  .td-landing__attr-trend {
-    margin: 0;
-    padding-top: var(--space-3);
-    border-top: 1.5px solid var(--color-rule);
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: var(--space-2) var(--space-3);
-    align-items: start;
-    color: var(--color-ink);
-  }
-  .td-landing__attr-trend-glyph {
-    width: 18px;
-    height: 18px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--color-frame);
-    color: var(--color-yellow);
-    flex-shrink: 0;
-  }
-  .td-landing__attr-trend-body {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-  }
-  .td-landing__attr-trend-label {
-    font-family: var(--font-sans);
-    font-weight: 900;
-    font-size: var(--text-xs);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    color: var(--color-ink);
-  }
-  .td-landing__attr-trend-caption {
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-size: 0.78rem;
-    line-height: var(--leading-snug);
-    color: var(--color-ink-dim);
-  }
-
-  .td-landing__attr-scale {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    min-width: 0;
-  }
-  .td-landing__attr-level {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    gap: var(--space-2);
-    font-family: var(--font-sans);
-    font-weight: 700;
-    font-size: 0.7rem;
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    color: var(--color-ink-dim);
-  }
-  .td-landing__attr-bars { display: inline-flex; gap: 2px; }
-  .td-landing__attr-bar {
-    width: 10px;
-    height: 7px;
-    background: var(--color-frame);
-    opacity: 0.18;
-    display: inline-block;
-  }
-  .td-landing__attr-bar.is-on { opacity: 1; }
-  .td-landing__attr-level-label {
-    color: var(--color-ink);
-    white-space: nowrap;
-  }
-
-  /* ---- Severity legend panel (identical treatment to FM, but titled
-     "Severity if wrong" to match the TD schema's field name). */
-  .td-landing__legend {
-    background: var(--color-surface);
-    color: var(--color-ink);
-    border: 3px solid var(--color-frame);
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-  }
-  .td-landing__legend-head {
-    margin: 0;
-    padding: var(--space-3) var(--space-4);
-    background: var(--color-frame);
-    color: var(--color-yellow);
-    font-family: var(--font-sans);
-    font-weight: 900;
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    font-size: var(--text-xs);
-  }
-  .td-landing__legend-list {
-    list-style: none;
-    padding: var(--space-4);
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-    flex: 1;
-  }
-  .td-landing__legend-item {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: var(--space-3);
-    font-family: var(--font-sans);
-    font-size: var(--text-xs);
-    font-weight: 800;
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-  }
-  .td-landing__legend-bars { display: inline-flex; gap: 2px; }
-  .td-landing__legend-bar {
-    width: 12px;
-    height: 8px;
-    background: var(--color-frame);
-    opacity: 0.18;
-    display: inline-block;
-  }
-  .td-landing__legend-bar.is-on { opacity: 1; }
-  .td-landing__legend-chip {
-    width: 14px;
-    height: 14px;
-    border: 1.5px solid var(--color-frame);
-    display: inline-block;
-  }
-  .td-landing__legend-chip--low         { background: var(--sev-low); }
-  .td-landing__legend-chip--medium      { background: var(--sev-medium); }
-  .td-landing__legend-chip--medium-high { background: var(--sev-medium-high); }
-  .td-landing__legend-chip--high        { background: var(--sev-high); }
-  .td-landing__legend-chip--critical    { background: var(--sev-critical); }
-  .td-landing__legend-foot {
-    margin: 0;
-    padding: var(--space-2) var(--space-4) var(--space-3);
-    border-top: 2px solid var(--color-frame);
-    background: var(--color-yellow);
-    color: var(--color-yellow-ink);
-    font-family: var(--font-sans);
-    font-weight: 800;
-    font-size: 0.7rem;
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-  }
-
-  /* ---- chapter-style group header (same pattern as FM) ---------- */
-  .td-landing__group {
-    margin-top: var(--space-9);
-  }
-  .td-landing__group-head {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: var(--space-4);
-    align-items: baseline;
-    padding-bottom: var(--space-3);
-    margin-bottom: var(--space-5);
-    border-bottom: 3px solid var(--color-frame);
-  }
-  .td-landing__group-code {
-    font-family: var(--font-sans);
-    font-weight: 900;
-    font-size: var(--text-xs);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    color: var(--color-yellow-ink);
-    background: var(--color-yellow);
-    padding: 4px 10px;
-    align-self: center;
-  }
-  .td-landing__group-title {
-    margin: 0;
-    font-size: clamp(var(--text-2xl), 3.4vw, var(--text-4xl));
-    color: var(--color-ink);
-    letter-spacing: -0.02em;
-  }
-  .td-landing__group-count {
-    font-family: var(--font-sans);
-    font-weight: 900;
-    font-size: var(--text-xs);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    color: var(--color-ink-soft);
-    font-feature-settings: "tnum";
-  }
-
-  .td-landing__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
-    gap: var(--space-4);
-  }
-</style>

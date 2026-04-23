@@ -48,6 +48,7 @@ import {
   barCounts,
   isFrequencyTrend,
   isReversibilityLevel,
+  severityTagVariant,
 } from "@/lib/attribute-scales";
 
 export async function getStaticPaths() {
@@ -94,17 +95,12 @@ const hasRelationships = Boolean(
 const indexInFile = allTd.findIndex((e) => e.slug === entry.slug);
 const { refCode } = formatRefCode("TD", indexInFile, allTd.length);
 
-// Severity-if-wrong pill variant on the masthead. Uses the same ramp as
-// FM's severity pill so a reader seeing a "high severity" weight on an
-// FM card and a "severityIfWrong: high" pill on a TD card reads them
-// as equivalent gravity, not as two unrelated scales.
+// Severity-if-wrong pill variant on the masthead. Uses the shared
+// `severityTagVariant` helper so a reader seeing a "high severity"
+// weight on an FM card and a "severityIfWrong: high" pill on a TD
+// card reads them as equivalent gravity, not as two unrelated scales.
 const severityPillVariant = entry.severityIfWrong
-  ? (`sev-${entry.severityIfWrong}` as
-      | "sev-low"
-      | "sev-medium"
-      | "sev-medium-high"
-      | "sev-high"
-      | "sev-critical")
+  ? severityTagVariant(entry.severityIfWrong)
   : undefined;
 
 // Prettify subcategory slug for display. Kept simple — no i18n needed
@@ -392,23 +388,30 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         title="How AI bends this decision"
         note="Where AI accelerates the call, where it introduces new distortions, and anything else worth knowing."
       />
-      <div class="td-ai">
+      {/* AI section — unified site-wide treatment: two boxed
+          LabeledLists side-by-side + blue-serif synthesis band
+          below. Matches FM / RF / EP (see docs/launch-readiness.md
+          §1). The synthesis band deliberately lives OUTSIDE the
+          two-col grid so it spans full width, not one column. */}
+      <div class="nsb-two-col">
         <LabeledList
+          variant="boxed"
           label="AI can help with"
           items={entry.aiCanHelpWith}
           caption="Where AI genuinely reduces the cost of making the call."
         />
         <LabeledList
+          variant="boxed"
           label="AI can make worse"
           items={entry.aiCanMakeWorseBy}
           caption="Distortions AI introduces that didn't exist before."
         />
-        {entry.aiSpecificNotes && (
-          <CalloutBand label="AI synthesis" variant="blue" serif>
-            <p>{entry.aiSpecificNotes}</p>
-          </CalloutBand>
-        )}
       </div>
+      {entry.aiSpecificNotes && (
+        <CalloutBand label="AI synthesis" variant="blue" serif>
+          <p>{entry.aiSpecificNotes}</p>
+        </CalloutBand>
+      )}
     </>
   )}
 
@@ -422,7 +425,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         title="Connected decisions"
         note="Related failure modes, adjacent decisions that are often entangled with this one, red flags that signal trouble, and playbooks to reach for."
       />
-      <div class="td-rel-grid">
+      <div class="nsb-two-col nsb-two-col--equal">
         <RelatedEntries
           eyebrow="Often leads to failure modes"
           title="Often leads to failure modes"
@@ -643,39 +646,13 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     }
   }
 
-  /* ---- 7. AI impact — same stacked-panel treatment. */
-  .td-ai {
-    margin-top: var(--space-4);
-    background: var(--color-surface);
-    border: 3px solid var(--color-frame);
-    padding: var(--space-5);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-5);
-  }
-  .td-ai > * + * {
-    padding-top: var(--space-4);
-    border-top: 1.5px solid var(--color-rule);
-  }
+  /* ---- 7. AI impact — uses the shared site-wide treatment now
+     (two boxed LabeledLists via `.nsb-two-col` + blue-serif
+     CalloutBand). No TD-specific styling. */
 
   /* ---- 8. Relationships — same grid approach as FM and RF. Row-
      aligned heights so two unequal RelatedEntries panels in the same
-     row share an outer frame height (see `.rf-related` / `.fm-rel-grid`
-     for the same treatment). */
-  .td-rel-grid {
-    margin-top: var(--space-4);
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-5);
-  }
-  @media (min-width: 760px) {
-    .td-rel-grid {
-      grid-template-columns: 1fr 1fr;
-      grid-auto-rows: 1fr;
-    }
-  }
-  .td-rel-grid > :global(.nsb-related) {
-    margin-top: 0;
-    height: 100%;
-  }
+     row share an outer frame height. Uses the shared
+     `.nsb-two-col--equal` utility (see globals.css) — the
+     `.nsb-related` height rule lives there. */
 </style>

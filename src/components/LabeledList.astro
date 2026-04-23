@@ -34,10 +34,16 @@ export interface Props {
   caption?: string;
   /**
    * Visual treatment:
-   *   · "plain" (default) — no framing, just the label + list
-   *   · "framed"          — thin accent rule above the label, 1.5× label spacing
+   *   · "plain"  (default) — no framing, just the label + list
+   *   · "framed"           — thin accent rule above the label, 1.5× label spacing
+   *   · "boxed"            — full 3px black frame on white surface, with a
+   *                          small black eyebrow bar at the top. Used on
+   *                          detail pages where several LabeledLists share
+   *                          a parallel role (e.g. the two AI-impact lists
+   *                          across FM / TD / RF / EP) and need to read
+   *                          as equal-weight panels, not naked columns.
    */
-  variant?: "plain" | "framed";
+  variant?: "plain" | "framed" | "boxed";
   /** Tighter vertical rhythm for dense clusters. */
   dense?: boolean;
 }
@@ -85,6 +91,18 @@ const visible =
   }
   .nsb-labeled-list--dense { gap: 6px; }
 
+  /* Boxed variant — promotes the label from an inline eyebrow to a
+     full black title bar with a yellow uppercase code (same anatomy
+     as RelatedEntries' black-bar head and the landing groups' black
+     mastheads), and wraps label + caption + list in a single 3px
+     frame on white. Gap is cleared because the frame itself provides
+     the internal rhythm via padding. */
+  .nsb-labeled-list--boxed {
+    gap: 0;
+    background: var(--color-surface);
+    border: 3px solid var(--color-frame);
+  }
+
   .nsb-labeled-list__label {
     margin: 0;
     font-family: var(--font-sans);
@@ -94,6 +112,11 @@ const visible =
     text-transform: uppercase;
     color: var(--color-ink);
   }
+  .nsb-labeled-list--boxed .nsb-labeled-list__label {
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-frame);
+    color: var(--color-yellow);
+  }
   .nsb-labeled-list__caption {
     margin: -2px 0 0 0;
     font-family: var(--font-serif);
@@ -101,6 +124,10 @@ const visible =
     font-size: 0.78rem;
     line-height: var(--leading-snug);
     color: var(--color-ink-dim);
+  }
+  .nsb-labeled-list--boxed .nsb-labeled-list__caption {
+    margin: 0;
+    padding: var(--space-3) var(--space-4) 0;
   }
 
   .nsb-labeled-list__items {
@@ -110,6 +137,12 @@ const visible =
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
+  }
+  .nsb-labeled-list--boxed .nsb-labeled-list__items {
+    padding: var(--space-3) var(--space-4) var(--space-4);
+  }
+  .nsb-labeled-list--boxed .nsb-labeled-list__caption + .nsb-labeled-list__items {
+    padding-top: var(--space-3);
   }
   .nsb-labeled-list--dense .nsb-labeled-list__items { gap: 4px; }
 

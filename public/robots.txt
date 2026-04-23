@@ -1,0 +1,11 @@
+# nosilverbullet.dev — robots directives
+#
+# Reference-first editorial site. No private areas, no auth, no
+# user-generated content — everything the site ships is meant to be
+# crawled and indexed. Sitemap is emitted at /sitemap.xml by the
+# `src/pages/sitemap.xml.ts` route.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://nosilverbullet.dev/sitemap.xml

@@ -56,6 +56,7 @@ import {
   CONFIDENCE_SCALE,
   barCounts,
   isFrequencyTrend,
+  severityTagVariant,
 } from "@/lib/attribute-scales";
 
 export async function getStaticPaths() {
@@ -75,21 +76,12 @@ const { refCode } = formatRefCode("RF", index, allRf.length);
 const prettify = (s: string): string =>
   s.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 
-// Severity pill on the masthead picks up the same color ramp used on the
-// landing-grid card fill, so a reader lands on "the same red-flag they
-// clicked". Pattern mirrors the FM detail page: the raw severity enum
-// (e.g. "high") gets prefixed to produce the Tag variant class name
-// (e.g. "sev-high"), which maps to a `--sev-*` ramp color token via
-// Tag's `.nsb-tag--sev-*` variant. Without the `sev-` prefix, the Tag
-// falls back to its default outline styling and the pill renders
-// colorless. MetaRail carries full structured metadata below.
-const severityPillVariant =
-  `sev-${entry.severity}` as
-    | "sev-low"
-    | "sev-medium"
-    | "sev-medium-high"
-    | "sev-high"
-    | "sev-critical";
+// Severity pill on the masthead picks up the same color ramp used on
+// the landing-grid card fill, so a reader lands on "the same red-flag
+// they clicked". Uses the shared `severityTagVariant` helper so the
+// mapping between severity and Tag variant is single-source; a future
+// `sev-*` → other-name rename flows through one place.
+const severityPillVariant = severityTagVariant(entry.severity);
 
 // Section visibility — optional fields should hide entire sections when
 // empty. Content audit shows every RF entry carries every field today,
@@ -512,9 +504,13 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         title="AI effects on this signal"
         note="How AI-assisted and AI-driven workflows tend to amplify or hide this signal."
       />
-      <div class="rf-ai">
+      {/* AI section — unified site-wide treatment: two boxed
+          LabeledLists side-by-side + blue-serif synthesis band
+          below. Matches FM / TD / EP. */}
+      <div class="nsb-two-col">
         {entry.aiAmplifies && entry.aiAmplifies.length > 0 && (
           <LabeledList
+            variant="boxed"
             label="AI amplifies"
             caption="Ways AI tooling tends to make this signal louder or more common."
             items={entry.aiAmplifies}
@@ -522,6 +518,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         )}
         {entry.aiMasks && entry.aiMasks.length > 0 && (
           <LabeledList
+            variant="boxed"
             label="AI masks"
             caption="Ways AI tooling tends to hide this signal — so it keeps growing under the surface."
             items={entry.aiMasks}
@@ -557,7 +554,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         title="Connected signals"
         note="Related failure modes, decisions behind the signal, response playbooks, and neighboring red flags."
       />
-      <div class="rf-related">
+      <div class="nsb-two-col nsb-two-col--equal">
         <RelatedEntries
           eyebrow="Failure modes"
           title="Related failure modes"
@@ -872,48 +869,8 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     color: var(--color-ink);
   }
 
-  /* Section 8 — AI effects. Two labeled lists side-by-side (amplifies
-     vs masks), and the optional `aiSpecificNotes` synthesis is surfaced
-     BELOW the grid via the shared CalloutBand (blue-serif variant) —
-     CSS not needed here for that callout. */
-  .rf-ai {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-5);
-    margin: var(--space-4) 0;
-  }
-  @media (min-width: 820px) {
-    .rf-ai { grid-template-columns: 1fr 1fr; align-items: start; }
-  }
-
-  /* Section 9 — cross-refs. 2×2 grid of RelatedEntries panels. Each
-     panel is a black-masthead framed card via the shared component's
-     own styles; the grid's job here is only to make siblings in the
-     same row share a height so the 4 cards read as one aligned board.
-     `align-items: stretch` (default) lets the grid stretch each cell
-     to the row's tallest content, and `height: 100%` on the child
-     forces its own internal frame to follow that stretched height —
-     otherwise `.nsb-related`'s block flow would leave blank space
-     between its bottom border and the grid cell edge. Top margin on
-     `.nsb-related` (present because it's normally placed below body
-     prose) is zeroed inside this grid context. */
-  .rf-related {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-5);
-    margin: var(--space-4) 0;
-  }
-  @media (min-width: 820px) {
-    .rf-related {
-      grid-template-columns: 1fr 1fr;
-      /* Each implicit row stretches to the taller of its two cells,
-         so a 4-link panel and a 2-link panel in the same row share
-         the same outer frame height. */
-      grid-auto-rows: 1fr;
-    }
-  }
-  .rf-related > :global(.nsb-related) {
-    margin-top: 0;
-    height: 100%;
-  }
+  /* Section 8 (AI effects) and Section 9 (Connected signals) both use
+     the shared `.nsb-two-col` / `.nsb-two-col--equal` utilities in
+     globals.css. Nothing RF-specific to style here — the equal-row
+     rule for the RelatedEntries children lives on the utility. */
 </style>

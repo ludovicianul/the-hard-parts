@@ -1,0 +1,113 @@
+---
+/**
+ * LandingGroup — a full subcategory section on a category landing
+ * page: the black masthead bar (eyebrow + title + count) followed by
+ * a slot for the `EntryCard` grid.
+ *
+ * Extracted from per-category `.xx-landing__group*` rules. Every
+ * category rendered this pixel-identically except for the eyebrow
+ * prefix (CLASS vs PLAYBOOK SET, etc.) and the count unit (entries
+ * vs decisions vs signals vs playbooks) — both of which are passed
+ * in as props here. The grid of cards goes into the default slot.
+ *
+ * The masthead collapses to a single stacked column at ≤640px so
+ * long subcategory names don't crowd the counts on phones.
+ */
+
+export interface Props {
+  /** Anchor id — typically "subcat-{slug}" for deep-linking. */
+  id?: string;
+  /** aria-label for the `<section>` wrapper. */
+  ariaLabel: string;
+  /**
+   * Eyebrow label in the yellow bar text — e.g. "CLASS 01" for FM/TD
+   * or "PLAYBOOK SET 01" for EP. Passed as a full precomputed string
+   * so each landing can pick its own editorial phrasing.
+   */
+  eyebrow: string;
+  /** Subcategory title, prettified (e.g. "Product Delivery"). */
+  title: string;
+  /**
+   * Right-aligned count label. Passed as a full precomputed string
+   * (e.g. "08 entries" / "01 decision" / "08 playbooks") so the
+   * landing owns the pluralization rules for its category.
+   */
+  countLabel: string;
+}
+
+const { id, ariaLabel, eyebrow, title, countLabel } = Astro.props;
+---
+<section class="nsb-landing-group" aria-label={ariaLabel} id={id}>
+  <header class="nsb-landing-group__head">
+    <span class="nsb-landing-group__code">{eyebrow}</span>
+    <h2 class="nsb-display nsb-landing-group__title">{title}</h2>
+    <span class="nsb-landing-group__count">{countLabel}</span>
+  </header>
+  <div class="nsb-landing-group__grid">
+    <slot />
+  </div>
+</section>
+
+<style>
+  /* Subcategory section — heavy margin-top so each group reads as a
+     distinct chapter, scroll-margin-top so in-page anchors land
+     clear of the sticky header. */
+  .nsb-landing-group {
+    margin-top: var(--space-9);
+    scroll-margin-top: var(--space-6);
+  }
+
+  /* Black masthead bar — yellow eyebrow + white display title + yellow
+     count. Matches the site's editorial black-bar idiom (see the
+     detail page's refCode pill + the RelatedEntries title bar). */
+  .nsb-landing-group__head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--space-4);
+    align-items: baseline;
+    padding: var(--space-4) var(--space-5);
+    margin-bottom: var(--space-5);
+    background: var(--color-frame);
+    color: var(--color-surface);
+  }
+  .nsb-landing-group__code {
+    font-family: var(--font-sans);
+    font-weight: 900;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    font-size: var(--text-xs);
+    color: var(--color-yellow);
+    font-feature-settings: "tnum";
+  }
+  .nsb-landing-group__title {
+    color: var(--color-surface);
+    font-size: clamp(var(--text-3xl), 5vw, 3.5rem);
+    line-height: 0.95;
+    margin: 0;
+  }
+  .nsb-landing-group__count {
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    font-weight: 900;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-yellow);
+    font-feature-settings: "tnum";
+    white-space: nowrap;
+  }
+  @media (max-width: 640px) {
+    .nsb-landing-group__head {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+    }
+  }
+
+  /* Entry-card grid — auto-fit so categories with 4-8 cards per
+     subcategory share a consistent 1/2/3-column behavior across
+     widths without per-category tuning. */
+  .nsb-landing-group__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    gap: var(--space-4);
+  }
+</style>
