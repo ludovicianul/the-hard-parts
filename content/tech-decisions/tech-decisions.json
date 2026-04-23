@@ -205,11 +205,11 @@
         "local-autonomy-vs-central-governance"
       ],
       "relatedRedFlags": [
-        "nobody can explain service boundaries in business terms",
-        "every change crosses too many services"
+        "nobody-can-explain-service-boundaries-in-business-terms",
+        "every-change-crosses-too-many-services"
       ],
       "relatedPlaybooks": [
-        "evaluate-service-boundaries",
+        "review-service-boundaries",
         "run-architecture-review"
       ],
       "frequency": "very common",
@@ -368,8 +368,8 @@
         "shared-database-vs-service-owned-data"
       ],
       "relatedRedFlags": [
-        "distributed services share the same release lifecycle anyway",
-        "module boundaries exist only in diagrams"
+        "distributed-services-share-the-same-release-lifecycle-anyway",
+        "module-boundaries-exist-only-in-diagrams"
       ],
       "relatedPlaybooks": [
         "review-boundaries-before-distribution"
@@ -530,8 +530,8 @@
         "manual-review-depth-vs-automation-dependence"
       ],
       "relatedRedFlags": [
-        "schema ownership is unclear",
-        "performance issues are discovered by clients first"
+        "schema-ownership-is-unclear",
+        "performance-issues-are-discovered-by-clients-first"
       ],
       "relatedPlaybooks": [
         "review-api-consumer-shapes"
@@ -691,8 +691,8 @@
         "strong-consistency-vs-eventual-consistency"
       ],
       "relatedRedFlags": [
-        "teams keep rebuilding joins in application code",
-        "reporting is painful by design"
+        "teams-keep-rebuilding-joins-in-application-code",
+        "reporting-is-painful-by-design"
       ],
       "relatedPlaybooks": [
         "analyze-data-access-patterns"
@@ -852,8 +852,8 @@
         "shared-database-vs-service-owned-data"
       ],
       "relatedRedFlags": [
-        "nobody can explain the end-to-end flow",
-        "events are emitted without clear consumers or ownership"
+        "nobody-can-explain-the-end-to-end-flow",
+        "events-are-emitted-without-clear-consumers-or-ownership"
       ],
       "relatedPlaybooks": [
         "map-end-to-end-workflow",
@@ -1009,8 +1009,8 @@
         "strong-consistency-vs-eventual-consistency"
       ],
       "relatedRedFlags": [
-        "multiple teams change the same tables routinely",
-        "service ownership ends at the API but not at the data"
+        "multiple-teams-change-the-same-tables-routinely",
+        "service-ownership-ends-at-the-api-but-not-at-the-data"
       ],
       "relatedPlaybooks": [
         "review-data-ownership-boundaries"
@@ -1165,8 +1165,8 @@
         "sql-vs-nosql"
       ],
       "relatedRedFlags": [
-        "teams say eventual consistency but cannot explain user-visible consequences",
-        "compensating flows are undefined"
+        "teams-say-eventual-consistency-but-cannot-explain-user-visible-consequences",
+        "compensating-flows-are-undefined"
       ],
       "relatedPlaybooks": [
         "model-consistency-consequences"
@@ -1319,8 +1319,8 @@
         "sync-vs-event-driven"
       ],
       "relatedRedFlags": [
-        "systems are real-time upstream and batch downstream without explicit design",
-        "freshness claims are not tied to business need"
+        "systems-are-real-time-upstream-and-batch-downstream-without-explicit-design",
+        "freshness-claims-are-not-tied-to-business-need"
       ],
       "relatedPlaybooks": [
         "assess-latency-value"
@@ -1472,8 +1472,8 @@
         "local-autonomy-vs-central-governance"
       ],
       "relatedRedFlags": [
-        "same rule exists in multiple runtime layers",
-        "nobody can explain where truth lives"
+        "same-rule-exists-in-multiple-runtime-layers",
+        "nobody-can-explain-where-truth-lives"
       ],
       "relatedPlaybooks": [
         "map-runtime-logic-placement"
@@ -1639,8 +1639,8 @@
         "generic-solution-vs-case-specific-solution"
       ],
       "relatedRedFlags": [
-        "internal teams are rebuilding commodity features repeatedly",
-        "integration code is larger than expected"
+        "internal-teams-are-rebuilding-commodity-features-repeatedly",
+        "integration-code-is-larger-than-expected"
       ],
       "relatedPlaybooks": [
         "evaluate-buy-vs-build",
@@ -1798,8 +1798,8 @@
         "experimentation-vs-operational-stability"
       ],
       "relatedRedFlags": [
-        "teams celebrate speed but hide rework",
-        "hardening is always postponed"
+        "teams-celebrate-speed-but-hide-rework",
+        "hardening-is-always-postponed"
       ],
       "relatedPlaybooks": [
         "assess-blast-radius-before-shipping"
@@ -1947,7 +1947,7 @@
         "one-way-door-vs-two-way-door-rollout"
       ],
       "relatedRedFlags": [
-        "nobody can say what is fixed versus flexible"
+        "nobody-can-say-what-is-fixed-vs-flexible"
       ],
       "relatedPlaybooks": [
         "frame-scope-time-quality-explicitly"
@@ -2109,11 +2109,11 @@
         "central-platform-team-vs-embedded-enablement"
       ],
       "relatedRedFlags": [
-        "platform has no clear adopters",
-        "reusability is discussed more than actual usage"
+        "platform-has-no-clear-adopters",
+        "reusability-is-discussed-more-than-actual-usage"
       ],
       "relatedPlaybooks": [
-        "validate-platform-demand"
+        "validate-internal-platform-demand"
       ],
       "frequency": "common",
       "severityIfWrong": "high",
@@ -2273,8 +2273,8 @@
         "scope-flexibility-vs-date-certainty"
       ],
       "relatedRedFlags": [
-        "nobody can define parity",
-        "new system scope keeps growing"
+        "nobody-can-define-parity",
+        "new-system-scope-keeps-growing"
       ],
       "relatedPlaybooks": [
         "run-a-phased-migration",
@@ -2426,7 +2426,7 @@
         "convention-over-configuration-vs-flexibility"
       ],
       "relatedRedFlags": [
-        "frameworks exist before repeated use exists"
+        "frameworks-exist-before-repeated-use-exists"
       ],
       "relatedPlaybooks": [
         "wait-for-second-real-consumer"
@@ -2575,10 +2575,10 @@
         "scope-flexibility-vs-date-certainty"
       ],
       "relatedRedFlags": [
-        "teams call a change reversible without rehearsing rollback"
+        "teams-call-a-change-reversible-without-rehearsing-rollback"
       ],
       "relatedPlaybooks": [
-        "design-safe-rollout"
+        "design-a-safe-rollout-path"
       ],
       "frequency": "common",
       "severityIfWrong": "high",
@@ -2722,7 +2722,7 @@
         "local-autonomy-vs-central-governance"
       ],
       "relatedRedFlags": [
-        "same product behaves differently in too many untracked ways"
+        "same-product-behaves-differently-in-too-many-untracked-ways"
       ],
       "relatedPlaybooks": [
         "review-variation-economics"
@@ -2869,7 +2869,7 @@
         "human-in-the-loop-vs-full-automation"
       ],
       "relatedRedFlags": [
-        "experiments are run on core trust surfaces without explicit control"
+        "experiments-are-run-on-core-trust-surfaces-without-explicit-control"
       ],
       "relatedPlaybooks": [
         "segment-experiment-safe-surfaces"
@@ -3019,7 +3019,7 @@
         "specialist-teams-vs-cross-functional-teams"
       ],
       "relatedRedFlags": [
-        "platform success is measured by output, not adoption"
+        "platform-success-is-measured-by-output-not-adoption"
       ],
       "relatedPlaybooks": [
         "review-platform-adoption-model"
@@ -3178,8 +3178,8 @@
         "strong-ownership-vs-shared-ownership"
       ],
       "relatedRedFlags": [
-        "teams look independent but escalate to the same few experts",
-        "handoffs dominate delivery time"
+        "teams-look-independent-but-escalate-to-the-same-few-experts",
+        "handoffs-dominate-delivery-time"
       ],
       "relatedPlaybooks": [
         "review-team-topology",
@@ -3327,7 +3327,7 @@
         "specialist-teams-vs-cross-functional-teams"
       ],
       "relatedRedFlags": [
-        "everyone can change it, nobody truly owns it"
+        "everyone-can-change-it-nobody-truly-owns-it"
       ],
       "relatedPlaybooks": [
         "re-establish-service-ownership"
@@ -3479,7 +3479,7 @@
         "customization-vs-standardization"
       ],
       "relatedRedFlags": [
-        "teams differ in critical behaviors without clear intent"
+        "teams-differ-in-critical-behaviors-without-clear-intent"
       ],
       "relatedPlaybooks": [
         "define-minimum-viable-governance"
@@ -3629,8 +3629,8 @@
         "strong-ownership-vs-shared-ownership"
       ],
       "relatedRedFlags": [
-        "critical knowledge exists only in chats and memory",
-        "docs exist but nobody trusts them"
+        "critical-knowledge-lives-in-chat-and-memory",
+        "docs-exist-but-nobody-trusts-them"
       ],
       "relatedPlaybooks": [
         "document-decisions-not-everything"
@@ -3779,8 +3779,8 @@
         "documentation-first-vs-tacit-coordination"
       ],
       "relatedRedFlags": [
-        "team is constantly in meetings but still unclear",
-        "async threads multiply without decisions"
+        "team-is-constantly-in-meetings-but-still-unclear",
+        "async-threads-multiply-without-decisions"
       ],
       "relatedPlaybooks": [
         "use-sync-for-ambiguity-async-for-memory"
@@ -3928,8 +3928,8 @@
         "manual-review-depth-vs-automation-dependence"
       ],
       "relatedRedFlags": [
-        "test count is high but confidence is low",
-        "pipeline is slow and flaky"
+        "test-count-is-high-but-confidence-is-low",
+        "pipeline-is-slow-and-flaky"
       ],
       "relatedPlaybooks": [
         "rebalance-test-strategy"
@@ -4079,8 +4079,8 @@
         "speed-vs-robustness"
       ],
       "relatedRedFlags": [
-        "developers distrust the pipeline",
-        "checks exist but do not change outcomes"
+        "developers-distrust-the-pipeline",
+        "checks-exist-but-do-not-change-outcomes"
       ],
       "relatedPlaybooks": [
         "risk-tier-ci-gates"
@@ -4229,8 +4229,8 @@
         "experimentation-vs-operational-stability"
       ],
       "relatedRedFlags": [
-        "nobody knows which flags are still live",
-        "release branches routinely diverge too long"
+        "nobody-knows-which-flags-are-still-live",
+        "release-branches-routinely-diverge-too-long"
       ],
       "relatedPlaybooks": [
         "clean-up-flag-debt"
@@ -4381,7 +4381,7 @@
         "rest-vs-graphql"
       ],
       "relatedRedFlags": [
-        "consumers discover breakage before producers announce it"
+        "consumers-discover-breakage-before-producers-announce-it"
       ],
       "relatedPlaybooks": [
         "manage-deprecation-explicitly"
@@ -4527,7 +4527,7 @@
         "customization-vs-standardization"
       ],
       "relatedRedFlags": [
-        "many options exist but most are rarely used"
+        "many-options-exist-but-most-are-rarely-used"
       ],
       "relatedPlaybooks": [
         "design-defaults-first"
@@ -4678,8 +4678,8 @@
         "ai-assisted-development-vs-manual-only-development"
       ],
       "relatedRedFlags": [
-        "reviews approve too much too fast",
-        "automated checks pass while design quality degrades"
+        "reviews-approve-too-much-too-fast",
+        "automated-checks-pass-while-design-quality-degrades"
       ],
       "relatedPlaybooks": [
         "review-what-automation-cannot"
@@ -4839,8 +4839,8 @@
         "fast-ai-adoption-vs-governance-first"
       ],
       "relatedRedFlags": [
-        "more output, less certainty",
-        "review becomes approval-shaped instead of understanding-shaped"
+        "more-output-less-certainty",
+        "review-becomes-approval-shaped-instead-of-understanding-shaped"
       ],
       "relatedPlaybooks": [
         "define-safe-ai-development-zones",
@@ -4996,8 +4996,8 @@
         "fast-ai-adoption-vs-governance-first"
       ],
       "relatedRedFlags": [
-        "provider dependence is real but unacknowledged",
-        "self-hosting effort outgrows product outcomes"
+        "provider-dependence-is-real-but-unacknowledged",
+        "self-hosting-effort-outgrows-product-outcomes"
       ],
       "relatedPlaybooks": [
         "evaluate-model-hosting-economics"
@@ -5155,11 +5155,11 @@
         "synthetic-evaluation-vs-real-world-evaluation"
       ],
       "relatedRedFlags": [
-        "sources are cited but not trusted",
-        "behavior quality is discussed without task-grounded eval"
+        "sources-are-cited-but-not-trusted",
+        "behavior-quality-is-discussed-without-task-grounded-eval"
       ],
       "relatedPlaybooks": [
-        "build-grounded-evaluation-harness",
+        "build-a-task-grounded-evaluation-harness",
         "define-source-trust-model"
       ],
       "frequency": "increasing",
@@ -5305,7 +5305,7 @@
         "human-in-the-loop-vs-full-automation"
       ],
       "relatedRedFlags": [
-        "prompts keep growing but quality remains unstable"
+        "prompts-keep-growing-but-quality-remains-unstable"
       ],
       "relatedPlaybooks": [
         "version-prompts-and-workflows"
@@ -5458,8 +5458,8 @@
         "fast-ai-adoption-vs-governance-first"
       ],
       "relatedRedFlags": [
-        "humans approve too much too quickly",
-        "automation is trusted beyond measured evidence"
+        "humans-approve-too-much-too-quickly",
+        "automation-is-trusted-beyond-measured-evidence"
       ],
       "relatedPlaybooks": [
         "define-human-review-boundaries"
@@ -5612,11 +5612,11 @@
         "human-in-the-loop-vs-full-automation"
       ],
       "relatedRedFlags": [
-        "teams use unapproved tools because official path is too slow",
-        "broad rollout happens without clear boundaries"
+        "teams-use-unapproved-tools-because-official-path-is-too-slow",
+        "broad-rollout-happens-without-clear-boundaries"
       ],
       "relatedPlaybooks": [
-        "define-ai-safe-zones-and-red-zones"
+        "define-safe-ai-development-zones"
       ],
       "frequency": "increasing",
       "severityIfWrong": "high",
@@ -5765,7 +5765,7 @@
         "ai-assisted-development-vs-manual-only-development"
       ],
       "relatedRedFlags": [
-        "same tool yields wildly different quality across teams"
+        "same-tool-yields-wildly-different-quality-across-teams"
       ],
       "relatedPlaybooks": [
         "phase-ai-rollout-by-risk"
@@ -5914,11 +5914,11 @@
         "human-in-the-loop-vs-full-automation"
       ],
       "relatedRedFlags": [
-        "demos and benchmarks look good, users do not agree",
-        "teams argue about scores instead of task outcomes"
+        "demos-and-benchmarks-look-good-users-do-not-agree",
+        "teams-argue-about-scores-instead-of-task-outcomes"
       ],
       "relatedPlaybooks": [
-        "build-task-grounded-evaluation-harness"
+        "build-a-task-grounded-evaluation-harness"
       ],
       "frequency": "increasing",
       "severityIfWrong": "high",

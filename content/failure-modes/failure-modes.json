@@ -148,8 +148,8 @@
         "stakeholder-capture"
       ],
       "relatedRedFlags": [
-        "nobody can explain what done means",
-        "old and new systems both receive urgent fixes"
+        "teams-cannot-explain-what-done-means",
+        "old-and-new-systems-both-receive-urgent-fixes"
       ],
       "relatedTechDecisions": [
         "monolith-vs-microservices",
@@ -255,8 +255,8 @@
         "local-optimization"
       ],
       "relatedRedFlags": [
-        "every incident routes to the same person",
-        "backup owners exist only on paper"
+        "every-incident-routes-to-the-same-person",
+        "backup-owners-exist-only-on-paper"
       ],
       "relatedTechDecisions": [
         "team-topologies",
@@ -359,8 +359,8 @@
         "platform-before-product"
       ],
       "relatedRedFlags": [
-        "simple work requires a guided tour",
-        "architecture diagrams are cleaner than the code experience"
+        "simple-work-requires-a-guided-tour",
+        "architecture-diagrams-are-cleaner-than-the-code-experience"
       ],
       "relatedTechDecisions": [
         "framework-vs-library",
@@ -464,8 +464,8 @@
         "stakeholder-capture"
       ],
       "relatedRedFlags": [
-        "board looks healthy while release reality does not",
-        "teams fear status reviews more than user impact"
+        "board-looks-healthy-while-release-reality-does-not",
+        "teams-fear-status-reviews-more-than-user-impact"
       ],
       "relatedTechDecisions": [
         "kanban-vs-scrum",
@@ -571,8 +571,8 @@
         "consensus-trap"
       ],
       "relatedRedFlags": [
-        "nobody can say what is fixed vs flexible",
-        "urgency appears without named trade-offs"
+        "nobody-can-say-what-is-fixed-vs-flexible",
+        "urgency-appears-without-named-trade-offs"
       ],
       "relatedTechDecisions": [
         "date-driven-vs-scope-driven-delivery"
@@ -676,8 +676,8 @@
         "consensus-trap"
       ],
       "relatedRedFlags": [
-        "roadmap changes without explanation",
-        "teams cannot defend current priorities"
+        "roadmap-changes-without-explanation",
+        "teams-cannot-defend-current-priorities"
       ],
       "relatedTechDecisions": [
         "centralized-vs-distributed-product-ownership"
@@ -783,8 +783,8 @@
         "platform-before-product"
       ],
       "relatedRedFlags": [
-        "integration is always later",
-        "nobody owns the interface between teams"
+        "integration-is-always-later",
+        "nobody-owns-the-interface-between-teams"
       ],
       "relatedTechDecisions": [
         "shared-platform-vs-team-owned-components"
@@ -887,8 +887,8 @@
         "stakeholder-capture"
       ],
       "relatedRedFlags": [
-        "each team is green but delivery is late",
-        "no one owns the end-to-end flow"
+        "each-team-is-green-but-delivery-is-late",
+        "no-one-owns-the-end-to-end-flow"
       ],
       "relatedTechDecisions": [
         "team-topologies",
@@ -988,11 +988,11 @@
         "stakeholder-capture"
       ],
       "oftenCausedBy": [
-        "weak governance structures"
+        "weak-governance-structures"
       ],
       "relatedRedFlags": [
-        "nobody can name who owns a key decision",
-        "proposals get softer over time"
+        "nobody-can-name-who-owns-a-key-decision",
+        "proposals-get-softer-over-time"
       ],
       "relatedTechDecisions": [
         "rfc-vs-dri-model",
@@ -1097,8 +1097,8 @@
         "stakeholder-capture"
       ],
       "relatedRedFlags": [
-        "metric improves while user complaints grow",
-        "teams optimize for the review not the outcome"
+        "metric-improves-while-user-complaints-grow",
+        "teams-optimize-for-the-review-not-the-outcome"
       ],
       "relatedTechDecisions": [
         "okrs-vs-kpis",
@@ -1202,8 +1202,8 @@
         "friendly-rewrite"
       ],
       "relatedRedFlags": [
-        "platform has more features than active users",
-        "consumer teams route around the platform"
+        "platform-has-more-features-than-active-users",
+        "consumer-teams-route-around-the-platform"
       ],
       "relatedTechDecisions": [
         "build-vs-buy",
@@ -1307,8 +1307,8 @@
         "dependency-fog"
       ],
       "relatedRedFlags": [
-        "incidents bounce without resolution",
-        "no one can name the owner of a live service"
+        "incidents-bounce-without-resolution",
+        "no-one-can-name-the-owner-of-a-live-service"
       ],
       "relatedTechDecisions": [
         "service-ownership-model",
@@ -1413,8 +1413,8 @@
         "metric-myopia"
       ],
       "relatedRedFlags": [
-        "more artifacts, less clarity",
-        "review becomes approval-shaped instead of understanding-shaped"
+        "more-artifacts-less-clarity",
+        "review-becomes-approval-shaped-instead-of-understanding-shaped"
       ],
       "relatedTechDecisions": [
         "where-to-allow-ai-assisted-development"
@@ -1517,11 +1517,11 @@
         "rag-without-ground-truth"
       ],
       "relatedRedFlags": [
-        "quality feels different but nobody can prove it",
-        "support sees a pattern before metrics do"
+        "quality-feels-different-but-nobody-can-prove-it",
+        "support-sees-a-pattern-before-metrics-do"
       ],
       "relatedTechDecisions": [
-        "managed-model-vs-self-hosted",
+        "model-api-vs-self-hosted-model",
         "online-vs-batch-evaluation"
       ],
       "relatedPlaybooks": [
@@ -1620,8 +1620,8 @@
         "synthetic-velocity"
       ],
       "relatedRedFlags": [
-        "nobody can explain why the structure is shaped this way",
-        "generated patterns spread without review"
+        "nobody-can-explain-why-the-structure-is-shaped-this-way",
+        "generated-patterns-spread-without-review"
       ],
       "relatedTechDecisions": [
         "where-to-allow-ai-assisted-development",
@@ -1722,14 +1722,14 @@
       ],
       "oftenCausedBy": [
         "stakeholder-capture",
-        "weak evaluation discipline"
+        "weak-evaluation-discipline"
       ],
       "relatedRedFlags": [
-        "selection was driven by provider marketing",
-        "no task-level evals exist before launch"
+        "selection-was-driven-by-provider-marketing",
+        "no-task-level-evals-exist-before-launch"
       ],
       "relatedTechDecisions": [
-        "managed-model-vs-self-hosted",
+        "model-api-vs-self-hosted-model",
         "fine-tuning-vs-prompting"
       ],
       "relatedPlaybooks": [
@@ -1829,11 +1829,11 @@
         "synthetic-velocity"
       ],
       "relatedRedFlags": [
-        "demos are impressive but production behavior is not tested",
-        "source list is not defined or maintained"
+        "demos-are-impressive-but-production-behavior-is-not-tested",
+        "source-list-is-not-defined-or-maintained"
       ],
       "relatedTechDecisions": [
-        "managed-model-vs-self-hosted",
+        "model-api-vs-self-hosted-model",
         "fine-tuning-vs-prompting"
       ],
       "relatedPlaybooks": [
@@ -1930,14 +1930,14 @@
         "ticket-theater"
       ],
       "oftenCausedBy": [
-        "weak operational discipline"
+        "weak-operational-discipline"
       ],
       "relatedRedFlags": [
-        "nobody can reproduce the good version",
-        "prompt changes are not in the deployment log"
+        "nobody-can-reproduce-the-good-version",
+        "prompt-changes-are-not-in-the-deployment-log"
       ],
       "relatedTechDecisions": [
-        "managed-model-vs-self-hosted"
+        "model-api-vs-self-hosted-model"
       ],
       "relatedPlaybooks": [
         "version-prompts-and-evaluations"
@@ -2038,12 +2038,12 @@
         "platform-before-product"
       ],
       "relatedRedFlags": [
-        "infrastructure complexity exceeds product complexity",
-        "load tests are for traffic that has never occurred"
+        "infrastructure-complexity-exceeds-product-complexity",
+        "load-tests-are-for-traffic-that-has-never-occurred"
       ],
       "relatedTechDecisions": [
         "monolith-vs-microservices",
-        "self-hosted-vs-managed-infrastructure"
+        "model-api-vs-self-hosted-model"
       ],
       "relatedPlaybooks": [
         "simplify-before-scaling"
@@ -2143,11 +2143,11 @@
         "local-optimization"
       ],
       "relatedRedFlags": [
-        "integration breaks at release but works in isolation",
-        "both teams thought the other team owned the contract"
+        "integration-breaks-at-release-but-works-in-isolation",
+        "both-teams-thought-the-other-team-owned-the-contract"
       ],
       "relatedTechDecisions": [
-        "event-driven-vs-request-response",
+        "sync-vs-event-driven",
         "shared-platform-vs-team-owned-components"
       ],
       "relatedPlaybooks": [
@@ -2250,8 +2250,8 @@
         "metric-myopia"
       ],
       "relatedRedFlags": [
-        "no pushback in planning sessions",
-        "retrospectives produce only small safe observations"
+        "no-pushback-in-planning-sessions",
+        "retrospectives-produce-only-small-safe-observations"
       ],
       "relatedTechDecisions": [
         "team-health-vs-output-metrics"
@@ -2355,8 +2355,8 @@
         "metric-myopia"
       ],
       "relatedRedFlags": [
-        "new systems with no users except the creator",
-        "maintenance ownership is unclear from day one"
+        "new-systems-with-no-users-except-the-creator",
+        "maintenance-ownership-is-unclear-from-day-one"
       ],
       "relatedTechDecisions": [
         "build-vs-buy",
@@ -2462,8 +2462,8 @@
         "platform-before-product"
       ],
       "relatedRedFlags": [
-        "both systems are in production and nobody plans to retire one",
-        "migration is always the next quarter's priority"
+        "both-systems-are-in-production-and-nobody-plans-to-retire-one",
+        "migration-is-always-the-next-quarters-priority"
       ],
       "relatedTechDecisions": [
         "rewrite-vs-refactor",
@@ -2567,8 +2567,8 @@
         "ticket-theater"
       ],
       "relatedRedFlags": [
-        "bugs appear in high-coverage areas",
-        "engineers describe tests as a formality"
+        "bugs-appear-in-high-coverage-areas",
+        "engineers-describe-tests-as-a-formality"
       ],
       "relatedTechDecisions": [
         "tdd-vs-test-after",
@@ -2672,8 +2672,8 @@
         "consensus-trap"
       ],
       "relatedRedFlags": [
-        "research findings never appear in design reviews",
-        "research is always scheduled after roadmap is committed"
+        "research-findings-never-appear-in-design-reviews",
+        "research-is-always-scheduled-after-roadmap-is-committed"
       ],
       "relatedTechDecisions": [
         "continuous-discovery-vs-project-based-research"
@@ -2777,8 +2777,8 @@
         "stakeholder-capture"
       ],
       "relatedRedFlags": [
-        "team cannot name which features moved key metrics",
-        "no feature has ever been removed or rolled back"
+        "team-cannot-name-which-features-moved-key-metrics",
+        "no-feature-has-ever-been-removed-or-rolled-back"
       ],
       "relatedTechDecisions": [
         "continuous-delivery-vs-milestone-releases",
@@ -2882,12 +2882,12 @@
         "prompt-ops-chaos"
       ],
       "relatedRedFlags": [
-        "eval scores improving while user satisfaction is flat or declining",
-        "eval set has not been updated in more than three months"
+        "eval-scores-improving-while-user-satisfaction-is-flat-or-declining",
+        "eval-set-has-not-been-updated-in-more-than-three-months"
       ],
       "relatedTechDecisions": [
         "online-vs-batch-evaluation",
-        "managed-model-vs-self-hosted"
+        "model-api-vs-self-hosted-model"
       ],
       "relatedPlaybooks": [
         "build-a-task-grounded-evaluation-harness"
@@ -2986,12 +2986,12 @@
         "synthetic-velocity"
       ],
       "relatedRedFlags": [
-        "nobody can explain what all the context instructions do",
-        "context additions are never removed"
+        "nobody-can-explain-what-all-the-context-instructions-do",
+        "context-additions-are-never-removed"
       ],
       "relatedTechDecisions": [
         "rag-architecture-choices",
-        "managed-model-vs-self-hosted"
+        "model-api-vs-self-hosted-model"
       ],
       "relatedPlaybooks": [
         "version-prompts-and-evaluations"
@@ -3091,8 +3091,8 @@
         "metric-myopia"
       ],
       "relatedRedFlags": [
-        "review is described as a formality",
-        "no data exists on what the review has caught recently"
+        "review-is-described-as-a-formality",
+        "no-data-exists-on-what-the-review-has-caught-recently"
       ],
       "relatedTechDecisions": [
         "where-to-allow-ai-assisted-development",
@@ -3196,8 +3196,8 @@
         "consensus-trap"
       ],
       "relatedRedFlags": [
-        "cut scope reappears at delivery",
-        "each side believes it behaved correctly in a delivery miss"
+        "cut-scope-reappears-at-delivery",
+        "each-side-believes-it-behaved-correctly-in-a-delivery-miss"
       ],
       "relatedTechDecisions": [
         "date-driven-vs-scope-driven-delivery"
@@ -3300,8 +3300,8 @@
         "consensus-trap"
       ],
       "relatedRedFlags": [
-        "the remaining work list is growing",
-        "the release has been almost ready for more than two weeks"
+        "the-remaining-work-list-is-growing",
+        "the-release-has-been-almost-ready-for-more-than-two-weeks"
       ],
       "relatedTechDecisions": [
         "date-driven-vs-scope-driven-delivery"

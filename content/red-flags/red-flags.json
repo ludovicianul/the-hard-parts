@@ -149,7 +149,7 @@
         "generic-solution-vs-case-specific-solution"
       ],
       "relatedPlaybooks": [
-        "review-module-boundaries",
+        "review-service-boundaries",
         "document-responsibilities-not-implementation"
       ],
       "relatedRedFlags": [
@@ -1027,7 +1027,7 @@
         "manual-review-depth-vs-automation-dependence"
       ],
       "relatedPlaybooks": [
-        "upgrade-review-for-ai-assisted-work",
+        "upgrade-code-review-for-ai-assisted-work",
         "require-authorship-accountability"
       ],
       "relatedRedFlags": [
