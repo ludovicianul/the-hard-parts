@@ -12,48 +12,99 @@
  */
 
 :root {
-  /* --- Core palette (neutral, reference-manual) ------------------------- */
-  --color-ink:        #0f0f10;
+  /* --- Core palette -----------------------------------------------------
+     The design direction is now high-key tabloid: bright off-white paper,
+     pure black frames + ink, and a small number of SATURATED color blocks
+     for pill tags, callout bands, and info panels. Neutrals are used for
+     body prose; everything else pushes hard. */
+  --color-ink:        #0d0d10;   /* near-black body ink */
   --color-ink-dim:    #2a2a2c;
   --color-ink-soft:   #54545a;
-  /* Readable small-label color; used by eyebrows and meta labels.
-     Previously `--color-ink-faint` (~#8a8a92) doubled for both decorative and
-     readable roles; that was too pale for bulletin eyebrows on warm paper. */
-  --color-label:      #4a4a52;
-  --color-ink-faint:  #8a8a92;  /* decorative-only: micro rules, separators */
+  --color-label:      #3a3a40;   /* darker label — reads strong against pills */
+  --color-ink-faint:  #8a8a92;
   --color-rule:       #c8c8cc;
   --color-rule-soft:  #e4e4e8;
-  /* Slightly stronger ruled lines for bulletin/dossier emphasis. */
   --color-rule-strong: #a8a8ad;
-  --color-paper:      #f4f2ec;  /* warm editorial off-white, slightly crisper */
-  --color-paper-alt:  #e8e6dd;
-  --color-surface:    #ffffff;
+  --color-paper:      #f7f4eb;   /* warm off-white, the "newsprint" paper */
+  --color-paper-alt:  #eee9dc;   /* slightly darker paper for secondary zones */
+  --color-surface:    #ffffff;   /* pure white — used inside framed panels */
 
-  /* Dark "plate" surfaces for editorial zones — masthead bands, voice panels,
-     bulletin plates. Cream text on near-black with accent color as highlight.
-     Used deliberately and sparingly per docs' "controlled tabloid energy". */
-  --color-ink-plate:  #17171a;
-  --color-ink-plate-soft: #24242a;
-  --color-on-plate:       #f5efe0;   /* warm cream for body text on dark */
-  --color-on-plate-dim:   #c4bfae;   /* dimmer cream for meta on dark */
-  --color-on-plate-faint: #8a8578;   /* faint cream for separators on dark */
+  /* Frame color — used by .nsb-frame and every pill/border in the tabloid
+     system. Pure black for maximum contrast against saturated fills. */
+  --color-frame:      #000000;
+  --color-frame-thick: 3px;
+  --color-frame-heavy: 5px;
 
-  /* --- Category accents (see docs/design-direction.md §Category Identity) */
-  --accent-fm:        #b85f06;   /* Failure Modes  — amber/ochre warning (richer, AA on labels) */
-  --accent-fm-deep:   #7a3d04;   /* darker amber for text on tint */
-  --accent-fm-bright: #e08420;   /* brighter amber for text on dark plate */
-  --accent-fm-tint:   #f2d9a8;   /* warm amber surface for bulletin panels */
-  --accent-fm-wash:   #f9ebc9;   /* softer amber wash for subtle emphasis */
-  --accent-td:        #2e4d73;   /* Tech Decisions — cool steel analytic */
-  --accent-rf:        #a6322b;   /* Red Flags      — coral/rust alert    */
-  --accent-ep:        #1f6054;   /* Playbook       — operational teal    */
+  /* --- Saturated color blocks (tabloid primaries) -----------------------
+     These are the signal colors for the layout. They carry meaning:
+       · Yellow — highlight / callout / "pay attention" / featured catalog fill
+       · Red    — alert / critical severity / "what not to do" / edition-strip
+       · Blue   — info / "at-a-glance" / relational panels / stat accent
+       · Amber  — Failure Modes category identity (kept from previous phase) */
+  --color-yellow:       #ffd60a;   /* primary highlight */
+  --color-yellow-soft:  #fff19a;   /* hover / soft band */
+  --color-yellow-ink:   #161309;   /* near-black chosen for contrast on yellow */
+  --color-red:          #e11e26;   /* alert */
+  --color-red-deep:     #a6151b;
+  --color-red-soft:     #fae1e3;
+  --color-blue:         #2954d6;   /* info */
+  --color-blue-deep:    #1e3fa8;
+  --color-blue-soft:    #e4eafc;
 
-  /* The live accent on the current page; layouts set this. */
-  --accent-current:        var(--color-ink);
-  --accent-current-deep:   var(--color-ink);
-  --accent-current-bright: var(--color-ink);
-  --accent-current-tint:   var(--color-paper-alt);
-  --accent-current-wash:   var(--color-paper-alt);
+  /* --- Severity ramp ---------------------------------------------------
+     Neutral grayscale weight ramp. Kept deliberately achromatic so it
+     can never collide with a category color (see below: FM = green,
+     TD = orange, RF = crimson, EP = purple) or a signal color (yellow,
+     blue). Reader scans the grid and the "heat" rises by darkness
+     alone: paper at `low` → near-black at `critical`. Ink inverts to
+     white at `medium-high` where the gray gets too dark for black ink
+     to stay legible. See docs/design-direction.md §Severity. */
+  --sev-low:           var(--color-paper);    /* paper — blends in, "noted" */
+  --sev-medium:        #e0dccf;               /* light warm gray */
+  --sev-medium-high:   #6e6a62;               /* mid warm gray — ink flips */
+  --sev-high:          #3a3836;               /* charcoal */
+  --sev-critical:      #0d0d10;               /* near-black (same as --color-ink) */
+
+  /* Ink colors — two dark steps, three white steps. The flip lands at
+     medium-high so the three "louder" severities all carry white text,
+     which reads as one consistent "heavy" band. */
+  --sev-low-ink:         var(--color-ink);
+  --sev-medium-ink:      var(--color-ink);
+  --sev-medium-high-ink: var(--color-surface);
+  --sev-high-ink:        var(--color-surface);
+  --sev-critical-ink:    var(--color-surface);
+
+  /* --- Category accents (see docs/design-direction.md §Category Identity)
+     Four distinct hues, none overlapping with the signal colors used
+     elsewhere (yellow = highlight/featured, blue = info/stat). Each is
+     a saturated editorial tone that takes white text cleanly, so the
+     `.nsb-home__card-head` strip can rely on a single contrast rule.
+       · FM = forest green   (archetypes / cold-analytical)
+       · TD = burnt orange   (decisions / trade-off energy)
+       · RF = crimson red    (alerts — semantic match to "red flags")
+       · EP = plum purple    (wisdom / playbook) */
+  --accent-fm:        #2d7a3a;   /* Failure Modes  — forest green */
+  --accent-fm-deep:   #1e5427;
+  --accent-fm-tint:   #c9e1cd;
+  --accent-fm-wash:   #e9f3eb;
+  --accent-td:        #d96c2e;   /* Tech Decisions — burnt orange */
+  --accent-td-deep:   #a44d18;
+  --accent-td-tint:   #f7d4bc;
+  --accent-td-wash:   #fbeadc;
+  --accent-rf:        #c8322a;   /* Red Flags      — crimson */
+  --accent-rf-deep:   #8f1f18;
+  --accent-rf-tint:   #f4c6c3;
+  --accent-rf-wash:   #fbe4e2;
+  --accent-ep:        #6b2d5c;   /* Playbook       — plum purple */
+  --accent-ep-deep:   #4a1d3e;
+  --accent-ep-tint:   #d9c2d1;
+  --accent-ep-wash:   #eedfe7;
+
+  /* The live accent on the current page; layouts set this via [data-accent]. */
+  --accent-current:      var(--color-ink);
+  --accent-current-deep: var(--color-ink);
+  --accent-current-tint: var(--color-paper-alt);
+  --accent-current-wash: var(--color-paper-alt);
 
   /* --- Typography scale (modular, slightly editorial) ------------------- */
   --font-serif: "Source Serif 4", "Iowan Old Style", "Apple Garamond",
@@ -72,6 +123,10 @@
   --text-2xl:    1.875rem;
   --text-3xl:    2.375rem;
   --text-4xl:    3rem;
+  /* Display scale — giant tabloid headlines. Clamp keeps them responsive. */
+  --text-display:    clamp(2.75rem, 7vw, 5.25rem);
+  --text-display-xl: clamp(3.25rem, 9vw, 7rem);
+  --text-stat:       clamp(2.5rem, 6vw, 3.5rem);
 
   --leading-tight: 1.15;
   --leading-snug:  1.3;
@@ -108,17 +163,28 @@
   --ease:     cubic-bezier(0.2, 0.6, 0.2, 1);
 }
 
-/* Accent-setters. Apply one of these to <body> or a page root wrapper.
-   The extended accent palette is intentionally only defined for FM for now —
-   the Failure Modes vertical slice uses it deliberately, and other categories
-   will gain matching tints as they come online. */
+/* Accent-setters. Apply one of these to <body> or a page root wrapper. */
 [data-accent="fm"] {
-  --accent-current:        var(--accent-fm);
-  --accent-current-deep:   var(--accent-fm-deep);
-  --accent-current-bright: var(--accent-fm-bright);
-  --accent-current-tint:   var(--accent-fm-tint);
-  --accent-current-wash:   var(--accent-fm-wash);
+  --accent-current:      var(--accent-fm);
+  --accent-current-deep: var(--accent-fm-deep);
+  --accent-current-tint: var(--accent-fm-tint);
+  --accent-current-wash: var(--accent-fm-wash);
 }
-[data-accent="td"] { --accent-current: var(--accent-td); }
-[data-accent="rf"] { --accent-current: var(--accent-rf); }
-[data-accent="ep"] { --accent-current: var(--accent-ep); }
+[data-accent="td"] {
+  --accent-current:      var(--accent-td);
+  --accent-current-deep: var(--accent-td-deep);
+  --accent-current-tint: var(--accent-td-tint);
+  --accent-current-wash: var(--accent-td-wash);
+}
+[data-accent="rf"] {
+  --accent-current:      var(--accent-rf);
+  --accent-current-deep: var(--accent-rf-deep);
+  --accent-current-tint: var(--accent-rf-tint);
+  --accent-current-wash: var(--accent-rf-wash);
+}
+[data-accent="ep"] {
+  --accent-current:      var(--accent-ep);
+  --accent-current-deep: var(--accent-ep-deep);
+  --accent-current-tint: var(--accent-ep-tint);
+  --accent-current-wash: var(--accent-ep-wash);
+}

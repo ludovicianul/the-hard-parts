@@ -37,18 +37,33 @@ export const PatternConfidenceSchema = z.enum([
 /**
  * Canonical, disciplined `frequency` enum.
  *
- * Matches the values defined in `docs/schema-failure-modes.md` plus `uncommon`
- * (kept from the shared vocabulary). The enum intentionally does NOT accept
- * contextual values like `"common in AI work"` — nuance about AI impact lives
- * in `category: "ai"` and the AI fields (`aiCanHelpWith`, `aiCanMakeWorseBy`,
- * `aiSpecificNotes`), not in the frequency label.
+ * Two kinds of values are accepted:
  *
- * Content is normalised to this set at author time. Unknown values fail the
- * build at schema parse time.
+ *   1. Five ordered *ladder* positions (rare → universal):
+ *      `rare · occasional · common · very common · universal`.
+ *      These are positions on a how-often-does-this-show-up axis,
+ *      rendered as a 5-step bar ladder everywhere frequency appears.
+ *
+ *   2. One *trend* value: `increasing`.
+ *      This is NOT a point on the ladder — it flags a pattern whose
+ *      prevalence is rising (often AI-era content). The UI renders it
+ *      with a trend arrow (↗) instead of bars, to keep "how common"
+ *      and "which way it's moving" from collapsing into one visual.
+ *
+ * The ordered ladder lives in `src/lib/attribute-scales.ts`
+ * (`FREQUENCY_SCALE`) and trend values in `FREQUENCY_TRENDS` there.
+ * Keep this enum in sync with those two arrays.
+ *
+ * The enum intentionally does NOT accept contextual values like
+ * `"common in AI work"` — nuance about AI impact lives in
+ * `category: "ai"` and the AI fields (`aiCanHelpWith`,
+ * `aiCanMakeWorseBy`, `aiSpecificNotes`), not in the frequency label.
+ *
+ * Content is normalised to this set at author time. Unknown values
+ * fail the build at schema parse time.
  */
 export const FrequencyEnum = z.enum([
   "rare",
-  "uncommon",
   "occasional",
   "common",
   "very common",
@@ -123,4 +138,25 @@ export type ResolvedRef = {
   title: string;
   categoryRoute: string; // e.g. "/failure-modes"
   href: string;          // e.g. "/failure-modes/the-friendly-rewrite"
+  /**
+   * 0-based position of this entry within its own category's canonical
+   * file order. Used to build catalog reference numbers (see `refCode`,
+   * `refNum`) that match the pill shown on the target entry's own
+   * detail page.
+   */
+  indexInCategory: number;
+  /**
+   * Zero-padded catalog number *without* the category prefix, e.g. "05"
+   * or "045". Padding width is `max(2, digits(totalEntries))` so small
+   * categories stay compact ("FM-05") and large ones stay aligned
+   * ("TD-045"). Match the target entry's own detail page code.
+   */
+  refNum: string;
+  /**
+   * Full catalog reference code with category prefix, e.g. "FM-05" or
+   * "TD-045". This is the string shown on a target entry's masthead
+   * pill AND on every cross-reference link that points to it, so the
+   * two never drift.
+   */
+  refCode: string;
 };

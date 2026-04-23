@@ -17,6 +17,13 @@ export interface OperatorNote {
   label: string;
   /** The body text. Omit to skip this note. */
   body: string | undefined | null;
+  /**
+   * Optional clarifying caption shown under the label. The raw labels
+   * ("Best moment", "Counter move", "False positive") are terse field-manual
+   * terms; the hint explains what kind of annotation the body is in one
+   * short sentence so the panel doesn't require tribal knowledge to read.
+   */
+  hint?: string;
 }
 
 export interface Props {
@@ -31,12 +38,19 @@ const visible = items.filter(
 ---
 {visible.length > 0 && (
   <section class="fm-ops" aria-label="Operator notes">
+    <div class="fm-ops__bar">
+      <span>From someone who&rsquo;s been in the room</span>
+      <span class="fm-ops__bar-count">{String(visible.length).padStart(2, "0")} notes</span>
+    </div>
     <dl class="fm-ops__list">
       {visible.map((item, i) => (
         <div class="fm-ops__item">
           <dt class="fm-ops__label">
             <span class="fm-ops__num" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
-            <span class="fm-ops__label-text">{item.label}</span>
+            <span class="fm-ops__label-stack">
+              <span class="fm-ops__label-text">{item.label}</span>
+              {item.hint && <span class="fm-ops__label-hint">{item.hint}</span>}
+            </span>
           </dt>
           <dd class="fm-ops__body">{item.body}</dd>
         </div>
@@ -46,15 +60,36 @@ const visible = items.filter(
 )}
 
 <style>
+  /* Framed operator-notes panel with black masthead strip.
+     Each row pairs a black step badge + uppercase label on the left with
+     serif body prose on the right. */
   .fm-ops {
     margin-top: var(--space-5);
-    padding: var(--space-6) var(--space-6);
     background: var(--color-surface);
-    border-top: 3px solid var(--accent-current);
-    border-left: var(--rule);
-    border-right: var(--rule);
-    border-bottom: var(--rule);
+    border: 3px solid var(--color-frame);
   }
+  .fm-ops__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-5);
+    background: var(--color-frame);
+    color: var(--color-yellow);
+    font-family: var(--font-sans);
+    font-weight: 900;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    font-size: var(--text-sm);
+    border-bottom: 3px solid var(--color-frame);
+  }
+  .fm-ops__bar-count {
+    color: var(--color-surface);
+    opacity: 0.7;
+    font-size: var(--text-xs);
+    font-feature-settings: "tnum";
+  }
+
   .fm-ops__list {
     margin: 0;
     padding: 0;
@@ -64,37 +99,59 @@ const visible = items.filter(
   }
   .fm-ops__item {
     display: grid;
-    grid-template-columns: 12rem 1fr;
-    gap: var(--space-6);
-    padding: var(--space-4) 0;
-    border-top: var(--rule-soft);
-    align-items: baseline;
+    /* Widen the left column to comfortably fit the hint caption under the
+       short uppercase label without wrapping. */
+    grid-template-columns: minmax(13rem, 17rem) 1fr;
+    gap: var(--space-5);
+    padding: var(--space-4) var(--space-5);
+    border-top: 2px solid var(--color-frame);
+    align-items: start;
   }
-  .fm-ops__item:first-child {
-    border-top: 0;
-    padding-top: var(--space-2);
-  }
-  .fm-ops__item:last-child {
-    padding-bottom: var(--space-2);
-  }
+  .fm-ops__item:first-child { border-top: 0; }
+
   .fm-ops__label {
     display: flex;
-    gap: var(--space-2);
-    align-items: baseline;
+    align-items: flex-start;
+    gap: var(--space-3);
     margin: 0;
-    font-family: var(--font-mono);
+  }
+  .fm-ops__num {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    font-weight: 900;
+    font-feature-settings: "tnum";
+    color: var(--color-surface);
+    background: var(--color-frame);
+    padding: 6px 10px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  /* Stack the short uppercase label over an optional lowercase serif hint.
+     The hint is the reader's missing-context clarifier: it converts a terse
+     field-manual term like "false positive" into an explanation. */
+  .fm-ops__label-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .fm-ops__label-text {
+    font-family: var(--font-sans);
+    font-weight: 900;
     font-size: var(--text-xs);
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
+    color: var(--color-ink);
   }
-  .fm-ops__num {
-    color: var(--color-label);
-    font-feature-settings: "tnum";
-    font-weight: 500;
-  }
-  .fm-ops__label-text {
-    color: var(--accent-current-deep, var(--accent-current));
-    font-weight: 700;
+  .fm-ops__label-hint {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 0.78rem;
+    line-height: var(--leading-snug);
+    color: var(--color-ink-soft);
+    text-transform: none;
+    letter-spacing: 0;
   }
   .fm-ops__body {
     margin: 0;
@@ -102,15 +159,12 @@ const visible = items.filter(
     font-size: var(--text-base);
     line-height: var(--leading-snug);
     color: var(--color-ink);
-    max-width: var(--reading-max);
   }
 
   @media (max-width: 680px) {
-    .fm-ops { padding: var(--space-5) var(--space-4); }
     .fm-ops__item {
       grid-template-columns: 1fr;
-      gap: var(--space-2);
-      padding: var(--space-3) 0;
+      gap: var(--space-3);
     }
   }
 </style>

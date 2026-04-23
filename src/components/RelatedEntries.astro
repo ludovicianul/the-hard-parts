@@ -55,10 +55,11 @@ const crossCategory = expectCategory
   ? resolved.filter((r) => r.code !== expectCategory)
   : [];
 
-// Stable 3-digit reference number per resolved entry within this block.
-// Purely decorative — gives the list a catalog-index feel without pretending
-// to be a real identifier. Numbering resets per block so it stays legible.
-const pad = (n: number) => String(n).padStart(3, "0");
+// NOTE: catalog numbers come from each resolved ref's own `refNum` (e.g.
+// "05" for the 5th FM, "045" for the 45th TD), *not* a locally-reset
+// counter. The number a reader sees next to a link matches the pill on
+// that target entry's own detail masthead, so "FM-05" here IS the
+// entry you land on when you click. See `resolve.ts · formatRefCode`.
 ---
 {hasAny && (
   <section
@@ -69,32 +70,29 @@ const pad = (n: number) => String(n).padStart(3, "0");
     aria-label={title}
   >
     <header class="nsb-related__head">
-      <p class="nsb-eyebrow nsb-eyebrow--bulletin nsb-related__eyebrow">{eyebrow}</p>
-      <div class="nsb-related__head-row">
-        <h3 class="nsb-related__title">{title}</h3>
-        <span class="nsb-related__counts" aria-hidden="true">
-          {resolved.length > 0 && (
-            <span class="nsb-related__count nsb-related__count--resolved">
-              {resolved.length} linked
-            </span>
-          )}
-          {unresolved.length > 0 && (
-            <span class="nsb-related__count nsb-related__count--pending">
-              {unresolved.length} pending
-            </span>
-          )}
-        </span>
-      </div>
+      <h3 class="nsb-related__title">{title}</h3>
+      <span class="nsb-related__counts" aria-hidden="true">
+        {resolved.length > 0 && (
+          <span class="nsb-related__count nsb-related__count--resolved">
+            {String(resolved.length).padStart(2, "0")} linked
+          </span>
+        )}
+        {unresolved.length > 0 && (
+          <span class="nsb-related__count nsb-related__count--pending">
+            {String(unresolved.length).padStart(2, "0")} pending
+          </span>
+        )}
+      </span>
     </header>
 
     {inExpected.length > 0 && (
       <ol class="nsb-related__list">
-        {inExpected.map((r, i) => (
+        {inExpected.map((r) => (
           <li class="nsb-related__item">
             <a class="nsb-related__link" href={r.href} data-accent={r.code.toLowerCase()}>
               <span class="nsb-related__code">
                 <span class="nsb-related__code-cat">{CATEGORIES[r.code].shortLabel}</span>
-                <span class="nsb-related__code-num">{pad(i + 1)}</span>
+                <span class="nsb-related__code-num">{r.refNum}</span>
               </span>
               <span class="nsb-related__item-title">{r.title}</span>
               <span class="nsb-related__arrow" aria-hidden="true">→</span>
@@ -108,12 +106,12 @@ const pad = (n: number) => String(n).padStart(3, "0");
       <div class="nsb-related__cross">
         <p class="nsb-eyebrow nsb-related__cross-label">Also relevant</p>
         <ol class="nsb-related__list">
-          {crossCategory.map((r, i) => (
+          {crossCategory.map((r) => (
             <li class="nsb-related__item">
               <a class="nsb-related__link" href={r.href} data-accent={r.code.toLowerCase()}>
                 <span class="nsb-related__code">
                   <span class="nsb-related__code-cat">{CATEGORIES[r.code].shortLabel}</span>
-                  <span class="nsb-related__code-num">{pad(i + 1)}</span>
+                  <span class="nsb-related__code-num">{r.refNum}</span>
                 </span>
                 <span class="nsb-related__item-title">{r.title}</span>
                 <span class="nsb-related__arrow" aria-hidden="true">→</span>
@@ -146,158 +144,182 @@ const pad = (n: number) => String(n).padStart(3, "0");
 )}
 
 <style>
-  /* Block frame: a bulletin-style reference panel. */
+  /* Framed reference panel with black title bar + pill-tag codes.
+     Reads as a catalog subsection: black masthead + white list body. */
   .nsb-related {
-    margin-top: var(--space-6);
-    padding: var(--space-5) var(--space-5) var(--space-4);
-    background: var(--color-surface);
-    border-top: 2px solid var(--accent-current);
-    border-left: var(--rule);
-    border-right: var(--rule);
-    border-bottom: var(--rule);
-  }
-  .nsb-related--dense {
     margin-top: var(--space-5);
-    padding: var(--space-4);
+    background: var(--color-surface);
+    border: 3px solid var(--color-frame);
   }
+  .nsb-related--dense { margin-top: var(--space-4); }
 
+  /* --- Black title bar ------------------------------------------- */
   .nsb-related__head {
-    margin-bottom: var(--space-3);
-  }
-  .nsb-related__eyebrow { margin: 0 0 var(--space-2) 0; }
-  .nsb-related__head-row {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: baseline;
     gap: var(--space-3);
+    padding: var(--space-3) var(--space-5);
+    background: var(--color-frame);
+    color: var(--color-surface);
+    border-bottom: 3px solid var(--color-frame);
     flex-wrap: wrap;
   }
   .nsb-related__title {
     font-family: var(--font-sans);
-    font-size: var(--text-lg);
-    font-weight: 600;
+    font-weight: 900;
+    font-size: var(--text-sm);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-yellow);
     margin: 0;
-    letter-spacing: var(--tracking-tight);
+    line-height: 1;
   }
   .nsb-related__counts {
     display: inline-flex;
     gap: var(--space-3);
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    color: var(--color-label);
-  }
-  .nsb-related__count--resolved { color: var(--accent-current-deep, var(--accent-current)); }
-  .nsb-related__count--pending { color: var(--color-ink-soft); }
-
-  /* Resolved list — catalog-index feel. */
-  .nsb-related__list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    counter-reset: ref;
-  }
-  .nsb-related__item {
-    border-top: var(--rule-soft);
-  }
-  .nsb-related__item:last-child {
-    border-bottom: 0;
-  }
-  .nsb-related__link {
-    display: grid;
-    grid-template-columns: 5rem 1fr auto;
-    gap: var(--space-4);
-    align-items: baseline;
-    padding: var(--space-3) 0;
-    text-decoration: none;
-    color: inherit;
-    transition: background var(--dur-fast) var(--ease);
-  }
-  .nsb-related__link:hover {
-    background: var(--accent-current-wash, var(--color-paper-alt));
-  }
-  .nsb-related__link:hover .nsb-related__arrow {
-    transform: translateX(2px);
-    color: var(--accent-current);
-  }
-
-  .nsb-related__code {
-    display: inline-flex;
-    align-items: baseline;
-    gap: var(--space-2);
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
+    font-weight: 800;
     font-size: var(--text-xs);
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
     font-feature-settings: "tnum";
   }
+  .nsb-related__count--resolved { color: var(--color-surface); }
+  .nsb-related__count--pending  { color: var(--color-yellow); opacity: 0.7; }
+
+  /* --- Resolved list -------------------------------------------- */
+  .nsb-related__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .nsb-related__item { border-top: 2px solid var(--color-frame); }
+  .nsb-related__item:first-child { border-top: 0; }
+
+  .nsb-related__link {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--space-4);
+    align-items: center;
+    padding: var(--space-3) var(--space-5);
+    text-decoration: none;
+    color: var(--color-ink);
+    background: var(--color-surface);
+    transition: background var(--dur-fast) var(--ease),
+                color var(--dur-fast) var(--ease);
+  }
+  .nsb-related__link:hover {
+    background: var(--color-yellow);
+    color: var(--color-yellow-ink);
+  }
+  .nsb-related__link:hover .nsb-related__arrow { transform: translateX(3px); }
+
+  /* Pill-tag code badge (category + ref num). */
+  .nsb-related__code {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: 0.68rem;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    font-feature-settings: "tnum";
+    border: 2px solid var(--color-frame);
+    overflow: hidden;
+  }
   .nsb-related__code-cat {
-    color: var(--accent-current);
-    font-weight: 700;
+    background: var(--color-frame);
+    color: var(--color-surface);
+    padding: 4px 8px;
+    line-height: 1;
   }
   .nsb-related__code-num {
-    color: var(--color-label);
+    background: var(--color-surface);
+    color: var(--color-ink);
+    padding: 4px 8px;
+    line-height: 1;
+    border-left: 2px solid var(--color-frame);
   }
+  .nsb-related__link:hover .nsb-related__code-num {
+    background: var(--color-yellow);
+    color: var(--color-yellow-ink);
+  }
+
   .nsb-related__item-title {
     font-family: var(--font-sans);
     font-size: var(--text-base);
-    color: var(--color-ink);
+    font-weight: 700;
+    color: inherit;
     line-height: var(--leading-snug);
   }
   .nsb-related__arrow {
-    font-family: var(--font-mono);
-    color: var(--color-ink-faint);
-    transition: transform var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
-    padding-right: var(--space-2);
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-lg);
+    color: inherit;
+    transition: transform var(--dur-fast) var(--ease);
   }
 
-  /* Cross-category subgroup. */
+  /* --- Cross-category subgroup ---------------------------------- */
   .nsb-related__cross {
-    margin-top: var(--space-4);
-    padding-top: var(--space-3);
-    border-top: var(--rule);
+    border-top: 3px solid var(--color-frame);
+    background: var(--color-paper-alt);
   }
   .nsb-related__cross-label {
-    margin: 0 0 var(--space-2) 0;
-    color: var(--color-label);
+    margin: 0;
+    padding: var(--space-2) var(--space-5);
+    font-family: var(--font-sans);
+    font-weight: 900;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    font-size: var(--text-xs);
+    color: var(--color-ink);
+    border-bottom: 2px solid var(--color-frame);
   }
 
-  /* Pending subgroup — honest, reference-catalog "awaiting entry" row. */
-  .nsb-related__pending {
-    margin-top: var(--space-4);
-    padding-top: var(--space-3);
-    border-top: 1px dashed var(--color-rule-strong, var(--color-rule));
-  }
+  /* --- Pending subgroup ----------------------------------------- */
+  .nsb-related__pending { border-top: 3px solid var(--color-frame); }
   .nsb-related__pending-label {
-    margin: 0 0 var(--space-2) 0;
-    color: var(--color-label);
+    margin: 0;
+    padding: var(--space-2) var(--space-5);
+    font-family: var(--font-sans);
+    font-weight: 900;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    font-size: var(--text-xs);
+    color: var(--color-ink);
+    background: var(--color-yellow);
+    border-bottom: 2px solid var(--color-frame);
   }
-  .nsb-related__list--pending {
-    counter-reset: none;
-  }
+  .nsb-related__list--pending { }
   .nsb-related__item--pending {
     display: grid;
-    grid-template-columns: 5rem 1fr;
+    grid-template-columns: auto 1fr;
     gap: var(--space-4);
-    align-items: baseline;
-    padding: var(--space-2) 0;
-    border-top: var(--rule-soft);
+    align-items: center;
+    padding: var(--space-3) var(--space-5);
+    border-top: 2px solid var(--color-frame);
+    background: var(--color-surface);
   }
   .nsb-related__item--pending:first-child { border-top: 0; }
   .nsb-related__code-cat--pending {
-    color: var(--color-ink-faint);
-    font-weight: 500;
+    background: var(--color-paper-alt);
+    color: var(--color-label);
   }
   .nsb-related__pending-tag {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
+    display: inline-block;
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: 0.65rem;
     letter-spacing: var(--tracking-label);
-    color: var(--accent-current-deep, var(--accent-current));
-    border: 1px solid var(--accent-current);
-    padding: 0 0.35rem;
-    line-height: 1.4;
-    font-weight: 600;
+    color: var(--color-surface);
+    background: var(--color-red);
+    padding: 3px 7px;
+    line-height: 1;
+    text-transform: uppercase;
+    margin-left: var(--space-2);
   }
   .nsb-related__pending-title {
     font-family: var(--font-serif);
@@ -308,13 +330,10 @@ const pad = (n: number) => String(n).padStart(3, "0");
 
   @media (max-width: 520px) {
     .nsb-related__link {
-      grid-template-columns: 1fr auto;
+      grid-template-columns: auto 1fr;
+      gap: var(--space-3);
     }
-    .nsb-related__code {
-      grid-column: 1 / -1;
-    }
-    .nsb-related__item--pending {
-      grid-template-columns: 1fr;
-    }
+    .nsb-related__arrow { display: none; }
+    .nsb-related__item--pending { grid-template-columns: 1fr; }
   }
 </style>

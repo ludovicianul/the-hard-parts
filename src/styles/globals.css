@@ -1,7 +1,9 @@
 /**
- * Global styles — intentionally minimal for Phase 1.
- * Phase 2+ will add component styles as real sections land. Do not preempt
- * those here; keep this file reference-first and typographic.
+ * Global styles — high-key tabloid direction.
+ *
+ * Core primitives only: reset, typography defaults, framed panels, pill-tag
+ * surface helpers, bulletin utilities. Component-specific styles live with
+ * their components.
  */
 
 @import "./tokens.css";
@@ -50,7 +52,19 @@ h2 { font-size: var(--text-2xl); }
 h3 { font-size: var(--text-xl); }
 h4 { font-size: var(--text-lg); }
 
-p { margin: 0 0 var(--space-4) 0; max-width: var(--reading-max); }
+p {
+  margin: 0 0 var(--space-4) 0;
+  /* NOTE: The previous global `max-width: var(--reading-max)` (42rem ≈
+     672px) was applied to every <p> on the site. In this tabloid
+     layout many columns are intentionally wider than 672px (detail
+     content column ≈ 800px, FM-landing intro ≈ 900px), so the cap
+     forced an artificially short wrap that produced dangling last
+     lines inside otherwise-wide boxes. Reading width is now controlled
+     by each context (the container sizes the column; components that
+     genuinely need a reading cap opt in explicitly with
+     `max-width: var(--reading-max)`). */
+  text-wrap: pretty;
+}
 
 ul, ol { margin: 0 0 var(--space-4) var(--space-5); padding: 0; }
 
@@ -113,34 +127,85 @@ code, pre, .mono {
   width: 100%;
 }
 
+/* =======================================================================
+ * TABLOID PRIMITIVES
+ * -----------------------------------------------------------------------
+ * The page is built out of black-framed panels sitting on warm paper, with
+ * occasional saturated color fills (yellow / red / blue) used as signal
+ * colors, not decoration. Everything uses pure black borders and heavy
+ * uppercase sans-serif labels.
+ * =====================================================================*/
+
 /*
- * Dark editorial plate — a theme-swap utility applied to masthead bands,
- * voice panels, or other deliberate dark zones.
+ * .nsb-frame — the universal framed panel.
  *
- * Remaps the shared text/label tokens so any descendant that uses
- * `var(--color-ink)`, `var(--color-label)`, `var(--accent-current-deep)`, etc.
- * automatically adapts to the dark background. No per-component overrides
- * needed — the same component reads correctly on paper AND on plate.
+ * Black frame, white surface inside, zero border-radius. Scales via the
+ * `--color-frame-thick` token. A frame can optionally host a `.nsb-frame__bar`
+ * header strip (filled black with white uppercase title) for "chapter-like"
+ * panels from the references.
  */
-.nsb-plate {
-  background: var(--color-ink-plate);
-  color: var(--color-on-plate);
-  /* text + label token remapping */
-  --color-ink:          var(--color-on-plate);
-  --color-ink-dim:      var(--color-on-plate);
-  --color-ink-soft:     var(--color-on-plate-dim);
-  --color-ink-faint:    var(--color-on-plate-faint);
-  --color-label:        var(--color-on-plate-dim);
-  /* rules on dark: very subtle */
-  --color-rule:         var(--color-on-plate-faint);
-  --color-rule-soft:    #2f2f34;
-  --color-rule-strong:  var(--color-on-plate-dim);
-  /* accent remapping: the deep variant was meant for amber-on-cream; on a
-     dark plate we want the bright variant instead. */
-  --accent-current-deep: var(--accent-current-bright);
+.nsb-frame {
+  background: var(--color-surface);
+  border: var(--color-frame-thick) solid var(--color-frame);
+  border-radius: 0;
+  position: relative;
 }
-.nsb-plate a { color: inherit; text-decoration-color: var(--color-on-plate-faint); }
-.nsb-plate a:hover { text-decoration-color: var(--accent-current-bright); }
+.nsb-frame--heavy { border-width: var(--color-frame-heavy); }
+.nsb-frame--yellow { background: var(--color-yellow); }
+.nsb-frame--red    { background: var(--color-red);    color: var(--color-surface); }
+.nsb-frame--red *  { color: inherit; }
+.nsb-frame--blue   { background: var(--color-blue);   color: var(--color-surface); }
+.nsb-frame--blue *  { color: inherit; }
+.nsb-frame--paper  { background: var(--color-paper-alt); }
+
+/* Optional header bar across the top of a framed panel — the black title
+   strip seen in the references ("FRONT PAGE STORY", "WHY TEAMS FALL FOR IT"). */
+.nsb-frame__bar {
+  background: var(--color-frame);
+  color: var(--color-surface);
+  font-family: var(--font-sans);
+  font-weight: 800;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  font-size: var(--text-sm);
+  padding: var(--space-3) var(--space-5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  border-bottom: var(--color-frame-thick) solid var(--color-frame);
+}
+.nsb-frame__bar--yellow { background: var(--color-yellow); color: var(--color-yellow-ink); }
+.nsb-frame__bar--red    { background: var(--color-red);    color: var(--color-surface); }
+.nsb-frame__bar--blue   { background: var(--color-blue);   color: var(--color-surface); }
+
+.nsb-frame__body { padding: var(--space-6); }
+.nsb-frame__body--tight { padding: var(--space-4) var(--space-5); }
+
+/* Giant display headline — uppercase, heavy, tight leading. */
+.nsb-display {
+  font-family: var(--font-sans);
+  font-weight: 900;
+  font-size: var(--text-display);
+  letter-spacing: -0.025em;
+  line-height: 0.95;
+  text-transform: uppercase;
+  margin: 0;
+  color: var(--color-ink);
+}
+.nsb-display--xl { font-size: var(--text-display-xl); }
+
+/* Big stat numeral used inside NumberCard. */
+.nsb-stat-num {
+  font-family: var(--font-sans);
+  font-weight: 900;
+  font-size: var(--text-stat);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-feature-settings: "tnum";
+  color: inherit;
+  margin: 0;
+}
 
 .nsb-placeholder {
   border: var(--rule);

@@ -20,76 +20,104 @@ const { quote, attribution } = Astro.props;
 const hasQuote = typeof quote === "string" && quote.trim().length > 0;
 ---
 {hasQuote && (
-  <section class="fm-voice nsb-plate" aria-label="Heard in the wild">
-    <span class="fm-voice__mark" aria-hidden="true">&ldquo;</span>
-    <blockquote class="fm-voice__quote">
-      <p>{quote}</p>
-    </blockquote>
-    {attribution && (
-      <p class="fm-voice__attribution">
-        <span class="nsb-eyebrow fm-voice__attribution-label">Said by</span>
-        <span class="fm-voice__attribution-name">{attribution}</span>
-      </p>
-    )}
+  <section class="fm-voice" aria-label="Heard in the wild">
+    <div class="fm-voice__bar">
+      <span>Heard in the wild</span>
+      <span class="fm-voice__bar-mark" aria-hidden="true">&ldquo; &rdquo;</span>
+    </div>
+    <div class="fm-voice__body">
+      <span class="fm-voice__mark" aria-hidden="true">&ldquo;</span>
+      <blockquote class="fm-voice__quote">
+        <p>{quote}</p>
+      </blockquote>
+      {attribution && (
+        <p class="fm-voice__attribution">
+          <span class="fm-voice__attribution-label">Said by</span>
+          <span class="fm-voice__attribution-name">{attribution}</span>
+        </p>
+      )}
+    </div>
   </section>
 )}
 
 <style>
   /*
-   * The voice panel is the second deliberate DARK editorial plate on the
-   * page (the first is the masthead). It bookends the reading experience
-   * and gives the entry's "voice moment" print-era presence without being
-   * loud. Theme tokens are remapped by the `.nsb-plate` utility so the
-   * component is just tuned here for typography and the quotation ornament.
+   * HeardInTheWild — a heavy-framed pull-quote panel with a yellow masthead
+   * strip. The yellow strip reads as a tabloid "quote-of-the-day" pennant;
+   * the body is white with a faded amber open-quote glyph behind the prose.
    */
   .fm-voice {
+    margin-top: var(--space-6);
+    border: 5px solid var(--color-frame);
+    background: var(--color-surface);
+  }
+  .fm-voice__bar {
+    background: var(--color-yellow);
+    color: var(--color-yellow-ink);
+    padding: var(--space-3) var(--space-5);
+    font-family: var(--font-sans);
+    font-weight: 900;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    font-size: var(--text-sm);
+    border-bottom: 5px solid var(--color-frame);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+  .fm-voice__bar-mark {
+    font-family: var(--font-serif);
+    font-weight: 900;
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+  .fm-voice__body {
     position: relative;
-    margin-top: var(--space-5);
-    padding: var(--space-8) var(--space-7) var(--space-6);
-    /* Accent-colored top rule cuts across the dark plate. */
-    border-top: 3px solid var(--accent-fm-bright);
+    padding: var(--space-7) var(--space-7) var(--space-6);
     overflow: hidden;
   }
-  /* Large faded accent open-quote glyph as typographic ornament. */
   .fm-voice__mark {
     position: absolute;
-    top: -0.32em;
+    top: -0.34em;
     left: var(--space-4);
     font-family: var(--font-serif);
     font-weight: 700;
-    font-size: 9rem;
+    font-size: 11rem;
     line-height: 1;
-    color: var(--accent-fm-bright);
-    opacity: 0.22;
+    color: var(--color-yellow);
+    opacity: 0.55;
     user-select: none;
     pointer-events: none;
+    z-index: 0;
   }
   .fm-voice__quote {
+    position: relative;
+    z-index: 1;
     margin: 0 0 var(--space-5) 0;
     padding-left: var(--space-8);
     border: 0;
-    position: relative;
   }
   .fm-voice__quote p {
     font-family: var(--font-serif);
     font-style: italic;
-    font-size: clamp(var(--text-xl), 2.5vw, var(--text-2xl));
+    font-size: clamp(var(--text-xl), 2.8vw, 2rem);
     line-height: var(--leading-snug);
-    color: var(--color-on-plate);
+    color: var(--color-ink);
     margin: 0;
-    max-width: 38rem;
-    letter-spacing: 0.005em;
-    font-weight: 400;
+    max-width: 42rem;
+    font-weight: 500;
   }
-  .fm-voice__quote p::before { content: ""; }
   .fm-voice__quote p::after {
     content: " \201D";
-    color: var(--accent-fm-bright);
+    color: var(--color-frame);
     font-style: normal;
-    font-weight: 700;
+    font-weight: 900;
     margin-left: 0.1em;
   }
   .fm-voice__attribution {
+    position: relative;
+    z-index: 1;
     display: inline-flex;
     gap: var(--space-3);
     align-items: baseline;
@@ -97,23 +125,25 @@ const hasQuote = typeof quote === "string" && quote.trim().length > 0;
     margin: 0;
   }
   .fm-voice__attribution-label {
-    margin: 0;
-    /* Bulletin-style label — accent bright on dark. */
-    color: var(--accent-fm-bright);
-    font-weight: 600;
+    font-family: var(--font-sans);
+    font-weight: 800;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
   }
   .fm-voice__attribution-name {
     font-family: var(--font-sans);
     font-size: var(--text-sm);
-    color: var(--color-on-plate);
-    font-weight: 600;
+    color: var(--color-ink);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
   }
 
   @media (max-width: 640px) {
-    .fm-voice {
-      padding: var(--space-7) var(--space-4) var(--space-5);
-    }
-    .fm-voice__mark { left: var(--space-2); font-size: 6rem; top: -0.28em; }
+    .fm-voice__body { padding: var(--space-6) var(--space-4) var(--space-5); }
+    .fm-voice__mark { left: var(--space-2); font-size: 7rem; top: -0.28em; }
     .fm-voice__quote { padding-left: var(--space-5); }
     .fm-voice__quote p { font-size: var(--text-lg); }
     .fm-voice__attribution { padding-left: var(--space-5); }

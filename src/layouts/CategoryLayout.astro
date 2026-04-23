@@ -1,22 +1,19 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
+import NumberCard from "@/components/NumberCard.astro";
 import type { CategoryCode } from "@/content/schemas/shared";
 import { categoryByCode } from "@/lib/categories";
 import { categoryBlock, listEntries } from "@/lib/load";
 
 export interface Props {
   code: CategoryCode;
-  /**
-   * Optional editorial tagline rendered under the category title.
-   * If omitted, `meta.summary` is used.
-   */
+  /** Optional editorial tagline rendered under the category title. */
   tagline?: string;
   /**
-   * Optional compact data strip rendered at the bottom of the hero plate.
-   * Each item is a label + value rendered as mono key-value pairs.
-   * If omitted, a default strip shows: entries total and subcategories.
+   * Optional stat cards shown as a column on the hero. If omitted, a default
+   * set (Entries + Subcategories) is rendered.
    */
-  dataStrip?: ReadonlyArray<{ label: string; value: string }>;
+  dataStrip?: ReadonlyArray<{ label: string; value: string; variant?: "yellow" | "blue" | "outline" | "black" }>;
 }
 
 const { code, tagline, dataStrip } = Astro.props;
@@ -24,37 +21,50 @@ const desc = categoryByCode(code);
 const meta = categoryBlock(code);
 const accent = code.toLowerCase() as "fm" | "td" | "rf" | "ep";
 
-const defaultStrip: ReadonlyArray<{ label: string; value: string }> = [
-  { label: "Entries", value: String(listEntries(code).length) },
-  { label: "Subcategories", value: String(meta.subcategories.length) },
-  { label: "Edition", value: "01 · draft" },
+const defaultStrip = [
+  { label: "Entries", value: String(listEntries(code).length).padStart(2, "0"), variant: "yellow" as const },
+  { label: "Classes", value: String(meta.subcategories.length).padStart(2, "0"), variant: "blue" as const },
 ];
 const strip = dataStrip ?? defaultStrip;
 ---
 <BaseLayout title={desc.name} description={meta.summary} accent={accent}>
-  <div class="nsb-cat-hero nsb-plate">
-    <div class="nsb-cat-hero__inner">
-      <p class="nsb-eyebrow nsb-eyebrow--bulletin">Category · {desc.shortLabel}</p>
-      <hr class="nsb-accent-rule nsb-accent-rule--thick" />
-      <h1 class="nsb-cat-hero__title">{meta.name}</h1>
-      <p class="nsb-cat-hero__summary">{tagline ?? meta.summary}</p>
-
-      <dl class="nsb-cat-hero__strip" aria-label="Catalog data">
-        {strip.map((item) => (
-          <div class="nsb-cat-hero__strip-item">
-            <dt>{item.label}</dt>
-            <dd>{item.value}</dd>
-          </div>
-        ))}
-        <div class="nsb-cat-hero__strip-item nsb-cat-hero__strip-item--wide">
-          <dt>Subcategories</dt>
-          <dd>{meta.subcategories.join(" · ")}</dd>
-        </div>
-      </dl>
-    </div>
-  </div>
-
+  {/* Framed bright tabloid hero — three bands inside one heavy black frame:
+      (1) masthead edition strip: CATEGORY · CODE
+      (2) main row: display title on white + stat-card column on paper-alt
+      (3) footer filter/data band: list of subcategories as outline pills */}
   <div class="nsb-container">
+    <header class="nsb-cat-hero nsb-frame nsb-frame--heavy">
+      <div class="nsb-cat-hero__edition">
+        <span class="nsb-cat-hero__edition-left">
+          <span class="nsb-cat-hero__edition-code">{desc.shortLabel}</span>
+          <span class="nsb-cat-hero__edition-sep">·</span>
+          <span class="nsb-cat-hero__edition-name">{desc.name}</span>
+        </span>
+        <span class="nsb-cat-hero__edition-right">Edition 01 · Draft</span>
+      </div>
+
+      <div class="nsb-cat-hero__main">
+        <div class="nsb-cat-hero__title-col">
+          <h1 class="nsb-display nsb-display--xl nsb-cat-hero__title">{meta.name}</h1>
+          <p class="nsb-cat-hero__summary">{tagline ?? meta.summary}</p>
+        </div>
+        <div class="nsb-cat-hero__stats" aria-label="Catalog stats">
+          {strip.map((item) => (
+            <NumberCard label={item.label} value={item.value} variant={item.variant ?? "yellow"} />
+          ))}
+        </div>
+      </div>
+
+      <div class="nsb-cat-hero__filters" aria-label="Subcategories">
+        <p class="nsb-cat-hero__filters-label">Classes</p>
+        <ul class="nsb-cat-hero__filters-list">
+          {meta.subcategories.map((s) => (
+            <li><span class="nsb-cat-hero__chip">{s}</span></li>
+          ))}
+        </ul>
+      </div>
+    </header>
+
     <section class="nsb-cat-body">
       <slot />
     </section>
@@ -62,61 +72,128 @@ const strip = dataStrip ?? defaultStrip;
 
   <style is:global>
     .nsb-cat-hero {
-      width: 100%;
-      padding-block: var(--space-7);
-      padding-inline: var(--gutter);
-      margin-bottom: var(--space-7);
-      border-bottom: 1px solid var(--color-ink-plate-soft);
+      margin: var(--space-5) 0 var(--space-8) 0;
     }
-    .nsb-cat-hero__inner {
-      max-width: var(--content-max);
-      margin-inline: auto;
-      width: 100%;
+    /* (1) edition strip — colored with the per-category accent so this
+       masthead matches the home-page card head for the same category
+       (green for FM, burnt orange for TD, crimson for RF, plum for EP).
+       Reader who clicked into the FM card sees the same green bar on
+       top of the landing. --accent-current is set by [data-accent] on
+       the <body> (see BaseLayout). */
+    .nsb-cat-hero__edition {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-5);
+      background: var(--accent-current);
+      color: var(--color-surface);
+      font-family: var(--font-sans);
+      font-weight: 800;
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      font-size: var(--text-xs);
+      border-bottom: 3px solid var(--color-frame);
+    }
+    .nsb-cat-hero__edition-code { color: var(--color-surface); font-weight: 900; }
+    .nsb-cat-hero__edition-sep  { opacity: 0.5; }
+    .nsb-cat-hero__edition-right { color: var(--color-surface); opacity: 0.75; }
+
+    /* (2) main row -------------------------------------------------- */
+    .nsb-cat-hero__main {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    @media (min-width: 880px) {
+      .nsb-cat-hero__main {
+        grid-template-columns: minmax(0, 1fr) minmax(12rem, 18rem);
+      }
+    }
+    .nsb-cat-hero__title-col {
+      padding: clamp(var(--space-5), 3vw, var(--space-7));
+      background: var(--color-surface);
+      border-bottom: 3px solid var(--color-frame);
+    }
+    @media (min-width: 880px) {
+      .nsb-cat-hero__title-col { border-right: 3px solid var(--color-frame); }
     }
     .nsb-cat-hero__title {
-      font-family: var(--font-sans);
-      font-weight: 700;
-      font-size: clamp(var(--text-3xl), 5vw, var(--text-4xl));
-      letter-spacing: -0.015em;
-      line-height: var(--leading-tight);
-      color: var(--color-on-plate);
-      margin: 0 0 var(--space-4) 0;
+      color: var(--color-ink);
+      margin: 0;
     }
     .nsb-cat-hero__summary {
       font-family: var(--font-serif);
-      font-size: var(--text-lg);
+      font-size: clamp(var(--text-md), 1.6vw, var(--text-lg));
       line-height: var(--leading-snug);
-      color: var(--color-on-plate-dim);
-      max-width: var(--reading-max);
-      margin: 0 0 var(--space-6) 0;
+      color: var(--color-ink-dim);
+      margin: var(--space-5) 0 0 0;
     }
-    /* Catalog data strip — a print-era reference marker. */
-    .nsb-cat-hero__strip {
+    .nsb-cat-hero__stats {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(9rem, max-content));
-      gap: var(--space-5) var(--space-7);
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0;
+      background: var(--color-paper-alt);
+      border-bottom: 3px solid var(--color-frame);
+    }
+    @media (min-width: 880px) {
+      .nsb-cat-hero__stats {
+        grid-template-columns: 1fr;
+      }
+    }
+    .nsb-cat-hero__stats > * {
+      border: 0 !important;
+      border-bottom: 3px solid var(--color-frame) !important;
+      min-width: 0;
+    }
+    @media (min-width: 880px) {
+      .nsb-cat-hero__stats > *:last-child { border-bottom: 0 !important; }
+    }
+    @media (max-width: 879px) {
+      .nsb-cat-hero__stats > *:not(:last-child) {
+        border-right: 3px solid var(--color-frame) !important;
+      }
+      .nsb-cat-hero__stats > *:last-child { border-right: 0 !important; }
+      .nsb-cat-hero__stats > *:nth-last-child(-n+2) { border-bottom: 0 !important; }
+    }
+
+    /* (3) filter band ----------------------------------------------- */
+    .nsb-cat-hero__filters {
+      padding: var(--space-4) var(--space-5);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-3);
+      background: var(--color-surface);
+    }
+    .nsb-cat-hero__filters-label {
       margin: 0;
-      padding-top: var(--space-4);
-      border-top: 1px solid var(--color-on-plate-faint);
       font-family: var(--font-sans);
-      font-size: var(--text-sm);
-    }
-    .nsb-cat-hero__strip-item--wide {
-      grid-column: 1 / -1;
-    }
-    .nsb-cat-hero__strip dt {
-      font-family: var(--font-mono);
-      font-size: var(--text-xs);
+      font-weight: 800;
       letter-spacing: var(--tracking-label);
       text-transform: uppercase;
-      color: var(--accent-current-bright);
-      font-weight: 600;
-      margin-bottom: var(--space-1);
+      font-size: var(--text-xs);
+      color: var(--color-ink);
     }
-    .nsb-cat-hero__strip dd {
+    .nsb-cat-hero__filters-list {
+      list-style: none;
+      padding: 0;
       margin: 0;
-      color: var(--color-on-plate);
-      font-feature-settings: "tnum";
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+    .nsb-cat-hero__chip {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-weight: 700;
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      padding: 4px 8px;
+      border: 2px solid var(--color-frame);
+      color: var(--color-ink);
+      background: var(--color-surface);
     }
   </style>
 </BaseLayout>

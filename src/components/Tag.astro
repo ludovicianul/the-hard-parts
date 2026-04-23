@@ -1,0 +1,122 @@
+---
+/**
+ * Tag — pill-style tabloid label.
+ *
+ * Used for category codes ("FM-01"), subcategory names ("PLANNING"), severity
+ * badges ("CRITICAL"), filters, and anywhere the references use a pill tag.
+ *
+ * Five variants map to the signal-color system:
+ *   · black   — identity / code ("FM-01"): black fill, white uppercase
+ *   · yellow  — highlighted category / "pay attention" (on paper)
+ *   · red     — alert / critical severity / "don't"
+ *   · blue    — info / related / neighbor
+ *   · outline — black border, paper fill, black text. The quiet variant.
+ *
+ * Intentionally uppercase + bold. Intentionally square (no rounding) to match
+ * the hard-edged tabloid frames. Renders as <span> by default; set `as="a"`
+ * for a linked pill.
+ */
+
+export interface Props {
+  /** Pill label text. */
+  label: string;
+  /**
+   * Color variant. Defaults to "outline".
+   *
+   * The `sev-*` variants tap into the severity ramp tokens (--sev-low …
+   * --sev-critical) so a severity pill on the detail-page masthead will
+   * resolve to the exact same color as a card of the same severity on the
+   * FM landing grid.
+   */
+  variant?:
+    | "black"
+    | "yellow"
+    | "red"
+    | "blue"
+    | "outline"
+    | "sev-low"
+    | "sev-medium"
+    | "sev-medium-high"
+    | "sev-high"
+    | "sev-critical";
+  /** Size. Defaults to "md". */
+  size?: "sm" | "md" | "lg";
+  /** Optional href — renders as <a>. */
+  href?: string;
+  /** Optional secondary icon/symbol, e.g. an arrow. */
+  trailing?: string;
+}
+
+const { label, variant = "outline", size = "md", href, trailing } = Astro.props;
+const cls = ["nsb-tag", `nsb-tag--${variant}`, `nsb-tag--${size}`];
+const Element = href ? "a" : "span";
+---
+<Element class:list={cls} href={href}>
+  <span class="nsb-tag__label">{label}</span>
+  {trailing && <span class="nsb-tag__trailing" aria-hidden="true">{trailing}</span>}
+</Element>
+
+<style>
+  .nsb-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-sans);
+    font-weight: 800;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    border-radius: 0;
+    line-height: 1;
+    white-space: nowrap;
+    text-decoration: none;
+    user-select: none;
+    /* thicker black border by default; variants may override. */
+    border: 2px solid var(--color-frame);
+  }
+
+  /* sizes ---------------------------------------------------------- */
+  .nsb-tag--sm { padding: 4px 8px;   font-size: 0.6875rem; }
+  .nsb-tag--md { padding: 6px 12px;  font-size: 0.78rem;   }
+  .nsb-tag--lg { padding: 8px 14px;  font-size: 0.95rem;   }
+
+  /* color variants ------------------------------------------------- */
+  .nsb-tag--black {
+    background: var(--color-frame);
+    color: var(--color-surface);
+  }
+  .nsb-tag--yellow {
+    background: var(--color-yellow);
+    color: var(--color-yellow-ink);
+  }
+  .nsb-tag--red {
+    background: var(--color-red);
+    color: var(--color-surface);
+  }
+  .nsb-tag--blue {
+    background: var(--color-blue);
+    color: var(--color-surface);
+  }
+  .nsb-tag--outline {
+    background: transparent;
+    color: var(--color-ink);
+  }
+
+  /* Severity-ramp variants — share tokens with EntryCard so a severity pill
+     and a severity-fill card always match in color. */
+  .nsb-tag--sev-low         { background: var(--sev-low);         color: var(--sev-low-ink);         }
+  .nsb-tag--sev-medium      { background: var(--sev-medium);      color: var(--sev-medium-ink);      }
+  .nsb-tag--sev-medium-high { background: var(--sev-medium-high); color: var(--sev-medium-high-ink); }
+  .nsb-tag--sev-high        { background: var(--sev-high);        color: var(--sev-high-ink);        }
+  .nsb-tag--sev-critical    { background: var(--sev-critical);    color: var(--sev-critical-ink);    }
+
+  a.nsb-tag {
+    transition: transform var(--dur-fast) var(--ease),
+                box-shadow var(--dur-fast) var(--ease);
+  }
+  a.nsb-tag:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 0 var(--color-frame);
+  }
+
+  .nsb-tag__trailing { font-weight: 900; }
+</style>

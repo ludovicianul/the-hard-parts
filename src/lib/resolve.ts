@@ -3,6 +3,29 @@ import { listEntries } from "./load";
 import type { CategoryCode, ResolvedRef } from "@/content/schemas/shared";
 
 /**
+ * Compute the padded catalog number + full refCode for an entry.
+ *
+ *   formatRefCode("FM",  4, 60)   -> { refNum: "05",  refCode: "FM-05"  }
+ *   formatRefCode("TD", 44, 145)  -> { refNum: "045", refCode: "TD-045" }
+ *
+ * Padding = `max(2, digits(total))` so small categories stay 2-digit
+ * and large categories grow to 3 without ever going below 2 (which
+ * would look ad-hoc — e.g. "FM-5" beside "TD-045").
+ */
+export function formatRefCode(
+  code: CategoryCode,
+  indexInCategory: number,
+  totalInCategory: number,
+): { refNum: string; refCode: string } {
+  const width = Math.max(2, String(totalInCategory).length);
+  const refNum = String(indexInCategory + 1).padStart(width, "0");
+  return {
+    refNum,
+    refCode: `${CATEGORIES[code].shortLabel}-${refNum}`,
+  };
+}
+
+/**
  * Cross-reference resolution.
  *
  * Entries reference each other via slugs in fields like `relatedFailureModes`,
@@ -23,19 +46,30 @@ function buildIndex(): Index {
   const idx: Index = new Map();
   for (const code of CATEGORY_ORDER) {
     const desc = CATEGORIES[code];
-    for (const entry of listEntries(code)) {
+    const entries = listEntries(code);
+    const total = entries.length;
+    // Stable catalog number per entry, padded to the width needed by
+    // this category's own size. Matches the refCode on each entry's
+    // own detail-page masthead, so a cross-reference link displays
+    // the same "FM-05" string a reader would see when they land on
+    // the target page.
+    entries.forEach((entry, indexInCategory) => {
+      const { refNum, refCode } = formatRefCode(code, indexInCategory, total);
       const ref: ResolvedRef = {
         code,
         slug: entry.slug,
         title: entry.title,
         categoryRoute: `/${desc.route}`,
         href: hrefForEntry(code, entry.slug),
+        indexInCategory,
+        refNum,
+        refCode,
       };
       // Slug collisions would be a real integrity bug; validator catches that.
       if (!idx.has(entry.slug)) {
         idx.set(entry.slug, ref);
       }
-    }
+    });
   }
   return idx;
 }

@@ -1,0 +1,69 @@
+---
+/**
+ * NumberCard — stat card inspired by the reference's "ENTRIES / 32" block.
+ *
+ * Renders a framed panel containing:
+ *   · a small uppercase label ("ENTRIES")
+ *   · a giant zero-padded numeral ("32")
+ *
+ * Used on category landing hero strips to surface catalog totals. Colour
+ * variants match the signal system: yellow (featured / primary count),
+ * blue (secondary / info), outline (quiet).
+ */
+
+export interface Props {
+  label: string;
+  /** Accepts string to allow zero-padding like "06". */
+  value: string | number;
+  /** Fill variant. Defaults to "yellow". */
+  variant?: "yellow" | "blue" | "outline" | "black";
+  /** Minimum visual width of the card. */
+  minWidth?: string;
+}
+
+const { label, value, variant = "yellow", minWidth = "10rem" } = Astro.props;
+const displayValue = typeof value === "number"
+  ? String(value).padStart(2, "0")
+  : value;
+---
+<div
+  class:list={["nsb-numcard", `nsb-numcard--${variant}`]}
+  style={`min-width:${minWidth}`}
+>
+  <p class="nsb-numcard__label">{label}</p>
+  <p class="nsb-stat-num nsb-numcard__value">{displayValue}</p>
+</div>
+
+<style>
+  .nsb-numcard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    border: 3px solid var(--color-frame);
+    background: var(--color-yellow);
+    color: var(--color-yellow-ink);
+  }
+  .nsb-numcard--blue {
+    background: var(--color-blue);
+    color: var(--color-surface);
+  }
+  .nsb-numcard--black {
+    background: var(--color-frame);
+    color: var(--color-surface);
+  }
+  .nsb-numcard--outline {
+    background: var(--color-surface);
+    color: var(--color-ink);
+  }
+  .nsb-numcard__label {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-weight: 800;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    font-size: var(--text-xs);
+    color: inherit;
+  }
+  .nsb-numcard__value { color: inherit; }
+</style>

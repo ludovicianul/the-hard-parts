@@ -28,14 +28,21 @@ export interface Props {
   href?: string;
   /** Visual accent for hover + title underline. Defaults to entry category. */
   accent?: "fm" | "td" | "rf" | "ep";
-  /**
-   * Optional severity (FM-specific). When provided, renders a left-edge bar
-   * whose intensity scales with severity — color-as-information per
-   * docs/design-direction.md.
-   */
+  /** Severity (FM-specific). Drives the bottom tick-bar intensity. */
   severity?: "low" | "medium" | "medium-high" | "high" | "critical";
   /** Optional decorative catalog reference number, e.g. "007". */
   refNum?: string;
+  /** Fill variant for the card. Drives color-as-information in the catalog. */
+  variant?: "default" | "yellow" | "blue" | "red" | "paper";
+  /**
+   * If true, ignore `variant` and fill the card background using the severity
+   * color ramp (see --sev-* tokens). The ramp is an achromatic grayscale
+   * (paper → near-black) so it can never collide with the category color
+   * palette (FM = green, TD = orange, RF = crimson, EP = purple) or the
+   * hero signal colors (yellow, blue). Used on the FM landing and the
+   * homepage preview strip so a reader can read weight before names.
+   */
+  fillFromSeverity?: boolean;
 }
 
 const {
@@ -49,113 +56,181 @@ const {
   accent,
   severity,
   refNum,
+  variant = "default",
+  fillFromSeverity = false,
 } = Astro.props;
 
 const desc = CATEGORIES[code];
 const resolvedHref = href ?? `/${desc.route}/${slug}`;
 const resolvedAccent = accent ?? (code.toLowerCase() as "fm" | "td" | "rf" | "ep");
+
+// Severity → number of filled tick bars (out of 5).
+const severitySteps: Record<NonNullable<Props["severity"]>, number> = {
+  low: 1,
+  medium: 2,
+  "medium-high": 3,
+  high: 4,
+  critical: 5,
+};
+const sevStep = severity ? severitySteps[severity] : 0;
 ---
 <a
-  class:list={["nsb-entry-card", severity && `nsb-entry-card--sev-${severity.replace(/\s+/g, "-")}`]}
+  class:list={[
+    "nsb-entry-card",
+    // When the caller asks the card to fill from severity, we ignore the
+    // variant prop entirely and key off the severity level instead. This
+    // keeps the color-as-information contract tight: on the FM catalog,
+    // card color means severity, nothing else.
+    fillFromSeverity && severity
+      ? `nsb-entry-card--fill-${severity.replace(/\s+/g, "-")}`
+      : `nsb-entry-card--v-${variant}`,
+    severity && `nsb-entry-card--sev-${severity.replace(/\s+/g, "-")}`,
+  ]}
   href={resolvedHref}
   data-accent={resolvedAccent}
 >
-  {severity && <span class="nsb-entry-card__sev-bar" aria-hidden="true" />}
   <div class="nsb-entry-card__body">
-    <p class="nsb-eyebrow nsb-entry-card__eyebrow">
-      <span class="nsb-entry-card__code">{desc.shortLabel}</span>
-      {refNum && <span class="nsb-entry-card__refnum">· {refNum}</span>}
-      {subcategory && <span class="nsb-entry-card__sub"> · {subcategory}</span>}
-    </p>
+    <div class="nsb-entry-card__top">
+      <span class="nsb-entry-card__code">
+        {desc.shortLabel}{refNum && <span class="nsb-entry-card__refnum">-{refNum}</span>}
+      </span>
+      {subcategory && <span class="nsb-entry-card__sub">{subcategory}</span>}
+    </div>
     <h3 class="nsb-entry-card__title">{title}</h3>
     <p class="nsb-entry-card__summary">{summary}</p>
-    {metaBits.length > 0 && (
-      <p class="nsb-entry-card__meta">
-        {metaBits.filter(Boolean).join("   ·   ")}
-      </p>
+    {(metaBits.length > 0 || severity) && (
+      <div class="nsb-entry-card__meta">
+        {severity && (
+          <span class="nsb-entry-card__meta-bars" aria-hidden="true">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <span class:list={["nsb-entry-card__meta-bar", { "is-on-full": i < sevStep }]} />
+            ))}
+          </span>
+        )}
+        {metaBits.length > 0 && (
+          <span class="nsb-entry-card__meta-text">{metaBits.filter(Boolean).join("  ·  ")}</span>
+        )}
+      </div>
     )}
   </div>
 </a>
 
 <style>
+  /* --- Base card: a framed rectangle with a heavy top-row "masthead" that
+         carries the code/ref pill (black) and optional subcategory (right-aligned).
+         Hover shifts the card up and drops a crisp black offset shadow for the
+         tabloid "clipping from a newspaper" feel. ------------------------- */
   .nsb-entry-card {
-    display: grid;
-    grid-template-columns: 6px 1fr;
+    display: block;
+    position: relative;
     background: var(--color-surface);
-    border-right: var(--rule);
-    border-bottom: var(--rule);
+    border: 3px solid var(--color-frame);
     text-decoration: none;
     color: inherit;
-    transition: background var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
-    min-height: 12rem;
-    position: relative;
+    min-height: 14rem;
+    transition: transform var(--dur-fast) var(--ease),
+                box-shadow var(--dur-fast) var(--ease),
+                background var(--dur-fast) var(--ease);
   }
-  .nsb-entry-card:hover { background: var(--accent-current-wash, var(--color-paper-alt)); }
-  .nsb-entry-card:focus-visible { outline-offset: -2px; }
+  .nsb-entry-card:hover,
+  .nsb-entry-card:focus-visible {
+    transform: translate(-3px, -3px);
+    box-shadow: 6px 6px 0 0 var(--color-frame);
+    outline: none;
+  }
 
-  /* Severity bar on the left edge — color-as-information.
-     Width fixed; intensity varies. Always amber, stepped saturation. */
-  .nsb-entry-card__sev-bar {
-    background: var(--color-rule);
-    transition: background var(--dur-fast) var(--ease);
-  }
-  .nsb-entry-card--sev-low        .nsb-entry-card__sev-bar { background: var(--color-rule-strong); }
-  .nsb-entry-card--sev-medium     .nsb-entry-card__sev-bar { background: var(--accent-current-tint); }
-  .nsb-entry-card--sev-medium-high .nsb-entry-card__sev-bar { background: var(--accent-current); opacity: 0.65; }
-  .nsb-entry-card--sev-high       .nsb-entry-card__sev-bar { background: var(--accent-current); }
-  .nsb-entry-card--sev-critical   .nsb-entry-card__sev-bar { background: var(--accent-current-deep, var(--accent-current)); }
-  /* Entries without a severity bar still reserve the 6px column but keep it
-     invisible — aligns grid of mixed cards. */
-  .nsb-entry-card:not([class*="--sev-"]) .nsb-entry-card__sev-bar { background: transparent; }
+  /* Variants — generic color fills for non-FM uses (Tech Decisions, etc.). */
+  .nsb-entry-card--v-yellow  { background: var(--color-yellow-soft); color: var(--color-yellow-ink); }
+  .nsb-entry-card--v-red     { background: var(--color-red);         color: var(--color-surface);    }
+  .nsb-entry-card--v-blue    { background: var(--color-blue);        color: var(--color-surface);    }
+  .nsb-entry-card--v-paper   { background: var(--color-paper-alt);   color: var(--color-ink);        }
+  .nsb-entry-card--v-default { background: var(--color-surface);     color: var(--color-ink);        }
+
+  /* Severity ramp — card background reads as a heat-map. All five steps
+     use the shared --sev-* tokens so the legend on the FM landing, the
+     cards on the grid, and the severity pill on the detail page all
+     resolve to the exact same color for any given level. */
+  .nsb-entry-card--fill-low         { background: var(--sev-low);         color: var(--sev-low-ink);         }
+  .nsb-entry-card--fill-medium      { background: var(--sev-medium);      color: var(--sev-medium-ink);      }
+  .nsb-entry-card--fill-medium-high { background: var(--sev-medium-high); color: var(--sev-medium-high-ink); }
+  .nsb-entry-card--fill-high        { background: var(--sev-high);        color: var(--sev-high-ink);        }
+  .nsb-entry-card--fill-critical    { background: var(--sev-critical);    color: var(--sev-critical-ink);    }
 
   .nsb-entry-card__body {
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
-    padding: var(--space-5) var(--space-5) var(--space-4);
+    padding: var(--space-4) var(--space-5) var(--space-4);
+    height: 100%;
   }
 
-  .nsb-entry-card__eyebrow { margin: 0; display: flex; gap: var(--space-1); flex-wrap: wrap; }
-  .nsb-entry-card__code { color: var(--accent-current); font-weight: 700; }
-  .nsb-entry-card__refnum { color: var(--color-label); font-feature-settings: "tnum"; }
-  .nsb-entry-card__sub { color: var(--color-label); }
+  /* Top row — code pill-like marker + right-aligned subcategory eyebrow. */
+  .nsb-entry-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-bottom: var(--space-3);
+    border-bottom: 2px solid currentColor;
+    font-family: var(--font-sans);
+    font-weight: 900;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    font-size: var(--text-xs);
+  }
+  .nsb-entry-card__code {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 2px;
+    color: inherit;
+  }
+  .nsb-entry-card__refnum { font-feature-settings: "tnum"; }
+  .nsb-entry-card__sub { color: inherit; opacity: 0.75; font-weight: 700; }
 
   .nsb-entry-card__title {
     font-family: var(--font-sans);
-    font-size: var(--text-lg);
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    line-height: var(--leading-snug);
-    margin: 0;
-    color: var(--color-ink);
-    /* Accent underline on hover only — not a default rule, per design direction
-       ("avoid decoration masking as structure"). */
-    background-image: linear-gradient(var(--accent-current), var(--accent-current));
-    background-repeat: no-repeat;
-    background-size: 0 2px;
-    background-position: 0 100%;
-    transition: background-size var(--dur-med) var(--ease);
-  }
-  .nsb-entry-card:hover .nsb-entry-card__title {
-    background-size: 3rem 2px;
+    font-size: clamp(var(--text-lg), 2.1vw, var(--text-xl));
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.015em;
+    line-height: 1;
+    margin: var(--space-2) 0 0 0;
+    color: inherit;
   }
 
   .nsb-entry-card__summary {
     font-family: var(--font-serif);
-    color: var(--color-ink-dim);
+    color: inherit;
+    opacity: 0.85;
     font-size: var(--text-base);
     line-height: var(--leading-snug);
     margin: 0;
     flex: 1 1 auto;
   }
+
+  /* Meta row — severity bars (black block tick marks) + mono meta text. */
   .nsb-entry-card__meta {
-    font-family: var(--font-mono);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 2px solid currentColor;
+    font-family: var(--font-sans);
     font-size: var(--text-xs);
+    font-weight: 700;
     letter-spacing: var(--tracking-label);
-    text-transform: lowercase;
-    color: var(--color-label);
-    margin: 0;
-    padding-top: var(--space-2);
-    border-top: var(--rule-soft);
+    text-transform: uppercase;
+    color: inherit;
   }
+  .nsb-entry-card__meta-bars { display: inline-flex; gap: 3px; }
+  .nsb-entry-card__meta-bar {
+    width: 18px;
+    height: 8px;
+    background: currentColor;
+    opacity: 0.18;
+    display: inline-block;
+  }
+  .nsb-entry-card__meta-bar.is-on-full { opacity: 1; }
+  .nsb-entry-card__meta-text { opacity: 0.85; }
 </style>

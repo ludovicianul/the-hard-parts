@@ -1,6 +1,8 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import EntryCard from "@/components/EntryCard.astro";
+import CalloutBand from "@/components/CalloutBand.astro";
+import Tag from "@/components/Tag.astro";
 import { CATEGORIES, CATEGORY_ORDER } from "@/lib/categories";
 import { categoryBlock, listEntries, loadFailureModes } from "@/lib/load";
 import { ensureValidated } from "@/lib/validate";
@@ -21,15 +23,19 @@ const cards = CATEGORY_ORDER.map((code) => {
   };
 });
 
-// Homepage FM preview — four entries chosen by editorial priority to span
-// four different FM subcategories (planning · people · technical · ai) so
-// the preview shows breadth, not a single flavour. The scope is one
-// vertical slice: only FM gets a preview strip in Phase 2.
+// Homepage FM preview — six entries chosen to span every FM subcategory
+// (planning · people · technical · process · leadership · ai) so the
+// preview shows the breadth of the catalog, not a single flavour. One
+// card per subcategory keeps the 3×2 grid informative rather than
+// redundant. The scope is still one vertical slice: only FM gets a
+// preview strip in Phase 2.
 const fmEntries = loadFailureModes().entries;
 const featuredSlugs = [
-  "friendly-rewrite",        // planning
-  "hero-trap",               // people
-  "abstraction-addiction",   // technical
+  "friendly-rewrite",          // planning
+  "hero-trap",                 // people
+  "abstraction-addiction",     // technical
+  "ticket-theater",            // process
+  "invisible-deadline",        // leadership
   "autocomplete-architecture", // ai
 ];
 const fmFeatured = featuredSlugs
@@ -41,34 +47,114 @@ const fmFeatured = featuredSlugs
   description="A reference-first field guide for software people. Failure Modes, Tech Decisions, Red Flags, and the Engineering Playbook."
 >
   <div class="nsb-container nsb-home">
-    <header class="nsb-home__hero">
-      <p class="nsb-eyebrow">nosilverbullet.dev</p>
-      <h1 class="nsb-home__title">
-        Software is hard. That’s the point.
-      </h1>
-      <p class="nsb-home__summary">
-        A reference-first field guide to how software work goes wrong, how
-        engineers make trade-offs, what to watch for early, and what good
-        looks like when things are hard.
-      </p>
+    {/* --------- TABLOID MASTHEAD ---------
+        Three-column framed hero inspired by the reference's "TABLOID EDITION"
+        front page: black brand rail + giant display headline + stat-card
+        rail. All three columns share identical top/bottom padding so their
+        internal content baselines (brand code / edition tag / categories
+        label) align across the row. Column dividers are drawn by a single
+        set of right-borders on the first two columns — no `!important`
+        border overrides, no doubled-up rules. */}
+    <header class="nsb-home__hero nsb-frame nsb-frame--heavy" aria-label="Masthead">
+      {/* Left nameplate — three stacked pieces:
+            1. NOSILVERBULLET masthead code (small yellow eyebrow)
+            2. The four section names as a stacked list — this is the
+               new "nameplate", replacing the old "FIELD GUIDE EDITION"
+               headline with the actual table-of-contents as the brand.
+            3. "Not a framework / Not a methodology / A reference" —
+               a three-beat positioning line that defines the site by
+               saying what it is NOT before what it is. */}
+      <div class="nsb-home__hero-brand nsb-home__hero-col">
+        <p class="nsb-home__hero-brand-code">NOSILVERBULLET</p>
+        <ul class="nsb-home__hero-brand-list">
+          <li>Failure modes.</li>
+          <li>Red-flags.</li>
+          <li>Trade-offs.</li>
+          <li>Playbooks.</li>
+        </ul>
+        <p class="nsb-home__hero-brand-note">
+          Not a framework.<br />
+          Not a methodology.<br />
+          A reference.
+        </p>
+      </div>
+
+      <div class="nsb-home__hero-title-col nsb-home__hero-col">
+        <div class="nsb-home__hero-eyebrow">
+          <Tag label="Edition 01" variant="yellow" size="sm" />
+        </div>
+        <h1 class="nsb-display nsb-display--xl nsb-home__hero-title">
+          Software<br />fails<br />the same way.<br />Every time.
+        </h1>
+        <p class="nsb-home__hero-summary">
+          The failure modes are documented. The warning signs are
+          observable. The counter-moves are known. This is where
+          they live.
+        </p>
+      </div>
+
+      {/* Stats rail — three equal-height cells stacked at desktop, each
+          sharing the rail's own uniform padding so their labels/values
+          align with the center column's content. Yellow and blue are
+          signal colors (not category colors), so they can stay loud
+          without overloading category meaning. The note cell carries
+          a short usage directive — a reader sees at a glance how the
+          reference is meant to be used (retros, reviews, decisions),
+          not what it is (that's the left and center columns' job). */}
+      <div class="nsb-home__hero-stats" aria-label="Catalog stats">
+        <div class="nsb-home__hero-stat nsb-home__hero-stat--yellow">
+          <p class="nsb-home__hero-stat-label">Sections</p>
+          <p class="nsb-home__hero-stat-value nsb-stat-num">
+            {String(CATEGORY_ORDER.length).padStart(2, "0")}
+          </p>
+        </div>
+        <div class="nsb-home__hero-stat nsb-home__hero-stat--blue">
+          <p class="nsb-home__hero-stat-label">Entries</p>
+          <p class="nsb-home__hero-stat-value nsb-stat-num">
+            {String(cards.reduce((sum, c) => sum + c.count, 0)).padStart(2, "0")}
+          </p>
+        </div>
+        <div class="nsb-home__hero-stat nsb-home__hero-stat--note">
+          <p class="nsb-home__hero-note-head">Open. Share.</p>
+          <ul class="nsb-home__hero-note-list">
+            <li>Use in retros.</li>
+            <li>Use in reviews.</li>
+            <li>Use in decisions.</li>
+          </ul>
+        </div>
+      </div>
     </header>
 
+    {/* --------- CATEGORY MAP ---------
+        Four framed cards, each with a saturated header strip. The head
+        color is driven by the per-category --accent-current variable
+        set via `data-accent`, so the palette is defined in exactly one
+        place (tokens.css §Category accents) and cascades everywhere
+        that reads --accent-current (detail masthead, arc accents,
+        related-entries frames, etc.). */}
     <section class="nsb-home__grid" aria-label="Categories">
       {cards.map((c) => (
-        <a class="nsb-home__card" href={`/${c.route}`} data-accent={c.accent}>
-          <p class="nsb-eyebrow">{c.code}</p>
-          <h2 class="nsb-home__card-title">{c.name}</h2>
-          <p class="nsb-home__card-summary">{c.summary}</p>
-          <p class="nsb-home__card-count">{c.count} entries</p>
+        <a class="nsb-home__card nsb-frame" href={`/${c.route}`} data-accent={c.accent}>
+          <div class="nsb-home__card-head">
+            <span class="nsb-home__card-code">{c.code}</span>
+            <span class="nsb-home__card-count">{String(c.count).padStart(2, "0")} entries</span>
+          </div>
+          <div class="nsb-home__card-body">
+            <h2 class="nsb-home__card-title">{c.name}</h2>
+            <p class="nsb-home__card-summary">{c.summary}</p>
+          </div>
         </a>
       ))}
     </section>
 
     {fmFeatured.length > 0 && (
       <section class="nsb-home__preview" aria-label="From Failure Modes" data-accent="fm">
+        <CalloutBand label="Special section" variant="yellow">
+          <p>Failure Modes &mdash; named patterns that recur in software teams.</p>
+        </CalloutBand>
+
         <header class="nsb-home__preview-header">
-          <p class="nsb-eyebrow">FM · from the field guide</p>
-          <h2 class="nsb-home__preview-title">From Failure Modes</h2>
+          <h2 class="nsb-display nsb-home__preview-title">From Failure Modes</h2>
           <p class="nsb-home__preview-note">
             A glimpse of the catalog. Each entry walks through how the
             pattern starts, how it escalates, what it looks like at early,
@@ -78,30 +164,33 @@ const fmFeatured = featuredSlugs
 
         <div class="nsb-home__preview-grid">
           {fmFeatured.map((e) => (
+            /* Same severity-driven fill rule as the FM landing catalog —
+               preview strip mirrors the big grid so readers see the same
+               color contract everywhere. */
             <EntryCard
               code="FM"
               slug={e.slug}
               title={e.title}
               summary={e.summary}
               subcategory={e.category}
-              metaBits={[
-                `severity · ${e.severity}`,
-                `frequency · ${e.frequency}`,
-              ]}
+              severity={e.severity as "low" | "medium" | "medium-high" | "high" | "critical"}
+              refNum={String(fmEntries.findIndex((x) => x.slug === e.slug) + 1).padStart(3, "0")}
+              fillFromSeverity
+              metaBits={[`Freq · ${e.frequency}`]}
             />
           ))}
         </div>
 
         <p class="nsb-home__preview-more">
           <a href="/failure-modes" class="nsb-home__preview-link">
-            Browse all {fmEntries.length} Failure Modes →
+            Browse all {fmEntries.length} Failure Modes &rarr;
           </a>
         </p>
       </section>
     )}
 
-    <aside class="nsb-home__status" aria-label="Build status">
-      <p class="nsb-eyebrow">Phase status</p>
+    <aside class="nsb-home__status nsb-frame" aria-label="Build status">
+      <div class="nsb-home__status-bar">Phase status</div>
       <p class="nsb-home__status-text">
         Failure Modes is the first category wired end-to-end with real
         detail pages, warning-signs-by-stage rendering, and cross-reference
@@ -112,119 +201,401 @@ const fmFeatured = featuredSlugs
   </div>
 
   <style>
-    .nsb-home { padding-block: var(--space-6) var(--space-8); }
-    .nsb-home__hero { margin-bottom: var(--space-8); }
-    .nsb-home__title {
-      font-size: clamp(var(--text-3xl), 5vw, var(--text-4xl));
-      max-width: 18ch;
-      margin-top: var(--space-3);
-      letter-spacing: var(--tracking-tight);
-    }
-    .nsb-home__summary {
-      font-size: var(--text-lg);
-      color: var(--color-ink-dim);
-      max-width: var(--reading-max);
-    }
+    .nsb-home { padding-block: var(--space-6) var(--space-9); }
 
-    /* category map */
-    .nsb-home__grid {
+    /* ================================================================
+       TABLOID MASTHEAD (reference image 1 direction)
+       ================================================================ */
+    .nsb-home__hero {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+      grid-template-columns: 1fr;
       gap: 0;
-      border-top: var(--rule);
-      border-left: var(--rule);
       margin-bottom: var(--space-8);
     }
+    @media (min-width: 900px) {
+      .nsb-home__hero {
+        grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr) minmax(13rem, 18rem);
+      }
+    }
+
+    /* Shared hero column: identical padding on all three grid children
+       so the first paint line of each column's content (NOSILVERBULLET
+       / EDITION 01 / CATEGORIES) sits at the same y-offset from the
+       top of the hero frame. Previously each column set its own padding
+       and the Categories label landed higher than the EDITION 01 tag,
+       which read as a vertical misalignment. */
+    .nsb-home__hero-col {
+      padding: var(--space-6) var(--space-5);
+      min-width: 0;
+    }
+    @media (min-width: 900px) {
+      .nsb-home__hero-brand,
+      .nsb-home__hero-title-col {
+        border-right: 3px solid var(--color-frame);
+      }
+    }
+    @media (max-width: 899px) {
+      .nsb-home__hero-brand,
+      .nsb-home__hero-title-col {
+        border-bottom: 3px solid var(--color-frame);
+      }
+    }
+
+    /* Left nameplate rail — black to continue the tabloid masthead from
+       the top nav bar. Yellow brand code + white body type on black
+       reads as "masthead", not "alert" (the old red version collided
+       with red=critical on FM cards). Flex-column so the tagline can
+       use `margin-top: auto` to pin itself to the bottom of the rail
+       regardless of how tall the center column pushes the hero. */
+    .nsb-home__hero-brand {
+      background: var(--color-frame);
+      color: var(--color-surface);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      min-height: 100%;
+    }
+    .nsb-home__hero-brand-code {
+      margin: 0;
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-yellow);
+    }
+    /* The four section names as a stacked list — the new "nameplate"
+       for the left rail. Sized to read as the dominant element on the
+       rail without competing with the center headline. Each line ends
+       in a period (by content) so the list scans as a series of beats,
+       not a bulleted nav menu. */
+    .nsb-home__hero-brand-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: clamp(1.1rem, 1.9vw, 1.4rem);
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+      color: var(--color-surface);
+    }
+    .nsb-home__hero-brand-list li { margin: 0; }
+    /* Three-beat positioning tagline — sits at the BOTTOM of the
+       black rail (margin-top: auto) so the left column reads as a
+       nameplate (code + list) on top and a caption on the bottom,
+       instead of everything clumping at the top with a tall black
+       void below. Italic serif at body size, same treatment as the
+       old brand-note. */
+    .nsb-home__hero-brand-note {
+      margin: auto 0 0 0;
+      padding-top: var(--space-5);
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: var(--text-sm);
+      color: var(--color-surface);
+      opacity: 0.78;
+      line-height: 1.35;
+    }
+
+    /* Center title column — big display headline. Padding comes from
+       the shared `.nsb-home__hero-col` rule above so its first content
+       line aligns with the other two columns. */
+    .nsb-home__hero-title-col {
+      background: var(--color-surface);
+    }
+    .nsb-home__hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+      font-family: var(--font-sans);
+      font-weight: 800;
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-label);
+      flex-wrap: wrap;
+    }
+    .nsb-home__hero-title {
+      color: var(--color-ink);
+      margin: 0;
+      /* Cap lowered from 4rem → 3.25rem: the new 4-line headline
+         ("Software / fails / the same way. / Every time.") is taller
+         than the old one, and at 4rem it was driving the whole hero
+         so tall that the side rails stretched into uncomfortable
+         voids. 3.25rem keeps the display feeling oversized without
+         inflating the overall hero height.
+         `overflow-wrap: anywhere` stays as a safety net. */
+      font-size: clamp(2rem, 5.4vw, 3.25rem);
+      line-height: 0.94;
+      overflow-wrap: anywhere;
+      hyphens: none;
+    }
+    .nsb-home__hero-summary {
+      font-family: var(--font-serif);
+      font-size: clamp(var(--text-md), 1.6vw, var(--text-lg));
+      color: var(--color-ink-dim);
+      line-height: var(--leading-snug);
+      margin: var(--space-5) 0 0 0;
+    }
+
+    /* Stats rail — three equal-height cells. The rail is a grid so
+       the cells stretch to fill the rail's vertical space equally
+       (important when the rail's total height is driven by the giant
+       headline in the center column — otherwise the rail would have
+       an unlabeled trailing gap below the note). At mobile the rail
+       stacks horizontally to two columns; the note drops to a full-
+       width row underneath. */
+    .nsb-home__hero-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+    }
+    @media (min-width: 900px) {
+      .nsb-home__hero-stats {
+        grid-template-columns: 1fr;
+        /* Three equal rows so all three cells stretch to the same
+           height. The previous `1fr 1fr auto` let the two stat cells
+           swallow the space and left the "Open. Share." note cell
+           awkwardly squat. Equal rows = balanced rail. */
+        grid-template-rows: 1fr 1fr 1fr;
+      }
+    }
+    /* Each stat cell — same padding as the hero columns so the label
+       inside lines up with EDITION 01 / NOSILVERBULLET in the other
+       two columns. Width fills the cell (no own border, no min-width);
+       dividers between cells are drawn by their own box edges. */
+    .nsb-home__hero-stat {
+      padding: var(--space-6) var(--space-5);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: var(--space-3);
+      min-width: 0;
+    }
+    .nsb-home__hero-stat--yellow {
+      background: var(--color-yellow);
+      color: var(--color-yellow-ink);
+    }
+    .nsb-home__hero-stat--blue {
+      background: var(--color-blue);
+      color: var(--color-surface);
+    }
+    .nsb-home__hero-stat--note {
+      background: var(--color-yellow);
+      color: var(--color-yellow-ink);
+      /* The note is a caption, not a number — it stays a single
+         flex child with its text vertically centered for balance
+         rather than top-anchored like the stat cells. */
+      justify-content: center;
+      grid-column: 1 / -1;
+    }
+    @media (min-width: 900px) {
+      .nsb-home__hero-stat--note { grid-column: auto; }
+    }
+    /* Dividers between stat cells — bottom borders at desktop (stacked),
+       right borders at mobile (two-up). Only the first-row cells get
+       them; the last cell never has a divider so the rail meets the
+       outer hero frame cleanly. */
+    @media (min-width: 900px) {
+      .nsb-home__hero-stat:not(:last-child) {
+        border-bottom: 3px solid var(--color-frame);
+      }
+    }
+    @media (max-width: 899px) {
+      .nsb-home__hero-stat--yellow { border-right: 3px solid var(--color-frame); }
+      .nsb-home__hero-stat--blue   { border-bottom: 3px solid var(--color-frame); }
+      .nsb-home__hero-stat--yellow { border-bottom: 3px solid var(--color-frame); }
+    }
+    .nsb-home__hero-stat-label {
+      margin: 0;
+      font-family: var(--font-sans);
+      font-weight: 800;
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: inherit;
+    }
+    .nsb-home__hero-stat-value {
+      margin: 0;
+      color: inherit;
+    }
+    /* Usage directive inside the note cell. `note-head` is the short
+       "Open. Share." lead-in at body-weight size; `note-list` is the
+       stacked "Use in retros / reviews / decisions" beats in a slightly
+       smaller, dimmer style so the lead-in reads first. Both stay on
+       the yellow background (no border separator) so the cell reads
+       as a single editorial paragraph, not a card inside a card. */
+    .nsb-home__hero-note-head {
+      margin: 0;
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-md);
+      letter-spacing: -0.01em;
+      line-height: var(--leading-snug);
+      color: inherit;
+    }
+    .nsb-home__hero-note-list {
+      margin: var(--space-2) 0 0 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: var(--text-sm);
+      line-height: var(--leading-snug);
+      color: inherit;
+      opacity: 0.85;
+    }
+    .nsb-home__hero-note-list li { margin: 0; }
+
+    /* ================================================================
+       CATEGORY MAP — framed cards with colored header strips.
+       Locked to a balanced 2×2 block at any desktop-ish width so the
+       four cards breathe (4-across squeezes the titles). Stacks into
+       one column on narrow screens.
+       ================================================================ */
+    .nsb-home__grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+      margin-bottom: var(--space-9);
+    }
+    @media (min-width: 640px) {
+      .nsb-home__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
     .nsb-home__card {
-      display: block;
-      padding: var(--space-6);
-      border-right: var(--rule);
-      border-bottom: var(--rule);
+      display: flex;
+      flex-direction: column;
       text-decoration: none;
       color: inherit;
       background: var(--color-surface);
-      transition: background var(--dur-fast) var(--ease);
+      transition: transform var(--dur-fast) var(--ease),
+                  box-shadow var(--dur-fast) var(--ease);
+      min-height: 12rem;
     }
-    .nsb-home__card:hover { background: var(--color-paper-alt); }
-    .nsb-home__card-title {
-      font-size: var(--text-xl);
-      margin-top: var(--space-3);
-      margin-bottom: var(--space-3);
+    .nsb-home__card:hover,
+    .nsb-home__card:focus-visible {
+      transform: translate(-3px, -3px);
+      box-shadow: 6px 6px 0 0 var(--color-frame);
+      outline: none;
+    }
+    .nsb-home__card-head {
+      padding: var(--space-3) var(--space-5);
+      border-bottom: 3px solid var(--color-frame);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
       font-family: var(--font-sans);
-      font-weight: 600;
-      letter-spacing: var(--tracking-tight);
+      font-weight: 900;
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      font-size: var(--text-xs);
+      /* One rule fits all four categories — the parent <a data-accent>
+         scopes --accent-current to the right per-category hue. All four
+         category accents are saturated enough to take white text. */
+      background: var(--accent-current);
+      color: var(--color-surface);
+    }
+    .nsb-home__card-code { font-size: var(--text-sm); }
+    .nsb-home__card-count { opacity: 0.75; font-feature-settings: "tnum"; }
+    .nsb-home__card-body {
+      padding: var(--space-5);
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .nsb-home__card-title {
+      font-family: var(--font-sans);
+      font-size: clamp(var(--text-xl), 2.4vw, var(--text-2xl));
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin: 0;
+      color: var(--color-ink);
     }
     .nsb-home__card-summary {
       font-family: var(--font-serif);
       color: var(--color-ink-dim);
-      margin-bottom: var(--space-4);
       font-size: var(--text-base);
       line-height: var(--leading-snug);
-    }
-    .nsb-home__card-count {
-      font-family: var(--font-mono);
-      font-size: var(--text-xs);
-      letter-spacing: var(--tracking-label);
-      text-transform: lowercase;
-      color: var(--color-ink-faint);
       margin: 0;
     }
 
-    /* FM preview strip */
-    .nsb-home__preview {
-      margin-bottom: var(--space-8);
-    }
-    .nsb-home__preview-header {
-      padding-bottom: var(--space-5);
-      border-bottom: var(--rule);
-      margin-bottom: var(--space-5);
-    }
+    /* ================================================================
+       FM PREVIEW SECTION
+       ================================================================ */
+    .nsb-home__preview { margin-bottom: var(--space-9); }
+    .nsb-home__preview-header { margin-bottom: var(--space-5); }
     .nsb-home__preview-title {
-      font-size: var(--text-2xl);
-      margin: var(--space-2) 0 var(--space-3) 0;
-      letter-spacing: var(--tracking-tight);
+      font-size: clamp(var(--text-3xl), 5vw, 3.5rem);
+      margin: 0;
+      color: var(--color-ink);
     }
     .nsb-home__preview-note {
       font-family: var(--font-serif);
       color: var(--color-ink-dim);
       font-size: var(--text-md);
-      line-height: var(--leading-relaxed);
-      max-width: var(--reading-max);
-      margin: 0;
+      line-height: var(--leading-snug);
+      margin: var(--space-3) 0 0 0;
     }
     .nsb-home__preview-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
-      gap: 0;
-      border-top: var(--rule);
-      border-left: var(--rule);
+      gap: var(--space-4);
     }
     .nsb-home__preview-more {
       margin: var(--space-5) 0 0 0;
       font-family: var(--font-sans);
       font-size: var(--text-sm);
+      font-weight: 800;
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
     }
     .nsb-home__preview-link {
-      color: var(--accent-current);
+      display: inline-block;
+      padding: 8px 14px;
+      background: var(--color-frame);
+      color: var(--color-surface);
       text-decoration: none;
+      border: 2px solid var(--color-frame);
     }
     .nsb-home__preview-link:hover {
-      text-decoration: underline;
-      text-decoration-color: var(--accent-current);
+      background: var(--color-yellow);
+      color: var(--color-yellow-ink);
     }
 
-    /* status aside */
-    .nsb-home__status {
-      border-top: var(--rule);
-      padding-top: var(--space-5);
-      margin-top: var(--space-6);
+    /* ================================================================
+       STATUS ASIDE
+       ================================================================ */
+    .nsb-home__status { background: var(--color-surface); }
+    .nsb-home__status-bar {
+      padding: var(--space-3) var(--space-5);
+      background: var(--color-frame);
+      color: var(--color-surface);
+      font-family: var(--font-sans);
+      font-weight: 900;
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      font-size: var(--text-xs);
     }
     .nsb-home__status-text {
+      padding: var(--space-5);
       font-family: var(--font-serif);
       font-size: var(--text-base);
-      color: var(--color-ink-soft);
-      max-width: var(--reading-max);
-      margin: var(--space-2) 0 0 0;
+      color: var(--color-ink-dim);
+      margin: 0;
       line-height: var(--leading-snug);
     }
   </style>

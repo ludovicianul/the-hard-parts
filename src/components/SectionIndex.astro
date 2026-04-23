@@ -35,7 +35,7 @@ const { items, eyebrow = "In this entry" } = Astro.props;
   {/* Mobile / narrow: collapsible jump menu */}
   <details class="nsb-section-index__mobile" open={false}>
     <summary class="nsb-section-index__summary">
-      <span class="nsb-eyebrow nsb-eyebrow--bulletin">{eyebrow}</span>
+      <span>{eyebrow}</span>
       <span class="nsb-section-index__summary-count">{items.length} sections</span>
     </summary>
     <ol class="nsb-section-index__list">
@@ -52,7 +52,7 @@ const { items, eyebrow = "In this entry" } = Astro.props;
 
   {/* Desktop / wide: sticky rail */}
   <aside class="nsb-section-index__rail" aria-hidden="false">
-    <p class="nsb-eyebrow nsb-eyebrow--bulletin nsb-section-index__rail-head">{eyebrow}</p>
+    <p class="nsb-section-index__rail-head">{eyebrow}</p>
     <ol class="nsb-section-index__list nsb-section-index__list--rail">
       {items.map((i) => (
         <li class="nsb-section-index__item">
@@ -66,14 +66,29 @@ const { items, eyebrow = "In this entry" } = Astro.props;
   </aside>
 </nav>
 
-{/* Progressive enhancement: highlight the active section while scrolling.
-    Harmless if disabled. Does not affect static rendering. */}
+{/* Progressive enhancement: highlight the active section while the
+    reader scrolls. Harmless if disabled — nothing about the static
+    render depends on this.
+
+    Implementation note: Astro compiles <script> tags to ES modules by
+    default. Inside an ES module, `document.currentScript` is null, so
+    the original version of this enhancement (which used
+    `currentScript?.previousElementSibling` to find the <nav>) silently
+    no-opped in production. We switched to a plain
+    `querySelectorAll('.nsb-section-index')` lookup + iterate so the
+    script finds every index on the page regardless of how Astro
+    wraps it. */}
 <script>
-  (() => {
-    const nav = document.currentScript?.previousElementSibling as HTMLElement | null;
-    if (!nav) return;
-    const links = Array.from(nav.querySelectorAll<HTMLAnchorElement>("a[data-target]"));
-    if (links.length === 0) return;
+  const navs = document.querySelectorAll<HTMLElement>(".nsb-section-index");
+  for (const nav of navs) {
+    const links = Array.from(
+      nav.querySelectorAll<HTMLAnchorElement>("a[data-target]"),
+    );
+    if (links.length === 0) continue;
+
+    // Group links by their target section id. Each section may have two
+    // anchors pointing at it (one in the mobile <details> menu, one in
+    // the desktop rail) — both should light up together.
     const byId = new Map<string, HTMLAnchorElement[]>();
     for (const a of links) {
       const id = a.dataset.target!;
@@ -81,10 +96,12 @@ const { items, eyebrow = "In this entry" } = Astro.props;
       list.push(a);
       byId.set(id, list);
     }
-    const sections = links
-      .map((a) => document.getElementById(a.dataset.target!))
+
+    const sections = Array.from(byId.keys())
+      .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => el !== null);
-    const unique = Array.from(new Set(sections));
+    if (sections.length === 0) continue;
+
     let activeId: string | null = null;
     const setActive = (id: string | null) => {
       if (id === activeId) return;
@@ -98,6 +115,12 @@ const { items, eyebrow = "In this entry" } = Astro.props;
         }
       }
     };
+
+    // rootMargin shrinks the viewport's "counts as intersecting" band to
+    // a horizontal strip spanning ~30–40% of the screen height. The
+    // currently-visible section is the topmost one whose header falls
+    // inside that band, which matches what a reader's eye is actually
+    // tracking at any given scroll offset.
     const io = new IntersectionObserver(
       (entries) => {
         const visible = entries
@@ -107,8 +130,24 @@ const { items, eyebrow = "In this entry" } = Astro.props;
       },
       { rootMargin: "-30% 0px -60% 0px", threshold: [0, 1] },
     );
-    for (const s of unique) io.observe(s);
-  })();
+    for (const s of sections) io.observe(s);
+
+    // Seed the active state: whichever section's top is closest to the
+    // viewport's sweet-spot on first paint wins. Without this seed the
+    // rail stays blank until the reader moves, which reads as "nothing
+    // is selected" instead of "this is where you are".
+    const seed = () => {
+      const pivot = window.innerHeight * 0.35;
+      let best: { id: string; dist: number } | null = null;
+      for (const s of sections) {
+        const top = s.getBoundingClientRect().top;
+        const dist = Math.abs(top - pivot);
+        if (best === null || dist < best.dist) best = { id: s.id, dist };
+      }
+      if (best) setActive(best.id);
+    };
+    seed();
+  }
 </script>
 
 <style>
@@ -118,26 +157,37 @@ const { items, eyebrow = "In this entry" } = Astro.props;
   .nsb-section-index__mobile {
     display: block;
     margin-bottom: var(--space-6);
-    border-top: 2px solid var(--accent-current);
-    border-bottom: var(--rule);
-    padding: var(--space-3) 0;
+    border: 3px solid var(--color-frame);
     background: var(--color-surface);
   }
   .nsb-section-index__summary {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     gap: var(--space-4);
     list-style: none;
     cursor: pointer;
-    padding: var(--space-1) 0;
+    padding: var(--space-3) var(--space-5);
+    background: var(--color-frame);
+    color: var(--color-surface);
+    font-family: var(--font-sans);
+    font-weight: 900;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    font-size: var(--text-xs);
+  }
+  .nsb-section-index__summary > .nsb-eyebrow {
+    color: var(--color-yellow);
+    font-weight: 900;
+    letter-spacing: var(--tracking-label);
+    margin: 0;
   }
   .nsb-section-index__summary::-webkit-details-marker { display: none; }
   .nsb-section-index__summary::after {
     content: "▾";
     margin-left: auto;
-    color: var(--accent-current);
-    font-family: var(--font-mono);
+    color: var(--color-yellow);
+    font-family: var(--font-sans);
     font-size: var(--text-sm);
     transition: transform var(--dur-fast) var(--ease);
   }
@@ -145,19 +195,18 @@ const { items, eyebrow = "In this entry" } = Astro.props;
     transform: rotate(180deg);
   }
   .nsb-section-index__summary-count {
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
+    font-weight: 900;
     font-size: var(--text-xs);
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
-    color: var(--color-label);
+    color: var(--color-surface);
+    opacity: 0.7;
   }
 
-  /* --- Desktop sticky rail ------------------------------------------ */
-  .nsb-section-index__rail {
-    display: none;
-  }
+  /* --- Desktop sticky rail: a framed side panel -------------------- */
+  .nsb-section-index__rail { display: none; }
 
-  /* The rail is consumed by DetailLayout's grid on wide screens. */
   @media (min-width: 1080px) {
     .nsb-section-index__mobile { display: none; }
     .nsb-section-index__rail {
@@ -166,62 +215,86 @@ const { items, eyebrow = "In this entry" } = Astro.props;
       top: var(--space-6);
       max-height: calc(100vh - var(--space-8));
       overflow: auto;
-      padding-right: var(--space-3);
-      border-left: 3px solid var(--accent-current);
-      padding-left: var(--space-5);
+      background: var(--color-surface);
+      border: 3px solid var(--color-frame);
     }
     .nsb-section-index__rail-head {
-      margin: 0 0 var(--space-3) 0;
+      margin: 0;
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-frame);
+      color: var(--color-yellow);
+      font-family: var(--font-sans);
+      font-weight: 900;
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      font-size: var(--text-xs);
     }
   }
 
   /* --- Shared list styles ------------------------------------------- */
   .nsb-section-index__list {
     list-style: none;
-    margin: var(--space-3) 0 0 0;
+    margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
     gap: 0;
   }
   .nsb-section-index__item {
-    border-bottom: var(--rule-soft);
+    border-bottom: 2px solid var(--color-frame);
   }
-  .nsb-section-index__list--rail .nsb-section-index__item:last-child {
-    border-bottom: 0;
-  }
+  .nsb-section-index__item:last-child { border-bottom: 0; }
+
   .nsb-section-index__link {
     display: grid;
-    grid-template-columns: 2.25rem 1fr;
+    grid-template-columns: 2.5rem 1fr;
     gap: var(--space-3);
-    align-items: baseline;
-    padding: var(--space-2) 0;
+    align-items: center;
+    padding: 0;
     text-decoration: none;
     color: inherit;
-    transition: color var(--dur-fast) var(--ease);
+    background: var(--color-surface);
+    transition: background var(--dur-fast) var(--ease),
+                color var(--dur-fast) var(--ease);
   }
-  .nsb-section-index__link:hover .nsb-section-index__label {
-    color: var(--accent-current-deep, var(--accent-current));
-  }
-  .nsb-section-index__link.is-active .nsb-section-index__label {
-    color: var(--accent-current-deep, var(--accent-current));
-    font-weight: 600;
-  }
-  .nsb-section-index__link.is-active .nsb-section-index__step {
-    color: var(--accent-current);
-    font-weight: 700;
-  }
+  .nsb-section-index__link:hover { background: var(--color-paper-alt); }
+  .nsb-section-index__link:hover .nsb-section-index__step { background: var(--accent-current); }
+
+  /* Step number as a filled black badge (matches SectionHeader step). */
   .nsb-section-index__step {
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
-    letter-spacing: var(--tracking-label);
-    color: var(--color-label);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: 900;
     font-feature-settings: "tnum";
+    color: var(--color-surface);
+    background: var(--color-frame);
+    padding: var(--space-3) 0;
+    text-align: center;
+    line-height: 1;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 2px solid var(--color-frame);
   }
   .nsb-section-index__label {
     font-family: var(--font-sans);
     font-size: var(--text-sm);
-    color: var(--color-ink-dim);
-    line-height: var(--leading-snug);
+    font-weight: 700;
+    color: var(--color-ink);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    padding: var(--space-3) var(--space-4) var(--space-3) 0;
+  }
+
+  /* Active state — yellow row, black step, black label. */
+  .nsb-section-index__link.is-active { background: var(--color-yellow); }
+  .nsb-section-index__link.is-active .nsb-section-index__step {
+    background: var(--color-frame);
+    color: var(--color-yellow);
+  }
+  .nsb-section-index__link.is-active .nsb-section-index__label {
+    color: var(--color-yellow-ink);
+    font-weight: 900;
   }
 </style>

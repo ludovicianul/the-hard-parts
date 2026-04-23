@@ -1,0 +1,86 @@
+---
+/**
+ * AttrGlyph — single-source inline SVG for the five attribute glyphs that
+ * appear everywhere the site exposes ordinal attributes.
+ *
+ *   severity    — solid downward triangle (gravity / weight)
+ *   frequency   — three ascending vertical tally marks (how often)
+ *   recovery    — ascending staircase (climbing back out)
+ *   confidence  — concentric bullseye (how sure we are)
+ *   increasing  — up-right chevron (trend arrow, not a ladder position)
+ *
+ * Design guardrails (so the site stays editorial, not dashboardy):
+ *   · Mono-line at stroke-width 2 (severity's solid triangle is the one
+ *     exception — a silhouette reads as "weight" more clearly than an
+ *     outline at 14px).
+ *   · Always 14×14 viewBox, caller sizes with `size` prop.
+ *   · Uses `currentColor` for both stroke and fill, so the glyph flips
+ *     automatically with whatever strip it sits on (yellow on black,
+ *     white on crimson, ink on paper).
+ *   · Never colored directly. Color only ever comes from the container.
+ *
+ * Consumers: `MetaRail` (detail page), FM landing reading-guide cards
+ * and severity legend head. Extend here — never re-inline glyphs at
+ * call sites, or they will drift.
+ *
+ * Implementation note: each glyph is emitted as a raw SVG markup string
+ * via `set:html` on a single <svg> root. This avoids Astro-JSX edge
+ * cases around conditional rendering of multiple <path> children and
+ * keeps the glyph definitions visibly side-by-side in the frontmatter.
+ */
+
+export type AttrGlyphKind = "severity" | "frequency" | "recovery" | "confidence" | "increasing";
+
+export interface Props {
+  kind: AttrGlyphKind;
+  /** Pixel size for both width and height. Defaults to 14. */
+  size?: number;
+  /** Accessible label. Omit for purely decorative usage. */
+  title?: string;
+  /** Extra class names on the <svg> root. */
+  class?: string;
+}
+
+const { kind, size = 14, title, class: className } = Astro.props;
+
+// Raw SVG inner-markup per glyph. Each path is drawn against a 14×14
+// viewBox; `currentColor` lets the consumer control all coloring.
+const GLYPHS: Record<AttrGlyphKind, string> = {
+  // Severity — solid downward triangle (gravity / weight). Filled
+  // silhouette because an outlined triangle at 14px reads as a generic
+  // warning glyph; we want weight, not "alert".
+  severity: '<path d="M2 3 L12 3 L7 12 Z" fill="currentColor" />',
+
+  // Frequency — three ascending vertical tally marks. 3 notches, not
+  // 5, because the actual bar ladder already shows full granularity;
+  // the glyph only needs to *signal* "ordinal frequency" at 14px.
+  frequency:
+    '<path d="M3 12 L3 9 M7 12 L7 6 M11 12 L11 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" />',
+
+  // Recovery — ascending staircase, three steps climbing from the
+  // bottom-left to the top-right. Literal visual of "climbing back out".
+  recovery:
+    '<path d="M2 12 L5 12 L5 8 L9 8 L9 4 L13 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" />',
+
+  // Confidence — concentric bullseye (outer ring + center dot). "How sure we are the pattern lands here."
+  confidence:
+    '<circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="2" /><circle cx="7" cy="7" r="1.5" fill="currentColor" />',
+
+  // Increasing trend — up-right chevron. Used for frequency values that are a trajectory, not a ladder position.
+  increasing:
+    '<path d="M3 11 L11 3 M6 3 L11 3 L11 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" />',
+};
+
+const inner = GLYPHS[kind];
+---
+<svg
+  viewBox="0 0 14 14"
+  width={size}
+  height={size}
+  class={className}
+  role={title ? "img" : undefined}
+  aria-hidden={title ? undefined : "true"}
+  aria-label={title}
+  focusable="false"
+  set:html={inner}
+/>

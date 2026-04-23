@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
+import Tag from "@/components/Tag.astro";
 import type { CategoryCode } from "@/content/schemas/shared";
 import { categoryByCode } from "@/lib/categories";
 
@@ -7,13 +8,15 @@ export interface Props {
   code: CategoryCode;
   title: string;
   summary?: string;
-  /** Optional subcategory / family / layer label, rendered in the meta rail. */
+  /** Optional subcategory / family / layer label, rendered as a yellow pill. */
   subcategory?: string;
   /** Optional short description used for <meta name="description">. */
   description?: string;
+  /** Optional reference code shown in the black pill on the masthead, e.g. "FM-01". */
+  refCode?: string;
 }
 
-const { code, title, summary, subcategory, description } = Astro.props;
+const { code, title, summary, subcategory, description, refCode } = Astro.props;
 const desc = categoryByCode(code);
 const accent = code.toLowerCase() as "fm" | "td" | "rf" | "ep";
 ---
@@ -23,38 +26,49 @@ const accent = code.toLowerCase() as "fm" | "td" | "rf" | "ep";
   accent={accent}
 >
   <article class="nsb-detail-shell">
-    <div class="nsb-detail-shell__plate nsb-plate">
-      <div class="nsb-detail-shell__plate-inner">
-        <nav class="nsb-breadcrumbs" aria-label="Breadcrumb">
-          <ol>
-            <li><a href="/">Home</a></li>
-            <li><a href={`/${desc.route}`}>{desc.name}</a></li>
-            <li aria-current="page">{title}</li>
-          </ol>
-        </nav>
-
-        <header class="nsb-detail__header">
-          <div class="nsb-detail__masthead">
-            <p class="nsb-eyebrow nsb-eyebrow--bulletin">{desc.shortLabel} · {desc.name}</p>
-            <slot name="header-stamp" />
-          </div>
-          <hr class="nsb-accent-rule nsb-accent-rule--thick" />
-          <h1 class="nsb-detail__title">{title}</h1>
-          {summary && <p class="nsb-detail__summary">{summary}</p>}
-          {subcategory && (
-            <p class="nsb-detail__sub">
-              <span class="nsb-eyebrow">Subcategory</span>
-              <span class="nsb-detail__sub-value">{subcategory}</span>
-            </p>
-          )}
-        </header>
+    {/* Breadcrumbs row on paper — small, mono, uppercase. */}
+    <nav class="nsb-detail__crumbs" aria-label="Breadcrumb">
+      <div class="nsb-detail__crumbs-inner">
+        <ol>
+          <li><a href="/">Home</a></li>
+          <li><a href={`/${desc.route}`}>{desc.name}</a></li>
+          <li aria-current="page">{title}</li>
+        </ol>
       </div>
-    </div>
+    </nav>
 
+    {/* Framed bright masthead — the "nameplate" panel. Three stacked rows:
+        (1) pill-tag row: reference code + subcategory
+        (2) optional slotted meta-bar (severity stamps etc.)
+        (3) giant uppercase display title + serif summary
+       Everything sits on a white surface inside a heavy black frame. */}
+    <header class="nsb-detail__masthead nsb-frame nsb-frame--heavy">
+      <div class="nsb-detail__masthead-inner">
+        <div class="nsb-detail__tagrow">
+          {refCode && <Tag label={refCode} variant="black" size="md" />}
+          {subcategory && <Tag label={subcategory} variant="yellow" size="md" />}
+          <span class="nsb-detail__tagrow-spacer" />
+          <span class="nsb-detail__cat">
+            <span class="nsb-detail__cat-code">{desc.shortLabel}</span>
+            <span class="nsb-detail__cat-name">{desc.name}</span>
+          </span>
+        </div>
+
+        {/* Optional meta bar (severity stamps, pills, etc.). */}
+        <div class="nsb-detail__metabar">
+          <slot name="header-stamp" />
+        </div>
+
+        <h1 class="nsb-display nsb-detail__title">{title}</h1>
+        {summary && <p class="nsb-detail__summary">{summary}</p>}
+      </div>
+    </header>
+
+    {/* Body grid: sidebar nav + main content column. */}
     <div class="nsb-detail-shell__grid">
-      <div class="nsb-detail-shell__rail">
+      <aside class="nsb-detail-shell__rail">
         <slot name="nav-rail" />
-      </div>
+      </aside>
       <section class="nsb-detail__body">
         <slot />
       </section>
@@ -64,120 +78,102 @@ const accent = code.toLowerCase() as "fm" | "td" | "rf" | "ep";
   <style is:global>
     .nsb-detail-shell {
       width: 100%;
-      /* No outer padding — the plate is full-bleed within the main column.
-         The plate itself and the body grid apply their own inline padding. */
-    }
-
-    /* --- Dark plate: full-bleed band at the top of the page ---------- */
-    .nsb-detail-shell__plate {
-      width: 100%;
-      padding-block: var(--space-6) var(--space-6);
-      padding-inline: var(--gutter);
-      border-bottom: 1px solid var(--color-ink-plate-soft);
-    }
-    .nsb-detail-shell__plate-inner {
-      width: 100%;
-      max-width: var(--content-max);
+      max-width: 88rem;
       margin-inline: auto;
+      padding-inline: var(--gutter);
+      padding-block: var(--space-5) var(--space-8);
     }
 
-    /* --- Body grid: light-paper reading zone ------------------------- */
+    /* --- Breadcrumbs row on paper ------------------------------------ */
+    .nsb-detail__crumbs {
+      margin: 0 0 var(--space-4) 0;
+    }
+    .nsb-detail__crumbs-inner ol {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-label);
+    }
+    .nsb-detail__crumbs a { color: var(--color-ink); font-weight: 600; }
+    .nsb-detail__crumbs a:hover { color: var(--accent-current); }
+    .nsb-detail__crumbs li + li::before {
+      content: "/";
+      color: var(--color-ink-faint);
+      margin-right: var(--space-2);
+    }
+
+    /* --- Framed bright masthead ------------------------------------- */
+    .nsb-detail__masthead {
+      margin-bottom: var(--space-7);
+    }
+    .nsb-detail__masthead-inner {
+      padding: clamp(var(--space-5), 3vw, var(--space-7));
+      display: grid;
+      gap: var(--space-4);
+    }
+    .nsb-detail__tagrow {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+    .nsb-detail__tagrow-spacer { flex: 1 1 auto; }
+    .nsb-detail__cat {
+      display: inline-flex;
+      align-items: baseline;
+      gap: var(--space-2);
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-label);
+    }
+    .nsb-detail__cat-code { color: var(--accent-current); font-weight: 700; }
+    .nsb-detail__cat-name { color: var(--color-label); }
+
+    .nsb-detail__metabar:empty { display: none; }
+    .nsb-detail__metabar {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      align-items: center;
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-paper-alt);
+      border: 2px solid var(--color-frame);
+      margin: 0;
+    }
+
+    .nsb-detail__title {
+      margin: var(--space-4) 0 0 0;
+    }
+    .nsb-detail__summary {
+      font-family: var(--font-serif);
+      font-size: clamp(var(--text-lg), 1.8vw, var(--text-xl));
+      line-height: var(--leading-snug);
+      color: var(--color-ink-dim);
+      margin: var(--space-4) 0 0 0;
+    }
+
+    /* --- Body grid: sidebar + main content -------------------------- */
     .nsb-detail-shell__grid {
       display: grid;
       grid-template-columns: 1fr;
       gap: var(--space-6);
-      max-width: var(--content-max);
-      margin-inline: auto;
-      width: 100%;
-      padding-inline: var(--gutter);
-      padding-block: var(--space-7) var(--space-8);
     }
     @media (min-width: 1080px) {
-      .nsb-detail-shell__plate,
       .nsb-detail-shell__grid {
-        padding-inline: var(--gutter);
-      }
-      .nsb-detail-shell__plate-inner {
-        max-width: 88rem;
-      }
-      .nsb-detail-shell__grid {
-        max-width: 88rem;
         grid-template-columns: 15rem minmax(0, 1fr);
         gap: var(--space-8);
       }
     }
     .nsb-detail-shell__rail { min-width: 0; }
     .nsb-detail__body { min-width: 0; }
-
-    /* --- Breadcrumbs on dark ----------------------------------------- */
-    .nsb-breadcrumbs ol {
-      list-style: none;
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-2);
-      margin: 0 0 var(--space-5) 0;
-      padding: 0;
-      font-family: var(--font-mono);
-      font-size: var(--text-xs);
-      letter-spacing: var(--tracking-label);
-      text-transform: uppercase;
-      color: var(--color-on-plate-dim);
-    }
-    .nsb-breadcrumbs a { color: var(--color-on-plate); }
-    .nsb-breadcrumbs a:hover {
-      color: var(--accent-current-bright);
-      text-decoration-color: var(--accent-current-bright);
-    }
-    .nsb-breadcrumbs li + li::before {
-      content: "/";
-      color: var(--color-on-plate-faint);
-      margin-right: var(--space-2);
-    }
-
-    /* --- Masthead body (still on plate) ------------------------------ */
-    .nsb-detail__header {
-      padding-bottom: var(--space-2);
-    }
-    .nsb-detail__masthead {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--space-4);
-      flex-wrap: wrap;
-      margin-bottom: var(--space-3);
-    }
-    /* Override .nsb-accent-rule default margin for plate usage. */
-    .nsb-detail__header .nsb-accent-rule {
-      margin-bottom: var(--space-5);
-    }
-    .nsb-detail__title {
-      font-family: var(--font-sans);
-      font-size: clamp(var(--text-3xl), 4.5vw, var(--text-4xl));
-      font-weight: 700;
-      letter-spacing: -0.015em;
-      line-height: var(--leading-tight);
-      color: var(--color-on-plate);
-      margin: 0 0 var(--space-4) 0;
-    }
-    .nsb-detail__summary {
-      font-family: var(--font-serif);
-      font-size: var(--text-lg);
-      line-height: var(--leading-snug);
-      color: var(--color-on-plate-dim);
-      max-width: var(--reading-max);
-      margin: 0;
-    }
-    .nsb-detail__sub {
-      font-family: var(--font-sans);
-      font-size: var(--text-sm);
-      display: flex;
-      gap: var(--space-3);
-      align-items: baseline;
-      margin: var(--space-5) 0 0 0;
-    }
-    .nsb-detail__sub-value {
-      color: var(--color-on-plate);
-      font-weight: 500;
-    }
   </style>
 </BaseLayout>

@@ -10,7 +10,15 @@
  *
  * Items with value `null`, `undefined`, `""`, or `[]` are skipped silently —
  * detail pages pass a superset of fields and we don't want empty slots.
+ *
+ * The frequency cell additionally supports a `trend` flag (see below)
+ * for values that are a trajectory rather than a ladder position
+ * (currently just `increasing`). That trend is the ONLY visual glyph
+ * carried here — per-attribute decorative icons were removed because
+ * they didn't read as editorial, and the written labels are short
+ * enough to identify each cell on their own.
  */
+import AttrGlyph from "./AttrGlyph.astro";
 
 export interface MetaItem {
   label: string;
@@ -18,6 +26,28 @@ export interface MetaItem {
   value: string | number | readonly string[] | undefined | null;
   /** Optional emphasis — renders value with accent color (e.g. severity: critical). */
   emphasis?: boolean;
+  /**
+   * Optional severity-ramp key. When set, the value is rendered as a chip
+   * filled with the matching --sev-* color. Used so the severity cell on
+   * the MetaRail reads as the same color a reader saw on the landing grid
+   * card and on the masthead severity pill.
+   */
+  severity?: "low" | "medium" | "medium-high" | "high" | "critical";
+  /**
+   * Optional position on an ordinal scale (e.g. frequency 3/5). When set,
+   * a small rising-bar indicator is rendered under the value. Matches the
+   * bar visual used by the FM landing attribute legend so a reader sees
+   * the same graphic in both places. `total` must be ≥ 1, `filled` between
+   * 0 and `total`. Omit on non-ordinal cells like `Lifecycle`.
+   */
+  scale?: { total: number; filled: number };
+  /**
+   * Optional trend flag. When set, renders a trend arrow (↗ for
+   * "increasing") under the value instead of — or alongside — the
+   * bar ladder. Used for `frequency: "increasing"`, which is a
+   * trajectory, not a position. Omit on non-trend cells.
+   */
+  trend?: "increasing";
 }
 
 export interface Props {
@@ -45,64 +75,161 @@ const visible = items
 {visible.length > 0 && (
   <dl class="nsb-meta-rail" aria-label="Entry metadata">
     {visible.map((i) => (
-      <div class="nsb-meta-rail__item">
+      <div
+        class:list={[
+          "nsb-meta-rail__item",
+          i.severity && `nsb-meta-rail__item--sev-${i.severity}`,
+        ]}
+      >
         <dt class="nsb-meta-rail__label nsb-eyebrow">{i.label}</dt>
         <dd
           class:list={[
             "nsb-meta-rail__value",
-            { "nsb-meta-rail__value--emphasis": i.emphasis },
+            { "nsb-meta-rail__value--emphasis": i.emphasis && !i.severity },
+            { "nsb-meta-rail__value--sev": Boolean(i.severity) },
           ]}
         >
           {i.rendered}
         </dd>
+        {i.scale && i.scale.total >= 1 && (
+          <span class="nsb-meta-rail__bars" aria-hidden="true">
+            {Array.from({ length: i.scale.total }).map((_, j) => (
+              <span class:list={[
+                "nsb-meta-rail__bar",
+                { "is-on": j < i.scale!.filled },
+              ]} />
+            ))}
+          </span>
+        )}
+        {i.trend === "increasing" && (
+          /* Trend arrow for frequency values that are a trajectory, not
+             a ladder position. Rendered in place of the bar ladder so
+             the two visuals never compete in the same cell. Uses the
+             shared AttrGlyph component (same chevron the FM landing
+             reading guide shows), never re-inlined here. */
+          <span class="nsb-meta-rail__trend">
+            <AttrGlyph kind="increasing" size={14} title="trending up" />
+            <span class="nsb-meta-rail__trend-label">trend</span>
+          </span>
+        )}
       </div>
     ))}
   </dl>
 )}
 
 <style>
+  /* MetaRail as a framed datasheet strip — thick black border, uppercase
+     bold labels + values, divided by thick vertical rules. Reads like the
+     "HIGH RISK / VERY COMMON / PLANNING TO BUILD" strip in the references. */
   .nsb-meta-rail {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    /* Bumped min from 10rem → 11rem so a 6-bar frequency ramp
+       (Frequency = up to 6 notches) always lays out on the same row
+       as the value without wrapping awkwardly. */
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
     gap: 0;
     margin: 0 0 var(--space-7) 0;
-    padding: var(--space-4) 0 var(--space-4) 0;
-    /* Ties visually to the dark masthead plate above via a 3px amber rule. */
-    border-top: 3px solid var(--accent-current);
-    border-bottom: 1px solid var(--color-rule-strong);
+    padding: 0;
+    border: 3px solid var(--color-frame);
     background: var(--color-surface);
   }
   .nsb-meta-rail__item {
-    padding: var(--space-2) var(--space-5);
-    border-right: 1px solid var(--color-rule);
+    padding: var(--space-3) var(--space-4);
+    border-right: 2px solid var(--color-frame);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
   }
   .nsb-meta-rail__item:last-child { border-right: 0; }
   .nsb-meta-rail__label {
-    margin: 0 0 var(--space-1) 0;
+    margin: 0;
+    font-family: var(--font-sans);
+    font-weight: 800;
+    font-size: 0.68rem;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-label);
   }
   .nsb-meta-rail__value {
     margin: 0;
     font-family: var(--font-sans);
     font-size: var(--text-sm);
     color: var(--color-ink);
-    line-height: var(--leading-snug);
-    font-weight: 500;
-    text-transform: lowercase;
-  }
-  .nsb-meta-rail__value--emphasis {
-    color: var(--accent-current-deep, var(--accent-current));
+    line-height: 1.25;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.02em;
-    font-family: var(--font-mono);
-    font-size: var(--text-xs);
   }
+  .nsb-meta-rail__value--emphasis {
+    color: var(--color-red);
+    font-weight: 900;
+  }
+  /* Severity cell — the entire cell is filled with the severity color, so a
+     reader's eye lands on the exact same hue they saw on the landing grid.
+     Ink flips to white at `high` and `critical` where the sepia darkens
+     enough to eat black text. The label inherits the cell ink (dim'd via
+     opacity) rather than picking up a category color — using yellow here
+     would read as "FM" to a trained reader. */
+  .nsb-meta-rail__item--sev-low         { background: var(--sev-low);         color: var(--sev-low-ink);         }
+  .nsb-meta-rail__item--sev-medium      { background: var(--sev-medium);      color: var(--sev-medium-ink);      }
+  .nsb-meta-rail__item--sev-medium-high { background: var(--sev-medium-high); color: var(--sev-medium-high-ink); }
+  .nsb-meta-rail__item--sev-high        { background: var(--sev-high);        color: var(--sev-high-ink);        }
+  .nsb-meta-rail__item--sev-critical    { background: var(--sev-critical);    color: var(--sev-critical-ink);    }
+  .nsb-meta-rail__item--sev-high .nsb-meta-rail__label,
+  .nsb-meta-rail__item--sev-critical .nsb-meta-rail__label {
+    color: inherit;
+    opacity: 0.78;
+  }
+  .nsb-meta-rail__value--sev {
+    color: inherit;
+    font-weight: 900;
+  }
+
+  /* Bar ramp under the value for ordinal attributes (severity,
+     frequency, recovery, confidence). Uses the current text color
+     (`currentColor`) so the bars stay legible on every severity-tint
+     cell — white on dark high/critical, ink on light low/medium. */
+  .nsb-meta-rail__bars {
+    display: inline-flex;
+    gap: 2px;
+    margin-top: 2px;
+  }
+  .nsb-meta-rail__bar {
+    width: 10px;
+    height: 6px;
+    background: currentColor;
+    opacity: 0.22;
+    display: inline-block;
+  }
+  .nsb-meta-rail__bar.is-on { opacity: 1; }
+
+  /* Trend marker (frequency: "increasing"). Sits in the same slot a
+     bar ladder would. Inline svg + tiny caption, all driven by the
+     cell's `currentColor` so it flips white on dark severity tints.
+     The marker is a quiet glyph next to a short caption — it adds
+     editorial information without feeling like a dashboard KPI. */
+  .nsb-meta-rail__trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+    color: inherit;
+  }
+  .nsb-meta-rail__trend svg { display: block; flex-shrink: 0; }
+  .nsb-meta-rail__trend-label {
+    font-family: var(--font-sans);
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    opacity: 0.78;
+  }
+
   @media (max-width: 640px) {
-    .nsb-meta-rail { padding: var(--space-3) 0; }
     .nsb-meta-rail__item {
       border-right: 0;
-      border-bottom: var(--rule-soft);
-      padding-block: var(--space-3);
+      border-bottom: 2px solid var(--color-frame);
     }
     .nsb-meta-rail__item:last-child { border-bottom: 0; }
   }

@@ -54,18 +54,24 @@ const showStep = Boolean(step) && !dense;
 </header>
 
 <style>
+  /* Bold tabloid section marker:
+     · thick 5px black top rule
+     · oversized step number in filled black square badge
+     · heavy uppercase title (inherits .nsb-display feel but slightly smaller)
+     · serif note beneath */
   .nsb-section-header {
     margin-top: var(--space-8);
     padding-bottom: var(--space-4);
+    scroll-margin-top: var(--space-6);
   }
   .nsb-section-header--dense {
     margin-top: var(--space-6);
     padding-bottom: var(--space-3);
-    border-bottom: var(--rule-soft);
+    border-bottom: 2px solid var(--color-frame);
   }
   .nsb-section-header__rule {
     border: 0;
-    border-top: 3px solid var(--accent-current);
+    border-top: 5px solid var(--color-frame);
     margin: 0 0 var(--space-4) 0;
     width: 100%;
   }
@@ -73,47 +79,73 @@ const showStep = Boolean(step) && !dense;
   .nsb-section-header__row {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--space-2);
+    gap: var(--space-3);
   }
   .nsb-section-header--bulletin .nsb-section-header__row {
-    grid-template-columns: minmax(3.5rem, auto) 1fr;
-    gap: var(--space-5);
-    align-items: baseline;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-4);
+    align-items: start;
   }
+  /* Step number as a filled black square badge (bulletin counter). */
   .nsb-section-header__step {
     margin: 0;
-    font-family: var(--font-mono);
-    font-size: var(--text-3xl);
-    letter-spacing: var(--tracking-tight);
+    font-family: var(--font-sans);
+    font-size: 1.5rem;
     line-height: 1;
-    color: var(--accent-current);
-    font-weight: 700;
+    color: var(--color-surface);
+    background: var(--color-frame);
+    font-weight: 900;
     font-feature-settings: "tnum";
+    padding: 10px 12px;
+    min-width: 3rem;
+    text-align: center;
   }
   .nsb-section-header__block { min-width: 0; }
   .nsb-section-header__eyebrow {
     margin: 0 0 var(--space-2) 0;
+    font-family: var(--font-sans);
+    font-weight: 800;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    font-size: var(--text-xs);
+    color: var(--color-label);
+  }
+  .nsb-section-header__eyebrow.nsb-eyebrow--bulletin {
+    color: var(--color-ink);
   }
   .nsb-section-header__title {
-    font-size: var(--text-2xl);
-    letter-spacing: var(--tracking-tight);
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: clamp(var(--text-2xl), 3.6vw, 2.5rem);
+    letter-spacing: -0.02em;
+    line-height: 0.98;
+    text-transform: uppercase;
+    color: var(--color-ink);
     margin: 0;
   }
   .nsb-section-header--dense .nsb-section-header__title {
-    font-size: var(--text-lg);
+    font-size: var(--text-xl);
+    text-transform: none;
+    font-weight: 800;
   }
   .nsb-section-header__note {
-    margin: var(--space-2) 0 0 0;
-    color: var(--color-ink-soft);
-    font-size: var(--text-sm);
-    max-width: var(--reading-max);
+    margin: var(--space-3) 0 0 0;
+    color: var(--color-ink-dim);
+    font-family: var(--font-serif);
+    font-size: var(--text-md);
+    line-height: var(--leading-snug);
   }
 
   @media (max-width: 520px) {
     .nsb-section-header--bulletin .nsb-section-header__row {
       grid-template-columns: 1fr;
-      gap: var(--space-2);
+      gap: var(--space-3);
     }
-    .nsb-section-header__step { font-size: var(--text-2xl); }
+    .nsb-section-header__step {
+      font-size: var(--text-xl);
+      min-width: 2.5rem;
+      padding: 8px 10px;
+      justify-self: start;
+    }
   }
 </style>

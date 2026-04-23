@@ -1,0 +1,70 @@
+---
+/**
+ * CalloutBand — a bold tabloid "pull-quote" / imperative band.
+ *
+ * Inspired by the reference's "USE AI TO RECOVER HIDDEN SYSTEM TRUTH, NOT TO
+ * DECORATE A FANTASY MIGRATION." panel: a saturated color block with a thick
+ * black frame and heavy uppercase sans-serif body text. Used for single-
+ * sentence imperatives, takeaways, or summary positions — not for long prose.
+ *
+ * Three variants:
+ *   · yellow — the default, "pay attention", AI-stance, key takeaways
+ *   · red    — warning / alert / anti-pattern imperative
+ *   · blue   — info / summary position / neighbor pointer
+ */
+
+export interface Props {
+  /** Optional small label above the main line, e.g. "KEY TAKEAWAY". */
+  label?: string;
+  /** The imperative / headline line. Rendered in heavy uppercase. */
+  children?: unknown;
+  variant?: "yellow" | "red" | "blue";
+  /** Render body as regular case serif instead of uppercase sans. */
+  serif?: boolean;
+}
+
+const { label, variant = "yellow", serif = false } = Astro.props;
+---
+<aside class:list={["nsb-callout", `nsb-callout--${variant}`, { "nsb-callout--serif": serif }]}>
+  {label && <p class="nsb-callout__label">{label}</p>}
+  <div class="nsb-callout__body"><slot /></div>
+</aside>
+
+<style>
+  .nsb-callout {
+    border: 3px solid var(--color-frame);
+    padding: var(--space-5) var(--space-6);
+    margin: var(--space-5) 0;
+  }
+  .nsb-callout--yellow { background: var(--color-yellow); color: var(--color-yellow-ink); }
+  .nsb-callout--red    { background: var(--color-red);    color: var(--color-surface);    }
+  .nsb-callout--blue   { background: var(--color-blue);   color: var(--color-surface);    }
+
+  .nsb-callout__label {
+    margin: 0 0 var(--space-2) 0;
+    font-family: var(--font-sans);
+    font-weight: 800;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: inherit;
+    opacity: 0.85;
+  }
+  .nsb-callout__body {
+    font-family: var(--font-sans);
+    font-weight: 800;
+    font-size: clamp(var(--text-lg), 2.2vw, var(--text-xl));
+    line-height: 1.2;
+    letter-spacing: 0;
+    text-transform: uppercase;
+    color: inherit;
+  }
+  .nsb-callout__body :global(p) { margin: 0; color: inherit; max-width: none; }
+  .nsb-callout--serif .nsb-callout__body {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    text-transform: none;
+    font-style: italic;
+    font-size: clamp(var(--text-md), 1.6vw, var(--text-lg));
+  }
+</style>
