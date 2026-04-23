@@ -1,0 +1,334 @@
+---
+/**
+ * AxisMatrix — a compact 2D taxonomy grid unique to the Red Flags
+ * landing page. Renders the `layer × signalType` distribution as a
+ * field-guide reference chart: rows are the primary axis, columns are
+ * the secondary axis, cells hold the count of entries in that bucket.
+ *
+ * Why a static matrix and not a filterable control:
+ *   · The build is static-first. No JS toggles, no hidden state.
+ *   · The goal is ORIENTATION, not filtering — a reader should
+ *     understand the two-axis classification at a glance and see where
+ *     the catalog is concentrated (most entries land on team·behavioral
+ *     and process·delivery; ai is all ai-quality; etc.).
+ *   · Each layer already has its own deep-link section below — so the
+ *     row-label links there, and the cells are purely informational.
+ *
+ * Visual intent:
+ *   · Periodic-table / chemistry-chart feel. Thin rules, mono labels,
+ *     small cell numerals. Empty cells render a faint dot so the grid
+ *     shape stays legible without shouting "missing".
+ *   · Populated cells get the RF accent wash; the densest cell (the
+ *     bucket with the most entries) gets a solid crimson fill + white
+ *     numeral so the eye finds the catalog's center of gravity.
+ *   · No hover states that imply interactivity beyond the row-header
+ *     anchor link.
+ */
+
+export interface Props {
+  /** Ordered primary axis — layers (e.g. code, team, process, leadership, ai). */
+  rowAxis: readonly string[];
+  /** Ordered secondary axis — signal types. */
+  colAxis: readonly string[];
+  /** Entries to tally. Each entry must carry its axis values on these keys. */
+  entries: readonly { layer: string; signalType: string }[];
+  /**
+   * If provided, each row label becomes an anchor to `${rowAnchorPrefix}${row}`.
+   * Pass e.g. "#layer-" to wire rows to the on-page layer sections.
+   */
+  rowAnchorPrefix?: string;
+}
+
+const { rowAxis, colAxis, entries, rowAnchorPrefix } = Astro.props;
+
+// Build a dense count grid. Rows and cols are kept in declared order so
+// the matrix mirrors the schema-level axis ordering (which is itself the
+// editorial ordering: `docs/schema-red-flags.md`).
+const counts: Record<string, Record<string, number>> = {};
+for (const r of rowAxis) {
+  counts[r] = {};
+  for (const c of colAxis) counts[r]![c] = 0;
+}
+for (const e of entries) {
+  if (counts[e.layer] && e.signalType in counts[e.layer]!) {
+    counts[e.layer]![e.signalType]! += 1;
+  }
+}
+let maxCell = 0;
+for (const r of rowAxis) {
+  for (const c of colAxis) {
+    const v = counts[r]![c]!;
+    if (v > maxCell) maxCell = v;
+  }
+}
+
+const totalsByRow: Record<string, number> = Object.fromEntries(
+  rowAxis.map((r) => [
+    r,
+    colAxis.reduce((s, c) => s + counts[r]![c]!, 0),
+  ]),
+);
+const totalsByCol: Record<string, number> = Object.fromEntries(
+  colAxis.map((c) => [
+    c,
+    rowAxis.reduce((s, r) => s + counts[r]![c]!, 0),
+  ]),
+);
+const grandTotal = entries.length;
+
+const prettify = (s: string): string =>
+  s.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+---
+<figure class="nsb-axis-matrix" aria-label="Layer by signal type distribution">
+  <figcaption class="nsb-axis-matrix__caption">
+    <span class="nsb-axis-matrix__caption-eyebrow">Two-axis index</span>
+    <span class="nsb-axis-matrix__caption-title">Layer &times; signal type</span>
+    <span class="nsb-axis-matrix__caption-note">
+      Rows are <strong>where</strong> the signal appears. Columns are
+      <strong>what kind</strong> of signal it is. Every entry has exactly
+      one of each.
+    </span>
+  </figcaption>
+
+  <div class="nsb-axis-matrix__scroll">
+    <table class="nsb-axis-matrix__table">
+      <thead>
+        <tr>
+          <th scope="col" class="nsb-axis-matrix__corner" aria-label="Axes">
+            <span class="nsb-axis-matrix__corner-row">Layer &darr;</span>
+            <span class="nsb-axis-matrix__corner-col">Signal type &rarr;</span>
+          </th>
+          {colAxis.map((c) => (
+            <th scope="col" class="nsb-axis-matrix__col-head">
+              <span class="nsb-axis-matrix__col-label">{prettify(c)}</span>
+              <span class="nsb-axis-matrix__col-total">{String(totalsByCol[c] ?? 0).padStart(2, "0")}</span>
+            </th>
+          ))}
+          <th scope="col" class="nsb-axis-matrix__col-head nsb-axis-matrix__col-head--total">
+            <span class="nsb-axis-matrix__col-label">Total</span>
+            <span class="nsb-axis-matrix__col-total">{String(grandTotal).padStart(2, "0")}</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {rowAxis.map((r) => (
+          <tr>
+            <th scope="row" class="nsb-axis-matrix__row-head">
+              {rowAnchorPrefix ? (
+                <a href={`${rowAnchorPrefix}${r}`} class="nsb-axis-matrix__row-link">
+                  <span class="nsb-axis-matrix__row-label">{prettify(r)}</span>
+                  <span class="nsb-axis-matrix__row-total">{String(totalsByRow[r] ?? 0).padStart(2, "0")}</span>
+                </a>
+              ) : (
+                <>
+                  <span class="nsb-axis-matrix__row-label">{prettify(r)}</span>
+                  <span class="nsb-axis-matrix__row-total">{String(totalsByRow[r] ?? 0).padStart(2, "0")}</span>
+                </>
+              )}
+            </th>
+            {colAxis.map((c) => {
+              const n = counts[r]![c]!;
+              const isEmpty = n === 0;
+              const isPeak = n > 0 && n === maxCell;
+              return (
+                <td class:list={[
+                  "nsb-axis-matrix__cell",
+                  { "nsb-axis-matrix__cell--empty": isEmpty },
+                  { "nsb-axis-matrix__cell--peak": isPeak },
+                ]}>
+                  {isEmpty ? (
+                    <span class="nsb-axis-matrix__cell-empty" aria-hidden="true">&middot;</span>
+                  ) : (
+                    <span class="nsb-axis-matrix__cell-num">{String(n).padStart(2, "0")}</span>
+                  )}
+                </td>
+              );
+            })}
+            <td class="nsb-axis-matrix__cell nsb-axis-matrix__cell--rowtotal">
+              <span class="nsb-axis-matrix__cell-num">{String(totalsByRow[r] ?? 0).padStart(2, "0")}</span>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</figure>
+
+<style>
+  .nsb-axis-matrix {
+    margin: 0;
+    border: 3px solid var(--color-frame);
+    background: var(--color-surface);
+  }
+
+  .nsb-axis-matrix__caption {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-frame);
+    color: var(--color-surface);
+    border-bottom: 3px solid var(--color-frame);
+  }
+  .nsb-axis-matrix__caption-eyebrow {
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--accent-rf-tint);
+  }
+  .nsb-axis-matrix__caption-title {
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: clamp(1.2rem, 2vw, 1.6rem);
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    color: var(--color-surface);
+  }
+  .nsb-axis-matrix__caption-note {
+    font-family: var(--font-serif);
+    font-size: var(--text-sm);
+    line-height: var(--leading-snug);
+    color: var(--color-surface);
+    opacity: 0.82;
+  }
+
+  .nsb-axis-matrix__scroll {
+    overflow-x: auto;
+  }
+  .nsb-axis-matrix__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-sans);
+  }
+
+  /* Corner cell — carries both axis labels so the chart is self-documenting
+     without needing external legends. */
+  .nsb-axis-matrix__corner {
+    padding: var(--space-3) var(--space-4);
+    text-align: left;
+    vertical-align: bottom;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+    background: var(--color-paper-alt);
+    border-right: 2px solid var(--color-frame);
+    border-bottom: 2px solid var(--color-frame);
+    min-width: 10rem;
+  }
+  .nsb-axis-matrix__corner-row,
+  .nsb-axis-matrix__corner-col { display: block; }
+  .nsb-axis-matrix__corner-row { color: var(--color-ink); font-weight: 700; }
+  .nsb-axis-matrix__corner-col { color: var(--color-ink-soft); margin-top: 2px; }
+
+  /* Column heads — signal types. */
+  .nsb-axis-matrix__col-head {
+    padding: var(--space-3) var(--space-3);
+    text-align: center;
+    vertical-align: bottom;
+    background: var(--color-paper-alt);
+    border-bottom: 2px solid var(--color-frame);
+    border-right: 1px solid var(--color-rule);
+    min-width: 5.5rem;
+  }
+  .nsb-axis-matrix__col-head--total {
+    background: var(--color-frame);
+    color: var(--color-surface);
+    border-right: 0;
+  }
+  .nsb-axis-matrix__col-label {
+    display: block;
+    font-family: var(--font-sans);
+    font-weight: 800;
+    font-size: 0.66rem;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink);
+    line-height: 1.2;
+  }
+  .nsb-axis-matrix__col-head--total .nsb-axis-matrix__col-label { color: var(--color-surface); }
+  .nsb-axis-matrix__col-total {
+    display: block;
+    margin-top: 4px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.72rem;
+    color: var(--color-ink-soft);
+  }
+  .nsb-axis-matrix__col-head--total .nsb-axis-matrix__col-total { color: var(--accent-rf-tint); }
+
+  /* Row heads — layers. Linkable when `rowAnchorPrefix` is passed. */
+  .nsb-axis-matrix__row-head {
+    padding: 0;
+    background: var(--color-paper-alt);
+    border-right: 2px solid var(--color-frame);
+    border-bottom: 1px solid var(--color-rule);
+    text-align: left;
+    vertical-align: middle;
+  }
+  .nsb-axis-matrix__row-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    color: inherit;
+    text-decoration: none;
+  }
+  .nsb-axis-matrix__row-link:hover { background: var(--color-surface); color: var(--accent-rf-deep); }
+  .nsb-axis-matrix__row-label {
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-sm);
+    letter-spacing: 0;
+    text-transform: capitalize;
+    color: inherit;
+  }
+  .nsb-axis-matrix__row-total {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: var(--color-ink-soft);
+  }
+
+  /* Count cells. */
+  .nsb-axis-matrix__cell {
+    padding: var(--space-3) var(--space-3);
+    text-align: center;
+    vertical-align: middle;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: var(--text-sm);
+    color: var(--color-ink);
+    border-right: 1px solid var(--color-rule);
+    border-bottom: 1px solid var(--color-rule);
+    background: var(--color-surface);
+  }
+  .nsb-axis-matrix__cell--empty {
+    color: var(--color-ink-faint);
+    background: var(--color-surface);
+  }
+  .nsb-axis-matrix__cell-empty {
+    font-size: 1.2em;
+    color: var(--color-ink-faint);
+  }
+  .nsb-axis-matrix__cell--peak {
+    background: var(--accent-rf);
+    color: var(--color-surface);
+  }
+  .nsb-axis-matrix__cell--rowtotal {
+    background: var(--color-frame);
+    color: var(--color-surface);
+    border-right: 0;
+  }
+  .nsb-axis-matrix__cell-num { font-feature-settings: "tnum"; }
+
+  /* Populated-but-not-peak cells get a faint accent wash so the
+     matrix reads as a heat chart without going full dashboard. */
+  .nsb-axis-matrix__cell:not(.nsb-axis-matrix__cell--empty):not(.nsb-axis-matrix__cell--peak):not(.nsb-axis-matrix__cell--rowtotal) {
+    background: var(--accent-rf-wash);
+  }
+</style>

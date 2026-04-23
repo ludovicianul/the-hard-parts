@@ -1,0 +1,169 @@
+---
+/**
+ * SignalQuote — the opening "sighting report" block on a Red Flag detail
+ * page. Renders the `whatYouNotice` field as a large serif italic quote
+ * with a thick crimson left rule. Optionally takes a short eyebrow label
+ * and a cluster of concrete example signals to surface below the main
+ * line.
+ *
+ * Visual intent:
+ *   · Treat the signal itself as the hero of the page — not a definition,
+ *     not a pill of metadata. A Red Flag is something you SEE; the page
+ *     should open with what you saw.
+ *   · Field-guide voice: serif italic, as if quoted from a report, NOT
+ *     a dashboard metric card.
+ *   · Left rule in the RF accent (crimson) ties it visually to the RF
+ *     accent everywhere else on the page without forcing red on the
+ *     whole block.
+ *   · Example signals render as a compact stacked list below the main
+ *     line with small mono eyebrow, deliberately un-bulleted — they
+ *     read as supporting "also observed" notes, not a checklist.
+ *
+ * Deliberately NOT a generalized "quote" component — the class namespace
+ * is `nsb-signal-quote` so future RF-only changes (drop caps, field-
+ * stamp ornament, etc.) stay scoped here without bleeding into FM/TD.
+ */
+
+export interface Props {
+  /** Short mono eyebrow, e.g. "THE SIGNAL". */
+  eyebrow?: string;
+  /** The `whatYouNotice` text. Rendered as the hero line. */
+  text: string;
+  /** Optional concrete examples (schema: `exampleSignals`). */
+  examples?: readonly string[];
+  /** Caption under the examples header. */
+  examplesLabel?: string;
+}
+
+const {
+  eyebrow = "The signal",
+  text,
+  examples,
+  examplesLabel = "Also observed",
+} = Astro.props;
+
+const visibleExamples =
+  Array.isArray(examples)
+    ? examples.filter((s): s is string => typeof s === "string" && s.trim().length > 0)
+    : [];
+---
+<section class="nsb-signal-quote" aria-label="The signal">
+  <p class="nsb-signal-quote__eyebrow">{eyebrow}</p>
+  <blockquote class="nsb-signal-quote__body">
+    <p>{text}</p>
+  </blockquote>
+
+  {visibleExamples.length > 0 && (
+    <div class="nsb-signal-quote__examples">
+      <p class="nsb-signal-quote__examples-label">{examplesLabel}</p>
+      <ul class="nsb-signal-quote__examples-list">
+        {visibleExamples.map((ex) => (
+          <li class="nsb-signal-quote__examples-item">{ex}</li>
+        ))}
+      </ul>
+    </div>
+  )}
+</section>
+
+<style>
+  .nsb-signal-quote {
+    /* Thick crimson left rule — the signal is framed like a pull-quote
+       in a field report, not a metadata panel. The rule uses the RF
+       accent so it reads as category identity without flooding the
+       whole block in red. */
+    border-left: 6px solid var(--accent-rf);
+    padding: var(--space-4) 0 var(--space-4) var(--space-6);
+    margin: var(--space-5) 0 var(--space-6) 0;
+    background: transparent;
+  }
+  .nsb-signal-quote__eyebrow {
+    margin: 0 0 var(--space-3) 0;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--accent-rf-deep);
+  }
+
+  /* The hero line. Large serif italic — the voice of an observer
+     reporting what they saw, not a metric being measured. */
+  .nsb-signal-quote__body {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(var(--text-xl), 2.6vw, var(--text-2xl));
+    line-height: var(--leading-snug);
+    color: var(--color-ink);
+    max-width: 44rem;
+  }
+  .nsb-signal-quote__body p { margin: 0; }
+  .nsb-signal-quote__body p::before {
+    content: "\201C";
+    font-size: 1.3em;
+    line-height: 0;
+    margin-right: 0.08em;
+    color: var(--accent-rf);
+    vertical-align: -0.08em;
+  }
+  .nsb-signal-quote__body p::after {
+    content: "\201D";
+    font-size: 1.3em;
+    line-height: 0;
+    margin-left: 0.05em;
+    color: var(--accent-rf);
+    vertical-align: -0.08em;
+  }
+
+  /* Supporting concrete examples — compact stack, small sans eyebrow,
+     solid-square bullets to stay consistent with the site-wide
+     LabeledList primitive (`@/components/LabeledList.astro`). The
+     square bullet is the field-manual index marker used on every
+     other list on the site; swapping to em-dashes here would break
+     the visual vocabulary for no editorial gain. */
+  .nsb-signal-quote__examples {
+    margin-top: var(--space-5);
+    padding-top: var(--space-4);
+    border-top: 1.5px solid var(--color-rule);
+    max-width: 44rem;
+  }
+  .nsb-signal-quote__examples-label {
+    margin: 0 0 var(--space-2) 0;
+    font-family: var(--font-sans);
+    font-weight: 800;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+  }
+  .nsb-signal-quote__examples-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .nsb-signal-quote__examples-item {
+    font-family: var(--font-serif);
+    font-size: var(--text-sm);
+    line-height: var(--leading-snug);
+    color: var(--color-ink-dim);
+    padding-left: 1.1em;
+    position: relative;
+  }
+  .nsb-signal-quote__examples-item::before {
+    /* Solid square bullet — identical to LabeledList.astro so every
+       short-item list on the site shares the same marker shape. */
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.5em;
+    width: 5px;
+    height: 5px;
+    background: var(--color-frame);
+  }
+</style>

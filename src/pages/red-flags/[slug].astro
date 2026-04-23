@@ -1,28 +1,886 @@
 ---
+/**
+ * /red-flags/[slug] — Red Flag detail page.
+ *
+ * Narrative structure is "scan-first, diagnostic":
+ *
+ *   1. THE SIGNAL                — what the reader would actually notice
+ *                                   (SignalQuote hero + exampleSignals).
+ *   2. WHAT IT USUALLY INDICATES — the primary diagnostic reading, paired
+ *                                   with `notNecessarilyAProblemWhen` to
+ *                                   calibrate false positives.
+ *   3. WHY IT MATTERS            — short editorial beat + decisionHeuristic
+ *                                   CalloutBand (the one-line verdict).
+ *   4. WHAT TO CHECK NEXT        — the inspection steps, rendered as a
+ *                                   numbered "field procedure" list, plus
+ *                                   the diagnostic questions a reader can
+ *                                   ask themselves. This is the load-
+ *                                   bearing section for the whole page.
+ *   5. UNDER THE SIGNAL          — 3-column progression:
+ *                                   leading indicators  (what came before)
+ *                                   common root causes  (what's underneath)
+ *                                   likely consequences (what happens next).
+ *                                   Renders as a before / under / after
+ *                                   strip so the signal's "direction of
+ *                                   travel" reads at a glance.
+ *   6. NOT WHAT IT LOOKS LIKE    — falseFriends (prominent, because it's
+ *                                   distinctive to RF) + antiPatterns.
+ *   7. CONTEXT & OWNERSHIP       — commonContexts + owners + timeHorizon.
+ *   8. AI EFFECTS                — aiAmplifies / aiMasks / aiSpecificNotes.
+ *   9. CONNECTED                 — cross-refs to FM / TD / EP / RF.
+ *
+ * Shared primitives reused: `DetailLayout`, `SectionHeader`, `SectionIndex`,
+ * `MetaRail`, `LabeledList`, `CalloutBand`, `FieldNote`, `RelatedEntries`,
+ * `Tag`. RF-specific primitives: `SignalQuote` (hero field-guide quote).
+ * All RF-only styling is class-scoped under `rf-*` so it can't leak into
+ * FM/TD layouts.
+ */
 import DetailLayout from "@/layouts/DetailLayout.astro";
-import { findEntry, listEntries } from "@/lib/load";
+import MetaRail from "@/components/MetaRail.astro";
+import SectionHeader from "@/components/SectionHeader.astro";
+import SectionIndex from "@/components/SectionIndex.astro";
+import SignalQuote from "@/components/SignalQuote.astro";
+import LabeledList from "@/components/LabeledList.astro";
+import CalloutBand from "@/components/CalloutBand.astro";
+import RelatedEntries from "@/components/RelatedEntries.astro";
+import Tag from "@/components/Tag.astro";
+import { loadRedFlags } from "@/lib/load";
 import { ensureValidated } from "@/lib/validate";
+import { formatRefCode } from "@/lib/resolve";
+import type { RedFlagEntry } from "@/content/schemas/red-flag";
+import {
+  SEVERITY_SCALE,
+  FREQUENCY_SCALE,
+  DETECTABILITY_SCALE,
+  CONFIDENCE_SCALE,
+  barCounts,
+  isFrequencyTrend,
+} from "@/lib/attribute-scales";
 
 export async function getStaticPaths() {
   ensureValidated();
-  return listEntries("RF").map((e) => ({ params: { slug: e.slug } }));
+  return loadRedFlags().entries.map((e) => ({ params: { slug: e.slug } }));
 }
 
 const { slug } = Astro.params;
-const entry = slug ? findEntry("RF", slug) : undefined;
+const allRf = loadRedFlags().entries;
+const entry: RedFlagEntry | undefined = allRf.find((e) => e.slug === slug);
 if (!entry) {
   throw new Error(`Red Flag not found for slug "${slug}"`);
 }
-const sub = (entry as any).layer as string | undefined;
+const index = allRf.findIndex((e) => e.slug === slug);
+const { refCode } = formatRefCode("RF", index, allRf.length);
+
+const prettify = (s: string): string =>
+  s.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+
+// Severity pill on the masthead picks up the same color ramp used on the
+// landing-grid card fill, so a reader lands on "the same red-flag they
+// clicked". Pattern mirrors the FM detail page: the raw severity enum
+// (e.g. "high") gets prefixed to produce the Tag variant class name
+// (e.g. "sev-high"), which maps to a `--sev-*` ramp color token via
+// Tag's `.nsb-tag--sev-*` variant. Without the `sev-` prefix, the Tag
+// falls back to its default outline styling and the pill renders
+// colorless. MetaRail carries full structured metadata below.
+const severityPillVariant =
+  `sev-${entry.severity}` as
+    | "sev-low"
+    | "sev-medium"
+    | "sev-medium-high"
+    | "sev-high"
+    | "sev-critical";
+
+// Section visibility — optional fields should hide entire sections when
+// empty. Content audit shows every RF entry carries every field today,
+// but the detail page must stay honest for future edits that remove
+// items from a single entry.
+const hasIndicates = Array.isArray(entry.whatItUsuallyIndicates) && entry.whatItUsuallyIndicates.length > 0;
+const hasNotAProblem = Array.isArray(entry.notNecessarilyAProblemWhen) && entry.notNecessarilyAProblemWhen.length > 0;
+const hasCheckNext = Array.isArray(entry.whatToCheckNext) && entry.whatToCheckNext.length > 0;
+const hasDiagnostic = Array.isArray(entry.diagnosticQuestions) && entry.diagnosticQuestions.length > 0;
+const hasLeading = Array.isArray(entry.leadingIndicators) && entry.leadingIndicators.length > 0;
+const hasRootCauses = Array.isArray(entry.commonRootCauses) && entry.commonRootCauses.length > 0;
+const hasConsequences = Array.isArray(entry.likelyConsequences) && entry.likelyConsequences.length > 0;
+const hasFalseFriends = Array.isArray(entry.falseFriends) && entry.falseFriends.length > 0;
+const hasAntiPatterns = Array.isArray(entry.antiPatterns) && entry.antiPatterns.length > 0;
+const hasContexts = Array.isArray(entry.commonContexts) && entry.commonContexts.length > 0;
+const hasOwners =
+  (Array.isArray(entry.ownerMostLikelyToNotice) && entry.ownerMostLikelyToNotice.length > 0) ||
+  (Array.isArray(entry.ownerBestPlacedToAct) && entry.ownerBestPlacedToAct.length > 0) ||
+  (typeof entry.timeHorizon === "string" && entry.timeHorizon.trim().length > 0);
+const hasAi =
+  (Array.isArray(entry.aiAmplifies) && entry.aiAmplifies.length > 0) ||
+  (Array.isArray(entry.aiMasks) && entry.aiMasks.length > 0) ||
+  (typeof entry.aiSpecificNotes === "string" && entry.aiSpecificNotes.trim().length > 0);
+const hasRelated =
+  (entry.relatedFailureModes && entry.relatedFailureModes.length > 0) ||
+  (entry.relatedTechDecisions && entry.relatedTechDecisions.length > 0) ||
+  (entry.relatedPlaybooks && entry.relatedPlaybooks.length > 0) ||
+  (entry.relatedRedFlags && entry.relatedRedFlags.length > 0);
+
+const sectionSpecs = [
+  { id: "sec-signal",       label: "The signal",             shown: true },
+  { id: "sec-indicates",    label: "What it usually indicates", shown: hasIndicates || hasNotAProblem },
+  { id: "sec-why",          label: "Why it matters",         shown: true },
+  { id: "sec-check-next",   label: "What to check next",     shown: hasCheckNext || hasDiagnostic },
+  { id: "sec-under",        label: "Under the signal",       shown: hasLeading || hasRootCauses || hasConsequences },
+  { id: "sec-look-alikes",  label: "Not what it looks like", shown: hasFalseFriends || hasAntiPatterns },
+  { id: "sec-ownership",    label: "Context and ownership",  shown: hasContexts || hasOwners },
+  { id: "sec-ai",           label: "AI effects",             shown: hasAi },
+  { id: "sec-connected",    label: "Connected",              shown: hasRelated },
+];
+const sections = sectionSpecs
+  .filter((s) => s.shown)
+  .map((s, i) => ({ step: String(i + 1).padStart(2, "0"), id: s.id, label: s.label }));
+const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
 ---
 <DetailLayout
   code="RF"
   title={entry.title}
   summary={entry.summary}
-  subcategory={sub}
+  subcategory={`${prettify(entry.layer)} · ${prettify(entry.signalType)}`}
+  refCode={refCode}
 >
-  <div class="nsb-placeholder">
-    Phase 1 placeholder · Red Flag detail page for "{entry.slug}".
-    Signal / inspect-next layout lands later.
-  </div>
+  {/* Masthead pill row — severity carries the ramp color (same ink
+      the landing grid card used) and frequency rides as a plain outline
+      pill. Detectability is deliberately NOT repeated here: it lives as
+      a first-class dimension on the MetaRail below with its own bar
+      ladder, and a masthead pill would be redundant signal. Mirrors
+      the FM masthead (severity colored, frequency outlined) so the
+      three categories' detail pages open with the same title-bar rhythm. */}
+  <Fragment slot="header-stamp">
+    <Tag label={`Severity ${entry.severity}`} variant={severityPillVariant} size="sm" />
+    {entry.frequency && <Tag label={`Freq ${entry.frequency}`} variant="outline" size="sm" />}
+  </Fragment>
+
+  <Fragment slot="nav-rail">
+    <SectionIndex items={sections} eyebrow="In this signal" />
+  </Fragment>
+
+  {/* Snapshot metadata rail — same cadence as FM/TD (ordinal → ordinal →
+      list → ordinal → ordinal). `ownerMostLikelyToNotice` plays the
+      bar-less "list" role that Lifecycle plays on FM and Audiences plays
+      on TD. Detectability is the RF-specific ladder, placed in position
+      4 so it mirrors where TD surfaces Reversibility. */}
+  <MetaRail
+    items={[
+      {
+        label: "Severity",
+        value: entry.severity,
+        severity: entry.severity,
+        scale: barCounts(SEVERITY_SCALE, entry.severity),
+      },
+      {
+        label: "Frequency",
+        value: entry.frequency,
+        ...(isFrequencyTrend(entry.frequency)
+          ? { trend: "increasing" as const }
+          : { scale: barCounts(FREQUENCY_SCALE, entry.frequency) }),
+      },
+      ...(entry.ownerMostLikelyToNotice && entry.ownerMostLikelyToNotice.length > 0
+        ? [{ label: "First noticed by", value: entry.ownerMostLikelyToNotice }]
+        : []),
+      {
+        label: "Detectability",
+        value: entry.detectability,
+        scale: barCounts(DETECTABILITY_SCALE, entry.detectability),
+      },
+      {
+        label: "Confidence",
+        value: entry.patternConfidence,
+        scale: barCounts(CONFIDENCE_SCALE, entry.patternConfidence),
+      },
+    ]}
+  />
+
+  {/* 1. THE SIGNAL — the hero beat of the whole page. `whatYouNotice` is
+        the required one-line observation and is promoted to a crimson-
+        ruled field-report quote. `exampleSignals` provides concrete
+        "also observed" phrasings beneath. */}
+  <SectionHeader
+    id="sec-signal"
+    step={stepFor("sec-signal")}
+    eyebrow="The signal"
+    title="What you would actually notice"
+    note={entry.whyItMatters}
+  />
+  <SignalQuote
+    eyebrow="Field observation"
+    text={entry.whatYouNotice}
+    examples={entry.exampleSignals}
+    examplesLabel="Also observed"
+  />
+
+  {/* 2. WHAT IT USUALLY INDICATES — the primary diagnostic reading.
+        Paired with "Not necessarily a problem when" so false positives
+        are visible right next to the reading. The pairing is the point:
+        no signal is 100%, and the calibration line matters. */}
+  {(hasIndicates || hasNotAProblem) && (
+    <>
+      <SectionHeader
+        id="sec-indicates"
+        step={stepFor("sec-indicates")}
+        eyebrow="Primary reading"
+        title="What it usually indicates"
+        note="Most likely underlying patterns when this signal shows up — not a diagnosis, a starting hypothesis."
+      />
+      <div class="rf-indicates">
+        {hasIndicates && (
+          <LabeledList
+            label="Usually indicates"
+            caption="Most likely underlying patterns when this signal shows up."
+            items={entry.whatItUsuallyIndicates}
+          />
+        )}
+        {/* "Not necessarily a problem when" is a calibration line that
+           prevents reading the signal as a diagnosis. Rendered with the
+           same square-bullet LabeledList primitive the rest of the page
+           uses, but set off by a yellow left rule + paper-alt fill so
+           it reads as a caveat, not a co-equal list. No dashes or
+           custom bullets — consistent with FM/TD. */}
+        {hasNotAProblem && (
+          <aside class="rf-indicates__caveat" aria-label="Not necessarily a problem when">
+            <LabeledList
+              label="Not necessarily a problem when"
+              caption="Contexts where this signal is expected and does not indicate a deeper issue."
+              items={entry.notNecessarilyAProblemWhen}
+              dense
+            />
+          </aside>
+        )}
+      </div>
+    </>
+  )}
+
+  {/* 3. WHY IT MATTERS — short editorial beat. `decisionHeuristic` is the
+        one-line verdict and gets a yellow CalloutBand (same treatment FM
+        and TD use for key-takeaway bands) so it reads as an imperative,
+        not body prose. */}
+  <SectionHeader
+    id="sec-why"
+    step={stepFor("sec-why")}
+    eyebrow="Stakes"
+    title="Why it matters"
+  />
+  <p class="rf-prose">{entry.whyItMatters}</p>
+  {entry.decisionHeuristic && (
+    <CalloutBand label="Heuristic" variant="yellow">
+      <p>{entry.decisionHeuristic}</p>
+    </CalloutBand>
+  )}
+
+  {/* 4. WHAT TO CHECK NEXT — the load-bearing section. Rendered as a
+        NUMBERED inspection list with crimson step badges so it reads as
+        a field procedure (not a todo-app checklist: no checkboxes, no
+        complete states). `diagnosticQuestions` renders beneath as the
+        self-check the reader can run without any tooling. */}
+  {(hasCheckNext || hasDiagnostic) && (
+    <>
+      <SectionHeader
+        id="sec-check-next"
+        step={stepFor("sec-check-next")}
+        eyebrow="Inspection"
+        title="What to check next"
+        note="Deliberate steps to confirm or disconfirm the primary reading above. Not a checklist — an order of inspection."
+      />
+      {hasCheckNext && (
+        <ol class="rf-inspect">
+          {entry.whatToCheckNext.map((step, i) => (
+            <li class="rf-inspect__item">
+              <span class="rf-inspect__num" aria-hidden="true">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span class="rf-inspect__text">{step}</span>
+            </li>
+          ))}
+        </ol>
+      )}
+      {hasDiagnostic && (
+        <div class="rf-diagnostic">
+          <p class="rf-diagnostic__label">Diagnostic questions</p>
+          <p class="rf-diagnostic__caption">
+            Questions to ask the team, or yourself, before concluding anything.
+          </p>
+          <ol class="rf-diagnostic__list">
+            {entry.diagnosticQuestions!.map((q) => (
+              <li class="rf-diagnostic__item">{q}</li>
+            ))}
+          </ol>
+        </div>
+      )}
+    </>
+  )}
+
+  {/* 5. UNDER THE SIGNAL — before / under / after progression. Three
+        columns on desktop: leading indicators came BEFORE this signal
+        was visible; common root causes are UNDER the signal right now;
+        likely consequences are AFTER the signal if nothing changes.
+        The "direction of travel" is the visual point of the strip. */}
+  {(hasLeading || hasRootCauses || hasConsequences) && (
+    <>
+      <SectionHeader
+        id="sec-under"
+        step={stepFor("sec-under")}
+        eyebrow="Progression"
+        title="Under the signal"
+        note="Where this pattern tends to come from, what's holding it up, and where it goes if nothing changes."
+      />
+      <div class="rf-under">
+        {hasLeading && (
+          <section class="rf-under__col rf-under__col--before">
+            <p class="rf-under__arrow" aria-hidden="true">&#x2190; Before</p>
+            <LabeledList
+              label="Leading indicators"
+              caption="What tends to show up first."
+              items={entry.leadingIndicators}
+            />
+          </section>
+        )}
+        {hasRootCauses && (
+          <section class="rf-under__col rf-under__col--under">
+            <p class="rf-under__arrow" aria-hidden="true">&#x2193; Under</p>
+            <LabeledList
+              label="Common root causes"
+              caption="What is usually sitting under the signal."
+              items={entry.commonRootCauses}
+            />
+          </section>
+        )}
+        {hasConsequences && (
+          <section class="rf-under__col rf-under__col--after">
+            <p class="rf-under__arrow" aria-hidden="true">&#x2192; After</p>
+            <LabeledList
+              label="Likely consequences"
+              caption="What happens if nothing changes."
+              items={entry.likelyConsequences}
+            />
+          </section>
+        )}
+      </div>
+    </>
+  )}
+
+  {/* 6. NOT WHAT IT LOOKS LIKE — two-column "look-alike chart" for
+        false-friends, plus anti-patterns underneath. False friends are
+        a distinctive RF field (things that LOOK like this signal but
+        aren't it), so the panel gets its own framed treatment. */}
+  {(hasFalseFriends || hasAntiPatterns) && (
+    <>
+      <SectionHeader
+        id="sec-look-alikes"
+        step={stepFor("sec-look-alikes")}
+        eyebrow="Look-alikes"
+        title="Not what it looks like"
+        note="Patterns that can be mistaken for this signal, and 'fix' attempts that make it worse."
+      />
+      {hasFalseFriends && (
+        <section class="rf-falsefriends" aria-label="False friends">
+          <header class="rf-falsefriends__head">
+            <span class="rf-falsefriends__eyebrow">False friends</span>
+            <span class="rf-falsefriends__sub">
+              Things the signal is often confused with, but isn't.
+            </span>
+          </header>
+          <ul class="rf-falsefriends__list">
+            {entry.falseFriends!.map((f) => (
+              <li class="rf-falsefriends__item">{f}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+      {hasAntiPatterns && (
+        <div class="rf-antipatterns">
+          <LabeledList
+            label="Anti-patterns when responding"
+            caption="Responses that feel sensible and usually make the underlying pattern worse."
+            items={entry.antiPatterns}
+          />
+        </div>
+      )}
+    </>
+  )}
+
+  {/* 7. CONTEXT & OWNERSHIP — four balanced panels in a 2×2 grid, each
+        with an identical TD-style black title bar + yellow eyebrow,
+        white body. Reads as a four-cell reference card, not a "main
+        list + side card" split. Panels:
+          · Common contexts         — where the signal shows up
+          · Most likely to notice   — who sees it first
+          · Best placed to act      — who can actually move on it
+          · Time horizon            — how much runway there usually is
+        Any empty cell is simply omitted; grid auto-fit collapses the
+        remaining panels cleanly. */}
+  {(hasContexts || hasOwners) && (
+    <>
+      <SectionHeader
+        id="sec-ownership"
+        step={stepFor("sec-ownership")}
+        eyebrow="Context"
+        title="Context and ownership"
+        note="Where this signal surfaces, who sees it first, who can actually act, and how much runway there usually is before escalation."
+      />
+      <div class="rf-context-grid">
+        {hasContexts && (
+          <section class="rf-context-panel">
+            <header class="rf-context-panel__head">Common contexts</header>
+            <div class="rf-context-panel__body">
+              <LabeledList
+                label="Where it shows up"
+                items={entry.commonContexts}
+                dense
+              />
+            </div>
+          </section>
+        )}
+        {entry.ownerMostLikelyToNotice && entry.ownerMostLikelyToNotice.length > 0 && (
+          <section class="rf-context-panel">
+            <header class="rf-context-panel__head">Most likely to notice</header>
+            <div class="rf-context-panel__body">
+              <LabeledList
+                label="Who sees it first"
+                caption="Before it escalates."
+                items={entry.ownerMostLikelyToNotice}
+                dense
+              />
+            </div>
+          </section>
+        )}
+        {entry.ownerBestPlacedToAct && entry.ownerBestPlacedToAct.length > 0 && (
+          <section class="rf-context-panel">
+            <header class="rf-context-panel__head">Best placed to act</header>
+            <div class="rf-context-panel__body">
+              <LabeledList
+                label="Who can move on it"
+                caption="Not always the same as who notices it."
+                items={entry.ownerBestPlacedToAct}
+                dense
+              />
+            </div>
+          </section>
+        )}
+        {entry.timeHorizon && (
+          <section class="rf-context-panel">
+            <header class="rf-context-panel__head">Time horizon</header>
+            <div class="rf-context-panel__body">
+              <p class="rf-context-panel__horizon">{entry.timeHorizon}</p>
+            </div>
+          </section>
+        )}
+      </div>
+    </>
+  )}
+
+  {/* 8. AI EFFECTS — two lists (aiAmplifies / aiMasks) plus an optional
+        single-paragraph synthesis (aiSpecificNotes). Surface ONLY if
+        any of the three are populated — every RF entry carries these
+        today but the page stays honest for future edits. */}
+  {hasAi && (
+    <>
+      <SectionHeader
+        id="sec-ai"
+        step={stepFor("sec-ai")}
+        eyebrow="AI impact"
+        title="AI effects on this signal"
+        note="How AI-assisted and AI-driven workflows tend to amplify or hide this signal."
+      />
+      <div class="rf-ai">
+        {entry.aiAmplifies && entry.aiAmplifies.length > 0 && (
+          <LabeledList
+            label="AI amplifies"
+            caption="Ways AI tooling tends to make this signal louder or more common."
+            items={entry.aiAmplifies}
+          />
+        )}
+        {entry.aiMasks && entry.aiMasks.length > 0 && (
+          <LabeledList
+            label="AI masks"
+            caption="Ways AI tooling tends to hide this signal — so it keeps growing under the surface."
+            items={entry.aiMasks}
+          />
+        )}
+      </div>
+      {/* AI-specific synthesis — promoted to a dominant blue CalloutBand
+          so it reads as the editorial take on how AI changes this signal,
+          not as an afterthought. Same treatment the TD detail pages use
+          for their highest-signal summary beats; keeps the visual
+          vocabulary consistent (yellow = heuristic / takeaway, blue =
+          synthesis / summary position). Serif variant renders as an
+          italic prose paragraph rather than uppercase headline, since
+          these notes are usually a full sentence or two. */}
+      {entry.aiSpecificNotes && (
+        <CalloutBand label="AI synthesis" variant="blue" serif>
+          <p>{entry.aiSpecificNotes}</p>
+        </CalloutBand>
+      )}
+    </>
+  )}
+
+  {/* 9. CONNECTED — cross-references into the other three categories.
+        Uses the shared `RelatedEntries` component so link styling, the
+        linked / pending tier split, and the cross-category grouping
+        behave identically to FM and TD detail pages. */}
+  {hasRelated && (
+    <>
+      <SectionHeader
+        id="sec-connected"
+        step={stepFor("sec-connected")}
+        eyebrow="Connected"
+        title="Where this signal leads"
+        note="Related failure modes, decisions behind the signal, response playbooks, and neighboring red flags."
+      />
+      <div class="rf-related">
+        <RelatedEntries
+          eyebrow="Failure modes"
+          title="Related failure modes"
+          refs={entry.relatedFailureModes}
+          expectCategory="FM"
+        />
+        <RelatedEntries
+          eyebrow="Tech decisions"
+          title="Related tech decisions"
+          refs={entry.relatedTechDecisions}
+          expectCategory="TD"
+        />
+        <RelatedEntries
+          eyebrow="Playbooks"
+          title="Related playbooks"
+          refs={entry.relatedPlaybooks}
+          expectCategory="EP"
+        />
+        <RelatedEntries
+          eyebrow="Adjacent red flags"
+          title="Adjacent red flags"
+          refs={entry.relatedRedFlags}
+          expectCategory="RF"
+        />
+      </div>
+    </>
+  )}
 </DetailLayout>
+
+<style>
+  /* ============================================================
+     RF-specific detail-page styles. All classes scoped under `rf-*`
+     so they can't leak into FM or TD layouts. The site-wide prose /
+     section / frame primitives are still doing the heavy lifting —
+     these styles only add RF-flavored rhythm where FM and TD don't
+     already have a convention for the field (e.g. inspection list,
+     false-friends panel, before/under/after progression strip).
+     ============================================================ */
+
+  .rf-prose {
+    font-family: var(--font-serif);
+    font-size: var(--text-md);
+    line-height: var(--leading-snug);
+    color: var(--color-ink);
+    margin: var(--space-4) 0;
+    max-width: 44rem;
+  }
+
+  /* Section 2 — primary reading + calibration caveat. Two columns at
+     desktop so the reader sees "what it indicates" and "when it's OK"
+     side-by-side; both are rendered with the shared LabeledList
+     primitive (square-bullet items, site-wide), so the list style is
+     identical to every other page. The caveat panel is distinguished
+     by a yellow left rule + paper-alt fill, not by a different bullet. */
+  .rf-indicates {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    margin: var(--space-4) 0;
+  }
+  @media (min-width: 820px) {
+    .rf-indicates { grid-template-columns: 1.3fr 1fr; align-items: start; }
+  }
+  .rf-indicates__caveat {
+    background: var(--color-paper-alt);
+    border: 2px solid var(--color-frame);
+    border-left-width: 6px;
+    border-left-color: var(--color-yellow);
+    padding: var(--space-4) var(--space-5);
+  }
+
+  /* Section 4 — inspection list.
+     Numbered ordered list where each step has a chunky crimson square
+     step badge to the left and a serif body to the right. Reads as a
+     field-procedure manual, not an interactive todo list. */
+  .rf-inspect {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-4) 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 3px solid var(--color-frame);
+    background: var(--color-surface);
+  }
+  .rf-inspect__item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: stretch;
+    gap: 0;
+    border-bottom: 1.5px solid var(--color-rule);
+  }
+  .rf-inspect__item:last-child { border-bottom: 0; }
+  .rf-inspect__num {
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: 1.2rem;
+    font-feature-settings: "tnum";
+    color: var(--color-surface);
+    background: var(--accent-rf);
+    padding: var(--space-3) var(--space-4);
+    min-width: 3.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 3px solid var(--color-frame);
+  }
+  .rf-inspect__text {
+    font-family: var(--font-serif);
+    font-size: var(--text-base);
+    line-height: var(--leading-snug);
+    color: var(--color-ink);
+    padding: var(--space-3) var(--space-4);
+  }
+
+  /* Diagnostic questions — quieter treatment than the inspection list,
+     because they're reflective prompts rather than procedural steps. */
+  .rf-diagnostic {
+    margin: var(--space-5) 0;
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-paper-alt);
+    border: 2px solid var(--color-frame);
+    border-left-width: 6px;
+    border-left-color: var(--accent-rf);
+  }
+  .rf-diagnostic__label {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink);
+  }
+  .rf-diagnostic__caption {
+    margin: 4px 0 var(--space-3) 0;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--color-ink-dim);
+  }
+  .rf-diagnostic__list {
+    list-style: none;
+    counter-reset: rf-diag;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .rf-diagnostic__item {
+    counter-increment: rf-diag;
+    font-family: var(--font-serif);
+    font-size: var(--text-base);
+    line-height: var(--leading-snug);
+    color: var(--color-ink);
+    padding-left: 2.2em;
+    position: relative;
+  }
+  .rf-diagnostic__item::before {
+    content: "Q" counter(rf-diag, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 0.1em;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: var(--tracking-label);
+    color: var(--accent-rf-deep);
+  }
+
+  /* Section 5 — before / under / after 3-column progression. Arrow
+     glyphs at the top of each column signal direction of travel. */
+  .rf-under {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    border: 3px solid var(--color-frame);
+    background: var(--color-surface);
+    margin: var(--space-4) 0;
+  }
+  @media (min-width: 820px) {
+    .rf-under { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .rf-under__col + .rf-under__col { border-left: 2px solid var(--color-frame); }
+  }
+  @media (max-width: 819px) {
+    .rf-under__col + .rf-under__col { border-top: 2px solid var(--color-frame); }
+  }
+  .rf-under__col { padding: var(--space-4) var(--space-5); min-width: 0; }
+  .rf-under__arrow {
+    margin: 0 0 var(--space-3) 0;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--accent-rf-deep);
+  }
+
+  /* Section 6 — false-friends panel. Two-column reference list with a
+     "looks like ≠" glyph so the reader sees the equivalence being
+     denied, not just a bulleted list. */
+  .rf-falsefriends {
+    margin: var(--space-4) 0;
+    border: 3px solid var(--color-frame);
+    background: var(--color-surface);
+  }
+  .rf-falsefriends__head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    padding: var(--space-3) var(--space-5);
+    background: var(--color-frame);
+    color: var(--color-surface);
+  }
+  .rf-falsefriends__eyebrow {
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--accent-rf-tint);
+  }
+  .rf-falsefriends__sub {
+    font-family: var(--font-serif);
+    font-size: var(--text-sm);
+    line-height: var(--leading-snug);
+    color: var(--color-surface);
+    opacity: 0.82;
+  }
+  .rf-falsefriends__list {
+    list-style: none;
+    padding: var(--space-3) 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 720px) {
+    .rf-falsefriends__list { grid-template-columns: repeat(2, 1fr); }
+  }
+  .rf-falsefriends__item {
+    font-family: var(--font-serif);
+    font-size: var(--text-base);
+    line-height: var(--leading-snug);
+    color: var(--color-ink);
+    padding: var(--space-2) var(--space-5);
+    position: relative;
+    padding-left: calc(var(--space-5) + 1.5em);
+  }
+  .rf-falsefriends__item::before {
+    /* "not equal" glyph in crimson — the whole panel argues against
+       an equivalence the reader might already be making. */
+    content: "\2260";
+    position: absolute;
+    left: var(--space-5);
+    top: var(--space-2);
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--accent-rf);
+    font-size: 1.1em;
+  }
+
+  .rf-antipatterns { margin: var(--space-5) 0; }
+
+  /* Section 7 — context + ownership. Balanced 2×2 panel grid. Each
+     panel carries the same TD-style anatomy (black title bar with
+     yellow eyebrow + white body), so no panel visually dominates its
+     neighbor — the reader sees a four-cell reference card instead of
+     the previous "labeled list on the left, framed card on the right"
+     asymmetry. Uses auto-fit so it collapses cleanly if fewer than 4
+     panels are populated. */
+  .rf-context-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    margin: var(--space-4) 0;
+  }
+  @media (min-width: 640px) {
+    .rf-context-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  .rf-context-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-surface);
+    border: 3px solid var(--color-frame);
+    min-width: 0;
+  }
+  .rf-context-panel__head {
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-frame);
+    color: var(--color-yellow);
+    font-family: var(--font-sans);
+    font-weight: 900;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    font-size: var(--text-xs);
+  }
+  .rf-context-panel__body {
+    padding: var(--space-4) var(--space-5);
+    flex: 1;
+  }
+  .rf-context-panel__horizon {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: var(--text-base);
+    line-height: var(--leading-snug);
+    color: var(--color-ink);
+  }
+
+  /* Section 8 — AI effects. Two labeled lists side-by-side (amplifies
+     vs masks), and the optional `aiSpecificNotes` synthesis is surfaced
+     BELOW the grid via the shared CalloutBand (blue-serif variant) —
+     CSS not needed here for that callout. */
+  .rf-ai {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    margin: var(--space-4) 0;
+  }
+  @media (min-width: 820px) {
+    .rf-ai { grid-template-columns: 1fr 1fr; align-items: start; }
+  }
+
+  /* Section 9 — cross-refs. 2×2 grid of RelatedEntries panels. Each
+     panel is a black-masthead framed card via the shared component's
+     own styles; the grid's job here is only to make siblings in the
+     same row share a height so the 4 cards read as one aligned board.
+     `align-items: stretch` (default) lets the grid stretch each cell
+     to the row's tallest content, and `height: 100%` on the child
+     forces its own internal frame to follow that stretched height —
+     otherwise `.nsb-related`'s block flow would leave blank space
+     between its bottom border and the grid cell edge. Top margin on
+     `.nsb-related` (present because it's normally placed below body
+     prose) is zeroed inside this grid context. */
+  .rf-related {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    margin: var(--space-4) 0;
+  }
+  @media (min-width: 820px) {
+    .rf-related {
+      grid-template-columns: 1fr 1fr;
+      /* Each implicit row stretches to the taller of its two cells,
+         so a 4-link panel and a 2-link panel in the same row share
+         the same outer frame height. */
+      grid-auto-rows: 1fr;
+    }
+  }
+  .rf-related > :global(.nsb-related) {
+    margin-top: 0;
+    height: 100%;
+  }
+</style>

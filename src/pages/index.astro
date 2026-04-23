@@ -4,7 +4,7 @@ import EntryCard from "@/components/EntryCard.astro";
 import CalloutBand from "@/components/CalloutBand.astro";
 import Tag from "@/components/Tag.astro";
 import { CATEGORIES, CATEGORY_ORDER } from "@/lib/categories";
-import { categoryBlock, listEntries, loadFailureModes, loadTechDecisions } from "@/lib/load";
+import { categoryBlock, listEntries, loadFailureModes, loadTechDecisions, loadRedFlags } from "@/lib/load";
 import { formatRefCode } from "@/lib/resolve";
 import { ensureValidated } from "@/lib/validate";
 import type { SeverityLevel } from "@/lib/attribute-scales";
@@ -64,6 +64,30 @@ const tdFeatured = featuredTdSlugs
 const tdTotal = tdEntries.length;
 const tdRefBySlug = new Map<string, string>();
 tdEntries.forEach((e, i) => tdRefBySlug.set(e.slug, formatRefCode("TD", i, tdTotal).refNum));
+
+// Red Flags preview — one entry per LAYER (code, team, process, leadership,
+// ai) so the 3×2 grid spans the full primary axis the catalog covers.
+// Mirrors the editorial shape of the FM & TD previews: one card per
+// axis, not a top-6. Severity drives the card weight as everywhere
+// else. The 6th slot surfaces a second high-signal entry from the
+// busiest layer (ai) so the grid reads as 3×2 without a blank cell.
+const rfEntries = loadRedFlags().entries;
+const featuredRfSlugs = [
+  "changes-always-touch-too-many-places",                          // code
+  "everyone-asks-the-same-person",                                 // team
+  "work-enters-faster-than-it-leaves",                             // process
+  "reporting-looks-healthier-than-delivery-feels",                 // leadership
+  "ai-generated-artifacts-are-trusted-more-than-source-material",  // ai
+  "benchmarks-are-discussed-more-than-real-user-outcomes",         // ai (2nd — also AI-quality, highest editorial value)
+];
+const rfFeatured = featuredRfSlugs
+  .map((slug) => rfEntries.find((e) => e.slug === slug))
+  .filter((e): e is (typeof rfEntries)[number] => e !== undefined);
+const rfRefBySlug = new Map<string, string>();
+rfEntries.forEach((e, i) => rfRefBySlug.set(e.slug, formatRefCode("RF", i, rfEntries.length).refNum));
+
+const prettifyRf = (s: string): string =>
+  s.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 ---
 <BaseLayout
   title="nosilverbullet.dev"
@@ -263,15 +287,69 @@ tdEntries.forEach((e, i) => tdRefBySlug.set(e.slug, formatRefCode("TD", i, tdTot
       </section>
     )}
 
+    {rfFeatured.length > 0 && (
+      /* Red Flags preview — siblings the FM & TD preview sections in
+         structure (CalloutBand + grid + browse-all tail), but scoped
+         with `data-accent="rf"` so anything that reads
+         `var(--accent-current)` inside this section (card hover
+         underline, link hover) picks up crimson instead of yellow or
+         burnt orange. Card meta surfaces `Detect · …` — the RF-
+         distinct dimension — instead of a second severity-style pill. */
+      <section class="nsb-home__preview" aria-label="From Red Flags" data-accent="rf">
+        <CalloutBand label="Signal bulletin" variant="yellow">
+          <p>Red Flags &mdash; early-warning signals across code, teams, process, leadership, and AI-enabled work.</p>
+        </CalloutBand>
+
+        <header class="nsb-home__preview-header">
+          <h2 class="nsb-display nsb-home__preview-title">From Red Flags</h2>
+          <p class="nsb-home__preview-note">
+            One signal per layer the catalog covers &mdash; code, team,
+            process, leadership, and AI. Each entry opens with
+            <em>what you would actually notice</em> and walks through what
+            it usually indicates and what to check next.
+          </p>
+        </header>
+
+        <div class="nsb-home__preview-grid">
+          {rfFeatured.map((e) => (
+            <EntryCard
+              code="RF"
+              slug={e.slug}
+              title={e.title}
+              summary={e.summary}
+              subcategory={prettifyRf(e.signalType)}
+              severity={e.severity as SeverityLevel}
+              refNum={rfRefBySlug.get(e.slug)}
+              fillFromSeverity
+              metaBits={[
+                /* Frequency, not detectability — mirrors the RF landing
+                   cards and the FM/TD preview cards so all three preview
+                   strips carry the same eyebrow vocabulary. Detectability
+                   is a first-class dimension on the RF detail MetaRail. */
+                e.frequency ? `Freq · ${e.frequency}` : undefined,
+              ].filter((s): s is string => typeof s === "string")}
+            />
+          ))}
+        </div>
+
+        <p class="nsb-home__preview-more">
+          <a href="/red-flags" class="nsb-home__preview-link">
+            Browse all {rfEntries.length} Red Flags &rarr;
+          </a>
+        </p>
+      </section>
+    )}
+
     <aside class="nsb-home__status nsb-frame" aria-label="Build status">
       <div class="nsb-home__status-bar">Phase status</div>
       <p class="nsb-home__status-text">
-        Failure Modes and Tech Decisions are both wired end-to-end with
-        real detail pages, structured rendering, and cross-reference
-        resolution. Tech Decisions reuses the shared page chassis while
-        carrying its own options-ledger visual and decision-support
-        structure. Red Flags and Engineering Playbook follow in later
-        phases using the same shared primitives.
+        Failure Modes, Tech Decisions, and Red Flags are all wired
+        end-to-end with real detail pages, structured rendering, and
+        cross-reference resolution. Each category reuses the shared page
+        chassis while carrying its own category-distinct visual — the
+        severity atlas (FM), the options ledger (TD), the two-axis signal
+        chart (RF). Engineering Playbook follows in a later phase using
+        the same shared primitives.
       </p>
     </aside>
   </div>

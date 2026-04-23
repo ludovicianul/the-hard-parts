@@ -1,24 +1,548 @@
 ---
+/**
+ * /red-flags — catalog landing page.
+ *
+ * Red Flags are scanned-first, diagnostic references. The landing's job
+ * is to help a reader move quickly from "I've been noticing X" to "here
+ * is the entry on X". Three things serve that:
+ *
+ *   1. Intro paragraph — explains the category's voice in one beat.
+ *   2. `AxisMatrix` — a compact layer × signalType reference chart.
+ *      This is the two-axis model made visible in one place. Row
+ *      labels anchor-link to the layer sections below; cells are
+ *      informational (static, no filters).
+ *   3. A 2×2 "reading guide" — the ladders used on cards and the
+ *      detail page (severity, frequency, detectability, confidence).
+ *      `Detectability` is the RF-specific dimension — none of the
+ *      other categories use it — so it earns its own tile here.
+ *   4. Grouped catalog — cards grouped by the PRIMARY axis (`layer`),
+ *      with the SECONDARY axis (`signalType`) surfaced per card as a
+ *      small chip in the card's meta line. This keeps the two-axis
+ *      model legible without introducing a mode toggle.
+ *
+ * Shared primitives reused: `CategoryLayout`, `EntryCard`. RF-specific
+ * visuals kept scoped under `rf-landing__*` so they don't bleed into
+ * FM/TD styling.
+ */
 import CategoryLayout from "@/layouts/CategoryLayout.astro";
-import { listEntries } from "@/lib/load";
+import EntryCard from "@/components/EntryCard.astro";
+import AxisMatrix from "@/components/AxisMatrix.astro";
+import { loadRedFlags } from "@/lib/load";
 import { ensureValidated } from "@/lib/validate";
-import { hrefForEntry } from "@/lib/categories";
+import { formatRefCode } from "@/lib/resolve";
+import {
+  SEVERITY_SCALE,
+  FREQUENCY_SCALE,
+  DETECTABILITY_SCALE,
+  CONFIDENCE_SCALE,
+} from "@/lib/attribute-scales";
+import type { SeverityLevel } from "@/lib/attribute-scales";
 
 ensureValidated();
-const entries = listEntries("RF");
----
-<CategoryLayout code="RF">
-  <div class="nsb-placeholder">
-    Phase 1 placeholder · /red-flags landing page.
-    Signal-oriented scan layout lands later.
-  </div>
 
-  <ul class="nsb-index-list">
-    {entries.map((e) => (
-      <li>
-        <a href={hrefForEntry("RF", e.slug)}>{e.title}</a>
-        <span class="nsb-index-sub"> · {(e as any).layer}</span>
+const file = loadRedFlags();
+const entries = file.entries;
+const layers = file.category.layers;
+const signalTypes = file.category.signalTypes;
+
+// Per-entry refNum via the shared resolver so cards carry the same
+// "RF-01 / RF-02 / …" numbering as the MetaRail pill on the detail page
+// and as cross-references surfaced inside other categories' pages.
+const refBySlug = new Map<string, string>();
+entries.forEach((e, i) => {
+  refBySlug.set(e.slug, formatRefCode("RF", i, entries.length).refNum);
+});
+
+// Group by the PRIMARY axis (`layer`). Preserve declared-layer order
+// so the page's narrative matches the schema's authorial ordering
+// (code → team → process → leadership → ai). Any entry whose layer
+// is not declared is bundled into an "other" group at the end — this
+// should be unreachable because `ensureValidated()` rejects unknown
+// layers, but the fallback is kept defensive.
+type Group = { key: string; entries: typeof entries };
+const groups: Group[] = layers.map((layer) => ({
+  key: layer,
+  entries: entries.filter((e) => e.layer === layer),
+}));
+const orphaned = entries.filter((e) => !layers.includes(e.layer));
+if (orphaned.length > 0) groups.push({ key: "other", entries: orphaned });
+
+// Reading-guide cards. Four tiles, 2×2 at desktop. Severity gets its
+// own "legend panel" treatment (same shape as FM's severity legend);
+// the other three (Frequency, Detectability, Confidence) share the
+// generic "attribute card" layout.
+//
+// Detectability is the category-distinct dimension. Its scale is
+// ordered "hardest to miss" → "easiest to miss", so a full bar
+// reads "this one slips past you unless you're actively watching".
+const attributeKeys: readonly {
+  title: string;
+  description: string;
+  scale: readonly string[];
+  trendNote?: { label: string; caption: string };
+}[] = [
+  {
+    title: "Frequency",
+    description: "How often this red flag actually shows up across teams — from occasional cameos to chronic patterns.",
+    scale: FREQUENCY_SCALE,
+    trendNote: {
+      label: "increasing",
+      caption: "Not a point on the scale — a trend. Flags signals whose prevalence is rising (often AI-era).",
+    },
+  },
+  {
+    title: "Detectability",
+    description: "How easy the signal is to miss — from obvious if you look once, to quietly normalized by the organization.",
+    scale: DETECTABILITY_SCALE,
+  },
+  {
+    title: "Confidence",
+    description: "How sure we are this reading of the signal holds up across contexts — provisional vs. repeatedly observed.",
+    scale: CONFIDENCE_SCALE,
+  },
+];
+
+const prettify = (s: string): string =>
+  s.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+---
+<CategoryLayout
+  code="RF"
+  heroTitle="Red Flags"
+  tagline="Early-warning signals across code, teams, process, leadership, and AI-enabled work — what you notice, what it usually means, and what to check next."
+>
+  <header class="rf-landing__intro" aria-label="About this reference">
+    <p class="rf-landing__intro-text">
+      Every entry is a named <strong>signal</strong>, not a diagnosis. The
+      page opens with <em>what you would actually notice</em>, and walks
+      you through <em>what it usually indicates</em> and
+      <em>what to check next</em> &mdash; so scanning for a pattern you've
+      half-seen in your own work should land you on the right entry in
+      under a minute.
+    </p>
+
+    {/* Two-axis index — the RF-specific reference chart. Rows link
+        down to the layer sections; cells surface distribution without
+        inviting click-to-filter interactivity we don't have. */}
+    <AxisMatrix
+      rowAxis={layers}
+      colAxis={signalTypes}
+      entries={entries.map((e) => ({ layer: e.layer, signalType: e.signalType }))}
+      rowAnchorPrefix="#layer-"
+    />
+
+    {/* Reading guide — identical anatomy to the FM and TD reading
+        guides so the three landings are visually consistent:
+          · Severity legend panel = white body with a black title bar
+            (yellow "SEVERITY KEY" eyebrow) and a yellow footer note.
+          · Three attribute cards = white body, sans title, serif
+            description, bar ladder on the right. Frequency's
+            "increasing" trend gets the black-square yellow-arrow
+            glyph identical to the FM/TD rendering.
+        Class namespace is `rf-landing__*` so RF-only tweaks don't
+        bleed back into FM/TD; the CSS below mirrors FM's sizing
+        property-for-property to keep the three pages aligned. */}
+    <ul class="rf-landing__attr-row" aria-label="Reading guide">
+      <li class="rf-landing__legend">
+        <p class="rf-landing__legend-head">Severity key</p>
+        <ul class="rf-landing__legend-list">
+          {SEVERITY_SCALE.map((level, i) => (
+            <li class="rf-landing__legend-item">
+              <span class="rf-landing__legend-bars" aria-hidden="true">
+                {SEVERITY_SCALE.map((_, j) => (
+                  <span class:list={["rf-landing__legend-bar", { "is-on": j <= i }]} />
+                ))}
+              </span>
+              <span class="rf-landing__legend-label">{level}</span>
+              <span
+                class:list={["rf-landing__legend-chip", `rf-landing__legend-chip--${level}`]}
+                aria-hidden="true"
+                title={`card fill for ${level}`}
+              />
+            </li>
+          ))}
+        </ul>
+        <p class="rf-landing__legend-foot">
+          Chip = card fill on the grid.
+        </p>
       </li>
-    ))}
-  </ul>
+      {attributeKeys.map((a) => (
+        <li class="rf-landing__attr">
+          <div class="rf-landing__attr-text">
+            <p class="rf-landing__attr-title">{a.title}</p>
+            <p class="rf-landing__attr-desc">{a.description}</p>
+            {a.trendNote && (
+              <p class="rf-landing__attr-trend">
+                <span class="rf-landing__attr-trend-glyph" aria-hidden="true">&#x2197;</span>
+                <span class="rf-landing__attr-trend-body">
+                  <span class="rf-landing__attr-trend-label">{a.trendNote.label}</span>
+                  <span class="rf-landing__attr-trend-caption">{a.trendNote.caption}</span>
+                </span>
+              </p>
+            )}
+          </div>
+          <ul class="rf-landing__attr-scale">
+            {a.scale.map((level, i) => (
+              <li class="rf-landing__attr-level">
+                <span class="rf-landing__attr-bars" aria-hidden="true">
+                  {a.scale.map((_, j) => (
+                    <span class:list={["rf-landing__attr-bar", { "is-on": j <= i }]} />
+                  ))}
+                </span>
+                <span class="rf-landing__attr-level-label">{level}</span>
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ul>
+  </header>
+
+  {groups.map((group, gi) => group.entries.length > 0 && (
+    <section
+      class="rf-landing__group"
+      aria-label={`Red flags · ${group.key}`}
+      id={`layer-${group.key}`}
+    >
+      <header class="rf-landing__group-head">
+        <span class="rf-landing__group-code">Layer {String(gi + 1).padStart(2, "0")}</span>
+        <h2 class="nsb-display rf-landing__group-title">{prettify(group.key)}</h2>
+        <span class="rf-landing__group-count">
+          {String(group.entries.length).padStart(2, "0")} {group.entries.length === 1 ? "signal" : "signals"}
+        </span>
+      </header>
+
+      <div class="rf-landing__grid">
+        {group.entries.map((e) => (
+          /* Severity-weight fill mirrors FM/TD landings — the reader sees
+             the same "gravity" ramp across categories. `signalType` is
+             surfaced as a small meta chip so the secondary axis is
+             always visible on the card without a second pill row. */
+          <EntryCard
+            code="RF"
+            slug={e.slug}
+            title={e.title}
+            summary={e.summary}
+            subcategory={prettify(e.signalType)}
+            severity={e.severity as SeverityLevel}
+            refNum={refBySlug.get(e.slug)}
+            fillFromSeverity
+            metaBits={[
+              /* Card meta carries frequency ONLY, mirroring the FM and
+                 TD cards. Detectability is surfaced as a first-class
+                 dimension on the detail page MetaRail — repeating it
+                 on the eyebrow line would clutter the grid without
+                 adding information the reader can act on mid-scan. */
+              e.frequency ? `Freq · ${e.frequency}` : undefined,
+            ].filter((s): s is string => typeof s === "string")}
+          />
+        ))}
+      </div>
+    </section>
+  ))}
 </CategoryLayout>
+
+<style>
+  /* ---- Intro block -----------------------------------------------
+     Parallels the FM & TD intro rhythm (wide serif paragraph + reading
+     guide), plus the RF-specific AxisMatrix in between. Class names
+     are scoped under `rf-landing__` so tweaks here can't leak back
+     into FM/TD. */
+  .rf-landing__intro {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    margin: var(--space-6) 0 var(--space-7) 0;
+  }
+  .rf-landing__intro-text {
+    font-family: var(--font-serif);
+    font-size: clamp(var(--text-md), 1.5vw, 1.125rem);
+    line-height: var(--leading-snug);
+    text-wrap: pretty;
+    color: var(--color-ink);
+    margin: 0;
+    padding: var(--space-5);
+    background: var(--color-surface);
+    border: 3px solid var(--color-frame);
+    max-width: none;
+  }
+
+  /* ---- Reading guide row (2×2 at ≥640px) ------------------------
+     Sizing, breakpoints, and bar dimensions mirror FM's landing
+     property-for-property so the two reading guides render as
+     siblings. The only RF-specific thing is the layer-section
+     anchor navigation from AxisMatrix; the guide itself is
+     visually identical to FM's. */
+  .rf-landing__attr-row {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  @media (min-width: 640px) {
+    .rf-landing__attr-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  /* ---- Severity legend panel (matches FM/TD) --------------------
+     Three bands top→bottom: black title bar (yellow eyebrow), white
+     body with level rows (bars · label · color chip), yellow footer
+     note. Flex column + flex:1 on the list lets the panel stretch
+     to fill its grid row so its outer height matches the adjacent
+     attribute card in the same 2×2 row. */
+  .rf-landing__legend {
+    background: var(--color-surface);
+    color: var(--color-ink);
+    border: 3px solid var(--color-frame);
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .rf-landing__legend-head {
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-frame);
+    color: var(--color-yellow);
+    font-family: var(--font-sans);
+    font-weight: 900;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    font-size: var(--text-xs);
+  }
+  .rf-landing__legend-list {
+    list-style: none;
+    padding: var(--space-4);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    flex: 1;
+  }
+  .rf-landing__legend-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    font-weight: 800;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+  .rf-landing__legend-bars { display: inline-flex; gap: 2px; }
+  .rf-landing__legend-bar {
+    width: 12px;
+    height: 8px;
+    background: var(--color-frame);
+    opacity: 0.18;
+    display: inline-block;
+  }
+  .rf-landing__legend-bar.is-on { opacity: 1; }
+  .rf-landing__legend-chip {
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid var(--color-frame);
+    display: inline-block;
+  }
+  .rf-landing__legend-chip--low          { background: var(--sev-low); }
+  .rf-landing__legend-chip--medium       { background: var(--sev-medium); }
+  .rf-landing__legend-chip--medium-high  { background: var(--sev-medium-high); }
+  .rf-landing__legend-chip--high         { background: var(--sev-high); }
+  .rf-landing__legend-chip--critical     { background: var(--sev-critical); }
+  .rf-landing__legend-foot {
+    margin: 0;
+    padding: var(--space-2) var(--space-4) var(--space-3);
+    border-top: 2px solid var(--color-frame);
+    background: var(--color-yellow);
+    color: var(--color-yellow-ink);
+    font-family: var(--font-sans);
+    font-weight: 800;
+    font-size: 0.7rem;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  /* ---- Attribute card (Frequency / Detectability / Confidence) --
+     Text column LEFT (sans title + serif description + optional
+     trend note), bar ladder RIGHT. 2-col internal grid; the bar
+     column sizes to its content (`auto`) so the text column fills
+     the remaining width. Mirrors FM's `fm-landing__attr*` spacing
+     verbatim so tile heights match when both sit in the same row. */
+  .rf-landing__attr {
+    background: var(--color-surface);
+    border: 3px solid var(--color-frame);
+    padding: var(--space-4) var(--space-5);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    min-width: 0;
+    align-items: start;
+  }
+  @media (min-width: 420px) {
+    .rf-landing__attr {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: var(--space-5);
+    }
+  }
+  .rf-landing__attr-text {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .rf-landing__attr-title {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    font-size: var(--text-sm);
+    color: var(--color-ink);
+  }
+  .rf-landing__attr-desc {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: var(--text-sm);
+    line-height: var(--leading-snug);
+    color: var(--color-ink-dim);
+  }
+  /* Trend note — "increasing ↗" sub-row under Frequency. Black-square
+     yellow-arrow glyph is the exact same visual used by the detail
+     MetaRail, so the reader sees the same symbol here first and
+     recognizes it later. */
+  .rf-landing__attr-trend {
+    margin: 0;
+    padding-top: var(--space-3);
+    border-top: 1.5px solid var(--color-rule);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2) var(--space-3);
+    align-items: start;
+    color: var(--color-ink);
+  }
+  .rf-landing__attr-trend-glyph {
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-frame);
+    color: var(--color-yellow);
+    flex-shrink: 0;
+  }
+  .rf-landing__attr-trend-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .rf-landing__attr-trend-label {
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink);
+  }
+  .rf-landing__attr-trend-caption {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 0.78rem;
+    line-height: var(--leading-snug);
+    color: var(--color-ink-dim);
+  }
+  .rf-landing__attr-scale {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .rf-landing__attr-level {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink-dim);
+  }
+  .rf-landing__attr-bars {
+    display: inline-flex;
+    gap: 2px;
+  }
+  .rf-landing__attr-bar {
+    width: 10px;
+    height: 7px;
+    background: var(--color-frame);
+    opacity: 0.18;
+    display: inline-block;
+  }
+  .rf-landing__attr-bar.is-on { opacity: 1; }
+  .rf-landing__attr-level-label {
+    color: var(--color-ink);
+    white-space: nowrap;
+  }
+
+  /* ---- Layer groups (primary-axis browse) -----------------------
+     Full-width black masthead bar matches the FM landing group-head
+     treatment (yellow code + count, white title, black ground) so the
+     three category landings carry the same chapter-style rhythm. */
+  .rf-landing__group {
+    margin-top: var(--space-9);
+    scroll-margin-top: var(--space-6);
+  }
+  .rf-landing__group-head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--space-4);
+    align-items: baseline;
+    padding: var(--space-4) var(--space-5);
+    margin-bottom: var(--space-5);
+    background: var(--color-frame);
+    color: var(--color-surface);
+  }
+  .rf-landing__group-code {
+    font-family: var(--font-sans);
+    font-weight: 900;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    font-size: var(--text-xs);
+    color: var(--color-yellow);
+    font-feature-settings: "tnum";
+  }
+  .rf-landing__group-title {
+    color: var(--color-surface);
+    font-size: clamp(var(--text-3xl), 5vw, 3.5rem);
+    line-height: 0.95;
+    margin: 0;
+  }
+  .rf-landing__group-count {
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    font-weight: 900;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-yellow);
+    font-feature-settings: "tnum";
+    white-space: nowrap;
+  }
+  @media (max-width: 640px) {
+    .rf-landing__group-head {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+    }
+  }
+  .rf-landing__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    gap: var(--space-4);
+  }
+</style>

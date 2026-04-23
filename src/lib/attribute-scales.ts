@@ -91,11 +91,33 @@ export const CONFIDENCE_SCALE = [
   "high",
 ] as const;
 
-export type SeverityLevel      = (typeof SEVERITY_SCALE)[number];
-export type FrequencyLevel     = (typeof FREQUENCY_SCALE)[number];
-export type RecoveryLevel      = (typeof RECOVERY_SCALE)[number];
-export type ReversibilityLevel = (typeof REVERSIBILITY_SCALE)[number];
-export type ConfidenceLevel    = (typeof CONFIDENCE_SCALE)[number];
+/**
+ * Four-step ordered detectability scale for Red Flags. Ordering goes
+ * from "hardest to miss" → "easiest to miss / rationalize":
+ *
+ *   obvious              — you can't not see it, even without looking
+ *   visible-if-you-look  — shows up in the normal metrics/artifacts
+ *   subtle               — only surfaces with deliberate inspection
+ *   easy-to-normalize    — actively rationalized away by the org
+ *
+ * Higher positions on the ladder mean the signal is easier to
+ * overlook, so a 4/4 bar visual reads as "this one will slip past
+ * you unless you're watching for it". The detectability field is
+ * canonical across all 42 RF entries per `docs/schema-red-flags.md`.
+ */
+export const DETECTABILITY_SCALE = [
+  "obvious",
+  "visible-if-you-look",
+  "subtle",
+  "easy-to-normalize",
+] as const;
+
+export type SeverityLevel       = (typeof SEVERITY_SCALE)[number];
+export type FrequencyLevel      = (typeof FREQUENCY_SCALE)[number];
+export type RecoveryLevel       = (typeof RECOVERY_SCALE)[number];
+export type ReversibilityLevel  = (typeof REVERSIBILITY_SCALE)[number];
+export type DetectabilityLevel  = (typeof DETECTABILITY_SCALE)[number];
+export type ConfidenceLevel     = (typeof CONFIDENCE_SCALE)[number];
 
 /** True if a reversibility value is one of the five canonical ladder steps. */
 export function isReversibilityLevel(value: string): value is ReversibilityLevel {
