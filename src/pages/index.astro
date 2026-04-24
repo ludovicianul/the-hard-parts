@@ -127,8 +127,8 @@ const prettifyEp = (s: string): string =>
   s.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 ---
 <BaseLayout
-  title="nosilverbullet.dev"
-  description="A reference-first field guide for software people. Failure Modes, Tech Decisions, Red Flags, and the Engineering Playbook."
+  title="thehardparts.dev"
+  description="The Hard Parts — an engineering reference for recurring software failures, warning signals, hard decisions, and practical playbooks. Four catalogs: Failure Modes, Tech Decisions, Red Flags, and the Engineering Playbook."
 >
   <div class="nsb-container nsb-home">
     {/* --------- TABLOID MASTHEAD ---------
@@ -140,19 +140,26 @@ const prettifyEp = (s: string): string =>
         set of right-borders on the first two columns — no `!important`
         border overrides, no doubled-up rules. */}
     <header class="nsb-home__hero nsb-frame nsb-frame--heavy" aria-label="Masthead">
-      {/* Left nameplate — three stacked pieces:
-            1. NOSILVERBULLET masthead code (small yellow eyebrow)
-            2. The four section names as a stacked list — this is the
-               new "nameplate", replacing the old "FIELD GUIDE EDITION"
-               headline with the actual table-of-contents as the brand.
-            3. "Not a framework / Not a methodology / A reference" —
-               a three-beat positioning line that defines the site by
-               saying what it is NOT before what it is. */}
+      {/* Left nameplate — four stacked pieces after the rebrand:
+            1. THE HARD PARTS wordmark (yellow, the brand)
+            2. ENGINEERING REFERENCE subtitle (white small caps, says
+               what the site IS in two words before the section list)
+            3. The four section names as a stacked list — the editorial
+               table-of-contents treatment.
+            4. "Not a framework / Not a methodology / A reference" —
+               the three-beat positioning line pinned to the bottom of
+               the black rail (margin-top: auto on the style side).
+         The old "NOSILVERBULLET" masthead-code line is replaced by the
+         new two-line wordmark+subtitle block so the rail reads as a
+         real nameplate, not as a small eyebrow code. */}
       <div class="nsb-home__hero-brand nsb-home__hero-col">
-        <p class="nsb-home__hero-brand-code">NOSILVERBULLET</p>
+        <div class="nsb-home__hero-wordmark">
+          <p class="nsb-home__hero-wordmark-name">The Hard Parts</p>
+          <p class="nsb-home__hero-wordmark-sub">Engineering reference</p>
+        </div>
         <ul class="nsb-home__hero-brand-list">
           <li>Failure modes.</li>
-          <li>Red-flags.</li>
+          <li>Red flags.</li>
           <li>Trade-offs.</li>
           <li>Playbooks.</li>
         </ul>
@@ -163,17 +170,23 @@ const prettifyEp = (s: string): string =>
         </p>
       </div>
 
+      {/* Center column — Edition tag eyebrow + headline + supporting
+          copy. The eyebrow Tag was NOT part of the rebrand ask and
+          is preserved as-is; the right rail separately carries a new
+          ISSUE cell (see stats rail below). The two markers coexist:
+          the eyebrow is a small editorial tag alongside the headline;
+          the ISSUE cell is a metadata entry in the catalog-stats
+          vertical stack. */}
       <div class="nsb-home__hero-title-col nsb-home__hero-col">
         <div class="nsb-home__hero-eyebrow">
           <Tag label="Edition 01" variant="yellow" size="sm" />
         </div>
         <h1 class="nsb-display nsb-display--xl nsb-home__hero-title">
-          Software<br />fails<br />the same way.<br />Every time.
+          Software fails<br />the same way.<br />Every time.
         </h1>
         <p class="nsb-home__hero-summary">
-          The failure modes are documented. The warning signs are
-          observable. The counter-moves are known. This is where
-          they live.
+          A reference for recurring software failures, warning
+          signals, hard decisions, and practical playbooks.
         </p>
       </div>
 
@@ -199,7 +212,7 @@ const prettifyEp = (s: string): string =>
           </p>
         </div>
         <div class="nsb-home__hero-stat nsb-home__hero-stat--note">
-          <p class="nsb-home__hero-note-head">Open. Share.</p>
+          <p class="nsb-home__hero-note-head">Open. Use.</p>
           <ul class="nsb-home__hero-note-list">
             <li>Use in retros.</li>
             <li>Use in reviews.</li>
@@ -495,7 +508,7 @@ const prettifyEp = (s: string): string =>
         related-entry heads); right column is the motto pair in serif. */}
     <aside class="nsb-home__closer" aria-label="Working motto">
       <div class="nsb-home__closer-code">
-        <span class="nsb-home__closer-code-cat">N S B</span>
+        <span class="nsb-home__closer-code-cat">T H P</span>
         <span class="nsb-home__closer-code-num">&middot; 01</span>
       </div>
       <div class="nsb-home__closer-body">
@@ -565,14 +578,39 @@ const prettifyEp = (s: string): string =>
       gap: var(--space-2);
       min-height: 100%;
     }
-    .nsb-home__hero-brand-code {
+    /* Two-line wordmark block: the site name (yellow, display size
+       on the rail — sits in the same y-slot where NOSILVERBULLET
+       used to live as a small eyebrow) over a small-caps subtitle
+       on white. The name doubles as the editorial masthead of the
+       left rail; the subtitle compacts "what this is" into two
+       words before the section list takes over. Sized to be clearly
+       the second-largest element on the page after the center
+       headline, without competing with it. */
+    .nsb-home__hero-wordmark {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-bottom: var(--space-2);
+    }
+    .nsb-home__hero-wordmark-name {
       margin: 0;
       font-family: var(--font-sans);
       font-weight: 900;
+      font-size: clamp(1.25rem, 2.1vw, 1.55rem);
+      line-height: 1.05;
+      letter-spacing: -0.015em;
+      text-transform: uppercase;
+      color: var(--color-yellow);
+    }
+    .nsb-home__hero-wordmark-sub {
+      margin: 0;
+      font-family: var(--font-sans);
+      font-weight: 800;
       font-size: var(--text-xs);
       letter-spacing: var(--tracking-label);
       text-transform: uppercase;
-      color: var(--color-yellow);
+      color: var(--color-surface);
+      opacity: 0.78;
     }
     /* The four section names as a stacked list — the new "nameplate"
        for the left rail. Sized to read as the dominant element on the

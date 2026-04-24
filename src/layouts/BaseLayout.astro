@@ -28,9 +28,9 @@ const NAV_NAME_OVERRIDES: Partial<Record<keyof typeof CATEGORIES, string>> = {
 // Canonical product strings used in <title>, <meta>, OG cards. Keeping
 // them here so every route gets the same editorial framing without
 // each page reinventing it.
-const SITE_NAME = "nosilverbullet.dev";
+const SITE_NAME = "thehardparts.dev";
 const SITE_TAGLINE =
-  "A reference-first field guide for software people. Failure Modes, Tech Decisions, Red Flags, and the Engineering Playbook.";
+  "The Hard Parts \u2014 an engineering reference for recurring software failures, warning signals, hard decisions, and practical playbooks.";
 const fullTitle = title === SITE_NAME ? title : `${title} · ${SITE_NAME}`;
 const metaDescription = description ?? SITE_TAGLINE;
 
@@ -74,9 +74,15 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).toStri
 
     <header class="nsb-header">
       <div class="nsb-container nsb-header__inner">
-        <a href="/" class="nsb-brand">
+        {/* Top-nav wordmark. Reader-facing brand is "The Hard Parts";
+            `.nsb-brand` has `text-transform: uppercase` so the three
+            words render as THE HARD PARTS. The TLD span stays as the
+            yellow secondary cue matching the existing color rhythm
+            (yellow dot + yellow .dev) so the nameplate silhouette is
+            unchanged. */}
+        <a href="/" class="nsb-brand" aria-label="The Hard Parts — home">
           <span class="nsb-brand__dot" aria-hidden="true"></span>
-          <span class="nsb-brand__text">nosilverbullet<span class="nsb-brand__tld">.dev</span></span>
+          <span class="nsb-brand__text">The Hard Parts<span class="nsb-brand__tld">.dev</span></span>
         </a>
         <nav class="nsb-nav" aria-label="Primary">
           <ul>
@@ -119,7 +125,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).toStri
     <footer class="nsb-footer">
       <div class="nsb-container nsb-footer__inner">
         <p class="nsb-footer__line">
-          nosilverbullet.dev &middot; a reference-first field guide for software people.
+          thehardparts.dev &middot; an engineering reference.
         </p>
         <nav class="nsb-footer__nav" aria-label="Utility">
           <a href="/about">About</a>
