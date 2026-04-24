@@ -28,20 +28,24 @@
       "bestMomentToIntervene",
       "blastRadius",
       "oftenMistakenAs",
+      "looksHealthyBecause",
+      "easilyConfusedWith",
       "starts",
       "feelsReasonableBecause",
       "escalates",
       "ends",
-      "earlyWarningSigns",
-      "midWarningSigns",
-      "lateWarningSigns",
+      "warningSigns",
       "whyItHappens",
       "immediateActions",
       "structuralFixes",
       "whatNotToDo",
+      "firstMove",
+      "hardTradeoff",
+      "recoveryTrap",
       "recoveryDifficulty",
       "aiCanHelpWith",
       "aiCanMakeWorseBy",
+      "aiFalseConfidence",
       "aiSpecificNotes",
       "oftenLeadsTo",
       "oftenCausedBy",
@@ -88,6 +92,26 @@
         "business"
       ],
       "oftenMistakenAs": "responsible modernization",
+      "looksHealthyBecause": [
+        "the new system uses current frameworks and cleaner patterns",
+        "architecture diagrams look tidier than the old code",
+        "leadership hears the words modernization, scalability, and debt reduction",
+        "morale is visibly higher on the rewrite side of the team"
+      ],
+      "easilyConfusedWith": [
+        {
+          "pattern": "migration-debt",
+          "distinction": "Migration debt is about unfinished prior moves. The friendly rewrite is a new move whose endpoint was never defined."
+        },
+        {
+          "pattern": "regular refactoring work",
+          "distinction": "Refactoring preserves behavior and scope. The friendly rewrite expands scope while the old system stays live."
+        },
+        {
+          "pattern": "abstraction-addiction",
+          "distinction": "Abstraction addiction adds layers inside one system. The friendly rewrite builds a parallel system."
+        }
+      ],
       "starts": "The current system is painful. Everyone agrees. A clean slate feels rational, overdue, even virtuous.",
       "feelsReasonableBecause": "The existing mess is real, and a rewrite promises clarity, speed, and fewer compromises.",
       "escalates": "Parallel systems appear. Scope expands. The new system is always almost ready while the old one remains mission-critical.",
@@ -130,6 +154,9 @@
         "Do not let the rewrite absorb unrelated improvements",
         "Do not treat morale as evidence of viability"
       ],
+      "firstMove": "name the rewrite as a rewrite in writing, and stop framing it as cleanup.",
+      "hardTradeoff": "accept that some of the new system will be thrown away, or accept that the old system will outlive the migration by years.",
+      "recoveryTrap": "launching a second rewrite to fix the first rewrite.",
       "recoveryDifficulty": "hard",
       "aiCanHelpWith": [
         "AI can help inventory legacy behavior, map dependencies, generate migration checklists, and summarize hidden code paths."
@@ -137,6 +164,7 @@
       "aiCanMakeWorseBy": [
         "AI can accelerate the wrong rewrite by generating scaffolding and broad rewrites faster than the team can validate architecture and migration risk."
       ],
+      "aiFalseConfidence": "Generated replacement code looks reviewed because it compiles and passes shallow tests, creating the illusion that behavior has been validated when only surface shape has.",
       "aiSpecificNotes": "Do not confuse generated replacement code with validated replacement behavior.",
       "oftenLeadsTo": [
         "dependency-fog",
@@ -196,6 +224,26 @@
         "business"
       ],
       "oftenMistakenAs": "leadership by example",
+      "looksHealthyBecause": [
+        "one person consistently delivers under pressure",
+        "the team publicly thanks them for saving launches and incidents",
+        "leadership cites them as a model of ownership",
+        "velocity numbers look fine while they are on call"
+      ],
+      "easilyConfusedWith": [
+        {
+          "pattern": "strong individual expertise",
+          "distinction": "Expertise is a property of the person. The hero trap is a property of the team: the work only moves when that person is present."
+        },
+        {
+          "pattern": "ownership-drift",
+          "distinction": "Ownership drift is diffuse and unclear. The hero trap is concentrated and over-clear — everything routes to one name."
+        },
+        {
+          "pattern": "quiet-quitter-team",
+          "distinction": "A quiet-quitter team disengages across the board. A hero-trap team is highly engaged with one person carrying most of the load."
+        }
+      ],
       "starts": "Someone capable, generous, and fast becomes the default path for hard work.",
       "feelsReasonableBecause": "The team gets quick answers, fast fixes, and a comforting sense that someone truly understands the system.",
       "escalates": "Escalations route through one person. Others stop learning certain areas. Documentation falls behind reality.",
@@ -237,6 +285,9 @@
         "Do not shame the hero for organizational dependency",
         "Do not call it solved because some docs were written once"
       ],
+      "firstMove": "route the next critical incident deliberately away from the hero, with an explicit second owner named in advance.",
+      "hardTradeoff": "accept slower response times and more visible near-misses in the short term so that other engineers build real context.",
+      "recoveryTrap": "writing a large documentation push and declaring the knowledge transferred.",
       "recoveryDifficulty": "medium-hard",
       "aiCanHelpWith": [
         "AI can help externalize tacit knowledge into diagrams, docs, FAQs, runbooks, and onboarding material."
@@ -244,6 +295,7 @@
       "aiCanMakeWorseBy": [
         "AI can deepen the trap if one senior person becomes the only person trusted to validate generated code or AI-produced recommendations."
       ],
+      "aiFalseConfidence": "AI-generated docs and summaries based on the hero's past work create the illusion that their knowledge has been captured, when what was captured is shape, not judgment.",
       "aiSpecificNotes": "AI-generated explanations based on stale or partial context can create the illusion that knowledge has been transferred when it has not.",
       "oftenLeadsTo": [
         "ownership-drift",
@@ -302,6 +354,26 @@
         "delivery"
       ],
       "oftenMistakenAs": "good architecture",
+      "looksHealthyBecause": [
+        "the team cites SOLID, DDD, hexagonal, or similar vocabularies fluently",
+        "architecture diagrams look cleaner than the actual code experience",
+        "pull requests come with thoughtful rationale about future flexibility",
+        "senior engineers endorse the direction as forward-looking"
+      ],
+      "easilyConfusedWith": [
+        {
+          "pattern": "platform-before-product",
+          "distinction": "Platform-before-product builds infrastructure ahead of demand. Abstraction addiction adds structure inside a product that already has users."
+        },
+        {
+          "pattern": "legitimate future-proofing",
+          "distinction": "Future-proofing responds to a concrete, likely next change. Abstraction addiction responds to generalized anxiety about unknown future changes."
+        },
+        {
+          "pattern": "friendly-rewrite",
+          "distinction": "A friendly rewrite replaces the system. Abstraction addiction keeps the system but multiplies its internal layers."
+        }
+      ],
       "starts": "A team wants flexibility, consistency, and elegance.",
       "feelsReasonableBecause": "Generalization sounds cheaper than revisiting design later, and abstraction often signals sophistication.",
       "escalates": "Interfaces multiply, wrappers appear, patterns spread, and the code becomes harder to reason about than the original problem.",
@@ -343,6 +415,9 @@
         "Do not declare war on abstraction itself",
         "Do not replace one grand framework with another grand framework"
       ],
+      "firstMove": "pick one simple feature, trace it end to end, and count every layer that does not change outcomes if removed.",
+      "hardTradeoff": "accept local duplication and a less elegant codebase so that the cost of change drops where it matters.",
+      "recoveryTrap": "building a new grand abstraction to unify the existing abstractions.",
       "recoveryDifficulty": "medium",
       "aiCanHelpWith": [
         "AI can help identify duplication patterns worth abstracting and map dead or redundant layers for simplification."
@@ -350,6 +425,7 @@
       "aiCanMakeWorseBy": [
         "AI can mass-produce interfaces, helper layers, patterns, and generic architecture that look polished but add no real leverage."
       ],
+      "aiFalseConfidence": "Generated layers look intentional because they follow named patterns and pass lint, creating the illusion of considered design where no real design decision was made.",
       "aiSpecificNotes": "Generated elegance is still cost. If no one can explain why a layer exists, it is already too expensive.",
       "oftenLeadsTo": [
         "dependency-fog",
@@ -406,6 +482,26 @@
         "leadership"
       ],
       "oftenMistakenAs": "operational maturity",
+      "looksHealthyBecause": [
+        "boards are tidy, dashboards are current, and statuses move every day",
+        "leadership can get a clean weekly update with one click",
+        "the team speaks in consistent process vocabulary",
+        "external reviewers praise the visibility"
+      ],
+      "easilyConfusedWith": [
+        {
+          "pattern": "genuine delivery discipline",
+          "distinction": "Delivery discipline uses the board to coordinate real work. Ticket theater uses the board to make the work look coordinated."
+        },
+        {
+          "pattern": "metric-myopia",
+          "distinction": "Metric myopia optimizes the wrong numbers. Ticket theater optimizes the wrong artifacts — statuses, titles, and visible motion."
+        },
+        {
+          "pattern": "discovery-theater",
+          "distinction": "Discovery theater performs learning before build. Ticket theater performs progress during build."
+        }
+      ],
       "starts": "A team wants visibility and control.",
       "feelsReasonableBecause": "Tickets, statuses, and dashboards create an immediate sense of order.",
       "escalates": "The system of reporting becomes heavier, and teams learn which motions look like progress.",
@@ -447,6 +543,9 @@
         "Do not abolish process without replacing it with better operating habits",
         "Do not add another dashboard to fix dashboard distortion"
       ],
+      "firstMove": "pick one weekly report or status ritual and remove it for two weeks; see what decisions actually change.",
+      "hardTradeoff": "accept that leadership will see less apparent movement in exchange for more honest signal on what is stuck.",
+      "recoveryTrap": "replacing the old board with a new tool or framework and calling the theater fixed.",
       "recoveryDifficulty": "medium",
       "aiCanHelpWith": [
         "AI can summarize real blockers, cluster delivery risks, and reduce administrative overhead when used against noise rather than for more noise."
@@ -454,6 +553,7 @@
       "aiCanMakeWorseBy": [
         "AI can generate persuasive updates, summaries, and ticket churn at scale, making synthetic clarity feel like real control."
       ],
+      "aiFalseConfidence": "AI-generated status summaries read as crisp and confident, creating the illusion that the team has a handle on the work when all that improved was the writing.",
       "aiSpecificNotes": "If AI makes reporting cheaper, organizations may consume more reporting instead of demanding better signal.",
       "oftenLeadsTo": [
         "metric-myopia",
@@ -512,6 +612,26 @@
         "business"
       ],
       "oftenMistakenAs": "motivation",
+      "looksHealthyBecause": [
+        "there is energy and urgency in the team",
+        "stakeholders talk about the goal with confidence",
+        "roadmaps and leadership slides mention a target window",
+        "nobody is openly panicking yet"
+      ],
+      "easilyConfusedWith": [
+        {
+          "pattern": "genuine hard deadline",
+          "distinction": "A hard deadline is explicit, owned, and tied to traceable trade-offs. An invisible deadline is implied, unowned, and never forced anyone to choose."
+        },
+        {
+          "pattern": "scope-negotiation-theater",
+          "distinction": "Scope-negotiation theater performs trade-off conversations that change nothing. The invisible deadline is the absence of those conversations entirely."
+        },
+        {
+          "pattern": "stakeholder-capture",
+          "distinction": "Stakeholder capture means one voice dominates priorities. The invisible deadline means timing was absorbed without any explicit priority conversation at all."
+        }
+      ],
       "starts": "A launch window, stakeholder expectation, or executive assumption emerges without precise negotiation.",
       "feelsReasonableBecause": "No one wants to be the person who slows momentum by forcing hard trade-off conversations.",
       "escalates": "The team senses urgency but lacks clear constraints. Local optimism fills the gap.",
@@ -553,6 +673,9 @@
         "Do not respond with heroic optimism",
         "Do not pretend ambiguity is flexibility"
       ],
+      "firstMove": "write the date on paper with the decision-maker's name next to it, and send it back up the chain for confirmation or correction.",
+      "hardTradeoff": "accept the discomfort of a hard conversation now, or accept a surprise escalation later when the date becomes real.",
+      "recoveryTrap": "taking the implied date at face value and asking the team to absorb scope quietly to hit it.",
       "recoveryDifficulty": "medium",
       "aiCanHelpWith": [
         "AI can detect vague commitments across notes, plans, and status updates and surface mismatched assumptions."
@@ -560,6 +683,7 @@
       "aiCanMakeWorseBy": [
         "AI can make progress reports sound calm and coherent, delaying the moment when underlying ambiguity is confronted."
       ],
+      "aiFalseConfidence": "AI-polished updates read as measured and coherent, creating the illusion that the plan is well-understood when nothing about the actual commitment has been sharpened.",
       "aiSpecificNotes": "A polished summary is not a clarified commitment.",
       "oftenLeadsTo": [
         "ticket-theater",
@@ -1355,6 +1479,26 @@
         "operations"
       ],
       "oftenMistakenAs": "modern engineering leverage",
+      "looksHealthyBecause": [
+        "PR count, ticket count, and lines of code climb noticeably",
+        "engineers report feeling fast and productive",
+        "leadership sees visible tool adoption and modern tooling",
+        "docs and code comments are more plentiful than before"
+      ],
+      "easilyConfusedWith": [
+        {
+          "pattern": "genuine productivity gains",
+          "distinction": "Real gains show up in outcomes — fewer incidents, faster learning loops, more durable changes. Synthetic velocity shows up only in output volume."
+        },
+        {
+          "pattern": "ticket-theater",
+          "distinction": "Ticket theater performs work that was never there. Synthetic velocity produces real artifacts — but of shallower quality than their volume suggests."
+        },
+        {
+          "pattern": "autocomplete-architecture",
+          "distinction": "Autocomplete architecture is about the shape of generated systems. Synthetic velocity is about the pace and volume of generated work, whatever its shape."
+        }
+      ],
       "starts": "New tooling makes many kinds of work faster to produce.",
       "feelsReasonableBecause": "The increase in visible activity is real, and some of it is genuinely useful.",
       "escalates": "Review becomes shallower than generation. Ownership weakens. Rework and confusion rise slowly rather than dramatically.",
@@ -1396,6 +1540,9 @@
         "Do not ban useful tools reactively",
         "Do not keep celebrating volume while ignoring maintenance cost"
       ],
+      "firstMove": "pick one AI-heavy area and measure a durable outcome (rework rate, incident rate, rollback rate) over the same window as the volume gain.",
+      "hardTradeoff": "accept that visible output will slow once review, ownership, and testing are held to the same bar as the generation rate.",
+      "recoveryTrap": "adding more AI tools to review the output of the AI tools.",
       "recoveryDifficulty": "medium",
       "aiCanHelpWith": [
         "AI can still reduce toil and accelerate well-bounded implementation if paired with strong review, ownership, and testing."
@@ -1403,6 +1550,7 @@
       "aiCanMakeWorseBy": [
         "This failure mode is itself AI-amplified: generation becomes cheap, so weak ideas and half-understood changes travel further and faster."
       ],
+      "aiFalseConfidence": "Generated artifacts look authored — they compile, they read fluently, they pass surface checks — creating the illusion of understood work when no one fully owns or has reasoned through the change.",
       "aiSpecificNotes": "Cheap output is not cheap system behavior.",
       "oftenLeadsTo": [
         "autocomplete-architecture",

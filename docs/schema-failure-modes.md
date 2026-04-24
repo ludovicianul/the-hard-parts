@@ -129,6 +129,10 @@ Each Failure Mode entry should use this structure:
   "bestMomentToIntervene": "",
   "blastRadius": [],
   "oftenMistakenAs": "",
+  "looksHealthyBecause": [],
+  "easilyConfusedWith": [
+    { "pattern": "", "distinction": "" }
+  ],
   "starts": "",
   "feelsReasonableBecause": "",
   "escalates": "",
@@ -142,9 +146,13 @@ Each Failure Mode entry should use this structure:
   "immediateActions": [],
   "structuralFixes": [],
   "whatNotToDo": [],
+  "firstMove": "",
+  "hardTradeoff": "",
+  "recoveryTrap": "",
   "recoveryDifficulty": "",
   "aiCanHelpWith": [],
   "aiCanMakeWorseBy": [],
+  "aiFalseConfidence": "",
   "aiSpecificNotes": "",
   "oftenLeadsTo": [],
   "oftenCausedBy": [],
@@ -209,9 +217,15 @@ These fields may be optional technically, but strong entries should usually incl
 * `bestMomentToIntervene`
 * `blastRadius`
 * `oftenMistakenAs`
+* `looksHealthyBecause`
+* `easilyConfusedWith`
 * `whatNotToDo`
+* `firstMove`
+* `hardTradeoff`
+* `recoveryTrap`
 * `aiCanHelpWith`
 * `aiCanMakeWorseBy`
+* `aiFalseConfidence`
 * `aiSpecificNotes`
 * `oftenLeadsTo`
 * `oftenCausedBy`
@@ -491,6 +505,73 @@ This can overlap with `mistakenFor`, but if both are present:
 
 ---
 
+### `looksHealthyBecause`
+
+Array of concrete, **external** tells that make the pattern read as responsible, mature, or healthy to people outside the team.
+
+Where other recognition fields handle:
+
+* `mistakenFor` — the short label the pattern is mistaken for
+* `oftenMistakenAs` — a slightly richer socially-acceptable phrasing
+* `feelsReasonableBecause` — the **internal** logic that makes the pattern feel rational from inside the team
+
+`looksHealthyBecause` is the **external, scannable** axis: the visible signals that make observers endorse or tolerate the pattern. This is what makes many failure modes survive social review — leadership sees these tells and nods.
+
+Example:
+
+```json
+"looksHealthyBecause": [
+  "architecture diagrams look modern and clean",
+  "the team quotes SOLID, DDD, or hexagonal architecture",
+  "pull requests look disciplined and well-reviewed"
+]
+```
+
+Strong entries include 2–5 items. Items should be short, recognizable, and observable from outside the team.
+
+### Rendering
+
+A compact boxed list rendered directly below the AT-A-GLANCE identity panel on the detail page, titled **"Why it looks healthy"**. The content is intended as part of recognition, not diagnosis.
+
+---
+
+### `easilyConfusedWith`
+
+An array of structured items that help the reader distinguish this pattern from nearby patterns.
+
+Each item has two fields:
+
+* `pattern` — the nearby pattern. Preferably a Failure Mode slug where a named mode exists; otherwise a short human phrase (e.g. `"regular refactoring work"`).
+* `distinction` — one concise sentence naming the specific difference.
+
+Example:
+
+```json
+"easilyConfusedWith": [
+  {
+    "pattern": "migration-debt",
+    "distinction": "Migration debt is about unfinished prior moves. The friendly rewrite is a new move whose endpoint was never defined."
+  },
+  {
+    "pattern": "regular refactoring work",
+    "distinction": "Refactoring preserves behavior and scope. The friendly rewrite expands scope while the old system stays live."
+  }
+]
+```
+
+### Rules
+
+* Keep it short — 2 to 4 items.
+* Distinctions should be one sentence, not a paragraph.
+* This field is **not** a generic "related" link — use `relatedFailureModes`, `oftenLeadsTo`, or `oftenCausedBy` for those.
+* `easilyConfusedWith` is specifically about the **recognition boundary**: telling adjacent patterns apart.
+
+### Rendering
+
+Renders at the top of the Relationships section as a dedicated sub-panel titled **"Easy to confuse with"**, with each row showing the pattern name in a framed cell and the distinction in a short serif line. Sits above the cross-reference grid.
+
+---
+
 ## Narrative Progression Fields
 
 These fields are central to Failure Modes and should appear in this sequence conceptually.
@@ -600,6 +681,46 @@ A list of tempting but weak or harmful responses.
 
 This field is strongly recommended.
 
+### `firstMove`
+
+A single sentence naming the **very first** specific action a team should take when they recognize the pattern.
+
+Sharper than `immediateActions[0]`: that list describes several things to do soon; `firstMove` names the one move that earns the right to do the rest.
+
+Example:
+
+```json
+"firstMove": "name the rewrite as a rewrite in writing, and stop framing it as cleanup."
+```
+
+### `hardTradeoff`
+
+A single sentence naming the **unavoidable hard choice** recovery will force.
+
+Recovery from a real failure mode is rarely free. This field names the cost honestly, so intervention isn't sold as a magic fix.
+
+Example:
+
+```json
+"hardTradeoff": "accept that some of the new system will be thrown away, or accept that the old system will outlive the migration."
+```
+
+### `recoveryTrap`
+
+A single sentence naming the **common, plausible-looking recovery move that actually makes things worse**.
+
+This is different from `whatNotToDo` (a list of weak responses). `recoveryTrap` is specifically the trap: the move that looks like a recovery but deepens the pattern.
+
+Example:
+
+```json
+"recoveryTrap": "launching a second rewrite to fix the first rewrite."
+```
+
+### Rendering
+
+`firstMove`, `hardTradeoff`, and `recoveryTrap` render together as a 3-cell **Intervention strip** at the top of the "What to do" section on the detail page, above the existing `immediateActions` / `structuralFixes` / `whatNotToDo` columns. The strip exists to make the response section feel like intervention guidance, not generic advice.
+
 ### `recoveryDifficulty`
 
 Editorial difficulty of escaping the pattern once active.
@@ -632,6 +753,28 @@ Array of ways AI may help inspect, surface, or reduce the failure mode.
 ### `aiCanMakeWorseBy`
 
 Array of ways AI can amplify, mask, or accelerate the failure mode.
+
+### `aiFalseConfidence`
+
+A short (one- to two-sentence) statement of the **specific false confidence** AI creates in this particular failure mode.
+
+Distinct from the sibling AI fields:
+
+* `aiCanMakeWorseBy` — a list of mechanisms AI uses to amplify the pattern
+* `aiSpecificNotes` — the editorial synthesis / takeaway
+* `aiFalseConfidence` — the specific **illusion of correctness, coverage, or progress** AI produces in the shape of this pattern
+
+This field exists to keep AI commentary **specific per entry**, not generic. Every AI-aware failure mode produces a particular kind of false confidence (generated code that looks reviewed, generated docs that look like knowledge transfer, generated tickets that look like throughput, etc.). Naming it here keeps the AI section honest.
+
+Example:
+
+```json
+"aiFalseConfidence": "Generated replacement code looks reviewed because it compiles and passes shallow tests, creating the illusion that behavior has been validated."
+```
+
+### Rendering
+
+Renders as a **red callout band** in the AI section, between the two AI-effect boxed lists (`aiCanHelpWith` / `aiCanMakeWorseBy`) and the blue `aiSpecificNotes` synthesis. The red treatment reads as a pattern-specific warning; the blue synthesis below reads as the editorial summary. Both render only when populated.
 
 ### `aiSpecificNotes`
 
