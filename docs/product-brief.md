@@ -291,7 +291,7 @@ Before launch, the site should satisfy this standard:
 
 ## Working Motto
 
-**Software is hard. That’s the point.**
+**Software is hard. The patterns repeat.**
 
 A more operational internal motto for the build:
 **Name the patterns. Show the trade-offs. Surface the signals. Make the useful path visible.**
