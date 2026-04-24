@@ -68,6 +68,42 @@ const hasInterventionStrip = Boolean(
   entry.firstMove || entry.hardTradeoff || entry.recoveryTrap,
 );
 
+/**
+ * `capFirst` — force a leading capital on body-prose strings rendered
+ * on this page. A number of FM fields are authored mid-sentence
+ * ("when the abstraction is proposed, not after it spreads", "name
+ * the rewrite as a rewrite") because they conceptually continue the
+ * section's lead-in. But on the page they render as standalone
+ * sentences, so inconsistent casing reads as a bug. This helper is
+ * idempotent — already-capitalized strings pass through unchanged —
+ * and is applied only at render ingress points on THIS page, not in
+ * the shared components (TD / RF / EP continue to render as authored).
+ *
+ * We leave `text-transform: uppercase`-driven UI (AtAGlance values,
+ * MetaRail cells, eyebrows) alone — those normalize case via CSS
+ * already, so `capFirst` would be a no-op for them.
+ */
+function capFirst(s: string | undefined | null): string {
+  if (typeof s !== "string") return "";
+  const trimmed = s.trimStart();
+  if (trimmed.length === 0) return "";
+  return trimmed[0].toUpperCase() + trimmed.slice(1);
+}
+function capItems(items: readonly string[] | undefined | null): string[] {
+  if (!Array.isArray(items)) return [];
+  return items.map((s) => capFirst(s));
+}
+
+// Pre-capitalized warningSigns: WarningSignsByStage renders each
+// bullet raw, so we normalize the three stage arrays here before
+// passing them in. Safe because the component only reads `early`,
+// `mid`, `late` arrays of strings.
+const warningSignsCapped = {
+  early: capItems(entry.warningSigns.early),
+  mid: capItems(entry.warningSigns.mid),
+  late: capItems(entry.warningSigns.late),
+};
+
 // Resolve each `easilyConfusedWith[].pattern` eagerly at build time.
 // `pattern` is allowed to be a FM slug OR a short human phrase; the
 // resolver returns a ResolvedRef for slugs and undefined for phrases.
@@ -209,7 +245,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         variant="boxed"
         label="Why it looks healthy"
         caption="Concrete external tells that make the pattern read as responsible behavior."
-        items={entry.looksHealthyBecause}
+        items={capItems(entry.looksHealthyBecause)}
       />
     </div>
   )}
@@ -222,7 +258,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     title="What it is"
     note={entry.blastRadius && entry.blastRadius.length > 0 ? `Blast radius: ${entry.blastRadius.join(" · ")}` : undefined}
   />
-  <p class="fm-prose">{entry.whatItIs}</p>
+  <p class="fm-prose">{capFirst(entry.whatItIs)}</p>
 
   {/* 4. Story arc — the canonical four-beat narrative */}
   <SectionHeader
@@ -237,28 +273,28 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         <span class="fm-arc__num" aria-hidden="true">i</span>
         <p class="nsb-eyebrow fm-arc__code">Starts</p>
       </div>
-      <p class="fm-prose">{entry.starts}</p>
+      <p class="fm-prose">{capFirst(entry.starts)}</p>
     </li>
     <li class="fm-arc__beat">
       <div class="fm-arc__marker">
         <span class="fm-arc__num" aria-hidden="true">ii</span>
         <p class="nsb-eyebrow fm-arc__code">Feels reasonable because</p>
       </div>
-      <p class="fm-prose">{entry.feelsReasonableBecause}</p>
+      <p class="fm-prose">{capFirst(entry.feelsReasonableBecause)}</p>
     </li>
     <li class="fm-arc__beat">
       <div class="fm-arc__marker">
         <span class="fm-arc__num" aria-hidden="true">iii</span>
         <p class="nsb-eyebrow fm-arc__code">Escalates</p>
       </div>
-      <p class="fm-prose">{entry.escalates}</p>
+      <p class="fm-prose">{capFirst(entry.escalates)}</p>
     </li>
     <li class="fm-arc__beat">
       <div class="fm-arc__marker">
         <span class="fm-arc__num" aria-hidden="true">iv</span>
         <p class="nsb-eyebrow fm-arc__code">Ends</p>
       </div>
-      <p class="fm-prose">{entry.ends}</p>
+      <p class="fm-prose">{capFirst(entry.ends)}</p>
     </li>
   </ol>
 
@@ -270,7 +306,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     title="Warning signs by stage"
     note="Observable signals as the pattern progresses."
   />
-  <WarningSignsByStage warningSigns={entry.warningSigns} />
+  <WarningSignsByStage warningSigns={warningSignsCapped} />
 
   {/* 6. Why it happens */}
   <SectionHeader
@@ -280,7 +316,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     title="Why it happens"
   />
   <ul class="fm-list">
-    {entry.whyItHappens.map((item) => <li>{item}</li>)}
+    {capItems(entry.whyItHappens).map((item) => <li>{item}</li>)}
   </ul>
 
   {/* 7. Response — immediate + structural + what not to do */}
@@ -304,19 +340,19 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
       {entry.firstMove && (
         <div class="fm-intervention__cell">
           <p class="nsb-eyebrow fm-intervention__label">First move</p>
-          <p class="fm-intervention__body">{entry.firstMove}</p>
+          <p class="fm-intervention__body">{capFirst(entry.firstMove)}</p>
         </div>
       )}
       {entry.hardTradeoff && (
         <div class="fm-intervention__cell">
           <p class="nsb-eyebrow fm-intervention__label">Hard trade-off</p>
-          <p class="fm-intervention__body">{entry.hardTradeoff}</p>
+          <p class="fm-intervention__body">{capFirst(entry.hardTradeoff)}</p>
         </div>
       )}
       {entry.recoveryTrap && (
         <div class="fm-intervention__cell fm-intervention__cell--warn">
           <p class="nsb-eyebrow fm-intervention__label">Recovery trap</p>
-          <p class="fm-intervention__body">{entry.recoveryTrap}</p>
+          <p class="fm-intervention__body">{capFirst(entry.recoveryTrap)}</p>
         </div>
       )}
     </div>
@@ -326,20 +362,20 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     <div class="fm-response__col">
       <p class="nsb-eyebrow">Immediate actions</p>
       <ul class="fm-list">
-        {entry.immediateActions.map((item) => <li>{item}</li>)}
+        {capItems(entry.immediateActions).map((item) => <li>{item}</li>)}
       </ul>
     </div>
     <div class="fm-response__col">
       <p class="nsb-eyebrow">Structural fixes</p>
       <ul class="fm-list">
-        {entry.structuralFixes.map((item) => <li>{item}</li>)}
+        {capItems(entry.structuralFixes).map((item) => <li>{item}</li>)}
       </ul>
     </div>
     {entry.whatNotToDo && entry.whatNotToDo.length > 0 && (
       <div class="fm-response__col fm-response__col--warn">
         <p class="nsb-eyebrow">What not to do</p>
         <ul class="fm-list fm-list--strike">
-          {entry.whatNotToDo.map((item) => <li>{item}</li>)}
+          {capItems(entry.whatNotToDo).map((item) => <li>{item}</li>)}
         </ul>
       </div>
     )}
@@ -365,12 +401,12 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         <LabeledList
           variant="boxed"
           label="AI can help with"
-          items={entry.aiCanHelpWith}
+          items={capItems(entry.aiCanHelpWith)}
         />
         <LabeledList
           variant="boxed"
           label="AI can make worse by"
-          items={entry.aiCanMakeWorseBy}
+          items={capItems(entry.aiCanMakeWorseBy)}
         />
       </div>
       {entry.aiFalseConfidence && (
@@ -382,7 +418,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
            warning → synthesis, not synthesis → warning, so a
            reader sees the caution before the summary. */
         <CalloutBand label="AI false confidence" variant="red">
-          <p>{entry.aiFalseConfidence}</p>
+          <p>{capFirst(entry.aiFalseConfidence)}</p>
         </CalloutBand>
       )}
       {entry.aiSpecificNotes && (
@@ -392,7 +428,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
            editorial synthesis of the two AI-effect lists above, so it
            belongs in the blue-serif treatment, not the yellow one. */
         <CalloutBand label="AI synthesis" variant="blue" serif>
-          <p>{entry.aiSpecificNotes}</p>
+          <p>{capFirst(entry.aiSpecificNotes)}</p>
         </CalloutBand>
       )}
     </>
@@ -435,10 +471,22 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
                   <span class="fm-confused__name">{item.ref.title}</span>
                 </a>
               ) : (
-                <span class="fm-confused__phrase">{item.raw}</span>
+                /* Free-phrase fallback — the `easilyConfusedWith[].pattern`
+                   field is intentionally polymorphic: either a FM slug
+                   (renders as a real link + refCode pill above) OR a short
+                   human phrase for an adjacent concept that isn't itself
+                   a failure mode (most often the "healthy twin" the FM is
+                   mistaken for, e.g. "regular refactoring work" next to
+                   the friendly rewrite). The small muted eyebrow here
+                   makes the distinction explicit so a reader never has
+                   to wonder whether a free phrase is a broken link. */
+                <span class="fm-confused__concept">
+                  <span class="fm-confused__concept-eyebrow">Adjacent concept</span>
+                  <span class="fm-confused__phrase">{capFirst(item.raw)}</span>
+                </span>
               )}
             </div>
-            <p class="fm-confused__distinction">{item.distinction}</p>
+            <p class="fm-confused__distinction">{capFirst(item.distinction)}</p>
           </li>
         ))}
       </ul>
@@ -505,7 +553,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         note="The phrase that signals the pattern is about to start — and who tends to say it."
       />
       <HeardInTheWild
-        quote={entry.commonQuote}
+        quote={capFirst(entry.commonQuote)}
         attribution={entry.whoSaysThis}
       />
     </>
@@ -523,7 +571,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         id="sec-operator-notes"
         step={stepFor("sec-operator-notes")}
         eyebrow="Notes from practice"
-        title="From someone who's been in the room"
+        title="What experienced people notice"
         note="Annotations from engineers who have worked this pattern before."
       />
       <OperatorNotes
@@ -531,17 +579,17 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
           {
             label: "Best moment",
             hint: "When intervention actually changes the trajectory.",
-            body: entry.bestMomentToIntervene,
+            body: capFirst(entry.bestMomentToIntervene),
           },
           {
             label: "Counter move",
             hint: "The specific action that breaks the pattern.",
-            body: entry.counterMove,
+            body: capFirst(entry.counterMove),
           },
           {
             label: "False positive",
             hint: "When this pattern is actually the correct call.",
-            body: entry.falsePositive,
+            body: capFirst(entry.falsePositive),
           },
         ]}
       />
@@ -871,11 +919,31 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     color: var(--color-ink);
     line-height: 1.1;
   }
+  /* Free-phrase adjacent-concept fallback. The stacked structure mirrors
+     the resolved-link cell (small eyebrow over a body label) so both
+     visual slots share the same vertical rhythm — you read either
+     "FM-23 / Migration Debt" or "Adjacent concept / Regular refactoring
+     work" in the same amount of space. The eyebrow uses the same mono,
+     dim-ink treatment as the refCode pill so the slot reads as the same
+     design element in two modes, not as two different things. */
+  .fm-confused__concept {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .fm-confused__concept-eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink-dim);
+  }
   .fm-confused__phrase {
     font-family: var(--font-serif);
     font-style: italic;
     font-size: var(--text-base);
-    line-height: var(--leading-snug);
+    line-height: 1.15;
     color: var(--color-ink);
   }
   .fm-confused__distinction {
