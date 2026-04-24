@@ -2,7 +2,7 @@
   "category": {
     "code": "EP",
     "name": "Engineering Playbook",
-    "summary": "Practical playbooks for recurring engineering situations — delivery, architecture, operations, teamwork, and AI adoption.",
+    "summary": "Practical playbooks for recurring engineering situations - delivery, architecture, operations, teamwork, and AI adoption.",
     "categories": [
       "delivery",
       "team",
@@ -54,7 +54,7 @@
       "title": "Review service boundaries",
       "situation": "You need to evaluate whether current service boundaries are helping or hurting.",
       "category": "architecture",
-      "summary": "Review service boundaries by looking at change patterns, ownership reality, dependency shape, and runtime behavior — not just diagrams or intended architecture.",
+      "summary": "Review service boundaries by looking at change patterns, ownership reality, dependency shape, and runtime behavior - not just diagrams or intended architecture.",
       "goal": "Determine whether current boundaries are reducing complexity, clarifying ownership, and localizing change, or whether they are creating coupling, coordination cost, and fuzzy responsibility.",
       "useWhen": [
         "simple changes require coordination across too many services or teams",
@@ -1011,7 +1011,7 @@
       "title": "Audit a shared layer for accidental complexity",
       "situation": "A common/shared layer keeps growing and may be hiding speculative abstraction.",
       "category": "architecture",
-      "summary": "Audit the shared layer by testing whether it serves real repeated needs, has clear consumers, and simplifies product work — or whether it has become a prestige dumping ground for abstracted uncertainty.",
+      "summary": "Audit the shared layer by testing whether it serves real repeated needs, has clear consumers, and simplifies product work - or whether it has become a prestige dumping ground for abstracted uncertainty.",
       "goal": "Separate real leverage from speculative reuse and reduce shared-layer complexity that is costing teams more than it helps them.",
       "useWhen": [
         "common or shared packages keep expanding",
@@ -1030,7 +1030,7 @@
         "shared code stays smaller and more intentional than product-specific code",
         "ownership and change policy for the layer are explicit",
         "teams can explain what belongs in shared and what should stay local",
-        "the audit leads to pruning, clarification, or productization—not just criticism"
+        "the audit leads to pruning, clarification, or productization-not just criticism"
       ],
       "inputs": [
         "shared layer inventory",
@@ -1394,7 +1394,7 @@
       "title": "Refactor a dangerous hotspot",
       "situation": "A frequently changing or high-risk code area is slowing delivery and raising risk.",
       "category": "architecture",
-      "summary": "Refactor a hotspot by targeting the specific reasons it is dangerous: high churn, poor testability, unclear ownership, or oversized responsibility — and improving it in narrow, repeatable steps.",
+      "summary": "Refactor a hotspot by targeting the specific reasons it is dangerous: high churn, poor testability, unclear ownership, or oversized responsibility - and improving it in narrow, repeatable steps.",
       "goal": "Make a risky high-churn area safer to change without turning refactoring into a disguised rewrite.",
       "useWhen": [
         "one file, module, or service keeps appearing in risky changes and incidents",

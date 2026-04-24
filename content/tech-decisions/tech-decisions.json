@@ -192,7 +192,7 @@
       "aiCanMakeWorseBy": [
         "AI can make service extraction look cheaper than it is by accelerating code movement without resolving boundary quality."
       ],
-      "aiFalseConfidence": "Generated service scaffolding looks designed because it uses textbook patterns and compiles cleanly — creating the illusion that domain boundaries have been reasoned about when only code shape has been moved.",
+      "aiFalseConfidence": "Generated service scaffolding looks designed because it uses textbook patterns and compiles cleanly - creating the illusion that domain boundaries have been reasoned about when only code shape has been moved.",
       "aiSpecificNotes": "Do not let generated scaffolding substitute for real domain decomposition.",
       "oftenLeadsToFailureModes": [
         "abstraction-addiction",
@@ -216,7 +216,7 @@
         },
         {
           "decision": "regular refactoring across boundaries",
-          "distinction": "Refactoring preserves deployment topology. This decision changes it — and makes cross-boundary refactoring fundamentally more expensive afterward."
+          "distinction": "Refactoring preserves deployment topology. This decision changes it - and makes cross-boundary refactoring fundamentally more expensive afterward."
         }
       ],
       "relatedRedFlags": [
@@ -373,7 +373,7 @@
       "aiCanMakeWorseBy": [
         "AI can mass-produce service wrappers and APIs without proving runtime separation is needed."
       ],
-      "aiFalseConfidence": "Generated module scaffolding and pattern-compliant boundaries look like enforcement because the code shape is clean — creating the illusion that module contracts will hold under pressure when only their syntactic surface has been laid down.",
+      "aiFalseConfidence": "Generated module scaffolding and pattern-compliant boundaries look like enforcement because the code shape is clean - creating the illusion that module contracts will hold under pressure when only their syntactic surface has been laid down.",
       "aiSpecificNotes": "Generated separation is not architectural justification.",
       "oftenLeadsToFailureModes": [
         "dependency-fog",
@@ -551,7 +551,7 @@
       "aiCanMakeWorseBy": [
         "AI can generate GraphQL layers quickly, increasing the chance of pretty schema over weak backend discipline."
       ],
-      "aiFalseConfidence": "Generated GraphQL schemas and REST specs look mature because the syntax is correct and tooling is rich — creating the illusion of well-governed API design when no decision has been made about consumer contracts, versioning, or backend discipline.",
+      "aiFalseConfidence": "Generated GraphQL schemas and REST specs look mature because the syntax is correct and tooling is rich - creating the illusion of well-governed API design when no decision has been made about consumer contracts, versioning, or backend discipline.",
       "aiSpecificNotes": "Do not choose GraphQL because AI made it easy to scaffold.",
       "oftenLeadsToFailureModes": [
         "abstraction-addiction"
@@ -727,7 +727,7 @@
       "aiCanMakeWorseBy": [
         "AI can suggest trendy datastore choices detached from real query and consistency needs."
       ],
-      "aiFalseConfidence": "Generated schemas and sample queries look well-fitted because the code compiles and patterns look idiomatic — creating the illusion that access patterns have been analyzed when only a plausible-looking shape has been picked.",
+      "aiFalseConfidence": "Generated schemas and sample queries look well-fitted because the code compiles and patterns look idiomatic - creating the illusion that access patterns have been analyzed when only a plausible-looking shape has been picked.",
       "aiSpecificNotes": "Do not let generated examples substitute for actual production access-pattern analysis.",
       "oftenLeadsToFailureModes": [
         "local-optimization"
@@ -771,7 +771,7 @@
       "title": "Sync Communication vs Event-Driven",
       "decisionQuestion": "Should services coordinate synchronously or through events?",
       "category": "architecture",
-      "summary": "Usually a coupling, resilience, and process-clarity decision—not just a latency or style choice.",
+      "summary": "Usually a coupling, resilience, and process-clarity decision-not just a latency or style choice.",
       "decisionHeuristic": "Use sync for short, direct, user-facing flows; use events when decoupling and async process shape are genuinely valuable.",
       "whatThisIsReallyAbout": "Temporal coupling, failure handling, business process clarity, and observability maturity.",
       "notActuallyAbout": "Which style is more advanced or scalable by default.",
@@ -902,7 +902,7 @@
       "aiCanMakeWorseBy": [
         "AI can scaffold brokers, handlers, and consumers quickly, increasing the chance of event-driven complexity without process clarity."
       ],
-      "aiFalseConfidence": "Generated broker configs, handler stubs, and consumer code look like a working event architecture because they compile and the topology diagrams are clean — creating the illusion that business processes have been mapped when only plumbing has been scaffolded.",
+      "aiFalseConfidence": "Generated broker configs, handler stubs, and consumer code look like a working event architecture because they compile and the topology diagrams are clean - creating the illusion that business processes have been mapped when only plumbing has been scaffolded.",
       "aiSpecificNotes": "Generated event plumbing does not reduce business ambiguity.",
       "oftenLeadsToFailureModes": [
         "dependency-fog",
@@ -1074,7 +1074,7 @@
       "aiCanMakeWorseBy": [
         "AI can generate service shells that hide continued database coupling."
       ],
-      "aiFalseConfidence": "Generated service scaffolding can create the appearance of ownership — separate repos, separate deployments, separate READMEs — while the database stays the real contract underneath, so the system looks decoupled and isn't.",
+      "aiFalseConfidence": "Generated service scaffolding can create the appearance of ownership - separate repos, separate deployments, separate READMEs - while the database stays the real contract underneath, so the system looks decoupled and isn't.",
       "aiSpecificNotes": "Generated service boundaries do not matter if the database is still the real contract.",
       "oftenLeadsToFailureModes": [
         "dependency-fog",
@@ -1583,7 +1583,7 @@
       "aiCanMakeWorseBy": [
         "AI can scaffold edge functions quickly, increasing logic sprawl risk."
       ],
-      "aiFalseConfidence": "Generated edge functions look like architecture because they deploy cleanly and return fast — creating the illusion of owned logic when nobody has inventoried where it runs, who owns it, or how it's observed once spread across regions.",
+      "aiFalseConfidence": "Generated edge functions look like architecture because they deploy cleanly and return fast - creating the illusion of owned logic when nobody has inventoried where it runs, who owns it, or how it's observed once spread across regions.",
       "aiSpecificNotes": "Generated edge code increases sprawl if ownership is weak.",
       "oftenLeadsToFailureModes": [
         "ownership-drift"
@@ -1764,7 +1764,7 @@
       "aiCanMakeWorseBy": [
         "AI lowers the apparent cost of building prototypes, making teams underestimate lifecycle ownership."
       ],
-      "aiFalseConfidence": "Generated prototypes reach the 'looks working' stage in hours, creating the illusion that owning the full lifecycle — hardening, integration, operations, support — will be similarly cheap.",
+      "aiFalseConfidence": "Generated prototypes reach the 'looks working' stage in hours, creating the illusion that owning the full lifecycle - hardening, integration, operations, support - will be similarly cheap.",
       "aiSpecificNotes": "A fast AI-generated prototype is not evidence that owning the full product is cheap.",
       "oftenLeadsToFailureModes": [
         "platform-before-product",
@@ -2278,7 +2278,7 @@
       "aiCanMakeWorseBy": [
         "AI makes internal platform scaffolding cheap, increasing the temptation to build elegant but weakly demanded foundations."
       ],
-      "aiFalseConfidence": "Generated platform scaffolding is cheap, so a usable-looking internal platform appears quickly — creating the illusion of leverage when no product team has adopted it under real conditions.",
+      "aiFalseConfidence": "Generated platform scaffolding is cheap, so a usable-looking internal platform appears quickly - creating the illusion of leverage when no product team has adopted it under real conditions.",
       "aiSpecificNotes": "A fast platform prototype is not evidence of durable adoption demand.",
       "oftenLeadsToFailureModes": [
         "platform-before-product",
@@ -2458,7 +2458,7 @@
       "aiCanMakeWorseBy": [
         "AI makes rewriting feel faster by making code generation cheaper, but it does not reduce hidden behavior risk."
       ],
-      "aiFalseConfidence": "Generated replacement code compiles and passes shallow tests, making a rewrite feel fast and de-risked — creating the illusion that replacement behavior has been validated when only replacement shape has been laid down.",
+      "aiFalseConfidence": "Generated replacement code compiles and passes shallow tests, making a rewrite feel fast and de-risked - creating the illusion that replacement behavior has been validated when only replacement shape has been laid down.",
       "aiSpecificNotes": "Generated replacement code does not equal validated replacement behavior.",
       "oftenLeadsToFailureModes": [
         "friendly-rewrite",
@@ -2627,7 +2627,7 @@
       "aiCanMakeWorseBy": [
         "AI makes generic scaffolding cheap, increasing the temptation to generalize too early."
       ],
-      "aiFalseConfidence": "Generated generic scaffolding looks reusable because the interfaces are polished and the patterns are on-trend — creating the illusion of leverage when no second use case has actually validated the abstraction.",
+      "aiFalseConfidence": "Generated generic scaffolding looks reusable because the interfaces are polished and the patterns are on-trend - creating the illusion of leverage when no second use case has actually validated the abstraction.",
       "aiSpecificNotes": "Generated genericity is still complexity.",
       "oftenLeadsToFailureModes": [
         "abstraction-addiction"
@@ -2791,7 +2791,7 @@
       "aiCanMakeWorseBy": [
         "AI-generated rollout scripts can create false confidence in reversibility."
       ],
-      "aiFalseConfidence": "AI-generated rollback scripts, runbooks, and playbooks create the illusion of reversibility — a scripted rollback is not the same as a proven rollback, and a change can still be effectively one-way even when it looks reversible on paper.",
+      "aiFalseConfidence": "AI-generated rollback scripts, runbooks, and playbooks create the illusion of reversibility - a scripted rollback is not the same as a proven rollback, and a change can still be effectively one-way even when it looks reversible on paper.",
       "aiSpecificNotes": "Scripted rollback is not the same as proven rollback.",
       "oftenLeadsToFailureModes": [
         "invisible-deadline"
@@ -2953,7 +2953,7 @@
       "aiCanMakeWorseBy": [
         "AI can make local customization cheaper, risking customization sprawl."
       ],
-      "aiFalseConfidence": "Cheap AI-generated local variants make customization look like a harmless adaptation choice — each variant looks small, but the aggregate lifecycle complexity is not visible until the fleet is already inconsistent.",
+      "aiFalseConfidence": "Cheap AI-generated local variants make customization look like a harmless adaptation choice - each variant looks small, but the aggregate lifecycle complexity is not visible until the fleet is already inconsistent.",
       "aiSpecificNotes": "Cheaper customization does not remove lifecycle complexity.",
       "oftenLeadsToFailureModes": [
         "local-optimization"
@@ -3114,7 +3114,7 @@
       "aiCanMakeWorseBy": [
         "AI lowers cost of trying more things, increasing temptation to experiment without enough operational guardrails."
       ],
-      "aiFalseConfidence": "Lower cost of change from AI tooling makes experimentation feel inherently safe, but the underlying operational risk (blast radius, detection, rollback) has not changed — so cheap experimentation is not the same as safe experimentation.",
+      "aiFalseConfidence": "Lower cost of change from AI tooling makes experimentation feel inherently safe, but the underlying operational risk (blast radius, detection, rollback) has not changed - so cheap experimentation is not the same as safe experimentation.",
       "aiSpecificNotes": "Lower cost of change increases governance need, not decreases it.",
       "oftenLeadsToFailureModes": [
         "silent-model-drift",
@@ -3279,7 +3279,7 @@
       "aiCanMakeWorseBy": [
         "AI can accelerate platform artifact production without proving adoption quality."
       ],
-      "aiFalseConfidence": "Generated platform docs, templates, and tooling scaffolding make the platform look adopted because the artifacts are polished — when the only thing that scaled was production of the artifacts, not the teams using them.",
+      "aiFalseConfidence": "Generated platform docs, templates, and tooling scaffolding make the platform look adopted because the artifacts are polished - when the only thing that scaled was production of the artifacts, not the teams using them.",
       "aiSpecificNotes": "Platform polish is not platform usefulness.",
       "oftenLeadsToFailureModes": [
         "hero-trap",
@@ -3452,7 +3452,7 @@
       "aiCanMakeWorseBy": [
         "AI may make shallow generalism look stronger than it is, masking where deep expertise still matters."
       ],
-      "aiFalseConfidence": "AI can accelerate handoffs and summaries between specialist teams, making the hand-off cost look lower than it is — creating the illusion of cross-team collaboration when what improved is the paperwork, not the shared context.",
+      "aiFalseConfidence": "AI can accelerate handoffs and summaries between specialist teams, making the hand-off cost look lower than it is - creating the illusion of cross-team collaboration when what improved is the paperwork, not the shared context.",
       "aiSpecificNotes": "AI assistance does not remove the need for real specialist judgment in high-risk domains.",
       "oftenLeadsToFailureModes": [
         "hero-trap",
@@ -3617,7 +3617,7 @@
       "aiCanMakeWorseBy": [
         "AI can make shared code contribution easier while leaving responsibility unclear."
       ],
-      "aiFalseConfidence": "AI makes shared contribution easier — anyone can generate a viable-looking change to anything — which inflates contribution activity while leaving responsibility for the change unclear.",
+      "aiFalseConfidence": "AI makes shared contribution easier - anyone can generate a viable-looking change to anything - which inflates contribution activity while leaving responsibility for the change unclear.",
       "aiSpecificNotes": "More contributors does not mean more ownership clarity.",
       "oftenLeadsToFailureModes": [
         "ownership-drift",
@@ -3784,7 +3784,7 @@
       "aiCanMakeWorseBy": [
         "AI can accelerate local divergence by making alternative implementations cheap."
       ],
-      "aiFalseConfidence": "Cheap AI-generated local variants make autonomy feel lower-risk — each team's alternative implementation looks small and well-made, hiding the compounding cost of lost coherence at the org level.",
+      "aiFalseConfidence": "Cheap AI-generated local variants make autonomy feel lower-risk - each team's alternative implementation looks small and well-made, hiding the compounding cost of lost coherence at the org level.",
       "aiSpecificNotes": "Cheap local variation increases the importance of knowing which standards are non-negotiable.",
       "oftenLeadsToFailureModes": [
         "local-optimization",
@@ -3949,7 +3949,7 @@
       "aiCanMakeWorseBy": [
         "AI can generate lots of documentation quickly, increasing the risk of stale but polished memory."
       ],
-      "aiFalseConfidence": "AI makes documents faster to produce, so the org can appear well-documented while the docs are stale, ownerless, and disconnected from real decisions — polished memory that isn't memory.",
+      "aiFalseConfidence": "AI makes documents faster to produce, so the org can appear well-documented while the docs are stale, ownerless, and disconnected from real decisions - polished memory that isn't memory.",
       "aiSpecificNotes": "Generated docs are only useful if tied to real decisions and maintained ownership.",
       "oftenLeadsToFailureModes": [
         "hero-trap",
@@ -4115,7 +4115,7 @@
       "aiCanMakeWorseBy": [
         "AI can make async artifacts easier to produce but may also increase low-signal communication volume."
       ],
-      "aiFalseConfidence": "AI-generated summaries make async communication feel sharper, which can mask that the decision itself was never made — the system polishes the output of alignment without creating alignment.",
+      "aiFalseConfidence": "AI-generated summaries make async communication feel sharper, which can mask that the decision itself was never made - the system polishes the output of alignment without creating alignment.",
       "aiSpecificNotes": "Cheaper summaries do not remove the need for real decision clarity.",
       "oftenLeadsToFailureModes": [
         "ticket-theater",
@@ -4279,7 +4279,7 @@
       "aiCanMakeWorseBy": [
         "AI can generate lots of low-value tests quickly, inflating counts without confidence."
       ],
-      "aiFalseConfidence": "Generated tests compile, pass, and raise coverage numbers — creating the illusion of a tested system when many of those tests don't actually distinguish correct from incorrect behavior.",
+      "aiFalseConfidence": "Generated tests compile, pass, and raise coverage numbers - creating the illusion of a tested system when many of those tests don't actually distinguish correct from incorrect behavior.",
       "aiSpecificNotes": "Generated tests are not automatically meaningful tests.",
       "oftenLeadsToFailureModes": [
         "synthetic-velocity"
@@ -4299,7 +4299,7 @@
         },
         {
           "decision": "a coverage-target decision",
-          "distinction": "A coverage target is a percentage. This decision is about the distribution of test types that produces that percentage — and whether the result actually signals confidence."
+          "distinction": "A coverage target is a percentage. This decision is about the distribution of test types that produces that percentage - and whether the result actually signals confidence."
         }
       ],
       "relatedRedFlags": [
@@ -4444,7 +4444,7 @@
       "aiCanMakeWorseBy": [
         "AI can increase change volume, which makes weak gates riskier and bad gates more painful."
       ],
-      "aiFalseConfidence": "AI raises change volume without any corresponding increase in gate quality — a gate that passes 95% of AI-generated PRs cleanly can look effective while catching less than it used to relative to the flow.",
+      "aiFalseConfidence": "AI raises change volume without any corresponding increase in gate quality - a gate that passes 95% of AI-generated PRs cleanly can look effective while catching less than it used to relative to the flow.",
       "aiSpecificNotes": "Higher output volume increases need for smart gating, not blanket friction.",
       "oftenLeadsToFailureModes": [
         "synthetic-velocity",
@@ -4610,7 +4610,7 @@
       "aiCanMakeWorseBy": [
         "AI can generate more flag-dependent code quickly, worsening toggle debt."
       ],
-      "aiFalseConfidence": "AI generates flag-dependent code easily, so a feature-flag rollout architecture looks lightweight while toggle debt accumulates silently — each flag generated cleanly, the fleet of flags a growing runtime complexity.",
+      "aiFalseConfidence": "AI generates flag-dependent code easily, so a feature-flag rollout architecture looks lightweight while toggle debt accumulates silently - each flag generated cleanly, the fleet of flags a growing runtime complexity.",
       "aiSpecificNotes": "Cheap branching logic becomes expensive runtime complexity.",
       "oftenLeadsToFailureModes": [
         "ownership-drift"
@@ -4777,7 +4777,7 @@
       "aiCanMakeWorseBy": [
         "AI can accelerate interface changes, increasing risk of silent incompatibility if governance is weak."
       ],
-      "aiFalseConfidence": "AI accelerates interface changes on both sides, making breaking changes feel lower-cost because the consumer migrations can be generated — creating the illusion that compatibility work has been done when it's only been sketched.",
+      "aiFalseConfidence": "AI accelerates interface changes on both sides, making breaking changes feel lower-cost because the consumer migrations can be generated - creating the illusion that compatibility work has been done when it's only been sketched.",
       "aiSpecificNotes": "Faster code changes increase compatibility governance need.",
       "oftenLeadsToFailureModes": [
         "stakeholder-capture"
@@ -4938,7 +4938,7 @@
       "aiCanMakeWorseBy": [
         "AI can cheaply add configuration surfaces, inflating optionality without real demand."
       ],
-      "aiFalseConfidence": "AI can cheaply add configuration surfaces, so flexibility appears low-cost — each new option compiles cleanly and looks well-scoped, hiding the aggregate decision fatigue and surface-area cost users and operators absorb.",
+      "aiFalseConfidence": "AI can cheaply add configuration surfaces, so flexibility appears low-cost - each new option compiles cleanly and looks well-scoped, hiding the aggregate decision fatigue and surface-area cost users and operators absorb.",
       "aiSpecificNotes": "Generated options are still product complexity.",
       "oftenLeadsToFailureModes": [
         "abstraction-addiction"
@@ -5103,7 +5103,7 @@
       "aiCanMakeWorseBy": [
         "AI increases output volume, making weak human review and weak automation both more dangerous."
       ],
-      "aiFalseConfidence": "AI-assisted review suggestions look thoughtful because they include explanations and cite policy — creating the illusion of reviewed work when the reviewer approved a generated summary, not the change itself.",
+      "aiFalseConfidence": "AI-assisted review suggestions look thoughtful because they include explanations and cite policy - creating the illusion of reviewed work when the reviewer approved a generated summary, not the change itself.",
       "aiSpecificNotes": "AI-assisted review is not the same as real review depth.",
       "oftenLeadsToFailureModes": [
         "synthetic-velocity",
@@ -5120,7 +5120,7 @@
         },
         {
           "decision": "ai-assisted-development-vs-manual-only-development",
-          "distinction": "That decision is about development. This one is about what happens after development — specifically who or what verifies the outcome."
+          "distinction": "That decision is about development. This one is about what happens after development - specifically who or what verifies the outcome."
         },
         {
           "decision": "ci-gate-strictness-vs-developer-throughput",
@@ -5279,7 +5279,7 @@
       "aiCanMakeWorseBy": [
         "AI-native by definition: it can accelerate both leverage and error propagation."
       ],
-      "aiFalseConfidence": "The AI-assisted path produces code that compiles and passes surface checks regardless of whether the author understands what they shipped — the safety question 'do we still know what we wrote?' is invisible at the moment of shipping.",
+      "aiFalseConfidence": "The AI-assisted path produces code that compiles and passes surface checks regardless of whether the author understands what they shipped - the safety question 'do we still know what we wrote?' is invisible at the moment of shipping.",
       "aiSpecificNotes": "The unit of safety is not whether AI was used; it is whether understanding and verification are still sufficient.",
       "oftenLeadsToFailureModes": [
         "synthetic-velocity",
@@ -5451,7 +5451,7 @@
       "aiCanMakeWorseBy": [
         "AI hype can distort both directions: APIs seem magically easy, self-hosting seems strategically superior."
       ],
-      "aiFalseConfidence": "APIs look strategically fragile and self-hosting looks strategically strong regardless of the actual workload — the narrative is loud on both sides and can turn an infrastructure decision into an identity commitment.",
+      "aiFalseConfidence": "APIs look strategically fragile and self-hosting looks strategically strong regardless of the actual workload - the narrative is loud on both sides and can turn an infrastructure decision into an identity commitment.",
       "aiSpecificNotes": "Do not turn infrastructure ownership into identity.",
       "oftenLeadsToFailureModes": [
         "silent-model-drift",
@@ -5625,7 +5625,7 @@
       "aiCanMakeWorseBy": [
         "This is an AI-native decision; hype around both options distorts judgment fast."
       ],
-      "aiFalseConfidence": "Outputs from both options read as fluent and confident regardless of whether retrieval surfaced the right sources or the model learned the right behavior — creating the illusion of a working system long before grounding and behavior have actually been verified.",
+      "aiFalseConfidence": "Outputs from both options read as fluent and confident regardless of whether retrieval surfaced the right sources or the model learned the right behavior - creating the illusion of a working system long before grounding and behavior have actually been verified.",
       "aiSpecificNotes": "Do not use fine-tuning to hide grounding problems, and do not use RAG to solve behavior problems.",
       "oftenLeadsToFailureModes": [
         "rag-without-ground-truth",
@@ -5791,7 +5791,7 @@
       "aiCanMakeWorseBy": [
         "Teams can overfit prompts quickly and mistake local improvements for system quality."
       ],
-      "aiFalseConfidence": "Incremental prompt improvements produce visible local wins on the eval you happened to run, creating the illusion of system-level progress — when what actually changed was a local fit, not a durable capability.",
+      "aiFalseConfidence": "Incremental prompt improvements produce visible local wins on the eval you happened to run, creating the illusion of system-level progress - when what actually changed was a local fit, not a durable capability.",
       "aiSpecificNotes": "Prompt quality cannot compensate indefinitely for missing system structure.",
       "oftenLeadsToFailureModes": [
         "prompt-ops-chaos"
@@ -5803,7 +5803,7 @@
       "easilyConfusedWith": [
         {
           "decision": "rag-vs-fine-tuning",
-          "distinction": "That decision is about how the model gets domain knowledge. This one is about where quality is engineered — prompts or orchestration."
+          "distinction": "That decision is about how the model gets domain knowledge. This one is about where quality is engineered - prompts or orchestration."
         },
         {
           "decision": "human-in-the-loop-vs-full-automation",
@@ -5958,7 +5958,7 @@
       "aiCanMakeWorseBy": [
         "AI systems can appear more capable than they are, pushing premature automation."
       ],
-      "aiFalseConfidence": "A system looks capable because it produces fluent, correct-shaped outputs on the happy path — creating pressure toward full automation long before the system has been evaluated on the cases where human judgment actually matters.",
+      "aiFalseConfidence": "A system looks capable because it produces fluent, correct-shaped outputs on the happy path - creating pressure toward full automation long before the system has been evaluated on the cases where human judgment actually matters.",
       "aiSpecificNotes": "Human presence is only valuable if the workflow preserves real judgment.",
       "oftenLeadsToFailureModes": [
         "benchmark-mirage",
@@ -6127,7 +6127,7 @@
       "aiCanMakeWorseBy": [
         "AI hype inflates pressure toward both reckless speed and performative caution."
       ],
-      "aiFalseConfidence": "Early visible wins from broad AI use — faster PRs, polished docs, cleaner emails — create the impression of institutional leverage and make governance feel like a drag, hiding the variance in how much of that output is actually understood.",
+      "aiFalseConfidence": "Early visible wins from broad AI use - faster PRs, polished docs, cleaner emails - create the impression of institutional leverage and make governance feel like a drag, hiding the variance in how much of that output is actually understood.",
       "aiSpecificNotes": "Governance must be proportionate, not theatrical.",
       "oftenLeadsToFailureModes": [
         "synthetic-velocity",
@@ -6295,7 +6295,7 @@
       "aiCanMakeWorseBy": [
         "AI spread multiplies both leverage and inconsistency quickly."
       ],
-      "aiFalseConfidence": "A broad enablement rollout looks successful by adoption metrics — logins, prompts sent, features used — while inconsistent output quality and uneven review rigor build up unseen across the long tail of use cases.",
+      "aiFalseConfidence": "A broad enablement rollout looks successful by adoption metrics - logins, prompts sent, features used - while inconsistent output quality and uneven review rigor build up unseen across the long tail of use cases.",
       "aiSpecificNotes": "Access strategy is not enough; usage quality strategy matters more.",
       "oftenLeadsToFailureModes": [
         "synthetic-velocity",
@@ -6459,7 +6459,7 @@
       "aiCanMakeWorseBy": [
         "AI systems are especially vulnerable to proxy overfitting."
       ],
-      "aiFalseConfidence": "Synthetic evals produce crisp repeatable numbers, so the system looks measurable — creating the illusion of progress when the proxy may have decoupled from the thing users actually care about.",
+      "aiFalseConfidence": "Synthetic evals produce crisp repeatable numbers, so the system looks measurable - creating the illusion of progress when the proxy may have decoupled from the thing users actually care about.",
       "aiSpecificNotes": "A repeatable proxy can still be the wrong proxy.",
       "oftenLeadsToFailureModes": [
         "benchmark-mirage",
