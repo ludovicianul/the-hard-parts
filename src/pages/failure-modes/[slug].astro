@@ -386,15 +386,18 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     </>
   )}
 
-  {/* Operator notes — hard-won practical annotations.
+  {/* Notes from practice — hard-won practical annotations.
       Holds bestMomentToIntervene + counterMove + falsePositive. Typed field-
-      manual register, not quote content. */}
+      manual register, not quote content. The internal section id and the
+      component class prefix (`fm-ops`) keep their original names so that
+      in-page anchors, scroll-spy, and existing CSS selectors aren't broken
+      by the editorial rename. */}
   {hasOperatorNotes && (
     <>
       <SectionHeader
         id="sec-operator-notes"
         step={stepFor("sec-operator-notes")}
-        eyebrow="Operator notes"
+        eyebrow="Notes from practice"
         title="From someone who's been in the room"
         note="Annotations from engineers who have worked this pattern before."
       />
