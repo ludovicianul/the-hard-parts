@@ -73,6 +73,31 @@ export const TimeHorizonNotesSchema = z
   })
   .strict();
 
+/**
+ * `easilyConfusedWith` (TD) — structured list of nearby decisions a
+ * reader might mistake this one for, each with a one-line distinction.
+ *
+ * Distinct from `adjacentDecisions` (a flat slug list meaning "also
+ * worth looking at when you're in this neighborhood") and from
+ * `notActuallyAbout` (a single framing negation). This field answers
+ * "I thought I was making decision X — am I sure?" by naming the
+ * sibling decisions and how THIS one differs.
+ *
+ * Each item is `{ decision, distinction }`:
+ *  - `decision`: a TD slug where a named decision exists, OR a short
+ *    human label (e.g. "a framework-choice decision") for adjacent
+ *    decisions that aren't themselves entries. The resolver returns
+ *    a `TD-XX · Title` link for real slugs and the raw phrase for
+ *    free labels — same polymorphism as FM's `easilyConfusedWith`.
+ *  - `distinction`: one concise sentence naming the specific difference.
+ */
+export const TechDecisionEasilyConfusedWithSchema = z
+  .object({
+    decision: z.string().min(1),
+    distinction: z.string().min(1),
+  })
+  .strict();
+
 export const TechDecisionEntrySchema = z
   .object({
     // Identity
@@ -113,11 +138,29 @@ export const TechDecisionEntrySchema = z
     // AI (site-wide canonical names)
     aiCanHelpWith: z.array(z.string()).optional(),
     aiCanMakeWorseBy: z.array(z.string()).optional(),
+    /**
+     * Pattern-specific false confidence that AI creates in THIS
+     * decision. Distinct from `aiCanMakeWorseBy` (mechanisms list)
+     * and `aiSpecificNotes` (editorial synthesis): this names the
+     * specific illusion of correctness, coverage, or progress AI
+     * produces in the shape of this particular decision. Rendered
+     * as a red callout band between the two AI-effect lists and the
+     * blue synthesis. Same role as FM's `aiFalseConfidence`.
+     */
+    aiFalseConfidence: z.string().optional(),
     aiSpecificNotes: z.string().optional(),
 
     // Cross-refs
     oftenLeadsToFailureModes: RefArray.optional(),
     adjacentDecisions: RefArray.optional(),
+    /**
+     * Recognition-boundary cross-refs: decisions this one is often
+     * MISTAKEN FOR, each with a one-line distinction. Distinct from
+     * `adjacentDecisions` (neutral neighborhood) and `notActuallyAbout`
+     * (single-sentence negation). See `TechDecisionEasilyConfusedWithSchema`
+     * above for the item shape.
+     */
+    easilyConfusedWith: z.array(TechDecisionEasilyConfusedWithSchema).optional(),
     relatedRedFlags: RefArray.optional(),
     relatedPlaybooks: RefArray.optional(),
 

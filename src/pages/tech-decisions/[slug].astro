@@ -37,7 +37,7 @@ import SectionHeader from "@/components/SectionHeader.astro";
 import SectionIndex from "@/components/SectionIndex.astro";
 import Tag from "@/components/Tag.astro";
 import { loadTechDecisions } from "@/lib/load";
-import { formatRefCode } from "@/lib/resolve";
+import { formatRefCode, resolveSlug } from "@/lib/resolve";
 import { ensureValidated } from "@/lib/validate";
 import type { TechDecisionEntry } from "@/content/schemas/tech-decision";
 import {
@@ -71,7 +71,20 @@ if (!entry) {
 // are now surfaced at the top of the page via the shared AtAGlance
 // panel (blue-fill identity strip), so sec-framing has been retired
 // entirely and the section numbering collapses accordingly.
-const hasCostTime = Boolean(entry.costBearer || entry.timeHorizonNotes);
+// Cost / time / reversibility — combined section now holds three editorial
+// panels: who pays (costBearer), when each option wins over time
+// (timeHorizonNotes), and how hard it is to undo + what should force a
+// re-look (reversibility + whenToRevisit). Reversibility and whenToRevisit
+// used to live in "How to decide" but they're time-sensitivity content,
+// not decision-support content. Moving them here tightens the editorial
+// story of each section.
+const hasReversibilityPanel = Boolean(
+  entry.reversibility ||
+  (entry.whenToRevisit && entry.whenToRevisit.length > 0),
+);
+const hasCostTime = Boolean(
+  entry.costBearer || entry.timeHorizonNotes || hasReversibilityPanel,
+);
 const hasSignals = Boolean(
   (entry.commonBadReasons && entry.commonBadReasons.length > 0) ||
   (entry.antiPatterns && entry.antiPatterns.length > 0) ||
@@ -81,14 +94,79 @@ const hasSignals = Boolean(
 const hasAiBlock = Boolean(
   (entry.aiCanHelpWith && entry.aiCanHelpWith.length > 0) ||
   (entry.aiCanMakeWorseBy && entry.aiCanMakeWorseBy.length > 0) ||
+  entry.aiFalseConfidence ||
   entry.aiSpecificNotes,
 );
+const hasEasilyConfused = Boolean(
+  entry.easilyConfusedWith && entry.easilyConfusedWith.length > 0,
+);
 const hasRelationships = Boolean(
+  hasEasilyConfused ||
   (entry.oftenLeadsToFailureModes && entry.oftenLeadsToFailureModes.length > 0) ||
   (entry.adjacentDecisions && entry.adjacentDecisions.length > 0) ||
   (entry.relatedRedFlags && entry.relatedRedFlags.length > 0) ||
   (entry.relatedPlaybooks && entry.relatedPlaybooks.length > 0),
 );
+
+// Secondary panels inside "How to decide" only render when the content
+// exists. `questionsToAsk` is required by the schema, so the primary
+// panel always renders; `keyFactors` and `evidenceNeeded` are optional
+// but universally populated in the current content set.
+const hasDecisionSupport = Boolean(
+  (entry.keyFactors && entry.keyFactors.length > 0) ||
+  (entry.evidenceNeeded && entry.evidenceNeeded.length > 0),
+);
+
+// Diagnostic halves of the Signals section — split left (what's usually
+// pushing the call, i.e. the wrong pressures) from right (what should
+// push the call, i.e. the real signals). Each half renders only if it
+// has at least one populated sub-field, so a sparse entry can degrade
+// gracefully without orphaning a masthead.
+const hasBadPressureHalf = Boolean(
+  (entry.commonBadReasons && entry.commonBadReasons.length > 0) ||
+  (entry.antiPatterns && entry.antiPatterns.length > 0),
+);
+const hasGoodSignalsHalf = Boolean(
+  (entry.goodSignalsForA && entry.goodSignalsForA.length > 0) ||
+  (entry.goodSignalsForB && entry.goodSignalsForB.length > 0),
+);
+
+/**
+ * `capFirst` — force a leading capital on body-prose strings rendered on
+ * this page. Several TD fields are authored mid-sentence (`defaultBias`,
+ * `timeHorizonNotes.optionA/B`, `aiSpecificNotes`, etc.) because they
+ * conceptually continue the section's lead-in. But on the page they
+ * render as standalone sentences, so inconsistent casing reads as a
+ * bug. Identical in shape to the FM page's `capFirst`; kept local to
+ * this page so other categories render as authored.
+ *
+ * Idempotent — already-capitalized strings pass through unchanged. We
+ * only apply it at serif/sans body-text render points; AtAGlance,
+ * MetaRail, and eyebrows already force uppercase via CSS and so don't
+ * need this helper.
+ */
+function capFirst(s: string | undefined | null): string {
+  if (typeof s !== "string") return "";
+  const trimmed = s.trimStart();
+  if (trimmed.length === 0) return "";
+  return trimmed[0].toUpperCase() + trimmed.slice(1);
+}
+function capItems(items: readonly string[] | undefined | null): string[] {
+  if (!Array.isArray(items)) return [];
+  return items.map((s) => capFirst(s));
+}
+
+// Resolve each `easilyConfusedWith[].decision` eagerly at build time. The
+// `decision` field is intentionally polymorphic: either a TD slug
+// (renders with a `TD-XX · Title` link) or a short human phrase for a
+// nearby decision that isn't itself an entry (renders with an "Adjacent
+// concept" eyebrow). Mirrors the FM `easilyConfusedWith` pattern so
+// readers recognize the two visual modes across categories.
+const easilyConfusedResolved = (entry.easilyConfusedWith ?? []).map((item) => ({
+  raw: item.decision,
+  distinction: item.distinction,
+  ref: resolveSlug(item.decision),
+}));
 
 // Catalog reference code — shared helper so the masthead pill and every
 // incoming cross-reference stay in lockstep.
@@ -218,13 +296,32 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
          the AtAGlance migration. No other page uses this flag today. */
       { label: "Not actually about", value: entry.notActuallyAbout, negate: true },
       { label: "Why it feels hard", value: entry.whyItFeelsHard },
-      { label: "Audiences",         value: entry.audiences },
+      /* Audiences intentionally OMITTED from AtAGlance — it is already
+         carried as a first-class dimension on the MetaRail above (the
+         "Audiences" cell). Duplicating it here would dilute the panel's
+         identity-framing purpose. Three cells is also a cleaner 3-col
+         grid at ≥640px than four. */
     ]}
   />
 
   {/* 1. THE DECISION — the whole reason this page exists. `decisionQuestion`
-        is a REQUIRED field in the TD schema; it deserves to read as the
-        opening editorial beat, not as a dt/dd buried in the metadata. */}
+        is REQUIRED in the TD schema; it deserves to read as the opening
+        editorial beat, not as a dt/dd buried in the metadata.
+        
+        This section now carries three stance beats for opening framing:
+          1. `summary`           — what we're looking at in one sentence
+          2. `decisionHeuristic` — the editorial rule-of-thumb (yellow band)
+          3. `defaultBias`       — where a reader should start before
+                                   gathering evidence (framed "default stance"
+                                   block; promoted up from section 5)
+        
+        `defaultBias` used to render as a small inline label+body line
+        inside "How to decide", which treated it as decision-support
+        detail. It is actually framing — the starting stance a reader
+        inherits before they've gathered anything. Promoting it into
+        the opening makes the page's default position legible in the
+        first screenful, the same way `mistakenFor` / `oftenMistakenAs`
+        anchor FM recognition at the top of each FM page. */}
   <SectionHeader
     id="sec-decision"
     step={stepFor("sec-decision")}
@@ -232,11 +329,18 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     title={entry.decisionQuestion}
   />
   <div class="td-prose td-decision__body">
-    <p>{entry.summary}</p>
+    <p>{capFirst(entry.summary)}</p>
     {entry.decisionHeuristic && (
       <CalloutBand label="Heuristic" variant="yellow" serif>
-        <p>{entry.decisionHeuristic}</p>
+        <p>{capFirst(entry.decisionHeuristic)}</p>
       </CalloutBand>
+    )}
+    {entry.defaultBias && (
+      <section class="td-stance" aria-label="Default stance">
+        <p class="td-stance__label">Default stance</p>
+        <p class="td-stance__caption">Where to start before any evidence arrives.</p>
+        <p class="td-stance__body">{capFirst(entry.defaultBias)}</p>
+      </section>
     )}
   </div>
 
@@ -250,16 +354,28 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
   />
   <OptionsLedger optionA={entry.optionA} optionB={entry.optionB} />
 
-  {/* 4. COST AND TIME — structured A/B carriers. Rendered as two small
-        parallel panels so a reader can see who pays and when each wins. */}
+  {/* 4. COST, TIME, AND REVERSIBILITY — three editorial panels that each
+        answer a different sharp question:
+          · `costBearer`       — WHO pays the cost of this decision
+          · `timeHorizonNotes` — HOW the right answer shifts over time
+          · `reversibility` + `whenToRevisit`
+                               — WHAT undoing this decision costs and
+                                 WHICH signals should force a re-look
+
+        Reversibility + whenToRevisit used to live inside "How to decide"
+        as two separate mini-rows; they're actually time-sensitivity
+        content ("how the right answer changes over time"), not
+        decision-support. Moving them here turns the section into a
+        single honest account of the decision's temporal shape — who
+        carries it, how it ages, and how costly it is to undo. */}
   {hasCostTime && (
     <>
       <SectionHeader
         id="sec-cost-time"
         step={stepFor("sec-cost-time")}
-        eyebrow="Cost and time"
-        title="Who bears it, how time changes the answer"
-        note="Trade-offs are rarely zero-sum — usually someone pays, and usually the payoff curve is different on different horizons."
+        eyebrow="Cost, time, and reversibility"
+        title="Who pays, how it ages, and what undoing it costs"
+        note="Trade-offs are rarely zero-sum and rarely static. Someone pays, the payoff curve shifts with the horizon, and the decision has an undo cost."
       />
       <div class="td-pairs">
         {entry.costBearer && (
@@ -268,11 +384,11 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
             <div class="td-pair__grid">
               <div class="td-pair__col">
                 <p class="td-pair__col-head">Option A · {entry.optionA.name}</p>
-                <LabeledList label="Who absorbs the cost" items={entry.costBearer.optionA} dense />
+                <LabeledList label="Who absorbs the cost" items={capItems(entry.costBearer.optionA)} dense />
               </div>
               <div class="td-pair__col">
                 <p class="td-pair__col-head">Option B · {entry.optionB.name}</p>
-                <LabeledList label="Who absorbs the cost" items={entry.costBearer.optionB} dense />
+                <LabeledList label="Who absorbs the cost" items={capItems(entry.costBearer.optionB)} dense />
               </div>
             </div>
           </section>
@@ -283,12 +399,43 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
             <div class="td-pair__grid">
               <div class="td-pair__col">
                 <p class="td-pair__col-head">Option A · {entry.optionA.name}</p>
-                <p class="td-pair__col-body">{entry.timeHorizonNotes.optionA}</p>
+                <p class="td-pair__col-body">{capFirst(entry.timeHorizonNotes.optionA)}</p>
               </div>
               <div class="td-pair__col">
                 <p class="td-pair__col-head">Option B · {entry.optionB.name}</p>
-                <p class="td-pair__col-body">{entry.timeHorizonNotes.optionB}</p>
+                <p class="td-pair__col-body">{capFirst(entry.timeHorizonNotes.optionB)}</p>
               </div>
+            </div>
+          </section>
+        )}
+        {/* Reversibility + whenToRevisit panel — same framed anatomy as
+            the two A/B panels above, but the body is a single column
+            rather than a two-column A/B split because reversibility
+            and revisit triggers apply to the decision as a whole, not
+            to each option independently. The two bodies stack as
+            "What undoing costs" (reversibility) and "What should force
+            a re-look" (whenToRevisit). The whole panel renders only
+            when at least one of the two fields has content. */}
+        {hasReversibilityPanel && (
+          <section class="td-pair td-pair--wide" aria-label="Reversibility">
+            <header class="td-pair__head">Reversibility</header>
+            <div class="td-pair__single">
+              {entry.reversibility && (
+                <div class="td-pair__block">
+                  <p class="td-pair__col-head">What undoing costs</p>
+                  <p class="td-pair__col-body">{capFirst(entry.reversibility)}</p>
+                </div>
+              )}
+              {entry.whenToRevisit && entry.whenToRevisit.length > 0 && (
+                <div class="td-pair__block">
+                  <LabeledList
+                    label="What should force a re-look"
+                    items={capItems(entry.whenToRevisit)}
+                    caption="Trigger conditions that mean the answer may have changed."
+                    dense
+                  />
+                </div>
+              )}
             </div>
           </section>
         )}
@@ -296,8 +443,22 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     </>
   )}
 
-  {/* 5. HOW TO DECIDE — decision support. `questionsToAsk` is REQUIRED; the
-        rest are optional helpers that only render when present. */}
+  {/* 5. HOW TO DECIDE — decision support.
+        
+        Restructured for clearer hierarchy: `questionsToAsk` is the
+        editorial primary block (boxed, yellow-headed masthead) because
+        answering those questions is, literally, most of the decision.
+        `keyFactors` and `evidenceNeeded` are the working material you
+        need to answer them — rendered as a two-column secondary row
+        below the primary panel.
+        
+        `defaultBias` used to live here as an inline label+body row;
+        it has been promoted up to the "The decision" section as a
+        framed stance block. `reversibility` and `whenToRevisit` used
+        to live here too; they've moved down into "Cost, time, and
+        reversibility" where they belong editorially. What's left is
+        the sharpest possible decision-support block: the questions,
+        the variables, and the evidence. */}
   <SectionHeader
     id="sec-how-to-decide"
     step={stepFor("sec-how-to-decide")}
@@ -307,40 +468,55 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
   />
   <div class="td-decide">
     <LabeledList
+      variant="boxed"
       label="Questions to ask"
-      items={entry.questionsToAsk}
+      items={capItems(entry.questionsToAsk)}
       caption="Open these in the room. Answering them is most of the decision."
     />
-    <LabeledList
-      label="Key factors"
-      items={entry.keyFactors}
-      caption="The variables that actually move the answer."
-    />
-    <LabeledList
-      label="Evidence needed"
-      items={entry.evidenceNeeded}
-      caption="What to gather before committing — not after."
-    />
-    {entry.defaultBias && (
-      <div class="td-decide__line">
-        <p class="td-decide__line-label">Default bias</p>
-        <p class="td-decide__line-body">{entry.defaultBias}</p>
+    {hasDecisionSupport && (
+      <div class="td-decide__support">
+        {entry.keyFactors && entry.keyFactors.length > 0 && (
+          <LabeledList
+            variant="framed"
+            label="Key factors"
+            items={capItems(entry.keyFactors)}
+            caption="The variables that actually move the answer."
+          />
+        )}
+        {entry.evidenceNeeded && entry.evidenceNeeded.length > 0 && (
+          <LabeledList
+            variant="framed"
+            label="Evidence needed"
+            items={capItems(entry.evidenceNeeded)}
+            caption="What to gather before committing — not after."
+          />
+        )}
       </div>
     )}
-    {entry.reversibility && (
-      <div class="td-decide__line">
-        <p class="td-decide__line-label">Reversibility</p>
-        <p class="td-decide__line-body">{entry.reversibility}</p>
-      </div>
-    )}
-    <LabeledList
-      label="When to revisit"
-      items={entry.whenToRevisit}
-      caption="Trigger conditions that should force a re-look."
-    />
   </div>
 
-  {/* 6. SIGNALS FROM THE GROUND — diagnostic evidence from real teams. */}
+  {/* 6. SIGNALS FROM THE GROUND — diagnostic evidence from real teams.
+        
+        Split into two editorial halves side by side, not a flat stack:
+        
+          · LEFT  (td-signals__bad)  — "What's usually pushing the call"
+            holds `commonBadReasons` + `antiPatterns`. These are the
+            wrong pressures the reader should recognize and set aside.
+            Red-framed panel, parallels the red band treatment used for
+            hazard content elsewhere on the site.
+        
+          · RIGHT (td-signals__good) — "What should push the call"
+            holds `goodSignalsForA` + `goodSignalsForB`. Concrete
+            observations that genuinely point to one pole or the other.
+            Surface-framed panel, neutral treatment.
+        
+        Each half has its own masthead eyebrow so a reader scanning the
+        section can immediately see the split between "pressures to
+        discount" and "signals to trust". Each LabeledList inside a
+        half renders only when its source field has content, and the
+        whole half renders only when at least one of its two fields
+        has content — matches the "render nothing when empty" policy
+        used elsewhere on the page. */}
   {hasSignals && (
     <>
       <SectionHeader
@@ -348,31 +524,57 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         step={stepFor("sec-signals")}
         eyebrow="Signals from the ground"
         title="What's usually pushing the call, and what should"
-        note="Bad reasons and anti-patterns on one side; concrete signals that genuinely point toward each option on the other."
+        note="On the left, pressures to recognize and discount. On the right, signals that genuinely point toward one option or the other."
       />
-      <div class="td-signals">
-        <LabeledList
-          label="Common bad reasons"
-          items={entry.commonBadReasons}
-          caption="Reasoning that feels convincing in the moment but doesn't hold up."
-        />
-        <LabeledList
-          label="Anti-patterns"
-          items={entry.antiPatterns}
-          caption="Shapes of reasoning the reader should recognize and set aside."
-        />
-        <div class="td-signals__good">
-          <LabeledList
-            label={`Good signals for · ${entry.optionA.name}`}
-            items={entry.goodSignalsForA}
-            caption="Concrete observations that genuinely point to Option A."
-          />
-          <LabeledList
-            label={`Good signals for · ${entry.optionB.name}`}
-            items={entry.goodSignalsForB}
-            caption="Concrete observations that genuinely point to Option B."
-          />
-        </div>
+      <div class="td-signals-split">
+        {hasBadPressureHalf && (
+          <section class="td-signals-half td-signals-half--bad" aria-label="What's usually pushing the call">
+            <header class="td-signals-half__head">
+              <p class="td-signals-half__eyebrow">What's usually pushing the call</p>
+              <p class="td-signals-half__caption">Pressures to recognize and discount.</p>
+            </header>
+            <div class="td-signals-half__body">
+              {entry.commonBadReasons && entry.commonBadReasons.length > 0 && (
+                <LabeledList
+                  label="Common bad reasons"
+                  items={capItems(entry.commonBadReasons)}
+                  caption="Reasoning that feels convincing in the moment but doesn't hold up."
+                />
+              )}
+              {entry.antiPatterns && entry.antiPatterns.length > 0 && (
+                <LabeledList
+                  label="Anti-patterns"
+                  items={capItems(entry.antiPatterns)}
+                  caption="Shapes of reasoning to recognize and set aside."
+                />
+              )}
+            </div>
+          </section>
+        )}
+        {hasGoodSignalsHalf && (
+          <section class="td-signals-half td-signals-half--good" aria-label="What should push the call">
+            <header class="td-signals-half__head">
+              <p class="td-signals-half__eyebrow">What should push the call</p>
+              <p class="td-signals-half__caption">Concrete signals that genuinely point to one pole.</p>
+            </header>
+            <div class="td-signals-half__body">
+              {entry.goodSignalsForA && entry.goodSignalsForA.length > 0 && (
+                <LabeledList
+                  label={`For · ${entry.optionA.name}`}
+                  items={capItems(entry.goodSignalsForA)}
+                  caption="Observations that genuinely point to Option A."
+                />
+              )}
+              {entry.goodSignalsForB && entry.goodSignalsForB.length > 0 && (
+                <LabeledList
+                  label={`For · ${entry.optionB.name}`}
+                  items={capItems(entry.goodSignalsForB)}
+                  caption="Observations that genuinely point to Option B."
+                />
+              )}
+            </div>
+          </section>
+        )}
       </div>
     </>
   )}
@@ -399,19 +601,30 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         <LabeledList
           variant="boxed"
           label="AI can help with"
-          items={entry.aiCanHelpWith}
+          items={capItems(entry.aiCanHelpWith)}
           caption="Where AI genuinely reduces the cost of making the call."
         />
         <LabeledList
           variant="boxed"
           label="AI can make worse"
-          items={entry.aiCanMakeWorseBy}
+          items={capItems(entry.aiCanMakeWorseBy)}
           caption="Distortions AI introduces that didn't exist before."
         />
       </div>
+      {entry.aiFalseConfidence && (
+        /* Pattern-specific false-confidence warning — the specific
+           illusion of correctness, coverage, or progress AI produces
+           in the shape of THIS decision. Red variant so it reads as
+           a warning distinct from the blue synthesis below (which
+           carries the editorial takeaway). Parallels the same field
+           on the FM detail page so readers recognize the treatment. */
+        <CalloutBand label="AI false confidence" variant="red">
+          <p>{capFirst(entry.aiFalseConfidence)}</p>
+        </CalloutBand>
+      )}
       {entry.aiSpecificNotes && (
         <CalloutBand label="AI synthesis" variant="blue" serif>
-          <p>{entry.aiSpecificNotes}</p>
+          <p>{capFirst(entry.aiSpecificNotes)}</p>
         </CalloutBand>
       )}
     </>
@@ -425,8 +638,54 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         step={stepFor("sec-relationships")}
         eyebrow="Relationships"
         title="Connected decisions"
-        note="Related failure modes, adjacent decisions that are often entangled with this one, red flags that signal trouble, and playbooks to reach for."
+        note="Nearby decisions this is sometimes confused with, adjacent decisions that are often entangled with this one, related failure modes, red flags, and playbooks to reach for."
       />
+
+      {/* "Easy to confuse with" — recognition-boundary panel. Distinct
+          from `adjacentDecisions` (neutral neighborhood grid below) and
+          from `notActuallyAbout` (a single-sentence framing negation up
+          top). This block is specifically about disambiguation: sibling
+          decisions + one-line distinctions explaining how THIS decision
+          differs. Rendered at the TOP of the Relationships section so a
+          reader who still isn't sure "am I making the right decision?"
+          reaches this before the cross-reference grid.
+
+          When a `decision` resolves to a real TD slug, the cell links to
+          that detail page and shows its refCode pill; free-phrase
+          decisions render with an "Adjacent concept" eyebrow. Mirrors the
+          FM `easilyConfusedWith` panel so the two categories read as one
+          design pattern in two modes. */}
+      {hasEasilyConfused && (
+        <section class="td-confused" aria-label="Easy to confuse with">
+          <header class="td-confused__head">
+            <h3 class="td-confused__title">Easy to confuse with</h3>
+            <p class="td-confused__note">
+              Nearby decisions and how this one differs.
+            </p>
+          </header>
+          <ul class="td-confused__list">
+            {easilyConfusedResolved.map((item) => (
+              <li class="td-confused__item">
+                <div class="td-confused__pattern">
+                  {item.ref ? (
+                    <a class="td-confused__link" href={item.ref.href}>
+                      <span class="td-confused__ref">{item.ref.refCode}</span>
+                      <span class="td-confused__name">{item.ref.title}</span>
+                    </a>
+                  ) : (
+                    <span class="td-confused__concept">
+                      <span class="td-confused__concept-eyebrow">Adjacent concept</span>
+                      <span class="td-confused__phrase">{capFirst(item.raw)}</span>
+                    </span>
+                  )}
+                </div>
+                <p class="td-confused__distinction">{capFirst(item.distinction)}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <div class="nsb-two-col nsb-two-col--equal">
         <RelatedEntries
           eyebrow="Often leads to failure modes"
@@ -479,6 +738,46 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
+  }
+
+  /* ---- Default stance — framed stance block rendered inside the
+     "The decision" section, under the yellow `decisionHeuristic`
+     band. Carries `defaultBias` (the reader's starting position
+     before any evidence is gathered). White surface + 3px black
+     frame + black eyebrow strip, parallel in weight to the yellow
+     CalloutBand above it so the two stance beats read as a pair
+     (heuristic = editorial rule of thumb / default stance = where
+     to start). Not a CalloutBand itself because we want a sharper
+     two-line editorial register here (label + caption + body),
+     which the CalloutBand primitive doesn't model. */
+  .td-stance {
+    background: var(--color-surface);
+    border: 3px solid var(--color-frame);
+    padding: var(--space-4) var(--space-5);
+  }
+  .td-stance__label {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink);
+  }
+  .td-stance__caption {
+    margin: 2px 0 var(--space-3) 0;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 0.82rem;
+    line-height: var(--leading-snug);
+    color: var(--color-ink-soft);
+  }
+  .td-stance__body {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: var(--text-md);
+    line-height: var(--leading-snug);
+    color: var(--color-ink);
   }
 
   /* The legacy `.td-framing*` styles are gone — the three reframe
@@ -576,85 +875,271 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     color: var(--color-ink);
   }
 
-  /* ---- 5. How to decide — stacked LabeledLists with thin rules
-        between them; two one-line fields (default bias, reversibility)
-        rendered as inline label+body. */
+  /* Wide-pair variant — the reversibility panel spans both columns at
+     desktop because reversibility and revisit triggers apply to the
+     decision as a whole, not to each option independently. At narrow
+     widths the regular single-column stack handles it. Its body uses
+     `.td-pair__single` (NOT the A/B grid) with two stacked blocks:
+     "What undoing costs" + "What should force a re-look". */
+  @media (min-width: 960px) {
+    .td-pair--wide { grid-column: 1 / -1; }
+  }
+  .td-pair__single {
+    padding: var(--space-4) var(--space-5);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  @media (min-width: 540px) {
+    /* Two blocks sit side by side on desktop only if BOTH are populated;
+       the grid uses `auto-fit` with a min track so a single populated
+       block fills the row cleanly. No A/B subgrid here because the two
+       blocks are semantically distinct (not two views of the same
+       attribute), so alignment-across-blocks isn't required. */
+    .td-pair__single {
+      grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+      gap: var(--space-5);
+    }
+  }
+  .td-pair__block { min-width: 0; }
+  .td-pair__block .td-pair__col-head {
+    margin-bottom: var(--space-2);
+  }
+
+  /* ---- 5. How to decide — primary+secondary layout.
+        
+        `questionsToAsk` renders as a full-width boxed LabeledList (the
+        primary block — answering those questions is most of the
+        decision). Below it, the `.td-decide__support` row holds
+        `keyFactors` and `evidenceNeeded` as two framed panels side by
+        side (the working material needed to answer the questions).
+        
+        No more inline label+body rows — `defaultBias` has moved up to
+        the opening "The decision" section, and `reversibility` /
+        `whenToRevisit` have moved down to "Cost, time, and
+        reversibility". The resulting block is deliberately sparser:
+        it carries only the three items that are, strictly, decision
+        support. */
   .td-decide {
     margin-top: var(--space-4);
-    background: var(--color-surface);
-    border: 3px solid var(--color-frame);
-    padding: var(--space-5);
     display: flex;
     flex-direction: column;
     gap: var(--space-5);
   }
-  .td-decide > * + * {
-    padding-top: var(--space-4);
-    border-top: 1.5px solid var(--color-rule);
-  }
-  .td-decide__line {
+  .td-decide__support {
     display: grid;
-    grid-template-columns: minmax(9rem, 11rem) 1fr;
-    gap: var(--space-4);
-    align-items: baseline;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
   }
-  .td-decide__line-label {
+  @media (min-width: 720px) {
+    .td-decide__support {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-5);
+    }
+  }
+
+  /* ---- 6. Signals from the ground — two editorial halves.
+        
+        Two side-by-side panels, each with its own masthead eyebrow
+        (the "What's usually pushing the call" vs "What should push
+        the call" framing the user asked for). The bad-pressure half
+        uses a red masthead strip because its content is "pressures
+        to discount"; the good-signals half uses the surface frame
+        because its content is neutral reference signal. Both halves
+        contain one or two LabeledLists, separated by a thin rule.
+        
+        At narrow widths the two halves stack. Each half renders only
+        when at least one of its source fields is populated. */
+  .td-signals-split {
+    margin-top: var(--space-4);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+  @media (min-width: 860px) {
+    .td-signals-split {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-5);
+    }
+  }
+  .td-signals-half {
+    background: var(--color-surface);
+    border: 3px solid var(--color-frame);
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .td-signals-half__head {
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 3px solid var(--color-frame);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .td-signals-half--bad .td-signals-half__head {
+    background: var(--color-red);
+    color: var(--color-surface);
+  }
+  .td-signals-half--good .td-signals-half__head {
+    background: var(--color-frame);
+    color: var(--color-surface);
+  }
+  .td-signals-half__eyebrow {
     margin: 0;
     font-family: var(--font-sans);
     font-weight: 900;
     font-size: var(--text-xs);
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
-    color: var(--color-ink);
+    color: var(--color-yellow);
   }
-  .td-decide__line-body {
+  .td-signals-half--bad .td-signals-half__eyebrow {
+    color: var(--color-yellow);
+  }
+  .td-signals-half__caption {
     margin: 0;
     font-family: var(--font-serif);
-    font-size: var(--text-md);
+    font-style: italic;
+    font-size: 0.78rem;
     line-height: var(--leading-snug);
-    color: var(--color-ink);
+    color: rgba(255, 255, 255, 0.78);
   }
-  @media (max-width: 640px) {
-    .td-decide__line {
-      grid-template-columns: 1fr;
-      gap: 2px;
-    }
-  }
-
-  /* ---- 6. Signals — mirrors td-decide's stacking but splits the
-        "good signals for A/B" pair into a 2-col sub-grid. */
-  .td-signals {
-    margin-top: var(--space-4);
-    background: var(--color-surface);
-    border: 3px solid var(--color-frame);
-    padding: var(--space-5);
+  .td-signals-half__body {
+    padding: var(--space-4) var(--space-5);
     display: flex;
     flex-direction: column;
-    gap: var(--space-5);
+    gap: var(--space-4);
   }
-  .td-signals > * + * {
+  .td-signals-half__body > * + * {
     padding-top: var(--space-4);
     border-top: 1.5px solid var(--color-rule);
   }
-  .td-signals__good {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-5);
+
+  /* ---- 7. AI impact — uses the shared site-wide treatment now
+     (two boxed LabeledLists via `.nsb-two-col` + red false-confidence
+     band + blue-serif synthesis CalloutBand). No TD-specific styling. */
+
+  /* ---- 8. "Easy to confuse with" panel + Relationships grid.
+
+     The confused panel parallels the FM `.fm-confused` block — same
+     anatomy (black eyebrow bar + linked pill | italic phrase + serif
+     distinction) so a reader recognizes the pattern across categories.
+     Class namespace is `.td-confused` rather than sharing `.fm-*` so
+     each category can tune its typography separately if needed
+     without changes on one side leaking into the other. */
+  .td-confused {
+    margin-top: var(--space-5);
+    border: 3px solid var(--color-frame);
+    background: var(--color-surface);
   }
-  @media (min-width: 720px) {
-    .td-signals__good {
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-6);
+  .td-confused__head {
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-frame);
+    color: var(--color-surface);
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+  .td-confused__title {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-yellow);
+  }
+  .td-confused__note {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 0.78rem;
+    line-height: var(--leading-snug);
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .td-confused__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .td-confused__item {
+    display: grid;
+    grid-template-columns: minmax(12rem, 16rem) 1fr;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 2px solid var(--color-frame);
+    align-items: baseline;
+  }
+  .td-confused__item:last-child { border-bottom: 0; }
+  .td-confused__pattern { min-width: 0; }
+  .td-confused__link {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+    text-decoration: none;
+    color: var(--color-ink);
+  }
+  .td-confused__link:hover .td-confused__name {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-decoration-color: var(--accent-td);
+  }
+  .td-confused__ref {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--color-ink-dim);
+    font-feature-settings: "tnum";
+  }
+  .td-confused__name {
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-base);
+    letter-spacing: -0.01em;
+    color: var(--color-ink);
+    line-height: 1.1;
+  }
+  /* Free-phrase fallback — same two-row layout as a resolved link so
+     the two modes share their vertical rhythm. */
+  .td-confused__concept {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .td-confused__concept-eyebrow {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink-dim);
+  }
+  .td-confused__phrase {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: var(--text-base);
+    line-height: 1.15;
+    color: var(--color-ink);
+  }
+  .td-confused__distinction {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: var(--text-base);
+    line-height: var(--leading-snug);
+    color: var(--color-ink);
+  }
+  @media (max-width: 720px) {
+    .td-confused__item {
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
     }
   }
 
-  /* ---- 7. AI impact — uses the shared site-wide treatment now
-     (two boxed LabeledLists via `.nsb-two-col` + blue-serif
-     CalloutBand). No TD-specific styling. */
-
-  /* ---- 8. Relationships — same grid approach as FM and RF. Row-
-     aligned heights so two unequal RelatedEntries panels in the same
-     row share an outer frame height. Uses the shared
-     `.nsb-two-col--equal` utility (see globals.css) — the
-     `.nsb-related` height rule lives there. */
+  /* Relationships grid — same grid approach as FM and RF. Row-aligned
+     heights so two unequal RelatedEntries panels in the same row share
+     an outer frame height. Uses the shared `.nsb-two-col--equal`
+     utility (see globals.css) — the `.nsb-related` height rule lives
+     there. */
 </style>

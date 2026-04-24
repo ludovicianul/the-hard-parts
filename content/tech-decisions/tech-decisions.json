@@ -192,6 +192,7 @@
       "aiCanMakeWorseBy": [
         "AI can make service extraction look cheaper than it is by accelerating code movement without resolving boundary quality."
       ],
+      "aiFalseConfidence": "Generated service scaffolding looks designed because it uses textbook patterns and compiles cleanly — creating the illusion that domain boundaries have been reasoned about when only code shape has been moved.",
       "aiSpecificNotes": "Do not let generated scaffolding substitute for real domain decomposition.",
       "oftenLeadsToFailureModes": [
         "abstraction-addiction",
@@ -203,6 +204,20 @@
         "shared-database-vs-service-owned-data",
         "sync-vs-event-driven",
         "local-autonomy-vs-central-governance"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "modular-monolith-vs-distributed-services",
+          "distinction": "That decision is about how to structure code inside one deployment. This one is about whether to split deployments at all."
+        },
+        {
+          "decision": "shared-database-vs-service-owned-data",
+          "distinction": "That decision is about data ownership between services once they exist. This one is about whether they should exist as independent deployments in the first place."
+        },
+        {
+          "decision": "regular refactoring across boundaries",
+          "distinction": "Refactoring preserves deployment topology. This decision changes it — and makes cross-boundary refactoring fundamentally more expensive afterward."
+        }
       ],
       "relatedRedFlags": [
         "nobody-can-explain-service-boundaries-in-business-terms",
@@ -358,6 +373,7 @@
       "aiCanMakeWorseBy": [
         "AI can mass-produce service wrappers and APIs without proving runtime separation is needed."
       ],
+      "aiFalseConfidence": "Generated module scaffolding and pattern-compliant boundaries look like enforcement because the code shape is clean — creating the illusion that module contracts will hold under pressure when only their syntactic surface has been laid down.",
       "aiSpecificNotes": "Generated separation is not architectural justification.",
       "oftenLeadsToFailureModes": [
         "dependency-fog",
@@ -366,6 +382,20 @@
       "adjacentDecisions": [
         "monolith-vs-microservices",
         "shared-database-vs-service-owned-data"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "monolith-vs-microservices",
+          "distinction": "That decision is about whether to split deployments at all. This one is about how to enforce boundaries inside a single deployable."
+        },
+        {
+          "decision": "shared-database-vs-service-owned-data",
+          "distinction": "That decision is about data ownership across boundaries. This one is about where the boundary line is drawn in the first place."
+        },
+        {
+          "decision": "package and module housekeeping",
+          "distinction": "Reorganizing files preserves coupling. This decision is about whether module boundaries stop hidden coupling from spreading."
+        }
       ],
       "relatedRedFlags": [
         "distributed-services-share-the-same-release-lifecycle-anyway",
@@ -521,6 +551,7 @@
       "aiCanMakeWorseBy": [
         "AI can generate GraphQL layers quickly, increasing the chance of pretty schema over weak backend discipline."
       ],
+      "aiFalseConfidence": "Generated GraphQL schemas and REST specs look mature because the syntax is correct and tooling is rich — creating the illusion of well-governed API design when no decision has been made about consumer contracts, versioning, or backend discipline.",
       "aiSpecificNotes": "Do not choose GraphQL because AI made it easy to scaffold.",
       "oftenLeadsToFailureModes": [
         "abstraction-addiction"
@@ -528,6 +559,20 @@
       "adjacentDecisions": [
         "sync-vs-event-driven",
         "manual-review-depth-vs-automation-dependence"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "sync-vs-event-driven",
+          "distinction": "That decision is about coupling shape between services. This one is about the shape of a single service's public surface."
+        },
+        {
+          "decision": "backward-compatibility-vs-faster-evolution",
+          "distinction": "That decision is about how to evolve an API over time. This one is about which style you're evolving in the first place."
+        },
+        {
+          "decision": "a schema-definition-language choice",
+          "distinction": "Choosing OpenAPI vs SDL vs Protobuf is about how to specify contracts. This decision is about the query shape your consumers will actually use."
+        }
       ],
       "relatedRedFlags": [
         "schema-ownership-is-unclear",
@@ -682,6 +727,7 @@
       "aiCanMakeWorseBy": [
         "AI can suggest trendy datastore choices detached from real query and consistency needs."
       ],
+      "aiFalseConfidence": "Generated schemas and sample queries look well-fitted because the code compiles and patterns look idiomatic — creating the illusion that access patterns have been analyzed when only a plausible-looking shape has been picked.",
       "aiSpecificNotes": "Do not let generated examples substitute for actual production access-pattern analysis.",
       "oftenLeadsToFailureModes": [
         "local-optimization"
@@ -689,6 +735,20 @@
       "adjacentDecisions": [
         "shared-database-vs-service-owned-data",
         "strong-consistency-vs-eventual-consistency"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "shared-database-vs-service-owned-data",
+          "distinction": "That decision is about who owns the data. This one is about how the data is modeled and queried regardless of ownership."
+        },
+        {
+          "decision": "strong-consistency-vs-eventual-consistency",
+          "distinction": "That decision is about guarantees on reads. This one is about the store underneath, which may or may not constrain those guarantees."
+        },
+        {
+          "decision": "a hosting-provider decision",
+          "distinction": "Choosing RDS vs Dynamo vs Mongo Atlas is about operations. This decision is about the data model, which constrains the provider set but is not the same choice."
+        }
       ],
       "relatedRedFlags": [
         "teams-keep-rebuilding-joins-in-application-code",
@@ -842,6 +902,7 @@
       "aiCanMakeWorseBy": [
         "AI can scaffold brokers, handlers, and consumers quickly, increasing the chance of event-driven complexity without process clarity."
       ],
+      "aiFalseConfidence": "Generated broker configs, handler stubs, and consumer code look like a working event architecture because they compile and the topology diagrams are clean — creating the illusion that business processes have been mapped when only plumbing has been scaffolded.",
       "aiSpecificNotes": "Generated event plumbing does not reduce business ambiguity.",
       "oftenLeadsToFailureModes": [
         "dependency-fog",
@@ -850,6 +911,20 @@
       "adjacentDecisions": [
         "strong-consistency-vs-eventual-consistency",
         "shared-database-vs-service-owned-data"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "strong-consistency-vs-eventual-consistency",
+          "distinction": "That decision is about guarantees after the call finishes. This one is about whether the call is a direct one at all."
+        },
+        {
+          "decision": "shared-database-vs-service-owned-data",
+          "distinction": "That decision is about where data lives. This one is about how services learn that the data changed."
+        },
+        {
+          "decision": "an async API choice",
+          "distinction": "Making an HTTP call asynchronous in code is a concurrency pattern. This decision is whether services coordinate through direct invocation or through events."
+        }
       ],
       "relatedRedFlags": [
         "nobody-can-explain-the-end-to-end-flow",
@@ -999,6 +1074,7 @@
       "aiCanMakeWorseBy": [
         "AI can generate service shells that hide continued database coupling."
       ],
+      "aiFalseConfidence": "Generated service scaffolding can create the appearance of ownership — separate repos, separate deployments, separate READMEs — while the database stays the real contract underneath, so the system looks decoupled and isn't.",
       "aiSpecificNotes": "Generated service boundaries do not matter if the database is still the real contract.",
       "oftenLeadsToFailureModes": [
         "dependency-fog",
@@ -1007,6 +1083,20 @@
       "adjacentDecisions": [
         "monolith-vs-microservices",
         "strong-consistency-vs-eventual-consistency"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "monolith-vs-microservices",
+          "distinction": "That decision is about deployment separation. This one is about whether that separation is meaningful when the database remains shared."
+        },
+        {
+          "decision": "strong-consistency-vs-eventual-consistency",
+          "distinction": "That decision is about guarantees between services. This one is about whether services have separate data at all."
+        },
+        {
+          "decision": "a database-per-tenant choice",
+          "distinction": "That is about isolating customers. This decision is about isolating services from each other, which is a different separation axis."
+        }
       ],
       "relatedRedFlags": [
         "multiple-teams-change-the-same-tables-routinely",
@@ -1156,6 +1246,7 @@
       "aiCanMakeWorseBy": [
         "AI can generate architecture proposals that invoke eventual consistency without modeling business reconciliation."
       ],
+      "aiFalseConfidence": "AI-generated architecture proposals can invoke eventual consistency as a best-practice keyword and make the system sound modern, hiding the fact that no one has modeled the business reconciliation that eventual consistency requires.",
       "aiSpecificNotes": "Do not let architectural vocabulary outrun business semantics.",
       "oftenLeadsToFailureModes": [
         "dependency-fog"
@@ -1163,6 +1254,20 @@
       "adjacentDecisions": [
         "sync-vs-event-driven",
         "sql-vs-nosql"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "sync-vs-event-driven",
+          "distinction": "That decision is about how services coordinate. This one is about what users and business processes see once coordination has happened."
+        },
+        {
+          "decision": "sql-vs-nosql",
+          "distinction": "That decision is about the storage engine. This one is about guarantees on reads, which some engines support and others don't."
+        },
+        {
+          "decision": "an ACID vs BASE framing",
+          "distinction": "ACID/BASE is the vendor vocabulary. This decision is about what your users and reconciliation processes can actually tolerate."
+        }
       ],
       "relatedRedFlags": [
         "teams-say-eventual-consistency-but-cannot-explain-user-visible-consequences",
@@ -1310,6 +1415,7 @@
       "aiCanMakeWorseBy": [
         "AI may recommend streaming or real-time designs as generic best practice."
       ],
+      "aiFalseConfidence": "Real-time architectures sound more modern in a generated design doc because the vocabulary is on-trend, creating the illusion of a latency win that no user will ever feel.",
       "aiSpecificNotes": "Do not optimize latency nobody will feel.",
       "oftenLeadsToFailureModes": [
         "local-optimization"
@@ -1317,6 +1423,20 @@
       "adjacentDecisions": [
         "edge-logic-vs-centralized-backend-logic",
         "sync-vs-event-driven"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "sync-vs-event-driven",
+          "distinction": "That decision is about inter-service coordination. This one is about how fresh the processed result is."
+        },
+        {
+          "decision": "a streaming-framework choice",
+          "distinction": "Choosing Kafka Streams vs Flink vs Spark Streaming is about the engine. This decision is whether streaming is the right mode at all."
+        },
+        {
+          "decision": "a scheduling-cadence decision",
+          "distinction": "Scheduling cadence is how often batches run. This decision is whether it should be a batch at all."
+        }
       ],
       "relatedRedFlags": [
         "systems-are-real-time-upstream-and-batch-downstream-without-explicit-design",
@@ -1463,6 +1583,7 @@
       "aiCanMakeWorseBy": [
         "AI can scaffold edge functions quickly, increasing logic sprawl risk."
       ],
+      "aiFalseConfidence": "Generated edge functions look like architecture because they deploy cleanly and return fast — creating the illusion of owned logic when nobody has inventoried where it runs, who owns it, or how it's observed once spread across regions.",
       "aiSpecificNotes": "Generated edge code increases sprawl if ownership is weak.",
       "oftenLeadsToFailureModes": [
         "ownership-drift"
@@ -1470,6 +1591,20 @@
       "adjacentDecisions": [
         "batch-vs-real-time-processing",
         "local-autonomy-vs-central-governance"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "batch-vs-real-time-processing",
+          "distinction": "That decision is about when data is processed. This one is about where logic executes relative to the request."
+        },
+        {
+          "decision": "local-autonomy-vs-central-governance",
+          "distinction": "That decision is about team structure. This one is about runtime structure, but similar governance risks apply when logic sprawls across locations."
+        },
+        {
+          "decision": "a CDN-caching decision",
+          "distinction": "Caching serves static content close to users. This decision is about running logic close to users, which is a different risk surface."
+        }
       ],
       "relatedRedFlags": [
         "same-rule-exists-in-multiple-runtime-layers",
@@ -1629,6 +1764,7 @@
       "aiCanMakeWorseBy": [
         "AI lowers the apparent cost of building prototypes, making teams underestimate lifecycle ownership."
       ],
+      "aiFalseConfidence": "Generated prototypes reach the 'looks working' stage in hours, creating the illusion that owning the full lifecycle — hardening, integration, operations, support — will be similarly cheap.",
       "aiSpecificNotes": "A fast AI-generated prototype is not evidence that owning the full product is cheap.",
       "oftenLeadsToFailureModes": [
         "platform-before-product",
@@ -1637,6 +1773,20 @@
       "adjacentDecisions": [
         "platform-first-vs-product-first",
         "generic-solution-vs-case-specific-solution"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "generic-solution-vs-case-specific-solution",
+          "distinction": "That decision is about the shape of the solution you own. This decision is about whether you own it at all."
+        },
+        {
+          "decision": "platform-first-vs-product-first",
+          "distinction": "Platform-first is about where a capability lives inside your org. Build-vs-buy is about whether that capability comes from inside at all."
+        },
+        {
+          "decision": "an integration decision",
+          "distinction": "An integration decision is how to glue your system to a third-party product. Build-vs-buy is whether to rely on a third-party product in the first place."
+        }
       ],
       "relatedRedFlags": [
         "internal-teams-are-rebuilding-commodity-features-repeatedly",
@@ -1788,6 +1938,7 @@
       "aiCanMakeWorseBy": [
         "AI can make speed look safer than it is by increasing output without proportionate hardening."
       ],
+      "aiFalseConfidence": "AI raises output speed without a proportionate increase in hardening practice, so 'we're shipping faster' looks like improved delivery when it's actually a larger volume moving through the same unchanged robustness discipline.",
       "aiSpecificNotes": "Faster generation does not eliminate robustness work.",
       "oftenLeadsToFailureModes": [
         "synthetic-velocity",
@@ -1796,6 +1947,20 @@
       "adjacentDecisions": [
         "ci-gate-strictness-vs-developer-throughput",
         "experimentation-vs-operational-stability"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "ci-gate-strictness-vs-developer-throughput",
+          "distinction": "That decision is about the gate in CI. This one is about the timing of hardening across the whole lifecycle."
+        },
+        {
+          "decision": "experimentation-vs-operational-stability",
+          "distinction": "That decision is about the system's willingness to change. This one is about the speed/hardening trade-off at the feature level."
+        },
+        {
+          "decision": "a prioritization decision",
+          "distinction": "Prioritization is what to work on. This decision is how much hardening to put into whatever you chose."
+        }
       ],
       "relatedRedFlags": [
         "teams-celebrate-speed-but-hide-rework",
@@ -1937,6 +2102,7 @@
       "aiCanMakeWorseBy": [
         "AI can hide schedule risk by making reports look calmer and output look faster."
       ],
+      "aiFalseConfidence": "AI-polished status updates read as measured and under control, creating the illusion that the commitment is well-managed when the underlying scope/date/quality trade-off has not actually been made.",
       "aiSpecificNotes": "A polished summary is not an actual constraint decision.",
       "oftenLeadsToFailureModes": [
         "invisible-deadline",
@@ -1945,6 +2111,20 @@
       "adjacentDecisions": [
         "speed-vs-robustness",
         "one-way-door-vs-two-way-door-rollout"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "one-way-door-vs-two-way-door-rollout",
+          "distinction": "That decision is about reversibility of a specific change. This one is about which commitment axis (scope or date) you're willing to move when reality disagrees with the plan."
+        },
+        {
+          "decision": "speed-vs-robustness",
+          "distinction": "That decision is about how much hardening to invest in. This one is about which commitment moves when reality doesn't match the plan."
+        },
+        {
+          "decision": "a deadline-reset decision",
+          "distinction": "Resetting the deadline is an outcome. This decision is the framing choice that determines whether it ever happens."
+        }
       ],
       "relatedRedFlags": [
         "nobody-can-say-what-is-fixed-vs-flexible"
@@ -2098,6 +2278,7 @@
       "aiCanMakeWorseBy": [
         "AI makes internal platform scaffolding cheap, increasing the temptation to build elegant but weakly demanded foundations."
       ],
+      "aiFalseConfidence": "Generated platform scaffolding is cheap, so a usable-looking internal platform appears quickly — creating the illusion of leverage when no product team has adopted it under real conditions.",
       "aiSpecificNotes": "A fast platform prototype is not evidence of durable adoption demand.",
       "oftenLeadsToFailureModes": [
         "platform-before-product",
@@ -2107,6 +2288,20 @@
         "build-vs-buy",
         "generic-solution-vs-case-specific-solution",
         "central-platform-team-vs-embedded-enablement"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "build-vs-buy",
+          "distinction": "That decision is about whether to own a capability at all. This one is about whether to invest in generalized internal capability before a specific product need has proved it out."
+        },
+        {
+          "decision": "central-platform-team-vs-embedded-enablement",
+          "distinction": "That decision assumes a platform exists and asks who owns it. This one is whether to build one before demand is proven."
+        },
+        {
+          "decision": "generic-solution-vs-case-specific-solution",
+          "distinction": "That decision is about a single solution's shape. This one is about an org-wide investment timing."
+        }
       ],
       "relatedRedFlags": [
         "platform-has-no-clear-adopters",
@@ -2263,6 +2458,7 @@
       "aiCanMakeWorseBy": [
         "AI makes rewriting feel faster by making code generation cheaper, but it does not reduce hidden behavior risk."
       ],
+      "aiFalseConfidence": "Generated replacement code compiles and passes shallow tests, making a rewrite feel fast and de-risked — creating the illusion that replacement behavior has been validated when only replacement shape has been laid down.",
       "aiSpecificNotes": "Generated replacement code does not equal validated replacement behavior.",
       "oftenLeadsToFailureModes": [
         "friendly-rewrite",
@@ -2271,6 +2467,20 @@
       "adjacentDecisions": [
         "monolith-vs-microservices",
         "scope-flexibility-vs-date-certainty"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "monolith-vs-microservices",
+          "distinction": "That decision is about deployment topology. This one is about whether to keep evolving the current code at all."
+        },
+        {
+          "decision": "scope-flexibility-vs-date-certainty",
+          "distinction": "That decision is about commitment axes. This one is about the path to the same outcome (replacement vs incremental improvement)."
+        },
+        {
+          "decision": "a modernization decision",
+          "distinction": "Modernization is a framing. This decision is which of its two concrete forms to take."
+        }
       ],
       "relatedRedFlags": [
         "nobody-can-define-parity",
@@ -2417,6 +2627,7 @@
       "aiCanMakeWorseBy": [
         "AI makes generic scaffolding cheap, increasing the temptation to generalize too early."
       ],
+      "aiFalseConfidence": "Generated generic scaffolding looks reusable because the interfaces are polished and the patterns are on-trend — creating the illusion of leverage when no second use case has actually validated the abstraction.",
       "aiSpecificNotes": "Generated genericity is still complexity.",
       "oftenLeadsToFailureModes": [
         "abstraction-addiction"
@@ -2424,6 +2635,20 @@
       "adjacentDecisions": [
         "platform-first-vs-product-first",
         "convention-over-configuration-vs-flexibility"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "platform-first-vs-product-first",
+          "distinction": "That decision is about org-level investment. This one is about the shape of a specific solution."
+        },
+        {
+          "decision": "convention-over-configuration-vs-flexibility",
+          "distinction": "That decision is about optionality inside a solution. This one is about whether the solution covers multiple cases at all."
+        },
+        {
+          "decision": "a code-review-time abstraction decision",
+          "distinction": "Extracting a helper is a local refactor. This decision is a lifecycle commitment to serve more than one concrete case."
+        }
       ],
       "relatedRedFlags": [
         "frameworks-exist-before-repeated-use-exists"
@@ -2566,6 +2791,7 @@
       "aiCanMakeWorseBy": [
         "AI-generated rollout scripts can create false confidence in reversibility."
       ],
+      "aiFalseConfidence": "AI-generated rollback scripts, runbooks, and playbooks create the illusion of reversibility — a scripted rollback is not the same as a proven rollback, and a change can still be effectively one-way even when it looks reversible on paper.",
       "aiSpecificNotes": "Scripted rollback is not the same as proven rollback.",
       "oftenLeadsToFailureModes": [
         "invisible-deadline"
@@ -2573,6 +2799,20 @@
       "adjacentDecisions": [
         "feature-flags-vs-branch-based-release-isolation",
         "scope-flexibility-vs-date-certainty"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "scope-flexibility-vs-date-certainty",
+          "distinction": "That decision is about commitment axes at the plan level. This one is about reversibility at the change level."
+        },
+        {
+          "decision": "feature-flags-vs-branch-based-release-isolation",
+          "distinction": "That decision is about the mechanism for controlled release. This one is about how reversible the underlying change is regardless of mechanism."
+        },
+        {
+          "decision": "a rollback-plan decision",
+          "distinction": "A rollback plan is the artifact. This decision is whether reversibility is actually achievable."
+        }
       ],
       "relatedRedFlags": [
         "teams-call-a-change-reversible-without-rehearsing-rollback"
@@ -2713,6 +2953,7 @@
       "aiCanMakeWorseBy": [
         "AI can make local customization cheaper, risking customization sprawl."
       ],
+      "aiFalseConfidence": "Cheap AI-generated local variants make customization look like a harmless adaptation choice — each variant looks small, but the aggregate lifecycle complexity is not visible until the fleet is already inconsistent.",
       "aiSpecificNotes": "Cheaper customization does not remove lifecycle complexity.",
       "oftenLeadsToFailureModes": [
         "local-optimization"
@@ -2720,6 +2961,20 @@
       "adjacentDecisions": [
         "convention-over-configuration-vs-flexibility",
         "local-autonomy-vs-central-governance"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "convention-over-configuration-vs-flexibility",
+          "distinction": "That decision is about optionality inside a single product. This one is about variation across instances or customers."
+        },
+        {
+          "decision": "local-autonomy-vs-central-governance",
+          "distinction": "That decision is about team authority. This one is about product/system variance, though the two often move together."
+        },
+        {
+          "decision": "a multi-tenant architecture decision",
+          "distinction": "Multi-tenancy is about isolation. This decision is about per-tenant variation, which is a separate axis."
+        }
       ],
       "relatedRedFlags": [
         "same-product-behaves-differently-in-too-many-untracked-ways"
@@ -2859,6 +3114,7 @@
       "aiCanMakeWorseBy": [
         "AI lowers cost of trying more things, increasing temptation to experiment without enough operational guardrails."
       ],
+      "aiFalseConfidence": "Lower cost of change from AI tooling makes experimentation feel inherently safe, but the underlying operational risk (blast radius, detection, rollback) has not changed — so cheap experimentation is not the same as safe experimentation.",
       "aiSpecificNotes": "Lower cost of change increases governance need, not decreases it.",
       "oftenLeadsToFailureModes": [
         "silent-model-drift",
@@ -2867,6 +3123,20 @@
       "adjacentDecisions": [
         "speed-vs-robustness",
         "human-in-the-loop-vs-full-automation"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "speed-vs-robustness",
+          "distinction": "That decision is about feature hardening timing. This one is about system willingness to be changed at all."
+        },
+        {
+          "decision": "human-in-the-loop-vs-full-automation",
+          "distinction": "That decision is about workflow design. This one is about change cadence at the system level."
+        },
+        {
+          "decision": "an A/B testing decision",
+          "distinction": "A/B testing is the mechanism. This decision is about the system's tolerance for running experiments at all."
+        }
       ],
       "relatedRedFlags": [
         "experiments-are-run-on-core-trust-surfaces-without-explicit-control"
@@ -3009,6 +3279,7 @@
       "aiCanMakeWorseBy": [
         "AI can accelerate platform artifact production without proving adoption quality."
       ],
+      "aiFalseConfidence": "Generated platform docs, templates, and tooling scaffolding make the platform look adopted because the artifacts are polished — when the only thing that scaled was production of the artifacts, not the teams using them.",
       "aiSpecificNotes": "Platform polish is not platform usefulness.",
       "oftenLeadsToFailureModes": [
         "hero-trap",
@@ -3017,6 +3288,20 @@
       "adjacentDecisions": [
         "platform-first-vs-product-first",
         "specialist-teams-vs-cross-functional-teams"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "platform-first-vs-product-first",
+          "distinction": "That decision is about whether a platform should exist at all. This one assumes it does and asks how the people doing platform work should relate to product teams."
+        },
+        {
+          "decision": "specialist-teams-vs-cross-functional-teams",
+          "distinction": "That decision is about team composition inside any unit. This one is specifically about the relationship between platform producers and platform users."
+        },
+        {
+          "decision": "a staffing decision",
+          "distinction": "A staffing decision sets how many people work on platform. This decision sets the ownership model they work under once they are there."
+        }
       ],
       "relatedRedFlags": [
         "platform-success-is-measured-by-output-not-adoption"
@@ -3167,6 +3452,7 @@
       "aiCanMakeWorseBy": [
         "AI may make shallow generalism look stronger than it is, masking where deep expertise still matters."
       ],
+      "aiFalseConfidence": "AI can accelerate handoffs and summaries between specialist teams, making the hand-off cost look lower than it is — creating the illusion of cross-team collaboration when what improved is the paperwork, not the shared context.",
       "aiSpecificNotes": "AI assistance does not remove the need for real specialist judgment in high-risk domains.",
       "oftenLeadsToFailureModes": [
         "hero-trap",
@@ -3176,6 +3462,20 @@
       "adjacentDecisions": [
         "central-platform-team-vs-embedded-enablement",
         "strong-ownership-vs-shared-ownership"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "strong-ownership-vs-shared-ownership",
+          "distinction": "That decision is about who's accountable for an area. This one is about how teams are composed."
+        },
+        {
+          "decision": "central-platform-team-vs-embedded-enablement",
+          "distinction": "That decision is specifically about platform teams' relationship to product teams. This one is about team composition across the org."
+        },
+        {
+          "decision": "a hiring-profile decision",
+          "distinction": "Hiring profiles affect who's available. This decision is how those people are grouped into delivery units."
+        }
       ],
       "relatedRedFlags": [
         "teams-look-independent-but-escalate-to-the-same-few-experts",
@@ -3317,6 +3617,7 @@
       "aiCanMakeWorseBy": [
         "AI can make shared code contribution easier while leaving responsibility unclear."
       ],
+      "aiFalseConfidence": "AI makes shared contribution easier — anyone can generate a viable-looking change to anything — which inflates contribution activity while leaving responsibility for the change unclear.",
       "aiSpecificNotes": "More contributors does not mean more ownership clarity.",
       "oftenLeadsToFailureModes": [
         "ownership-drift",
@@ -3325,6 +3626,20 @@
       "adjacentDecisions": [
         "local-autonomy-vs-central-governance",
         "specialist-teams-vs-cross-functional-teams"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "specialist-teams-vs-cross-functional-teams",
+          "distinction": "That decision is about team composition. This one is about who's accountable for an area regardless of which team touches it."
+        },
+        {
+          "decision": "local-autonomy-vs-central-governance",
+          "distinction": "That decision is about authority across teams. This one is about ownership within the work itself."
+        },
+        {
+          "decision": "a code-review policy decision",
+          "distinction": "Review policy is about quality gates. This decision is about who carries the consequences of the code after it merges."
+        }
       ],
       "relatedRedFlags": [
         "everyone-can-change-it-nobody-truly-owns-it"
@@ -3469,6 +3784,7 @@
       "aiCanMakeWorseBy": [
         "AI can accelerate local divergence by making alternative implementations cheap."
       ],
+      "aiFalseConfidence": "Cheap AI-generated local variants make autonomy feel lower-risk — each team's alternative implementation looks small and well-made, hiding the compounding cost of lost coherence at the org level.",
       "aiSpecificNotes": "Cheap local variation increases the importance of knowing which standards are non-negotiable.",
       "oftenLeadsToFailureModes": [
         "local-optimization",
@@ -3477,6 +3793,20 @@
       "adjacentDecisions": [
         "strong-ownership-vs-shared-ownership",
         "customization-vs-standardization"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "strong-ownership-vs-shared-ownership",
+          "distinction": "That decision is about accountability for an area. This one is about authority to set direction across areas."
+        },
+        {
+          "decision": "customization-vs-standardization",
+          "distinction": "That decision is about product/system variance. This one is about the team authority model that produces or prevents it."
+        },
+        {
+          "decision": "a policy-enforcement decision",
+          "distinction": "Policy enforcement is the mechanism. This decision is the authority model underneath the mechanism."
+        }
       ],
       "relatedRedFlags": [
         "teams-differ-in-critical-behaviors-without-clear-intent"
@@ -3619,6 +3949,7 @@
       "aiCanMakeWorseBy": [
         "AI can generate lots of documentation quickly, increasing the risk of stale but polished memory."
       ],
+      "aiFalseConfidence": "AI makes documents faster to produce, so the org can appear well-documented while the docs are stale, ownerless, and disconnected from real decisions — polished memory that isn't memory.",
       "aiSpecificNotes": "Generated docs are only useful if tied to real decisions and maintained ownership.",
       "oftenLeadsToFailureModes": [
         "hero-trap",
@@ -3627,6 +3958,20 @@
       "adjacentDecisions": [
         "synchronous-collaboration-vs-async-first",
         "strong-ownership-vs-shared-ownership"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "synchronous-collaboration-vs-async-first",
+          "distinction": "That decision is about real-time vs async collaboration. This one is about whether written artifacts or tacit context is the durable carrier of org memory."
+        },
+        {
+          "decision": "strong-ownership-vs-shared-ownership",
+          "distinction": "That decision is about who carries accountability. This one is about which artifact carries organizational memory."
+        },
+        {
+          "decision": "a wiki-tooling choice",
+          "distinction": "Tooling is the substrate. This decision is whether writing-down-first is the coordination mode, regardless of tool."
+        }
       ],
       "relatedRedFlags": [
         "critical-knowledge-lives-in-chat-and-memory",
@@ -3770,6 +4115,7 @@
       "aiCanMakeWorseBy": [
         "AI can make async artifacts easier to produce but may also increase low-signal communication volume."
       ],
+      "aiFalseConfidence": "AI-generated summaries make async communication feel sharper, which can mask that the decision itself was never made — the system polishes the output of alignment without creating alignment.",
       "aiSpecificNotes": "Cheaper summaries do not remove the need for real decision clarity.",
       "oftenLeadsToFailureModes": [
         "ticket-theater",
@@ -3777,6 +4123,20 @@
       ],
       "adjacentDecisions": [
         "documentation-first-vs-tacit-coordination"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "documentation-first-vs-tacit-coordination",
+          "distinction": "That decision is about durable written artifacts. This one is about real-time presence vs deferred artifacts in day-to-day coordination."
+        },
+        {
+          "decision": "a remote-policy decision",
+          "distinction": "Remote policy is about where people work. This decision is about how they coordinate, which is related but distinct."
+        },
+        {
+          "decision": "a meeting-culture initiative",
+          "distinction": "Meeting culture is the manifestation. This decision is the underlying coordination philosophy."
+        }
       ],
       "relatedRedFlags": [
         "team-is-constantly-in-meetings-but-still-unclear",
@@ -3919,6 +4279,7 @@
       "aiCanMakeWorseBy": [
         "AI can generate lots of low-value tests quickly, inflating counts without confidence."
       ],
+      "aiFalseConfidence": "Generated tests compile, pass, and raise coverage numbers — creating the illusion of a tested system when many of those tests don't actually distinguish correct from incorrect behavior.",
       "aiSpecificNotes": "Generated tests are not automatically meaningful tests.",
       "oftenLeadsToFailureModes": [
         "synthetic-velocity"
@@ -3926,6 +4287,20 @@
       "adjacentDecisions": [
         "ci-gate-strictness-vs-developer-throughput",
         "manual-review-depth-vs-automation-dependence"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "ci-gate-strictness-vs-developer-throughput",
+          "distinction": "That decision is about how strict the CI gate is. This one is about which kinds of tests make up what's behind the gate."
+        },
+        {
+          "decision": "manual-review-depth-vs-automation-dependence",
+          "distinction": "That decision is about how much judgment to keep manual. This one is about which shape of automated coverage to build."
+        },
+        {
+          "decision": "a coverage-target decision",
+          "distinction": "A coverage target is a percentage. This decision is about the distribution of test types that produces that percentage — and whether the result actually signals confidence."
+        }
       ],
       "relatedRedFlags": [
         "test-count-is-high-but-confidence-is-low",
@@ -4069,6 +4444,7 @@
       "aiCanMakeWorseBy": [
         "AI can increase change volume, which makes weak gates riskier and bad gates more painful."
       ],
+      "aiFalseConfidence": "AI raises change volume without any corresponding increase in gate quality — a gate that passes 95% of AI-generated PRs cleanly can look effective while catching less than it used to relative to the flow.",
       "aiSpecificNotes": "Higher output volume increases need for smart gating, not blanket friction.",
       "oftenLeadsToFailureModes": [
         "synthetic-velocity",
@@ -4077,6 +4453,20 @@
       "adjacentDecisions": [
         "test-pyramid-vs-heavy-end-to-end",
         "speed-vs-robustness"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "test-pyramid-vs-heavy-end-to-end",
+          "distinction": "That decision is about the shape of automated tests. This one is about how strictly those tests are enforced as gates."
+        },
+        {
+          "decision": "manual-review-depth-vs-automation-dependence",
+          "distinction": "That decision is about where confidence comes from. This one is about how strictly the automated half is applied."
+        },
+        {
+          "decision": "speed-vs-robustness",
+          "distinction": "That decision is about feature-level hardening timing. This one is about the specific friction developers feel on every change."
+        }
       ],
       "relatedRedFlags": [
         "developers-distrust-the-pipeline",
@@ -4220,6 +4610,7 @@
       "aiCanMakeWorseBy": [
         "AI can generate more flag-dependent code quickly, worsening toggle debt."
       ],
+      "aiFalseConfidence": "AI generates flag-dependent code easily, so a feature-flag rollout architecture looks lightweight while toggle debt accumulates silently — each flag generated cleanly, the fleet of flags a growing runtime complexity.",
       "aiSpecificNotes": "Cheap branching logic becomes expensive runtime complexity.",
       "oftenLeadsToFailureModes": [
         "ownership-drift"
@@ -4227,6 +4618,20 @@
       "adjacentDecisions": [
         "one-way-door-vs-two-way-door-rollout",
         "experimentation-vs-operational-stability"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "one-way-door-vs-two-way-door-rollout",
+          "distinction": "That decision is about reversibility of a change. This one is about the mechanism used to stage rollouts."
+        },
+        {
+          "decision": "experimentation-vs-operational-stability",
+          "distinction": "That decision is about system change willingness. This one is about release-time control structure."
+        },
+        {
+          "decision": "a deployment-strategy decision",
+          "distinction": "Blue/green vs canary is about deployment shape. This decision is about how features are exposed once deployed."
+        }
       ],
       "relatedRedFlags": [
         "nobody-knows-which-flags-are-still-live",
@@ -4372,6 +4777,7 @@
       "aiCanMakeWorseBy": [
         "AI can accelerate interface changes, increasing risk of silent incompatibility if governance is weak."
       ],
+      "aiFalseConfidence": "AI accelerates interface changes on both sides, making breaking changes feel lower-cost because the consumer migrations can be generated — creating the illusion that compatibility work has been done when it's only been sketched.",
       "aiSpecificNotes": "Faster code changes increase compatibility governance need.",
       "oftenLeadsToFailureModes": [
         "stakeholder-capture"
@@ -4379,6 +4785,20 @@
       "adjacentDecisions": [
         "customization-vs-standardization",
         "rest-vs-graphql"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "rest-vs-graphql",
+          "distinction": "That decision is about API style. This one is about evolution policy within whichever style you're in."
+        },
+        {
+          "decision": "customization-vs-standardization",
+          "distinction": "That decision is about product variance. This one is about interface stability over time."
+        },
+        {
+          "decision": "a versioning-policy decision",
+          "distinction": "Versioning policy is the mechanism. This decision is the stance the policy implements."
+        }
       ],
       "relatedRedFlags": [
         "consumers-discover-breakage-before-producers-announce-it"
@@ -4518,6 +4938,7 @@
       "aiCanMakeWorseBy": [
         "AI can cheaply add configuration surfaces, inflating optionality without real demand."
       ],
+      "aiFalseConfidence": "AI can cheaply add configuration surfaces, so flexibility appears low-cost — each new option compiles cleanly and looks well-scoped, hiding the aggregate decision fatigue and surface-area cost users and operators absorb.",
       "aiSpecificNotes": "Generated options are still product complexity.",
       "oftenLeadsToFailureModes": [
         "abstraction-addiction"
@@ -4525,6 +4946,20 @@
       "adjacentDecisions": [
         "generic-solution-vs-case-specific-solution",
         "customization-vs-standardization"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "generic-solution-vs-case-specific-solution",
+          "distinction": "That decision is about whether a solution covers multiple cases. This one is about how much the solution's user can tune it within one case."
+        },
+        {
+          "decision": "customization-vs-standardization",
+          "distinction": "That decision is about variance across instances. This one is about configurability within one instance."
+        },
+        {
+          "decision": "a defaults-design decision",
+          "distinction": "Good defaults are the implementation. This decision is the philosophy that determines whether defaults are strong or just present."
+        }
       ],
       "relatedRedFlags": [
         "many-options-exist-but-most-are-rarely-used"
@@ -4668,6 +5103,7 @@
       "aiCanMakeWorseBy": [
         "AI increases output volume, making weak human review and weak automation both more dangerous."
       ],
+      "aiFalseConfidence": "AI-assisted review suggestions look thoughtful because they include explanations and cite policy — creating the illusion of reviewed work when the reviewer approved a generated summary, not the change itself.",
       "aiSpecificNotes": "AI-assisted review is not the same as real review depth.",
       "oftenLeadsToFailureModes": [
         "synthetic-velocity",
@@ -4676,6 +5112,20 @@
       "adjacentDecisions": [
         "test-pyramid-vs-heavy-end-to-end",
         "ai-assisted-development-vs-manual-only-development"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "test-pyramid-vs-heavy-end-to-end",
+          "distinction": "That decision is about automated test shape. This one is about whether automation or human judgment is the primary source of confidence."
+        },
+        {
+          "decision": "ai-assisted-development-vs-manual-only-development",
+          "distinction": "That decision is about development. This one is about what happens after development — specifically who or what verifies the outcome."
+        },
+        {
+          "decision": "ci-gate-strictness-vs-developer-throughput",
+          "distinction": "That decision is about the gate's strictness. This one is about whether the gate relies on humans or machines."
+        }
       ],
       "relatedRedFlags": [
         "reviews-approve-too-much-too-fast",
@@ -4829,6 +5279,7 @@
       "aiCanMakeWorseBy": [
         "AI-native by definition: it can accelerate both leverage and error propagation."
       ],
+      "aiFalseConfidence": "The AI-assisted path produces code that compiles and passes surface checks regardless of whether the author understands what they shipped — the safety question 'do we still know what we wrote?' is invisible at the moment of shipping.",
       "aiSpecificNotes": "The unit of safety is not whether AI was used; it is whether understanding and verification are still sufficient.",
       "oftenLeadsToFailureModes": [
         "synthetic-velocity",
@@ -4837,6 +5288,20 @@
       "adjacentDecisions": [
         "manual-review-depth-vs-automation-dependence",
         "fast-ai-adoption-vs-governance-first"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "manual-review-depth-vs-automation-dependence",
+          "distinction": "That decision is about verification. This one is about the authoring phase itself."
+        },
+        {
+          "decision": "fast-ai-adoption-vs-governance-first",
+          "distinction": "That decision is about org-level AI policy. This one is about the engineer-level workflow within whatever policy is in place."
+        },
+        {
+          "decision": "broad-ai-enablement-vs-restricted-high-trust-use",
+          "distinction": "That decision is about who gets access. This one is about whether any given engineer uses AI in their day-to-day work."
+        }
       ],
       "relatedRedFlags": [
         "more-output-less-certainty",
@@ -4986,6 +5451,7 @@
       "aiCanMakeWorseBy": [
         "AI hype can distort both directions: APIs seem magically easy, self-hosting seems strategically superior."
       ],
+      "aiFalseConfidence": "APIs look strategically fragile and self-hosting looks strategically strong regardless of the actual workload — the narrative is loud on both sides and can turn an infrastructure decision into an identity commitment.",
       "aiSpecificNotes": "Do not turn infrastructure ownership into identity.",
       "oftenLeadsToFailureModes": [
         "silent-model-drift",
@@ -4994,6 +5460,20 @@
       "adjacentDecisions": [
         "rag-vs-fine-tuning",
         "fast-ai-adoption-vs-governance-first"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "rag-vs-fine-tuning",
+          "distinction": "That decision is about how knowledge gets to the model. This one is about where the model runs."
+        },
+        {
+          "decision": "fast-ai-adoption-vs-governance-first",
+          "distinction": "That decision is about org readiness. This one is about infrastructure shape, which may or may not be ready for either path."
+        },
+        {
+          "decision": "a vendor-selection decision",
+          "distinction": "Picking an API vendor is a buying choice. This decision is whether you're in the buy lane at all for the model itself."
+        }
       ],
       "relatedRedFlags": [
         "provider-dependence-is-real-but-unacknowledged",
@@ -5145,6 +5625,7 @@
       "aiCanMakeWorseBy": [
         "This is an AI-native decision; hype around both options distorts judgment fast."
       ],
+      "aiFalseConfidence": "Outputs from both options read as fluent and confident regardless of whether retrieval surfaced the right sources or the model learned the right behavior — creating the illusion of a working system long before grounding and behavior have actually been verified.",
       "aiSpecificNotes": "Do not use fine-tuning to hide grounding problems, and do not use RAG to solve behavior problems.",
       "oftenLeadsToFailureModes": [
         "rag-without-ground-truth",
@@ -5153,6 +5634,20 @@
       "adjacentDecisions": [
         "model-api-vs-self-hosted-model",
         "synthetic-evaluation-vs-real-world-evaluation"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "model-api-vs-self-hosted-model",
+          "distinction": "That decision is about where the model runs. This one is about how to shape the knowledge the model brings to the task."
+        },
+        {
+          "decision": "synthetic-evaluation-vs-real-world-evaluation",
+          "distinction": "That decision is about how to verify the answer. This one is the architectural choice whose quality that evaluation is trying to measure."
+        },
+        {
+          "decision": "a prompt-engineering decision",
+          "distinction": "Prompt engineering is how you ask a model for an answer. RAG vs fine-tuning is how the relevant knowledge gets to the model in the first place."
+        }
       ],
       "relatedRedFlags": [
         "sources-are-cited-but-not-trusted",
@@ -5296,6 +5791,7 @@
       "aiCanMakeWorseBy": [
         "Teams can overfit prompts quickly and mistake local improvements for system quality."
       ],
+      "aiFalseConfidence": "Incremental prompt improvements produce visible local wins on the eval you happened to run, creating the illusion of system-level progress — when what actually changed was a local fit, not a durable capability.",
       "aiSpecificNotes": "Prompt quality cannot compensate indefinitely for missing system structure.",
       "oftenLeadsToFailureModes": [
         "prompt-ops-chaos"
@@ -5303,6 +5799,20 @@
       "adjacentDecisions": [
         "rag-vs-fine-tuning",
         "human-in-the-loop-vs-full-automation"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "rag-vs-fine-tuning",
+          "distinction": "That decision is about how the model gets domain knowledge. This one is about where quality is engineered — prompts or orchestration."
+        },
+        {
+          "decision": "human-in-the-loop-vs-full-automation",
+          "distinction": "That decision is about workflow autonomy. This one is about what carries the workflow's quality."
+        },
+        {
+          "decision": "a prompt-engineering initiative",
+          "distinction": "Prompt engineering is an activity. This decision is whether that activity is the right load-bearing investment."
+        }
       ],
       "relatedRedFlags": [
         "prompts-keep-growing-but-quality-remains-unstable"
@@ -5448,6 +5958,7 @@
       "aiCanMakeWorseBy": [
         "AI systems can appear more capable than they are, pushing premature automation."
       ],
+      "aiFalseConfidence": "A system looks capable because it produces fluent, correct-shaped outputs on the happy path — creating pressure toward full automation long before the system has been evaluated on the cases where human judgment actually matters.",
       "aiSpecificNotes": "Human presence is only valuable if the workflow preserves real judgment.",
       "oftenLeadsToFailureModes": [
         "benchmark-mirage",
@@ -5456,6 +5967,20 @@
       "adjacentDecisions": [
         "synthetic-evaluation-vs-real-world-evaluation",
         "fast-ai-adoption-vs-governance-first"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "synthetic-evaluation-vs-real-world-evaluation",
+          "distinction": "That decision is about how to evaluate model quality. This one is about whether the workflow relies on human oversight at runtime."
+        },
+        {
+          "decision": "fast-ai-adoption-vs-governance-first",
+          "distinction": "That decision is about org-level pacing. This one is about specific workflow risk posture."
+        },
+        {
+          "decision": "a UX-copilot decision",
+          "distinction": "A copilot is a UI pattern. This decision is whether authority to act sits with the human or the system."
+        }
       ],
       "relatedRedFlags": [
         "humans-approve-too-much-too-quickly",
@@ -5602,6 +6127,7 @@
       "aiCanMakeWorseBy": [
         "AI hype inflates pressure toward both reckless speed and performative caution."
       ],
+      "aiFalseConfidence": "Early visible wins from broad AI use — faster PRs, polished docs, cleaner emails — create the impression of institutional leverage and make governance feel like a drag, hiding the variance in how much of that output is actually understood.",
       "aiSpecificNotes": "Governance must be proportionate, not theatrical.",
       "oftenLeadsToFailureModes": [
         "synthetic-velocity",
@@ -5610,6 +6136,20 @@
       "adjacentDecisions": [
         "broad-ai-enablement-vs-restricted-high-trust-use",
         "human-in-the-loop-vs-full-automation"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "broad-ai-enablement-vs-restricted-high-trust-use",
+          "distinction": "That decision is about who has access. This one is about the timing of adoption relative to controls."
+        },
+        {
+          "decision": "human-in-the-loop-vs-full-automation",
+          "distinction": "That decision is workflow-specific. This one is org-wide pacing."
+        },
+        {
+          "decision": "an AI-policy draft",
+          "distinction": "Policy is the artifact. This decision is the stance the policy encodes."
+        }
       ],
       "relatedRedFlags": [
         "teams-use-unapproved-tools-because-official-path-is-too-slow",
@@ -5755,6 +6295,7 @@
       "aiCanMakeWorseBy": [
         "AI spread multiplies both leverage and inconsistency quickly."
       ],
+      "aiFalseConfidence": "A broad enablement rollout looks successful by adoption metrics — logins, prompts sent, features used — while inconsistent output quality and uneven review rigor build up unseen across the long tail of use cases.",
       "aiSpecificNotes": "Access strategy is not enough; usage quality strategy matters more.",
       "oftenLeadsToFailureModes": [
         "synthetic-velocity",
@@ -5763,6 +6304,20 @@
       "adjacentDecisions": [
         "fast-ai-adoption-vs-governance-first",
         "ai-assisted-development-vs-manual-only-development"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "fast-ai-adoption-vs-governance-first",
+          "distinction": "That decision is about timing. This one is about scope of access."
+        },
+        {
+          "decision": "ai-assisted-development-vs-manual-only-development",
+          "distinction": "That decision is per-engineer workflow. This one is about org-level access shape."
+        },
+        {
+          "decision": "a training-and-enablement decision",
+          "distinction": "Training is the supporting investment. This decision is whether access is broad in the first place."
+        }
       ],
       "relatedRedFlags": [
         "same-tool-yields-wildly-different-quality-across-teams"
@@ -5904,6 +6459,7 @@
       "aiCanMakeWorseBy": [
         "AI systems are especially vulnerable to proxy overfitting."
       ],
+      "aiFalseConfidence": "Synthetic evals produce crisp repeatable numbers, so the system looks measurable — creating the illusion of progress when the proxy may have decoupled from the thing users actually care about.",
       "aiSpecificNotes": "A repeatable proxy can still be the wrong proxy.",
       "oftenLeadsToFailureModes": [
         "benchmark-mirage",
@@ -5912,6 +6468,20 @@
       "adjacentDecisions": [
         "rag-vs-fine-tuning",
         "human-in-the-loop-vs-full-automation"
+      ],
+      "easilyConfusedWith": [
+        {
+          "decision": "rag-vs-fine-tuning",
+          "distinction": "That decision is the architectural choice being evaluated. This one is how that choice is evaluated."
+        },
+        {
+          "decision": "human-in-the-loop-vs-full-automation",
+          "distinction": "That decision is about workflow trust. This one is about how the workflow's quality is measured."
+        },
+        {
+          "decision": "a benchmark-choice decision",
+          "distinction": "Benchmark choice sits inside synthetic eval. This decision is whether synthetic eval is the right trust source at all."
+        }
       ],
       "relatedRedFlags": [
         "demos-and-benchmarks-look-good-users-do-not-agree",

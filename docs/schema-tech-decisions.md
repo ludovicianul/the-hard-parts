@@ -177,10 +177,14 @@ Each Tech Decision entry uses this structure:
 
   "aiCanHelpWith": [],
   "aiCanMakeWorseBy": [],
+  "aiFalseConfidence": "",
   "aiSpecificNotes": "",
 
   "oftenLeadsToFailureModes": [],
   "adjacentDecisions": [],
+  "easilyConfusedWith": [
+    { "decision": "", "distinction": "" }
+  ],
   "relatedRedFlags": [],
   "relatedPlaybooks": [],
 
@@ -241,9 +245,11 @@ These fields are technically optional but should usually exist in strong entries
 * `timeHorizonNotes`
 * `aiCanHelpWith`
 * `aiCanMakeWorseBy`
+* `aiFalseConfidence`
 * `aiSpecificNotes`
 * `oftenLeadsToFailureModes`
 * `adjacentDecisions`
+* `easilyConfusedWith`
 * `relatedRedFlags`
 * `relatedPlaybooks`
 * `frequency`
@@ -676,6 +682,28 @@ Array of ways AI can improve the decision process or the implementation of eithe
 
 Array of ways AI can distort the decision or make the wrong option feel easier.
 
+### `aiFalseConfidence`
+
+A short (one- to two-sentence) statement of the **specific false confidence** AI creates in this particular decision.
+
+Distinct from its sibling AI fields:
+
+* `aiCanMakeWorseBy` — a list of mechanisms AI uses to distort this call
+* `aiSpecificNotes` — the editorial synthesis / takeaway
+* `aiFalseConfidence` — the specific **illusion of correctness, coverage, or progress** AI produces in the shape of this decision
+
+This field exists to keep AI commentary **specific per entry**, not generic. Every AI-aware Tech Decision produces a particular kind of false confidence (generated architecture diagrams that look considered, generated comparison matrices that look like evaluations, generated tests that look like coverage). Naming it here keeps the AI section honest.
+
+Example:
+
+```json
+"aiFalseConfidence": "Generated service-boundary proposals read as designed because they use standard patterns, creating the illusion that domain boundaries have been reasoned about when only code shape has."
+```
+
+### Rendering
+
+Renders as a **red callout band** in the AI section, between the two AI-effect boxed lists (`aiCanHelpWith` / `aiCanMakeWorseBy`) and the blue `aiSpecificNotes` synthesis. Parallels the rendering and role of the same-named field on Failure Modes.
+
 ### `aiSpecificNotes`
 
 A short synthesis string explaining how AI changes this decision surface in a meaningful way.
@@ -702,13 +730,48 @@ Example:
 
 ### `adjacentDecisions`
 
-Array of slugs of other Tech Decisions that are conceptually adjacent and often confused, entangled, or co-decided. This is the Tech-Decision-to-Tech-Decision lateral link. There is no separate `relatedTechDecisions` field.
+Array of slugs of other Tech Decisions that are conceptually adjacent and often entangled, or co-decided. This is the Tech-Decision-to-Tech-Decision lateral link. There is no separate `relatedTechDecisions` field.
 
 Example:
 
 ```json
 "adjacentDecisions": ["modular-monolith-vs-distributed-services", "shared-database-vs-service-owned-data"]
 ```
+
+### `easilyConfusedWith`
+
+An array of structured items that help a reader distinguish this decision from nearby decisions it is often **mistaken for**.
+
+Each item has two fields:
+
+* `decision` — the nearby decision. Preferably a Tech Decision slug where a named entry exists; otherwise a short human phrase (e.g. `"a framework-choice decision"`).
+* `distinction` — one concise sentence naming the specific difference.
+
+Example:
+
+```json
+"easilyConfusedWith": [
+  {
+    "decision": "modular-monolith-vs-distributed-services",
+    "distinction": "That decision is about how to structure code inside one deployment. This one is about whether to split deployments at all."
+  },
+  {
+    "decision": "a framework-choice decision",
+    "distinction": "Framework choices are about a technology stack within one option. This decision is about which of the two deployment shapes to take first."
+  }
+]
+```
+
+### Rules
+
+* Keep it short — 2 to 4 items.
+* Distinctions should be one sentence, not a paragraph.
+* This field is **not** a generic "related" link — use `adjacentDecisions`, `relatedRedFlags`, `relatedPlaybooks`, or `oftenLeadsToFailureModes` for those.
+* `easilyConfusedWith` is specifically about the **recognition boundary**: "I thought I was making decision X — am I sure?"
+
+### Rendering
+
+Renders at the top of the Relationships section as a dedicated sub-panel titled **"Easy to confuse with"**. Each row shows the decision name (with a `TD-XX` pill when it resolves to a real Tech Decision slug, or a muted "Adjacent concept" eyebrow for free phrases) on the left, and the distinction prose on the right. Mirrors the rendering of Failure Modes' `easilyConfusedWith` so readers recognize the pattern across categories.
 
 ### `relatedRedFlags`
 

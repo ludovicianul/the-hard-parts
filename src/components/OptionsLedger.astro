@@ -26,10 +26,30 @@
  *     line up horizontally at the same y-offset on both sides — structural
  *     parallelism is the whole point
  *
- * HIDDEN COSTS gets a distinctive yellow band treatment because it is the
- * most load-bearing facet of a Tech Decision (the site's editorial voice
- * treats hidden costs as the thing novices miss most), and because the
- * source schema calls it out with its own field name distinct from `costs`.
+ * Two facets get distinctive band treatment because they carry the
+ * editorial weight the other facets don't:
+ *
+ *   · HIDDEN COSTS — yellow band. The site's editorial voice treats
+ *     hidden costs as the thing novices miss most, and the schema
+ *     separates it from `costs` for exactly this reason.
+ *   · FAILURE MODES WHEN MISUSED — red band. Paired as the other
+ *     "danger" axis of each option: hidden costs is what the option
+ *     secretly charges you; failure modes when misused is how the
+ *     option breaks when applied in the wrong context. Visually
+ *     anchoring both makes the two hazard facets scannable as a pair.
+ *
+ * Facet order is deliberate:
+ *   1. Best when          — where the option fits (conditions)
+ *   2. Real-world fits    — concrete instances of that fit
+ *   3. Strengths          — what the option does well
+ *   4. Costs              — what you accept up front
+ *   5. Hidden costs       — what you'll accept later (yellow band)
+ *   6. Failure modes when misused — how it breaks off-context (red band)
+ *
+ * Rationale: bestWhen + realWorldFits describe fit; strengths + costs
+ * describe normal economics; the two banded facets describe hazards.
+ * Reading top-to-bottom a reader moves from "where this applies" to
+ * "what it costs" to "where it breaks".
  */
 
 import LabeledList from "./LabeledList.astro";
@@ -56,15 +76,18 @@ const { optionA, optionB } = Astro.props;
 // out of alignment when a facet is added or renamed. Facets with no content
 // on a given option render nothing (LabeledList handles empty arrays).
 type FacetKey = Exclude<keyof TechDecisionOption, "name">;
-const facets: Array<{ key: FacetKey; label: string; caption?: string; highlight?: boolean }> = [
+type FacetBand = "none" | "yellow" | "red";
+const facets: Array<{ key: FacetKey; label: string; caption?: string; band?: FacetBand }> = [
   { key: "bestWhen",                 label: "Best when",                  caption: "Conditions where this option is a natural fit." },
+  { key: "realWorldFits",            label: "Real-world fits",            caption: "Concrete environments where this option has worked." },
   { key: "strengths",                label: "Strengths",                  caption: "What this option does well on its own terms." },
-  { key: "costs",                    label: "Costs",                      caption: "What you accept to get those strengths." },
+  { key: "costs",                    label: "Costs",                      caption: "What you accept up front to get those strengths." },
   { key: "hiddenCosts",              label: "Hidden costs",
     caption: "Costs that surface later than expected — the main thing novices miss.",
-    highlight: true },
-  { key: "failureModesWhenMisused",  label: "Failure modes when misused", caption: "How this option breaks when applied to the wrong context." },
-  { key: "realWorldFits",            label: "Real-world fits",            caption: "Concrete environments where this option has worked." },
+    band: "yellow" },
+  { key: "failureModesWhenMisused",  label: "Failure modes when misused",
+    caption: "How this option breaks when applied to the wrong context.",
+    band: "red" },
 ];
 ---
 <section class="td-ledger" aria-label="Options on the table">
@@ -88,10 +111,11 @@ const facets: Array<{ key: FacetKey; label: string; caption?: string; highlight?
             const hasItems =
               Array.isArray(items) &&
               items.filter((s): s is string => typeof s === "string" && s.trim().length > 0).length > 0;
+            const band = f.band ?? "none";
             return (
               <div class:list={[
                 "td-ledger__facet",
-                { "td-ledger__facet--highlight": f.highlight },
+                `td-ledger__facet--band-${band}`,
                 { "td-ledger__facet--empty": !hasItems },
               ]}>
                 {hasItems ? (
@@ -228,21 +252,49 @@ const facets: Array<{ key: FacetKey; label: string; caption?: string; highlight?
     }
   }
 
-  /* Individual facet wrapper — most facets are plain; HIDDEN COSTS gets
-     a yellow band treatment because the source schema and the editorial
-     voice both single it out as the most load-bearing facet. */
+  /* Individual facet wrapper — most facets are plain; HIDDEN COSTS and
+     FAILURE MODES WHEN MISUSED each get a band treatment because the
+     editorial voice singles them out as the two hazard axes of each
+     option. Both bands break out of the column's horizontal padding
+     (via negative margin) so they rule across the full column width
+     and read as a single horizontal band spanning both A and B
+     columns (the subgrid keeps them on the same row). */
   .td-ledger__facet { min-width: 0; }
-  .td-ledger__facet--highlight {
+  .td-ledger__facet--band-yellow,
+  .td-ledger__facet--band-red {
     margin: 0 calc(-1 * var(--space-5));
     padding: var(--space-4) var(--space-5);
-    background: var(--color-yellow);
-    color: var(--color-yellow-ink);
     border-top: 3px solid var(--color-frame);
     border-bottom: 3px solid var(--color-frame);
   }
-  /* When the facet is highlighted, the LabeledList's bullets and label
-     should sit on the yellow background in black ink (already the case
-     via currentColor fallbacks). No additional overrides needed. */
+  /* Yellow band = HIDDEN COSTS. Black ink on yellow reads as highlight.
+     The LabeledList inside inherits color via currentColor, so bullets
+     and body stay in the same ink tone as the background. */
+  .td-ledger__facet--band-yellow {
+    background: var(--color-yellow);
+    color: var(--color-yellow-ink);
+  }
+  /* Red band = FAILURE MODES WHEN MISUSED. White ink on red reads as
+     warning — parallels the warning treatment used for recovery-trap
+     cells on FM and the red CalloutBand variant elsewhere on the site.
+     The LabeledList's square bullets pick up the surface color via
+     the currentColor cascade in LabeledList.astro; we override the
+     bullet color here explicitly so a reader perceives them as on-red
+     rather than as the default black. */
+  .td-ledger__facet--band-red {
+    background: var(--color-red);
+    color: var(--color-surface);
+  }
+  .td-ledger__facet--band-red :global(.nsb-labeled-list__label) {
+    color: var(--color-yellow);
+  }
+  .td-ledger__facet--band-red :global(.nsb-labeled-list__caption),
+  .td-ledger__facet--band-red :global(.nsb-labeled-list__item) {
+    color: var(--color-surface);
+  }
+  .td-ledger__facet--band-red :global(.nsb-labeled-list__item::before) {
+    background: var(--color-surface);
+  }
 
   /* Empty-facet placeholder — keeps the two columns' facets row-aligned
      even when one option has nothing recorded for a given facet. */
