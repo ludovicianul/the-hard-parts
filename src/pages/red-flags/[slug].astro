@@ -190,23 +190,31 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
       "quickly-did-I-land-on-the-right-signal" fields ABOVE the
       SignalQuote hero so a reader calibrates context before reading
       the quoted observation:
-        · Where you see this     — `commonContexts`
-        · Time horizon           — `timeHorizon`
-        · Often mistaken for     — first of `falseFriends` (full list
-                                   still has its own section below)
-        · Best placed to act     — `ownerBestPlacedToAct` (the "who
-                                   actually moves on it" role; the
-                                   "first-noticed-by" role is already
-                                   on the MetaRail above, so we don't
-                                   duplicate it here).
+        · Where you see this        — `commonContexts`
+        · Not necessarily a problem — first of `notNecessarilyAProblemWhen`
+                                      (calibration gate that PREVENTS over-
+                                      reading the signal; full list still
+                                      has its own section below)
+        · Often mistaken for        — first of `falseFriends` (full list
+                                      still has its own section below)
+        · Time horizon              — `timeHorizon`
+        · Best placed to act        — `ownerBestPlacedToAct` (the "who
+                                      actually moves on it" role; the
+                                      "first-noticed-by" role is already
+                                      on the MetaRail above, so we don't
+                                      duplicate it here).
+      Row order is deliberate: context → calibration → disambiguation →
+      urgency → escalation pointer. A reader lands on the page and gets
+      the "don't overreact" cue before any of the primary reading.
       Empty rows drop out silently via the component. */}
   <AtAGlance
     refCode={refCode}
     rows={[
-      { label: "Where you see this", value: entry.commonContexts },
-      { label: "Time horizon",       value: entry.timeHorizon },
-      { label: "Often mistaken for", value: entry.falseFriends && entry.falseFriends.length > 0 ? entry.falseFriends[0] : undefined },
-      { label: "Best placed to act", value: entry.ownerBestPlacedToAct },
+      { label: "Where you see this",         value: entry.commonContexts },
+      { label: "Not necessarily a problem when", value: entry.notNecessarilyAProblemWhen && entry.notNecessarilyAProblemWhen.length > 0 ? entry.notNecessarilyAProblemWhen[0] : undefined },
+      { label: "Often mistaken for",         value: entry.falseFriends && entry.falseFriends.length > 0 ? entry.falseFriends[0] : undefined },
+      { label: "Time horizon",               value: entry.timeHorizon },
+      { label: "Best placed to act",         value: entry.ownerBestPlacedToAct },
     ]}
   />
 
@@ -404,7 +412,9 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
           </header>
           <ul class="rf-falsefriends__list">
             {entry.falseFriends!.map((f) => (
-              <li class="rf-falsefriends__item">{f}</li>
+              <li class="rf-falsefriends__item">
+                <span class="rf-falsefriends__belief">{f}</span>
+              </li>
             ))}
           </ul>
         </section>
@@ -484,6 +494,9 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
             <header class="rf-context-panel__head">Time horizon</header>
             <div class="rf-context-panel__body">
               <p class="rf-context-panel__horizon">{entry.timeHorizon}</p>
+              <p class="rf-context-panel__horizon-note">
+                How much runway there usually is before the signal hardens into the underlying pattern.
+              </p>
             </div>
           </section>
         )}
@@ -822,6 +835,27 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     color: var(--accent-rf);
     font-size: 1.1em;
   }
+  /* The belief text itself renders as a quoted misread — serif italic
+     wrapped in typographic curly quotes — so each item reads as a
+     BELIEF a reader might already hold, not a neutral category label.
+     Pairs with the crimson ≠ glyph: the glyph denies the equivalence,
+     the quotes mark the voice. */
+  .rf-falsefriends__belief {
+    font-style: italic;
+    color: var(--color-ink-dim);
+  }
+  .rf-falsefriends__belief::before {
+    content: "\201C";
+    margin-right: 0.05em;
+    color: var(--color-ink-dim);
+    font-style: normal;
+  }
+  .rf-falsefriends__belief::after {
+    content: "\201D";
+    margin-left: 0.05em;
+    color: var(--color-ink-dim);
+    font-style: normal;
+  }
 
   .rf-antipatterns { margin: var(--space-5) 0; }
 
@@ -862,12 +896,28 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     padding: var(--space-4) var(--space-5);
     flex: 1;
   }
+  /* Time horizon reads as an operational STATUS, not body prose —
+     bold uppercase sans with tight tracking, sitting visually like a
+     short status stamp inside its panel. `timeHorizon` values are
+     short phrases ("medium-term", "urgent", "ongoing") and they want
+     to be read as a cue, not as a sentence. */
   .rf-context-panel__horizon {
     margin: 0;
-    font-family: var(--font-serif);
-    font-size: var(--text-base);
-    line-height: var(--leading-snug);
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: 1.35rem;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    line-height: var(--leading-tight);
     color: var(--color-ink);
+  }
+  .rf-context-panel__horizon-note {
+    margin: var(--space-2) 0 0 0;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 0.8rem;
+    line-height: var(--leading-snug);
+    color: var(--color-ink-dim);
   }
 
   /* Section 8 (AI effects) and Section 9 (Connected signals) both use
