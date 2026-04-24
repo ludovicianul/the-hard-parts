@@ -158,23 +158,36 @@ gradient cards. Category identity is expressed via a single CSS variable
 
 ## Deployment
 
-Target: **Cloudflare Pages, Free plan**.
+Target: **Cloudflare Workers (Workers Static Assets), Free plan**.
+
+This site deploys as a static-only Worker — no Worker script, no
+runtime compute. Cloudflare serves the pre-built `dist/` directory
+directly from its edge. Configuration lives in `wrangler.jsonc` at
+the repository root.
 
 1. Push this repository to GitHub.
-2. In Cloudflare Pages, connect the repo.
+2. In the Cloudflare dashboard: **Workers & Pages → Create →
+   Import a repository**, pick this repo.
 3. Build command: `npm run build`
-4. Output directory: `dist`
-5. No Pages Functions required.
+4. Deploy command: `npx wrangler deploy`
+5. Click **Deploy**.
 
-The output is a plain static site and can also be served from any static
-host (Netlify, GitHub Pages, etc.) without changes.
+The first deploy reads `wrangler.jsonc`, uploads `dist/` as static
+assets, and hands you a `*.workers.dev` preview URL. Point
+`thehardparts.dev` at the Worker from the Cloudflare DNS tab when
+you're ready.
+
+The same `dist/` output can also be served from any other static host
+(classic Cloudflare Pages, Netlify, GitHub Pages, plain S3) without
+code changes — `wrangler.jsonc` is only consulted by Wrangler.
 
 ### Environment variables
 
 Copy `.env.example` to `.env` for local dev, or set the same variables
-in the Cloudflare Pages project Build settings for production. All
-variables are optional — the site builds and runs fine without any of
-them. The only one currently defined:
+in the Worker's **Build** environment (see "Cloudflare Web Analytics"
+below for exact navigation). All variables are optional — the site
+builds and runs fine without any of them. The only one currently
+defined:
 
 | Variable | Purpose |
 | --- | --- |
@@ -186,18 +199,26 @@ Privacy-friendly, cookie-less, free on every Cloudflare account. Two
 ways to wire it up; pick one (not both — doubling up loads the beacon
 twice):
 
-**Option A (recommended): automatic injection via Pages.**
-In the Cloudflare dashboard: Pages → your project → Settings →
-Analytics → **Enable Web Analytics**. Cloudflare injects the beacon
-during edge delivery; no code change required, and no env var
-required. Leave `PUBLIC_CF_BEACON_TOKEN` unset.
+**Option A (recommended): automatic injection via the dashboard.**
+In the Cloudflare dashboard: **Analytics & Logs → Web Analytics →
+Add a site → `thehardparts.dev`**. Cloudflare will inject the beacon
+at the edge on your chosen hostname, no code change required. Leave
+`PUBLIC_CF_BEACON_TOKEN` unset.
 
 **Option B: explicit token in the build.**
-In the Cloudflare dashboard: Analytics & Logs → Web Analytics → Add a
-site → copy the beacon token. Then in Pages → your project → Settings
-→ Environment variables → add `PUBLIC_CF_BEACON_TOKEN` with that
-value for the Production environment. Redeploy. `BaseLayout.astro`
-will emit the beacon on every page.
+The site reads `PUBLIC_CF_BEACON_TOKEN` at **build time** via
+`import.meta.env` — so it must be set as a **build** variable, not a
+runtime Worker secret (the "Encrypt" toggle would make it invisible
+to the build process). Navigation:
+
+1. Cloudflare dashboard → **Analytics & Logs → Web Analytics → Add a
+   site** → copy the beacon token.
+2. Cloudflare dashboard → **Workers & Pages → your Worker →
+   Settings → Build → Variables and secrets** → add
+   `PUBLIC_CF_BEACON_TOKEN` = *&lt;beacon token&gt;*, **unencrypted**.
+3. Trigger a new deploy (push a commit, or use "Retry deployment" in
+   the Deployments tab). `BaseLayout.astro` will emit the beacon on
+   every page.
 
 ### Open Graph / social card
 

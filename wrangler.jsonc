@@ -1,0 +1,76 @@
+/**
+ * Cloudflare Workers config for thehardparts.dev.
+ *
+ * Deploy model:
+ *   Workers Static Assets. No Worker script ("main" is intentionally
+ *   omitted) — Cloudflare serves the pre-built `dist/` directory
+ *   directly from its edge, the same way Pages does. This keeps the
+ *   site 100% static: no runtime compute, no KV, no Durable Objects.
+ *
+ * Build flow (Cloudflare Workers → Build from Git):
+ *   1. Build command:   `npm run build`       → produces ./dist
+ *   2. Deploy command:  `npx wrangler deploy` → reads this file,
+ *      uploads ./dist as static assets.
+ *
+ * Why this file is JSONC (not TOML):
+ *   JSONC allows the comments we rely on for explaining deploy
+ *   decisions, and is the format Cloudflare's own templates and
+ *   docs have standardized on since Wrangler v3.91.
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+
+  /**
+   * Worker/project name. Must match the repo slug visible in the
+   * Cloudflare "Create a Worker" dialog ("the-hard-parts"). Renaming
+   * this would create a second Worker rather than update the first.
+   */
+  "name": "the-hard-parts",
+
+  /**
+   * Workers runtime compatibility date. Safe recent date — pins the
+   * runtime behavior so the Worker doesn't silently change when
+   * Cloudflare ships new defaults. Bump this intentionally, not
+   * reflexively.
+   */
+  "compatibility_date": "2025-01-01",
+
+  /**
+   * Static assets served by this Worker.
+   *
+   *   directory          — path to the built static site, relative to
+   *                        this config file. Must exist at deploy time
+   *                        (the `npm run build` step produces it).
+   *
+   *   not_found_handling — "404-page" makes Workers serve the
+   *                        `/404.html` at the root of the assets dir
+   *                        with an HTTP 404 status whenever a request
+   *                        doesn't match a built file. Matches the
+   *                        site's own `src/pages/404.astro` route.
+   *                        (Alternatives: "none" = generic, empty 404
+   *                        body; "single-page-application" = serve
+   *                        index.html for any miss — inappropriate
+   *                        here, the site is not an SPA.)
+   *
+   *   html_handling      — "drop-trailing-slash" aligns the served
+   *                        URLs with the site's own `trailingSlash:
+   *                        "never"` config in astro.config.mjs. A
+   *                        request for `/about/` 301-redirects to
+   *                        `/about`, matching the canonical URLs in
+   *                        `<link rel="canonical">` and sitemap.xml.
+   */
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+    "html_handling": "drop-trailing-slash"
+  },
+
+  /**
+   * Observability. Free tier, no additional cost. Enables the Logs
+   * tab in the Cloudflare dashboard so you can see request counts
+   * and any errors without wiring up a third-party logger.
+   */
+  "observability": {
+    "enabled": true
+  }
+}
