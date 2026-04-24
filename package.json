@@ -11,7 +11,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "validate": "tsx scripts/validate-content.ts",
-    "typecheck": "astro check"
+    "typecheck": "astro check",
+    "og": "node scripts/generate-og-image.mjs"
   },
   "dependencies": {
     "astro": "^5.1.1",

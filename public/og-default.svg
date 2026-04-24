@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  og-default.svg — default Open Graph social card (1200x630).
+
+  Visual language matches the site's tabloid masthead:
+    · Warm-paper base (#f7f4eb) on the right
+    · Pure-black "nameplate rail" on the left (#000000)
+    · Yellow editorial accent (#ffd60a)
+    · Serif display headline in Georgia; sans labels in Helvetica
+
+  This is the SOURCE. The matching PNG at /og-default.png is what social
+  platforms actually fetch (Facebook, Twitter, LinkedIn, Slack all
+  require PNG/JPG — not SVG). Regenerate the PNG after any edit via:
+      npm run og
+  (which runs scripts/generate-og-image.mjs through sharp).
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="The Hard Parts — an engineering reference. Failure modes. Red flags. Trade-offs. Playbooks.">
+  <!-- Warm paper base -->
+  <rect width="1200" height="630" fill="#f7f4eb"/>
+
+  <!-- Left black nameplate rail -->
+  <rect x="0" y="0" width="380" height="630" fill="#000000"/>
+
+  <!-- Yellow logo mark (mirrors .nsb-brand__dot in the top nav) -->
+  <rect x="56" y="56" width="36" height="36" fill="#ffd60a"/>
+
+  <!-- Wordmark — stacked two-line THE HARD PARTS in brand yellow -->
+  <text x="56" y="184"
+        fill="#ffd60a"
+        font-family="Helvetica Neue, Helvetica, Arial, sans-serif"
+        font-weight="900" font-size="54" letter-spacing="-1">THE HARD</text>
+  <text x="56" y="242"
+        fill="#ffd60a"
+        font-family="Helvetica Neue, Helvetica, Arial, sans-serif"
+        font-weight="900" font-size="54" letter-spacing="-1">PARTS</text>
+
+  <!-- Subtitle on black rail — small caps, warm paper ink -->
+  <text x="56" y="284"
+        fill="#f7f4eb"
+        font-family="Helvetica Neue, Helvetica, Arial, sans-serif"
+        font-weight="700" font-size="13" letter-spacing="3">ENGINEERING REFERENCE</text>
+
+  <!-- Edition tag + domain pinned to the bottom of the rail -->
+  <text x="56" y="560"
+        fill="#ffd60a"
+        font-family="Helvetica Neue, Helvetica, Arial, sans-serif"
+        font-weight="900" font-size="13" letter-spacing="3">EDITION 01</text>
+  <text x="56" y="586"
+        fill="#f7f4eb" opacity="0.6"
+        font-family="Helvetica Neue, Helvetica, Arial, sans-serif"
+        font-weight="500" font-size="13">thehardparts.dev</text>
+
+  <!-- Right face — giant three-beat serif headline (mirrors the
+       homepage hero: "Software fails / the same way. / Every time.") -->
+  <text x="436" y="226"
+        fill="#0d0d10"
+        font-family="Georgia, Times, serif"
+        font-weight="700" font-size="80" letter-spacing="-1">Software fails</text>
+  <text x="436" y="314"
+        fill="#0d0d10"
+        font-family="Georgia, Times, serif"
+        font-weight="700" font-size="80" letter-spacing="-1">the same way.</text>
+  <text x="436" y="402"
+        fill="#0d0d10"
+        font-family="Georgia, Times, serif"
+        font-weight="700" font-size="80" letter-spacing="-1">Every time.</text>
+
+  <!-- Yellow editorial accent rule — same yellow-block rhythm used
+       on the site (eyebrow tag, stat cells, hero logo dot) -->
+  <rect x="436" y="444" width="80" height="6" fill="#ffd60a"/>
+
+  <!-- Small-caps sans section list — the four catalogs, punctuated -->
+  <text x="436" y="498"
+        fill="#0d0d10"
+        font-family="Helvetica Neue, Helvetica, Arial, sans-serif"
+        font-weight="800" font-size="16" letter-spacing="1.5">FAILURE MODES &#183; RED FLAGS &#183; TRADE-OFFS &#183; PLAYBOOKS</text>
+
+  <!-- Italic serif lede — single-line "An engineering reference." -->
+  <text x="436" y="552"
+        fill="#54545a"
+        font-family="Georgia, Times, serif"
+        font-style="italic" font-size="22">An engineering reference.</text>
+</svg>

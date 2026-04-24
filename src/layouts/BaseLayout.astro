@@ -7,9 +7,18 @@ export interface Props {
   description?: string;
   /** One of "fm" | "td" | "rf" | "ep" — sets the current page accent. */
   accent?: "fm" | "td" | "rf" | "ep";
+  /**
+   * Optional per-page OG image override. A relative path like
+   * "/og/my-card.png" is fine — the layout resolves it against
+   * `Astro.site` to emit an absolute URL (social crawlers require
+   * absolute image URLs). When unset, every page shares the default
+   * editorial card at `/og-default.png`, which is the launch stance:
+   * one strong card is better than dozens of weak ones.
+   */
+  ogImage?: string;
 }
 
-const { title, description, accent } = Astro.props;
+const { title, description, accent, ogImage } = Astro.props;
 
 /**
  * Nav-only display override for category names.
@@ -39,6 +48,32 @@ const metaDescription = description ?? SITE_TAGLINE;
 // returns a valid URL for local static builds), and lets the site
 // expose `og:url` / canonical without hardcoding a production domain.
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).toString();
+
+// Default social card — rendered from public/og-default.svg by
+// `npm run og` (see scripts/generate-og-image.mjs). Social crawlers
+// require an absolute URL, so resolve against Astro.site.
+// Single shared card is the launch stance: one strong editorial
+// card beats dozens of underbuilt per-entry cards. Pages can still
+// override via the `ogImage` prop (absolute or site-relative).
+const ogImageUrl = new URL(
+  ogImage ?? "/og-default.png",
+  Astro.site ?? Astro.url,
+).toString();
+
+// Cloudflare Web Analytics beacon token.
+//   · Read at build time from the `PUBLIC_CF_BEACON_TOKEN` env var.
+//     Using the `PUBLIC_` prefix is Vite's convention for values that
+//     are safe to expose in the built HTML; the beacon token is
+//     explicitly meant to be public (it identifies the analytics
+//     site, not an account secret), so this is the correct channel.
+//   · When unset (local dev, or when relying on Cloudflare Pages'
+//     automatic beacon injection via the Pages project dashboard),
+//     the beacon `<script>` simply isn't emitted.
+//   · Kept as plain ambient env access so there is zero runtime cost
+//     when it's unset: Astro drops the whole block at build time.
+const CF_BEACON_TOKEN = import.meta.env.PUBLIC_CF_BEACON_TOKEN as
+  | string
+  | undefined;
 ---
 <!doctype html>
 <html lang="en">
@@ -52,19 +87,46 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).toStri
     <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 
-    {/* OpenGraph — social / link-preview card. No image yet (pending
-        editorial art); the fields below are sufficient for text-first
-        previews and won't emit a broken image placeholder when shared. */}
+    {/* OpenGraph — social / link-preview card. Shared default
+        editorial card at /og-default.png (1200×630, rasterized from
+        /og-default.svg by `npm run og`). The same PNG is used for
+        Twitter/X via summary_large_image, LinkedIn, Slack, and
+        Facebook — social platforms all require raster (no SVG). */}
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={metaDescription} />
     <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Hard Parts — an engineering reference. Failure modes. Red flags. Trade-offs. Playbooks." />
 
-    {/* Twitter — text card. Same reasoning as OG above. */}
-    <meta name="twitter:card" content="summary" />
+    {/* Twitter / X — upgraded to summary_large_image to render the
+        full editorial card rather than a thumbnail. Same image as OG. */}
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={metaDescription} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content="The Hard Parts — an engineering reference. Failure modes. Red flags. Trade-offs. Playbooks." />
+
+    {/* Cloudflare Web Analytics — privacy-friendly, cookie-less,
+        free on all Cloudflare accounts. Emitted only when the
+        `PUBLIC_CF_BEACON_TOKEN` env var is set at build time. See
+        README §"Cloudflare Web Analytics" for the one-time setup
+        (add site in the Cloudflare dashboard → copy beacon token →
+        set the env var in the Pages project's Build settings). The
+        `defer` attribute keeps it out of the critical path. */}
+    {CF_BEACON_TOKEN && (
+      <script
+        is:inline
+        defer
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={`{"token": "${CF_BEACON_TOKEN}"}`}
+      />
+    )}
   </head>
   <body data-accent={accent ?? null}>
     {/* Skip link — visually hidden until focused. Lets keyboard /

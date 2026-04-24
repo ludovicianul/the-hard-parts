@@ -164,10 +164,54 @@ Target: **Cloudflare Pages, Free plan**.
 2. In Cloudflare Pages, connect the repo.
 3. Build command: `npm run build`
 4. Output directory: `dist`
-5. No Pages Functions required. No environment variables required.
+5. No Pages Functions required.
 
 The output is a plain static site and can also be served from any static
 host (Netlify, GitHub Pages, etc.) without changes.
+
+### Environment variables
+
+Copy `.env.example` to `.env` for local dev, or set the same variables
+in the Cloudflare Pages project Build settings for production. All
+variables are optional — the site builds and runs fine without any of
+them. The only one currently defined:
+
+| Variable | Purpose |
+| --- | --- |
+| `PUBLIC_CF_BEACON_TOKEN` | Cloudflare Web Analytics beacon token. When set, `BaseLayout.astro` emits the beacon `<script>` on every page. When unset, no analytics code is emitted. |
+
+### Cloudflare Web Analytics
+
+Privacy-friendly, cookie-less, free on every Cloudflare account. Two
+ways to wire it up; pick one (not both — doubling up loads the beacon
+twice):
+
+**Option A (recommended): automatic injection via Pages.**
+In the Cloudflare dashboard: Pages → your project → Settings →
+Analytics → **Enable Web Analytics**. Cloudflare injects the beacon
+during edge delivery; no code change required, and no env var
+required. Leave `PUBLIC_CF_BEACON_TOKEN` unset.
+
+**Option B: explicit token in the build.**
+In the Cloudflare dashboard: Analytics & Logs → Web Analytics → Add a
+site → copy the beacon token. Then in Pages → your project → Settings
+→ Environment variables → add `PUBLIC_CF_BEACON_TOKEN` with that
+value for the Production environment. Redeploy. `BaseLayout.astro`
+will emit the beacon on every page.
+
+### Open Graph / social card
+
+The default 1200×630 social card at `/og-default.png` is generated
+from `/public/og-default.svg` by `scripts/generate-og-image.mjs`.
+After editing the SVG, run:
+
+```
+npm run og
+```
+
+to rewrite the PNG. Commit both files. The PNG is what social
+platforms (Twitter/X, LinkedIn, Slack, Facebook) actually fetch —
+none of them support SVG for og:image.
 
 ## Schema alignment status
 
