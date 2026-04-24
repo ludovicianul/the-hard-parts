@@ -2,7 +2,7 @@
   "category": {
     "code": "EP",
     "name": "Engineering Playbook",
-    "summary": "Practical playbooks for recurring engineering situations — delivery, architecture, operations, teamwork, and AI adoption.",
+    "summary": "Practical playbooks for recurring engineering situations - delivery, architecture, operations, teamwork, and AI adoption.",
     "categories": [
       "delivery",
       "team",

@@ -2,7 +2,7 @@
   "category": {
     "code": "EP",
     "name": "Engineering Playbook",
-    "summary": "Practical playbooks for recurring engineering situations — delivery, architecture, operations, teamwork, and AI adoption.",
+    "summary": "Practical playbooks for recurring engineering situations - delivery, architecture, operations, teamwork, and AI adoption.",
     "categories": [
       "delivery",
       "team",
@@ -436,7 +436,7 @@
       "title": "Introduce AI tools without synthetic velocity",
       "situation": "A team is adopting AI tools and wants real leverage, not just more apparent output.",
       "category": "ai",
-      "summary": "Adopt AI by measuring whether it improves durable outcomes like clarity, cycle time, quality, and system understanding — not just output volume, ticket count, or code throughput.",
+      "summary": "Adopt AI by measuring whether it improves durable outcomes like clarity, cycle time, quality, and system understanding - not just output volume, ticket count, or code throughput.",
       "goal": "Prevent AI adoption from inflating visible activity while leaving the team less certain, less coherent, or more brittle.",
       "useWhen": [
         "leadership or the team wants to scale AI use quickly",

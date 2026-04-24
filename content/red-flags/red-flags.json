@@ -1934,7 +1934,7 @@
       "layer": "process",
       "signalType": "delivery",
       "summary": "Priority loses meaning because too many items are treated as immediate and exceptional at the same time.",
-      "decisionHeuristic": "When everything is urgent, nothing is prioritized—only interrupted.",
+      "decisionHeuristic": "When everything is urgent, nothing is prioritized-only interrupted.",
       "whatYouNotice": "Teams switch rapidly, deadlines multiply, and ordinary planning cannot survive incoming escalation.",
       "whyItMatters": "Constant urgency destroys focus, hides trade-offs, and corrodes delivery predictability.",
       "whatItUsuallyIndicates": [

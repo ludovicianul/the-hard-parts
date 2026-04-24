@@ -199,7 +199,7 @@
         "bus factor of one",
         "key person risk",
         "the indispensable engineer",
-        "single point of failure — human"
+        "single point of failure - human"
       ],
       "category": "people",
       "summary": "One person becomes the informal system of record for critical knowledge, decisions, and rescue work.",
@@ -237,7 +237,7 @@
         },
         {
           "pattern": "ownership-drift",
-          "distinction": "Ownership drift is diffuse and unclear. The hero trap is concentrated and over-clear — everything routes to one name."
+          "distinction": "Ownership drift is diffuse and unclear. The hero trap is concentrated and over-clear - everything routes to one name."
         },
         {
           "pattern": "quiet-quitter-team",
@@ -495,7 +495,7 @@
         },
         {
           "pattern": "metric-myopia",
-          "distinction": "Metric myopia optimizes the wrong numbers. Ticket theater optimizes the wrong artifacts — statuses, titles, and visible motion."
+          "distinction": "Metric myopia optimizes the wrong numbers. Ticket theater optimizes the wrong artifacts - statuses, titles, and visible motion."
         },
         {
           "pattern": "discovery-theater",
@@ -751,7 +751,7 @@
       "easilyConfusedWith": [
         {
           "pattern": "consensus-trap",
-          "distinction": "Consensus trap stalls decisions waiting for broad agreement. Stakeholder capture moves quickly — it just moves wherever one voice points."
+          "distinction": "Consensus trap stalls decisions waiting for broad agreement. Stakeholder capture moves quickly - it just moves wherever one voice points."
         },
         {
           "pattern": "scope-negotiation-theater",
@@ -933,7 +933,7 @@
         "Do not treat every dependency as equal",
         "Do not wait for full certainty before testing interfaces"
       ],
-      "firstMove": "list every external input your next milestone depends on — with an owner, a date, and a written confirmation from that owner.",
+      "firstMove": "list every external input your next milestone depends on - with an owner, a date, and a written confirmation from that owner.",
       "hardTradeoff": "accept slower commitments now in exchange for commitments that actually hold, or keep the fog and keep missing dates.",
       "recoveryTrap": "building a dependency-tracking tool before anyone has started owning dependencies by name.",
       "recoveryDifficulty": "medium-hard",
@@ -1063,7 +1063,7 @@
         "Do not remove local metrics entirely",
         "Do not assume good local numbers mean a healthy system"
       ],
-      "firstMove": "trace one real user-value flow end to end, and measure total time through every team boundary — not each team's internal cycle time.",
+      "firstMove": "trace one real user-value flow end to end, and measure total time through every team boundary - not each team's internal cycle time.",
       "hardTradeoff": "accept that some team metrics will stop improving (or visibly regress) so the system can improve.",
       "recoveryTrap": "adding a cross-team metric on top of the existing team metrics, which creates reporting work without changing incentives.",
       "recoveryDifficulty": "medium-hard",
@@ -1201,7 +1201,7 @@
       "aiCanMakeWorseBy": [
         "AI can multiply plausible arguments for every position, making consensus feel even further away."
       ],
-      "aiFalseConfidence": "AI-generated meeting notes and decision logs make the absence of closure look procedurally sound — the artifact trail implies deliberation happened even when no one actually chose.",
+      "aiFalseConfidence": "AI-generated meeting notes and decision logs make the absence of closure look procedurally sound - the artifact trail implies deliberation happened even when no one actually chose.",
       "aiSpecificNotes": "More arguments do not mean better decisions.",
       "oftenLeadsTo": [
         "invisible-deadline",
@@ -1460,7 +1460,7 @@
       "aiCanMakeWorseBy": [
         "AI can generate internal tooling and frameworks too cheaply, encouraging overbuilding before demand is proven."
       ],
-      "aiFalseConfidence": "AI-generated platform scaffolding and docs make the platform feel production-ready because the artifacts are polished — hiding that no product team has actually adopted it under load.",
+      "aiFalseConfidence": "AI-generated platform scaffolding and docs make the platform feel production-ready because the artifacts are polished - hiding that no product team has actually adopted it under load.",
       "aiSpecificNotes": "Speed of construction is not evidence of need.",
       "oftenLeadsTo": [
         "abstraction-addiction",
@@ -1638,7 +1638,7 @@
         "build",
         "delivery"
       ],
-      "whatItIs": "Teams produce more code, tickets, documents, and visible activity — often assisted by AI — without the expected improvement in outcomes.",
+      "whatItIs": "Teams produce more code, tickets, documents, and visible activity - often assisted by AI - without the expected improvement in outcomes.",
       "bestMomentToIntervene": "when output accelerates before quality controls mature",
       "blastRadius": [
         "code",
@@ -1656,11 +1656,11 @@
       "easilyConfusedWith": [
         {
           "pattern": "genuine productivity gains",
-          "distinction": "Real gains show up in outcomes — fewer incidents, faster learning loops, more durable changes. Synthetic velocity shows up only in output volume."
+          "distinction": "Real gains show up in outcomes - fewer incidents, faster learning loops, more durable changes. Synthetic velocity shows up only in output volume."
         },
         {
           "pattern": "ticket-theater",
-          "distinction": "Ticket theater performs work that was never there. Synthetic velocity produces real artifacts — but of shallower quality than their volume suggests."
+          "distinction": "Ticket theater performs work that was never there. Synthetic velocity produces real artifacts - but of shallower quality than their volume suggests."
         },
         {
           "pattern": "autocomplete-architecture",
@@ -1718,7 +1718,7 @@
       "aiCanMakeWorseBy": [
         "This failure mode is itself AI-amplified: generation becomes cheap, so weak ideas and half-understood changes travel further and faster."
       ],
-      "aiFalseConfidence": "Generated artifacts look authored — they compile, they read fluently, they pass surface checks — creating the illusion of understood work when no one fully owns or has reasoned through the change.",
+      "aiFalseConfidence": "Generated artifacts look authored - they compile, they read fluently, they pass surface checks - creating the illusion of understood work when no one fully owns or has reasoned through the change.",
       "aiSpecificNotes": "Cheap output is not cheap system behavior.",
       "oftenLeadsTo": [
         "autocomplete-architecture",
@@ -1836,7 +1836,7 @@
         "Do not treat user trust decay as ordinary noise",
         "Do not rely solely on provider assurances"
       ],
-      "firstMove": "pin the prompt, the model version, and every external dependency version — then build a small task-grounded eval you can re-run on a schedule.",
+      "firstMove": "pin the prompt, the model version, and every external dependency version - then build a small task-grounded eval you can re-run on a schedule.",
       "hardTradeoff": "accept the ongoing operational cost of behavioral evaluation, or accept that you are flying blind on a system whose behavior is non-deterministic.",
       "recoveryTrap": "adding more infrastructure dashboards (latency, error rate, token counts) instead of task-quality signals.",
       "recoveryDifficulty": "hard",
@@ -1846,7 +1846,7 @@
       "aiCanMakeWorseBy": [
         "This is an AI-native failure mode: systems whose behavior is partly probabilistic and externally influenced drift silently unless deliberately observed."
       ],
-      "aiFalseConfidence": "AI systems can produce fluent, correct-shaped outputs for a long time after underlying behavior has shifted — creating the illusion of stability because the output still looks right even when it isn't.",
+      "aiFalseConfidence": "AI systems can produce fluent, correct-shaped outputs for a long time after underlying behavior has shifted - creating the illusion of stability because the output still looks right even when it isn't.",
       "aiSpecificNotes": "Behavioral monitoring must reflect task quality, not just uptime or latency.",
       "oftenLeadsTo": [
         "benchmark-mirage",
@@ -1964,7 +1964,7 @@
         "Do not ban AI code generation",
         "Do not let correctness substitute for comprehension"
       ],
-      "firstMove": "pick one recent generated PR that introduced a new abstraction, interface, or pattern — and require the author to explain why that structure exists before it merges.",
+      "firstMove": "pick one recent generated PR that introduced a new abstraction, interface, or pattern - and require the author to explain why that structure exists before it merges.",
       "hardTradeoff": "accept slower generated-code throughput so each structural choice passes through real review.",
       "recoveryTrap": "adding lint rules or style guides, which catch surface shape but not structural decisions.",
       "recoveryDifficulty": "medium-hard",
@@ -1974,7 +1974,7 @@
       "aiCanMakeWorseBy": [
         "Native mode: AI scales questionable design instantly across a codebase before anyone has reviewed the implicit decisions embedded in the output."
       ],
-      "aiFalseConfidence": "Generated code compiles, follows named patterns, and passes its also-generated tests — which makes the resulting architecture look like a deliberate design when no one actually designed it.",
+      "aiFalseConfidence": "Generated code compiles, follows named patterns, and passes its also-generated tests - which makes the resulting architecture look like a deliberate design when no one actually designed it.",
       "aiSpecificNotes": "Passing tests do not validate architectural choices.",
       "oftenLeadsTo": [
         "abstraction-addiction",
@@ -2102,7 +2102,7 @@
       "aiCanMakeWorseBy": [
         "AI-native by definition: the failure mode is built into how models are marketed and selected."
       ],
-      "aiFalseConfidence": "Benchmark scores produce clean numeric comparisons that feel like rigorous evidence — hiding that the benchmark may not correlate with your task at all.",
+      "aiFalseConfidence": "Benchmark scores produce clean numeric comparisons that feel like rigorous evidence - hiding that the benchmark may not correlate with your task at all.",
       "aiSpecificNotes": "A model that wins benchmarks you did not set may be optimized for problems you do not have.",
       "oftenLeadsTo": [
         "rag-without-ground-truth",
@@ -2222,7 +2222,7 @@
         "Do not deploy without domain expert sign-off on representative outputs"
       ],
       "firstMove": "define what the system should refuse to answer, and test that behavior before you test what it can answer.",
-      "hardTradeoff": "accept narrower scope — fewer answers, more refusals — so the answers given are defensible.",
+      "hardTradeoff": "accept narrower scope - fewer answers, more refusals - so the answers given are defensible.",
       "recoveryTrap": "adding more sources to the index, which increases surface area for plausible-sounding but ungrounded output.",
       "recoveryDifficulty": "hard",
       "aiCanHelpWith": [
@@ -2231,7 +2231,7 @@
       "aiCanMakeWorseBy": [
         "AI makes plausible-sounding nonsense feel authoritative and confident, which is the core risk of this failure mode."
       ],
-      "aiFalseConfidence": "Fluent, citation-backed answers read as authoritative regardless of whether retrieval surfaced the right documents — creating confidence indistinguishable from correctness without an eval the system doesn't have.",
+      "aiFalseConfidence": "Fluent, citation-backed answers read as authoritative regardless of whether retrieval surfaced the right documents - creating confidence indistinguishable from correctness without an eval the system doesn't have.",
       "aiSpecificNotes": "A fluent answer is not a correct answer.",
       "oftenLeadsTo": [
         "stakeholder-capture",
@@ -2280,7 +2280,7 @@
         "build",
         "operate"
       ],
-      "whatItIs": "The instruction layer of an AI system — prompts, system messages, retrieval configuration, tool definitions — changes without the controls applied to other production code.",
+      "whatItIs": "The instruction layer of an AI system - prompts, system messages, retrieval configuration, tool definitions - changes without the controls applied to other production code.",
       "bestMomentToIntervene": "before the first production prompt is written without version control",
       "blastRadius": [
         "product",
@@ -2349,7 +2349,7 @@
         "Do not allow prompts to live outside version control",
         "Do not iterate on production prompts without staging validation"
       ],
-      "firstMove": "move every production prompt into a version-controlled file today, even if the prompt stays identical — baseline first, iterate second.",
+      "firstMove": "move every production prompt into a version-controlled file today, even if the prompt stays identical - baseline first, iterate second.",
       "hardTradeoff": "accept slower prompt iteration in exchange for prompt changes that are traceable, reviewable, and reversible.",
       "recoveryTrap": "adding an eval harness before the prompt is under version control, which reports on a moving target.",
       "recoveryDifficulty": "medium",
@@ -2359,7 +2359,7 @@
       "aiCanMakeWorseBy": [
         "AI systems are uniquely vulnerable to invisible behavioral changes because so much behavior is encoded in the instruction layer rather than in deterministic code."
       ],
-      "aiFalseConfidence": "Prompt changes feel like minor wording tweaks, not code changes — creating the illusion that they are low-risk even though they can silently shift system behavior.",
+      "aiFalseConfidence": "Prompt changes feel like minor wording tweaks, not code changes - creating the illusion that they are low-risk even though they can silently shift system behavior.",
       "aiSpecificNotes": "Configuration drift is still drift even when it lives in a prompt.",
       "oftenLeadsTo": [
         "silent-model-drift",
@@ -2477,7 +2477,7 @@
         "Do not optimize for load that has not been observed",
         "Do not conflate architectural sophistication with engineering quality"
       ],
-      "firstMove": "measure current real load and write down the load at which the current simple architecture would actually break — most systems are nowhere near it.",
+      "firstMove": "measure current real load and write down the load at which the current simple architecture would actually break - most systems are nowhere near it.",
       "hardTradeoff": "accept a system that will need meaningful rework if it wins the market, so the team stays alive long enough to reach that problem.",
       "recoveryTrap": "simplifying one layer of the scale architecture while keeping the rest, which preserves the operational burden.",
       "recoveryDifficulty": "hard",
@@ -2487,7 +2487,7 @@
       "aiCanMakeWorseBy": [
         "AI can generate sophisticated distributed architecture quickly, making premature scaling feel cheap and easy to justify."
       ],
-      "aiFalseConfidence": "AI can scaffold a sophisticated distributed architecture in hours, making premature scaling feel low-cost to start — the real cost lives in operating it for years, which is invisible at generation time.",
+      "aiFalseConfidence": "AI can scaffold a sophisticated distributed architecture in hours, making premature scaling feel low-cost to start - the real cost lives in operating it for years, which is invisible at generation time.",
       "aiSpecificNotes": "The cost of premature scaling is not in writing the code but in operating it.",
       "oftenLeadsTo": [
         "abstraction-addiction",
@@ -2558,7 +2558,7 @@
         },
         {
           "pattern": "ownership-drift",
-          "distinction": "Ownership drift is about the service owner. Contract neglect is about the contract owner — often different or missing."
+          "distinction": "Ownership drift is about the service owner. Contract neglect is about the contract owner - often different or missing."
         },
         {
           "pattern": "normal integration coordination",
@@ -2606,7 +2606,7 @@
         "Do not treat absence of complaints as evidence the contract is sound",
         "Do not allow interface changes without downstream notification"
       ],
-      "firstMove": "write down the current contract — exact fields, types, semantics, error shapes — and have both sides sign off before the next change.",
+      "firstMove": "write down the current contract - exact fields, types, semantics, error shapes - and have both sides sign off before the next change.",
       "hardTradeoff": "accept slower interface changes in exchange for changes that both sides stay compatible with.",
       "recoveryTrap": "introducing a schema registry with no enforcement, which documents drift instead of preventing it.",
       "recoveryDifficulty": "medium",
@@ -2653,7 +2653,7 @@
         "psychological safety collapse"
       ],
       "category": "people",
-      "summary": "A team stops raising risks, pushing back on decisions, or flagging problems — appearing harmonious while actually disengaged.",
+      "summary": "A team stops raising risks, pushing back on decisions, or flagging problems - appearing harmonious while actually disengaged.",
       "whoNoticesFirst": [
         "engineering manager",
         "staff engineer",
@@ -2865,9 +2865,9 @@
         "Do not assume visible work is valuable work",
         "Do not promote work without asking who maintains it"
       ],
-      "firstMove": "ask who asked for this, who will own it after, and what product need it addresses — in writing, before any design approval.",
+      "firstMove": "ask who asked for this, who will own it after, and what product need it addresses - in writing, before any design approval.",
       "hardTradeoff": "accept frustrating a capable engineer in the short term, or accept a codebase shaped by promotion cycles.",
-      "recoveryTrap": "blocking the individual instead of fixing the incentive — another engineer will pick up the same pattern next year.",
+      "recoveryTrap": "blocking the individual instead of fixing the incentive - another engineer will pick up the same pattern next year.",
       "recoveryDifficulty": "medium",
       "aiCanHelpWith": [
         "AI can help evaluate proposals against existing systems to surface whether a new system is genuinely needed."
@@ -2924,7 +2924,7 @@
         "build",
         "operate"
       ],
-      "whatItIs": "A migration — to a new platform, database, cloud environment, or architecture — begins but never completes, creating an indefinite dual-state system.",
+      "whatItIs": "A migration - to a new platform, database, cloud environment, or architecture - begins but never completes, creating an indefinite dual-state system.",
       "bestMomentToIntervene": "when a migration has no defined completion criteria or owner",
       "blastRadius": [
         "code",
@@ -2956,7 +2956,7 @@
       "starts": "A migration is planned, resourced, and begins with enthusiasm.",
       "feelsReasonableBecause": "The first phase is successful and the team moves on to other priorities.",
       "escalates": "New features are built on both old and new systems. The old system receives patches. Completion keeps getting deprioritized.",
-      "ends": "Years later, the system has two data stores, two deployment models, or two infrastructure patterns — and nobody is sure how to finish.",
+      "ends": "Years later, the system has two data stores, two deployment models, or two infrastructure patterns - and nobody is sure how to finish.",
       "warningSigns": {
         "early": [
           "Migration has no explicit completion criteria.",
@@ -3123,7 +3123,7 @@
         "Do not raise coverage targets as a response to escaped defects",
         "Do not treat a green build as evidence the system is correct"
       ],
-      "firstMove": "sample ten random tests from the suite and check what each one would catch if it broke — you will know within an hour what kind of suite you actually have.",
+      "firstMove": "sample ten random tests from the suite and check what each one would catch if it broke - you will know within an hour what kind of suite you actually have.",
       "hardTradeoff": "accept lower coverage numbers in exchange for fewer, meaningful tests that actually catch regressions.",
       "recoveryTrap": "adopting a better coverage tool that measures the same thing more precisely, preserving the illusion at higher fidelity.",
       "recoveryDifficulty": "medium",
@@ -3133,7 +3133,7 @@
       "aiCanMakeWorseBy": [
         "AI can generate high-coverage test suites quickly that satisfy metrics without meaningfully testing behavior, accelerating the theater at scale."
       ],
-      "aiFalseConfidence": "AI-generated tests include plausible-looking assertions that pass consistently — so the common mitigation of sampling tests for quality returns a false positive, because each sampled test reads like it checks the right thing.",
+      "aiFalseConfidence": "AI-generated tests include plausible-looking assertions that pass consistently - so the common mitigation of sampling tests for quality returns a false positive, because each sampled test reads like it checks the right thing.",
       "aiSpecificNotes": "Generated tests inherit the bias of their prompt. If the prompt does not ask for meaningful assertions, it will not produce them.",
       "oftenLeadsTo": [
         "synthetic-velocity",
@@ -3183,7 +3183,7 @@
         "strategy",
         "planning"
       ],
-      "whatItIs": "Discovery activities — interviews, personas, journey maps, usability tests — are conducted as process compliance rather than genuine inquiry.",
+      "whatItIs": "Discovery activities - interviews, personas, journey maps, usability tests - are conducted as process compliance rather than genuine inquiry.",
       "bestMomentToIntervene": "when research activities are scheduled after decisions have already been made",
       "blastRadius": [
         "product",
@@ -3252,9 +3252,9 @@
         "Do not run research that cannot change the outcome",
         "Do not use user quotes to validate decisions already made"
       ],
-      "firstMove": "pick one current decision that could actually be reversed by research — if there isn't one, don't run the research.",
+      "firstMove": "pick one current decision that could actually be reversed by research - if there isn't one, don't run the research.",
       "hardTradeoff": "accept research that might force you to change a direction leadership has already signaled, or accept that research is not decision-support.",
-      "recoveryTrap": "tightening the research process — faster cycles, better synthesis templates — without moving research ahead of the decision.",
+      "recoveryTrap": "tightening the research process - faster cycles, better synthesis templates - without moving research ahead of the decision.",
       "recoveryDifficulty": "medium",
       "aiCanHelpWith": [
         "AI can help analyze real user feedback, session recordings, and support tickets to surface genuine patterns quickly."
@@ -3262,7 +3262,7 @@
       "aiCanMakeWorseBy": [
         "AI can generate synthetic personas, journey maps, and user stories that reinforce existing assumptions without real user contact."
       ],
-      "aiFalseConfidence": "AI-accelerated synthesis of real interviews improves the quality of the output artifact while leaving the decision process untouched — better-looking research that still cannot change the call.",
+      "aiFalseConfidence": "AI-accelerated synthesis of real interviews improves the quality of the output artifact while leaving the decision process untouched - better-looking research that still cannot change the call.",
       "aiSpecificNotes": "Synthetic user insight is not user insight.",
       "oftenLeadsTo": [
         "stakeholder-capture",
@@ -3332,7 +3332,7 @@
         },
         {
           "pattern": "ticket-theater",
-          "distinction": "Ticket theater performs movement on the board. Feature factory actually ships — it just doesn't learn from what shipped."
+          "distinction": "Ticket theater performs movement on the board. Feature factory actually ships - it just doesn't learn from what shipped."
         },
         {
           "pattern": "a high-performing delivery team",
@@ -3377,12 +3377,12 @@
         "Deprioritize features that have not moved their metric"
       ],
       "whatNotToDo": [
-        "Do not slow shipping — add learning alongside it",
+        "Do not slow shipping - add learning alongside it",
         "Do not use engagement metrics as a proxy for user value"
       ],
-      "firstMove": "pick the next three planned features and define, in one sentence each, what you expect to learn from shipping them — if you can't, remove them from the plan.",
+      "firstMove": "pick the next three planned features and define, in one sentence each, what you expect to learn from shipping them - if you can't, remove them from the plan.",
       "hardTradeoff": "accept slower output and leadership asking why, or accept building more of what the team doesn't know whether users want.",
-      "recoveryTrap": "adding a learning ritual — retros, reviews — after each release without changing what gets prioritized for the next one.",
+      "recoveryTrap": "adding a learning ritual - retros, reviews - after each release without changing what gets prioritized for the next one.",
       "recoveryDifficulty": "medium",
       "aiCanHelpWith": [
         "AI can help analyze usage patterns, cluster user feedback, and surface which features are actually being used and how."
@@ -3509,7 +3509,7 @@
         "Do not abandon evals because they can be gamed",
         "Do not treat eval score improvement as equivalent to user experience improvement"
       ],
-      "firstMove": "swap in a fresh eval set drawn from last week's production cases and re-score the current system — if the score regresses, the previous number was overfit.",
+      "firstMove": "swap in a fresh eval set drawn from last week's production cases and re-score the current system - if the score regresses, the previous number was overfit.",
       "hardTradeoff": "accept \"worse\" scores on a harder eval set, or accept scores that stopped reflecting production behavior some time ago.",
       "recoveryTrap": "expanding the existing eval set with more cases of the same kind, which doesn't help if optimization pressure stays pointed at it.",
       "recoveryDifficulty": "medium",
@@ -3519,7 +3519,7 @@
       "aiCanMakeWorseBy": [
         "AI can optimize prompts and configurations to score well on known eval cases, accelerating overfitting without surfacing production risk."
       ],
-      "aiFalseConfidence": "AI systems can be tuned to hit known eval cases almost perfectly while behaving worse on everything else — the score keeps rising as the signal keeps shrinking.",
+      "aiFalseConfidence": "AI systems can be tuned to hit known eval cases almost perfectly while behaving worse on everything else - the score keeps rising as the signal keeps shrinking.",
       "aiSpecificNotes": "An eval that cannot surprise you is not testing anything you do not already know.",
       "oftenLeadsTo": [
         "benchmark-mirage",
@@ -3638,7 +3638,7 @@
         "Do not assume longer context always produces better output",
         "Do not add context to fix a problem without understanding why the problem exists"
       ],
-      "firstMove": "take one recent production prompt, remove half of it, and measure the quality difference on real cases — most hoarding folds under this test.",
+      "firstMove": "take one recent production prompt, remove half of it, and measure the quality difference on real cases - most hoarding folds under this test.",
       "hardTradeoff": "accept removing content that might occasionally help, in exchange for behavior that's debuggable and cost-predictable.",
       "recoveryTrap": "compressing the context (summarization, chunking) rather than questioning whether the content should be there at all.",
       "recoveryDifficulty": "medium",
@@ -3648,7 +3648,7 @@
       "aiCanMakeWorseBy": [
         "Native mode: the failure mode is in the structure of how AI systems are built. Adding context feels like improvement even when it is not."
       ],
-      "aiFalseConfidence": "Every additional section in the prompt feels like it might be the one that fixes the next failure case — creating a monotonic \"add more\" pressure that is indistinguishable from progress.",
+      "aiFalseConfidence": "Every additional section in the prompt feels like it might be the one that fixes the next failure case - creating a monotonic \"add more\" pressure that is indistinguishable from progress.",
       "aiSpecificNotes": "Context is not free. Every token in the window is a cost, a potential distraction, and a debugging surface.",
       "oftenLeadsTo": [
         "prompt-ops-chaos",
@@ -3718,7 +3718,7 @@
         },
         {
           "pattern": "silent-model-drift",
-          "distinction": "Silent drift is behavior shifting. HITL decay is oversight shifting while behavior stays roughly the same — until it doesn't."
+          "distinction": "Silent drift is behavior shifting. HITL decay is oversight shifting while behavior stays roughly the same - until it doesn't."
         },
         {
           "pattern": "legitimate process simplification",
@@ -3766,7 +3766,7 @@
         "Do not remove oversight because errors have not been caught recently",
         "Do not automate the oversight step without designing what catches the automator"
       ],
-      "firstMove": "pull a sample of the last 100 decisions the review step touched — if it caught even a few high-cost errors, it is not a formality.",
+      "firstMove": "pull a sample of the last 100 decisions the review step touched - if it caught even a few high-cost errors, it is not a formality.",
       "hardTradeoff": "accept the ongoing cost of review that usually finds nothing, or accept a tail risk you aren't pricing.",
       "recoveryTrap": "replacing the human step with an automated check that matches what humans usually catch, missing what they occasionally catch.",
       "recoveryDifficulty": "medium-hard",
@@ -3813,7 +3813,7 @@
         "expectation laundering"
       ],
       "category": "leadership",
-      "summary": "Scope negotiation processes exist and are followed, but the real scope is never actually reduced — only the formal acknowledgment of it changes.",
+      "summary": "Scope negotiation processes exist and are followed, but the real scope is never actually reduced - only the formal acknowledgment of it changes.",
       "whoNoticesFirst": [
         "delivery lead",
         "engineering manager",
@@ -3895,7 +3895,7 @@
         "Do not treat verbal agreement as sufficient for scope reduction",
         "Do not cut scope without communicating the change to everyone who holds expectations"
       ],
-      "firstMove": "write down what was cut, who agreed in person, and what they expected before — then send it to every expectation holder, not just the ones in the meeting.",
+      "firstMove": "write down what was cut, who agreed in person, and what they expected before - then send it to every expectation holder, not just the ones in the meeting.",
       "hardTradeoff": "accept the stakeholder-by-stakeholder re-alignment work, or accept that the \"reduced\" scope will silently return as a surprise at launch.",
       "recoveryTrap": "adding another formal descoping checkpoint, which gives the theater a higher-frequency stage.",
       "recoveryDifficulty": "medium",
@@ -4023,7 +4023,7 @@
         "Do not expand launch criteria during the release phase",
         "Do not treat every discovered issue as a launch blocker"
       ],
-      "firstMove": "freeze the launch criteria in writing — nothing discovered after freeze blocks launch unless it meets those criteria.",
+      "firstMove": "freeze the launch criteria in writing - nothing discovered after freeze blocks launch unless it meets those criteria.",
       "hardTradeoff": "accept known-acceptable issues shipping to production, or accept the release continuing to slip indefinitely.",
       "recoveryTrap": "launching a \"final hardening sprint\" that prioritizes the same unfrozen list of issues, extending the tail instead of ending it.",
       "recoveryDifficulty": "medium",

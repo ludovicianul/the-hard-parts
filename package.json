@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "The Hard Parts (thehardparts.dev) — static-first engineering reference site. Four catalogs: Failure Modes, Tech Decisions, Red Flags, Engineering Playbook.",
+  "description": "The Hard Parts (thehardparts.dev) - static-first engineering reference site. Four catalogs: Failure Modes, Tech Decisions, Red Flags, Engineering Playbook.",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
