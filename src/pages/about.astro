@@ -36,13 +36,14 @@ const totalEntries = catCards.reduce((sum, c) => sum + c.count, 0);
 // Section model for the in-page index. Keeping the structure declarative
 // makes the anchor list trivially in-sync with the headings below.
 const sections = [
-  { step: "01", id: "sec-what",     label: "What this is" },
-  { step: "02", id: "sec-four",     label: "The four catalogs" },
-  { step: "03", id: "sec-use",      label: "How to use it" },
-  { step: "04", id: "sec-entries",  label: "How entries are structured" },
-  { step: "05", id: "sec-ai",       label: "How AI is treated" },
-  { step: "06", id: "sec-pending",  label: "Cross-references and pending entries" },
-  { step: "07", id: "sec-stance",   label: "What this site is not" },
+  { step: "01", id: "sec-what",       label: "What this is" },
+  { step: "02", id: "sec-four",       label: "The four catalogs" },
+  { step: "03", id: "sec-use",        label: "How to use it" },
+  { step: "04", id: "sec-entries",    label: "How entries are structured" },
+  { step: "05", id: "sec-ai",         label: "How AI is treated" },
+  { step: "06", id: "sec-pending",    label: "Cross-references and pending entries" },
+  { step: "07", id: "sec-stance",     label: "What this site is not" },
+  { step: "08", id: "sec-editorial",  label: "Editorial note and feedback" },
 ];
 ---
 <BaseLayout
@@ -135,7 +136,7 @@ const sections = [
                 <span class="nsb-about__cat-blurb">
                   {c.code === "FM" && "Named failure patterns in software work - how they start, how they escalate, and what good responses look like."}
                   {c.code === "TD" && "Structured trade-off references for consequential engineering decisions. Two options side-by-side, honest about what's lost on each side."}
-                  {c.code === "RF" && "Early-warning signals across code, team, process, leadership, and AI-enabled work. What you notice, what it usually means, what to check next."}
+                  {c.code === "RF" && "Early-warning signals across code, team, process, leadership, and AI-enabled work. What you notice, what it usually means, what it is NOT, and what to check next."}
                   {c.code === "EP" && "Operational playbooks for recurring engineering situations. Steps, actions, outputs, common mistakes - the reference you'd keep open while running one."}
                 </span>
               </span>
@@ -200,15 +201,22 @@ const sections = [
           landing page.
         </li>
         <li>
-          <strong>At-a-glance.</strong> Three or four identity rows
-          (&ldquo;often mistaken for&rdquo;, &ldquo;primary owner&rdquo;,
-          &ldquo;really about&rdquo;). Framing, not prose.
+          <strong>At-a-glance.</strong> Three to five identity rows
+          &mdash; what the entry is, what it is often mistaken for, a
+          calibration cue for when it is <em>not</em> the right read
+          (&ldquo;not necessarily a problem when&rdquo; on RF,
+          &ldquo;do not use when&rdquo; on EP), and who owns it.
+          Framing, not prose.
         </li>
         <li>
-          <strong>Narrative sections.</strong> Category-specific
-          structure: FM walks the arc, TD weighs options, RF
-          diagnoses, EP walks the procedure. Section anatomy is
-          consistent; section ordering is schema-driven.
+          <strong>Narrative sections.</strong> Category-specific and
+          category-shaped. FM walks the failure arc and closes with
+          notes from practice and recognition boundaries. TD weighs
+          two options in a side-by-side ledger with reversibility
+          and hazard framing. RF moves signal &rarr; diagnostic
+          reading &rarr; inspection, with false friends rendered as
+          quoted misreads. EP walks a numbered procedure where every
+          step carries its purpose, actions, and outputs.
         </li>
         <li>
           <strong>Connected patterns.</strong> A grid of
@@ -238,7 +246,10 @@ const sections = [
         two boxed lists (&ldquo;AI can help with&rdquo; /
         &ldquo;AI can make worse by&rdquo;) followed by a blue-serif
         synthesis callout. Same anatomy on FM, TD, RF, and EP detail
-        pages.
+        pages. On failure modes and tech decisions, entries where AI
+        creates false confidence carry an additional red band above
+        the synthesis &mdash; named explicitly so the distortion can
+        be read, not smoothed over.
       </p>
       <CalloutBand label="AI synthesis" variant="blue" serif>
         <p>
@@ -277,7 +288,10 @@ const sections = [
       </p>
     </section>
 
-    {/* 07. What this site is not */}
+    {/* 07. What this site is not
+        Kept as a rhetorical spine before the editorial note / closer.
+        Deliberately terse, sans-bold, in a paper-alt panel so it reads
+        as a stance statement, not as a feature list. */}
     <section class="nsb-about__section">
       <SectionHeader id="sec-stance" step="07" title="What this site is not" />
       <ul class="nsb-about__not">
@@ -286,11 +300,39 @@ const sections = [
         <li>Not a learning management system.</li>
         <li>Not a &ldquo;frameworks for engineering&rdquo; product.</li>
         <li>Not a tool-marketing site dressed up as editorial.</li>
-        <li>Not trying to be exhaustive &mdash; trying to be useful.</li>
       </ul>
       <p>
         The goal is the opposite of &ldquo;one more thing to read&rdquo;.
         The goal is a catalog you keep open while thinking.
+      </p>
+    </section>
+
+    {/* 08. Editorial note and feedback
+        Added as part of the /about alignment pass so the page
+        matches the current state of the site. Two short blocks:
+        a low-ego, anonymous author note (the catalog is written
+        from field experience, not authored as a personal brand);
+        and a plain mailto feedback line for editorial corrections.
+        Kept outside the "What this site is not" stance so the
+        stance panel remains the last rhetorical beat before the
+        closer motto. */}
+    <section class="nsb-about__section">
+      <SectionHeader id="sec-editorial" step="08" title="Editorial note and feedback" />
+      <p>
+        Written and maintained by a practicing software engineer.
+        Patterns in this catalog are drawn from repeated field
+        observation &mdash; what recurs across teams, stacks, and
+        time &mdash; not from a branded methodology or a formal
+        framework. Entries are deliberately low-ego: named patterns,
+        not personal war stories.
+      </p>
+      <p>
+        If an entry lands wrong, if a cross-reference feels forced,
+        or if a pattern is named here that you recognise under a
+        different name, corrections are welcome. Reach the editor at
+        <a class="nsb-about__mono nsb-about__mail" href="mailto:hello@nosilverbullet.dev">hello@nosilverbullet.dev</a>.
+        No newsletter, no form, no tracker &mdash; just a plain
+        inbox.
       </p>
     </section>
 
@@ -566,6 +608,15 @@ const sections = [
       background: var(--color-paper-alt);
       padding: 1px 4px;
     }
+    .nsb-about__mail {
+      color: var(--color-ink);
+      text-decoration: underline;
+      text-decoration-color: var(--color-rule);
+      text-underline-offset: 2px;
+      transition: text-decoration-color var(--dur-fast) var(--ease);
+    }
+    .nsb-about__mail:hover { text-decoration-color: var(--accent-current, var(--color-ink)); }
+
     .nsb-about__pend {
       display: inline-block;
       font-family: var(--font-sans);
