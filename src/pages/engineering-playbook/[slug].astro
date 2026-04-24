@@ -187,22 +187,29 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     ]}
   />
 
-  {/* AT A GLANCE — shared blue-fill identity panel. Four rows: the
-      scenario the playbook addresses, the outcome it produces, the
-      person driving it, and the full cast of roles it pulls in.
+  {/* AT A GLANCE — shared blue-fill identity panel. Five rows: the
+      scenario the playbook addresses, the outcome it produces, a
+      calibration cue that PREVENTS reaching for this playbook on the
+      wrong situation (mirrors RF's "not necessarily a problem when"
+      row), the person driving it, and the full cast of roles it
+      pulls in.
+      Row order is deliberate: situation → goal → calibration → driver
+      → cast. A reader lands on the page and gets the "is this for
+      me / is this overkill?" cue before any body reading. The full
+      `doNotUseWhen` list still renders in Section 1 below — this row
+      is a preview only, drawn from its first entry.
       `Primary owner` duplicates the MetaRail string-cell because it's
       the single strongest "is this for me?" orientation signal, and
       reading it again next to `Roles involved` lets a reader tell
-      driver vs. cast at a glance. `Roles involved` moved here from
-      the MetaRail so the rail stays compact and the supporting cast
-      gets editorial space to wrap. */}
+      driver vs. cast at a glance. Empty rows drop out silently. */}
   <AtAGlance
     refCode={refCode}
     rows={[
-      { label: "Situation",      value: entry.situation },
-      { label: "Goal",           value: entry.goal },
-      { label: "Primary owner",  value: entry.primaryOwner },
-      { label: "Roles involved", value: entry.rolesInvolved },
+      { label: "Situation",       value: entry.situation },
+      { label: "Goal",            value: entry.goal },
+      { label: "Do not use when", value: entry.doNotUseWhen && entry.doNotUseWhen.length > 0 ? entry.doNotUseWhen[0] : undefined },
+      { label: "Primary owner",   value: entry.primaryOwner },
+      { label: "Roles involved",  value: entry.rolesInvolved },
     ]}
   />
 
@@ -244,16 +251,27 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     </>
   )}
 
-  {/* 2. WHY THIS MATTERS — short editorial beat. No heuristic band
-        here: EP doesn't have a dedicated single-line heuristic field.
-        `goal` (which would be the closest) is already on AtAGlance. */}
+  {/* 2. WHY THIS MATTERS — the operational justification for running
+        this playbook at all. Promoted to a plum-ruled pull-quote with
+        larger serif typography so the section reads as the REAL reason
+        to reach for this tool, not as a bridge paragraph between
+        Section 1 and Section 3. EP doesn't have a single-line heuristic
+        field, so we don't render a yellow takeaway band here; the
+        pull-quote treatment gives weight through typography and a
+        category-accent left rule instead. Same visual vocabulary RF
+        uses for the SignalQuote hero (thick category-accent left
+        rule, serif body) adapted in EP-plum and scoped to this
+        section only. */}
   <SectionHeader
     id="sec-why"
     step={stepFor("sec-why")}
     eyebrow="Stakes"
     title="Why this matters"
+    note="What this playbook protects against, and why skipping or half-running it tends to be expensive."
   />
-  <p class="ep-prose">{entry.whyThisMatters}</p>
+  <blockquote class="ep-why">
+    <p>{entry.whyThisMatters}</p>
+  </blockquote>
 
   {/* 3. WHAT GOOD LOOKS LIKE — the quality bar for this playbook.
         Rendered as a single LabeledList; deliberately NOT a numbered
@@ -509,6 +527,28 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     line-height: var(--leading-snug);
     color: var(--color-ink);
     margin: var(--space-4) 0;
+  }
+
+  /* Section 2 — "Why this matters" promoted to a pull-quote with a
+     thick plum left rule and larger serif body. The `whyThisMatters`
+     field holds a 23-40-word editorial paragraph justifying the
+     playbook; rendering it as body prose drops it visually below the
+     surrounding sections. The left rule uses the EP accent so it reads
+     as category identity, not decoration; the typography upgrade gives
+     the operational justification weight without turning it into a
+     yellow takeaway band (EP has no heuristic field to pair with). */
+  .ep-why {
+    margin: var(--space-4) 0 var(--space-6) 0;
+    padding: var(--space-3) 0 var(--space-3) var(--space-6);
+    border-left: 6px solid var(--accent-ep);
+    background: transparent;
+  }
+  .ep-why p {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+    line-height: 1.4;
+    color: var(--color-ink);
   }
 
   /* Section 1 — situation + caveat. Uses the shared `.nsb-two-col`
