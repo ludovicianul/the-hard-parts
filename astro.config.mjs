@@ -3,7 +3,7 @@ import { defineConfig } from "astro/config";
 // Static-first config. No adapter. No SSR. No runtime server. Cloudflare Pages Free-friendly.
 // Deployment target: publish the `dist/` directory as a plain static site.
 export default defineConfig({
-  site: "https://nosilverbullet.dev",
+  site: "https://thehardparts.dev",
   output: "static",
   trailingSlash: "never",
   build: {

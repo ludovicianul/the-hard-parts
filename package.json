@@ -1,9 +1,9 @@
 {
-  "name": "nosilverbullet-dev",
+  "name": "thehardparts-dev",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "nosilverbullet.dev — static-first editorial reference site. Phase 1 scaffold.",
+  "description": "The Hard Parts (thehardparts.dev) — static-first engineering reference site. Four catalogs: Failure Modes, Tech Decisions, Red Flags, Engineering Playbook.",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
