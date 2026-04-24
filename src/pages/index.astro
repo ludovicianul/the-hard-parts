@@ -460,6 +460,10 @@ const prettifyEp = (s: string): string =>
 
         <div class="nsb-home__preview-grid">
           {epFeatured.map((e) => (
+            /* Owner role rendered as a plain meta bit (no "Owner · "
+               prefix) to match the EP landing cards. The role name
+               itself ("tech lead", "engineering manager", etc.) is
+               unambiguous; the eyebrow label was visual noise. */
             <EntryCard
               code="EP"
               slug={e.slug}
@@ -469,9 +473,9 @@ const prettifyEp = (s: string): string =>
               severity={epSeverityFor(e.difficulty)}
               refNum={epRefBySlug.get(e.slug)}
               fillFromSeverity
-              metaBits={[
-                e.primaryOwner ? `Owner · ${e.primaryOwner}` : undefined,
-              ].filter((s): s is string => typeof s === "string")}
+              metaBits={[e.primaryOwner].filter(
+                (s): s is string => typeof s === "string" && s.length > 0,
+              )}
             />
           ))}
         </div>

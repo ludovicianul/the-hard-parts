@@ -11,6 +11,20 @@ export interface Props {
 
 const { title, description, accent } = Astro.props;
 
+/**
+ * Nav-only display override for category names.
+ *
+ * The canonical product name for EP is "Engineering Playbook" — it's
+ * used on the category hero, the detail masthead, meta descriptions
+ * and SEO. In the top nav, though, it's the longest of the four and
+ * was forcing the bar to overflow at common laptop widths. The nav
+ * shortens it to "Playbooks" (noun, matches the countLabel already
+ * used on the landing grid). Every other surface keeps the full
+ * canonical name. */
+const NAV_NAME_OVERRIDES: Partial<Record<keyof typeof CATEGORIES, string>> = {
+  EP: "Playbooks",
+};
+
 // Canonical product strings used in <title>, <meta>, OG cards. Keeping
 // them here so every route gets the same editorial framing without
 // each page reinventing it.
@@ -73,10 +87,26 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).toStri
                   data-accent-link={code.toLowerCase()}
                 >
                   <span class="nsb-nav__code">{CATEGORIES[code].shortLabel}</span>
-                  <span class="nsb-nav__name">{CATEGORIES[code].name}</span>
+                  <span class="nsb-nav__name">{NAV_NAME_OVERRIDES[code] ?? CATEGORIES[code].name}</span>
                 </a>
               </li>
             ))}
+            {/* Utility links - sit after the four category buttons so
+                the category nav stays the primary axis. Rendered in
+                the same outline-pill idiom so they read as siblings,
+                not as a separate utility rail. */}
+            <li class="nsb-nav__util">
+              <a href="/search" aria-label="Search entries">
+                <span class="nsb-nav__code" aria-hidden="true">&#x2315;</span>
+                <span class="nsb-nav__name">Search</span>
+              </a>
+            </li>
+            <li class="nsb-nav__util">
+              <a href="/about">
+                <span class="nsb-nav__code" aria-hidden="true">&sect;</span>
+                <span class="nsb-nav__name">About</span>
+              </a>
+            </li>
           </ul>
         </nav>
       </div>
@@ -89,8 +119,15 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).toStri
     <footer class="nsb-footer">
       <div class="nsb-container nsb-footer__inner">
         <p class="nsb-footer__line">
-          nosilverbullet.dev · a reference-first field guide for software people.
+          nosilverbullet.dev &middot; a reference-first field guide for software people.
         </p>
+        <nav class="nsb-footer__nav" aria-label="Utility">
+          <a href="/about">About</a>
+          <span class="nsb-footer__sep" aria-hidden="true">&middot;</span>
+          <a href="/search">Search</a>
+          <span class="nsb-footer__sep" aria-hidden="true">&middot;</span>
+          <a href="/sitemap.xml">Sitemap</a>
+        </nav>
       </div>
     </footer>
 
@@ -136,6 +173,12 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).toStri
         margin: 0;
         padding: 0;
       }
+      /* Shared nav-link chassis — category + utility pills use the
+         same outlined-box anatomy now. Color of the text is what
+         tells them apart: categories render in the brand yellow
+         (they are the primary navigation axis), utility links
+         render in white. Both hover to the same solid-yellow fill
+         so the hover affordance is consistent. */
       .nsb-nav a {
         font-family: var(--font-sans);
         font-weight: 800;
@@ -148,7 +191,7 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).toStri
         gap: var(--space-2);
         padding: 6px 10px;
         border: 2px solid var(--color-surface);
-        color: var(--color-surface);
+        color: var(--color-yellow);
         transition: background var(--dur-fast) var(--ease),
                     color var(--dur-fast) var(--ease);
       }
@@ -158,12 +201,15 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).toStri
         border-color: var(--color-yellow);
       }
       .nsb-nav a:hover .nsb-nav__code { color: var(--color-yellow-ink); }
+      /* The `.nsb-nav__code` span inherits the link's text color by
+         default (yellow for categories, white for utility). No
+         explicit color here — letting it inherit is what keeps the
+         two pill families in sync with their parent link color. */
       .nsb-nav__code {
         font-family: var(--font-sans);
         font-weight: 900;
         font-size: var(--text-xs);
         letter-spacing: var(--tracking-label);
-        color: var(--color-yellow);
       }
       .nsb-main {
         flex: 1 0 auto;
@@ -174,16 +220,95 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).toStri
         padding-block: var(--space-5);
         background: var(--color-surface);
       }
+      .nsb-footer__inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: var(--space-3);
+      }
       .nsb-footer__line {
         font-family: var(--font-sans);
         font-size: var(--text-sm);
         color: var(--color-ink-soft);
         margin: 0;
       }
+      .nsb-footer__nav {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-3);
+        font-family: var(--font-sans);
+        font-size: var(--text-xs);
+        font-weight: 800;
+        letter-spacing: var(--tracking-label);
+        text-transform: uppercase;
+        color: var(--color-ink-soft);
+      }
+      .nsb-footer__nav a {
+        color: var(--color-ink);
+        text-decoration-color: var(--color-rule);
+      }
+      .nsb-footer__nav a:hover { text-decoration-color: var(--accent-current); }
+      .nsb-footer__sep { color: var(--color-ink-faint); }
+
+      /* Utility nav items (Search, About) — same outlined-pill
+         chassis as categories, but rendered with WHITE text so the
+         bar reads as two parallel families:
+             [ FAILURE MODES ] [ TECH DECISIONS ] … in yellow
+             [ ⌕ SEARCH ] [ § ABOUT ]              in white
+         The color swap does all the grouping work, so the earlier
+         vertical rule between the two families is gone — it would
+         be redundant alongside the color contrast, and crowded at
+         narrow widths. A small left margin on the first utility
+         item preserves a little breathing room without drawing a
+         rule. */
+      .nsb-nav li.nsb-nav__util:first-of-type {
+        margin-left: var(--space-3);
+      }
+      .nsb-nav__util a {
+        color: var(--color-surface);
+      }
+      /* Utility glyphs (⌕ / §) sit in the same slot as category
+         codes. They inherit the link's white text color by default
+         and flip to yellow-ink on hover like the rest of the pill.
+         No font-size override here: the glyph shares the parent
+         link's `--text-xs` sizing so the utility pill's line-box
+         height matches the category pills exactly. An earlier
+         `0.95rem` override bumped the glyph a few pixels larger
+         and pushed the whole pill ~3px taller than its siblings. */
+
+      /* Category label strategy — inverted on purpose.
+         --------------------------------------------------------------
+         Earlier iteration showed BOTH the short code ("FM") and the
+         full name ("FAILURE MODES") on wide screens. That doubled the
+         horizontal footprint of each pill and pushed the whole bar
+         into overflow on common laptop widths even after EP was
+         shortened.
+
+         The new rule:
+           · Wide  (> 1100px): show full name only, hide the code.
+             e.g. [ FAILURE MODES ][ TECH DECISIONS ][ RED FLAGS ][ PLAYBOOKS ]
+           · Narrow (≤ 1100px): show code only, hide the name.
+             e.g. [ FM ][ TD ][ RF ][ EP ]
+
+         Utility links (Search, About) keep both glyph + label at all
+         widths — the glyph is ornamental (⌕ / §) and the label is
+         the actual affordance. */
+      .nsb-nav li:not(.nsb-nav__util) .nsb-nav__code { display: none; }
+      @media (max-width: 1100px) {
+        .nsb-nav li:not(.nsb-nav__util) .nsb-nav__code { display: inline; }
+        .nsb-nav li:not(.nsb-nav__util) .nsb-nav__name { display: none; }
+      }
+
       @media (max-width: 640px) {
         .nsb-header__inner { flex-direction: column; align-items: flex-start; }
-        .nsb-nav ul { flex-wrap: wrap; gap: var(--space-3) var(--space-5); }
-        .nsb-nav__name { display: none; }
+        .nsb-nav ul { flex-wrap: wrap; gap: var(--space-2) var(--space-3); }
+        /* Drop the extra left-margin on the first utility pill once
+           the nav wraps — the row gap from flex-wrap already spaces
+           utility pills from the categories above them. */
+        .nsb-nav li.nsb-nav__util:first-of-type {
+          margin-left: 0;
+        }
       }
     </style>
   </body>

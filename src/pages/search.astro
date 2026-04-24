@@ -1,0 +1,544 @@
+---
+/**
+ * /search - static-first catalog search.
+ *
+ * Fetches /search-index.json on first keystroke, then filters in
+ * pure vanilla JS. No framework, no network service after the
+ * initial index download, no runtime infrastructure - aligns with
+ * docs/deployment-target.md (static-first Cloudflare Pages Free).
+ *
+ * Match rules (kept deliberately simple):
+ *   - case-insensitive substring on title + summary + subcategory
+ *   - title matches rank higher than summary matches
+ *   - results grouped by category in the canonical FM -> TD -> RF -> EP
+ *     order so the reader sees the same left-to-right vocabulary the
+ *     homepage and header use
+ *   - limit 40 results per category so a very-common term does not
+ *     render the whole catalog
+ *
+ * Results are rendered as catalog-style rows, not app search results:
+ *   black frame, category-accent code pill, mono ref number, serif
+ *   title + summary. Same editorial voice as RelatedEntries.
+ */
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+<BaseLayout
+  title="Search"
+  description="Search every entry across Failure Modes, Tech Decisions, Red Flags, and the Engineering Playbook."
+>
+  <div class="nsb-container nsb-search">
+    <header class="nsb-search__head">
+      <p class="nsb-search__code">NSB &middot; SEARCH</p>
+      <h1 class="nsb-display nsb-search__title">Find an entry.</h1>
+      <p class="nsb-search__lede">
+        Search titles, summaries, and subcategories across all four
+        catalogs. Case-insensitive; two or three words usually gets
+        you there.
+      </p>
+    </header>
+
+    <form
+      class="nsb-search__form"
+      role="search"
+      aria-label="Search entries"
+      onsubmit="return false;"
+    >
+      <label class="nsb-search__label" for="nsb-search-input">Query</label>
+      <input
+        class="nsb-search__input"
+        id="nsb-search-input"
+        type="search"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck={false}
+        placeholder="e.g. rewrite, hero, migration, benchmark..."
+        aria-controls="nsb-search-results"
+      />
+      <p class="nsb-search__hint" aria-live="polite" id="nsb-search-hint">
+        Start typing to search across 156 entries.
+      </p>
+    </form>
+
+    {/* Results get rendered by the inline script below. Four section
+        containers (one per category) are already present in the DOM so
+        the script only has to populate each section's list - no
+        createElement for the section frames, which keeps the script
+        short and makes the empty state styleable by CSS alone. */}
+    <section class="nsb-search__results" id="nsb-search-results" aria-live="polite">
+      <div class="nsb-search__empty" id="nsb-search-empty">
+        <p>Nothing to show yet. Type a query above to search the catalog.</p>
+      </div>
+
+      <section class="nsb-search__group" data-accent="fm" data-cat="FM" hidden>
+        <header class="nsb-search__group-head">
+          <span class="nsb-search__group-code">FM</span>
+          <h2 class="nsb-search__group-title">Failure Modes</h2>
+          <span class="nsb-search__group-count"></span>
+        </header>
+        <ol class="nsb-search__list"></ol>
+      </section>
+
+      <section class="nsb-search__group" data-accent="td" data-cat="TD" hidden>
+        <header class="nsb-search__group-head">
+          <span class="nsb-search__group-code">TD</span>
+          <h2 class="nsb-search__group-title">Tech Decisions</h2>
+          <span class="nsb-search__group-count"></span>
+        </header>
+        <ol class="nsb-search__list"></ol>
+      </section>
+
+      <section class="nsb-search__group" data-accent="rf" data-cat="RF" hidden>
+        <header class="nsb-search__group-head">
+          <span class="nsb-search__group-code">RF</span>
+          <h2 class="nsb-search__group-title">Red Flags</h2>
+          <span class="nsb-search__group-count"></span>
+        </header>
+        <ol class="nsb-search__list"></ol>
+      </section>
+
+      <section class="nsb-search__group" data-accent="ep" data-cat="EP" hidden>
+        <header class="nsb-search__group-head">
+          <span class="nsb-search__group-code">EP</span>
+          <h2 class="nsb-search__group-title">Engineering Playbook</h2>
+          <span class="nsb-search__group-count"></span>
+        </header>
+        <ol class="nsb-search__list"></ol>
+      </section>
+
+      <div class="nsb-search__zero" id="nsb-search-zero" hidden>
+        <p>No match for that query. Try a different word or fewer words.</p>
+      </div>
+    </section>
+
+    {/* JS module - loads the prebuilt index once, filters on every
+        keystroke. Minimal, dependency-free. Kept in the page so the
+        search experience works even when there is no JS bundler on
+        the deployment path. Progressive-enhancement: if JS is off,
+        the reader still lands on a clearly-labeled search page with
+        a path to the four categories via the header nav. */}
+    <script is:inline>
+      (function () {
+        var input = document.getElementById("nsb-search-input");
+        var empty = document.getElementById("nsb-search-empty");
+        var zero = document.getElementById("nsb-search-zero");
+        var hint = document.getElementById("nsb-search-hint");
+        var groups = document.querySelectorAll(".nsb-search__group");
+        if (!input || !empty || !zero || !hint || !groups.length) return;
+
+        var MAX_PER_CAT = 40;
+        var indexPromise = null;
+        var cache = null;
+
+        function loadIndex() {
+          if (cache) return Promise.resolve(cache);
+          if (indexPromise) return indexPromise;
+          indexPromise = fetch("/search-index.json")
+            .then(function (r) {
+              if (!r.ok) throw new Error("Search index unavailable.");
+              return r.json();
+            })
+            .then(function (rows) {
+              cache = rows;
+              return rows;
+            })
+            .catch(function () {
+              cache = [];
+              return [];
+            });
+          return indexPromise;
+        }
+
+        function score(row, q) {
+          // Case-insensitive: both sides lowercased once at call site.
+          var t = row._t;
+          var s = row._s;
+          var sub = row._sub;
+          var tHit = t.indexOf(q);
+          var sHit = s.indexOf(q);
+          var subHit = sub.indexOf(q);
+          if (tHit === -1 && sHit === -1 && subHit === -1) return -1;
+          // Lower = better. Title matches rank above summary above sub.
+          var best = 9999;
+          if (tHit !== -1) best = Math.min(best, tHit);
+          if (sHit !== -1) best = Math.min(best, 1000 + sHit);
+          if (subHit !== -1) best = Math.min(best, 2000 + subHit);
+          return best;
+        }
+
+        function render(results, q) {
+          // Clear all group lists first.
+          for (var i = 0; i < groups.length; i++) {
+            var g = groups[i];
+            g.hidden = true;
+            var list = g.querySelector(".nsb-search__list");
+            if (list) list.innerHTML = "";
+            var count = g.querySelector(".nsb-search__group-count");
+            if (count) count.textContent = "";
+          }
+          var byCat = { FM: [], TD: [], RF: [], EP: [] };
+          for (var j = 0; j < results.length; j++) {
+            var r = results[j];
+            if (byCat[r.code]) byCat[r.code].push(r);
+          }
+          var total = 0;
+          for (var k = 0; k < groups.length; k++) {
+            var group = groups[k];
+            var cat = group.getAttribute("data-cat");
+            var rows = byCat[cat] || [];
+            if (rows.length === 0) continue;
+            // Sort rows by score so best matches lead inside each category.
+            rows.sort(function (a, b) { return a._score - b._score; });
+            var shown = rows.slice(0, MAX_PER_CAT);
+            total += rows.length;
+            var listEl = group.querySelector(".nsb-search__list");
+            var countEl = group.querySelector(".nsb-search__group-count");
+            countEl.textContent =
+              (rows.length > MAX_PER_CAT
+                ? MAX_PER_CAT + " of " + rows.length
+                : String(rows.length).padStart(2, "0"));
+            for (var m = 0; m < shown.length; m++) {
+              var row = shown[m];
+              var li = document.createElement("li");
+              li.className = "nsb-search__item";
+              var a = document.createElement("a");
+              a.className = "nsb-search__link";
+              a.href = row.href;
+              // Category / ref chip
+              var chip = document.createElement("span");
+              chip.className = "nsb-search__chip";
+              var chipCat = document.createElement("span");
+              chipCat.className = "nsb-search__chip-cat";
+              chipCat.textContent = row.code;
+              var chipNum = document.createElement("span");
+              chipNum.className = "nsb-search__chip-num";
+              chipNum.textContent = row.refNum;
+              chip.appendChild(chipCat);
+              chip.appendChild(chipNum);
+              // Title + summary
+              var body = document.createElement("span");
+              body.className = "nsb-search__body";
+              var t = document.createElement("span");
+              t.className = "nsb-search__t";
+              t.textContent = row.title;
+              var s = document.createElement("span");
+              s.className = "nsb-search__s";
+              s.textContent = row.summary;
+              body.appendChild(t);
+              body.appendChild(s);
+              // Subcategory chip (small)
+              var sub = document.createElement("span");
+              sub.className = "nsb-search__sub";
+              sub.textContent = row.subcategory;
+              a.appendChild(chip);
+              a.appendChild(body);
+              a.appendChild(sub);
+              li.appendChild(a);
+              listEl.appendChild(li);
+            }
+            group.hidden = false;
+          }
+          empty.hidden = true;
+          zero.hidden = total > 0;
+          hint.textContent =
+            total === 0
+              ? ('No match for "' + q + '".')
+              : (total + " match" + (total === 1 ? "" : "es") + " for \"" + q + '".');
+        }
+
+        function showEmpty() {
+          for (var i = 0; i < groups.length; i++) groups[i].hidden = true;
+          zero.hidden = true;
+          empty.hidden = false;
+          hint.textContent = "Start typing to search across 156 entries.";
+        }
+
+        function handle() {
+          var raw = (input.value || "").trim().toLowerCase();
+          if (raw.length < 2) {
+            showEmpty();
+            return;
+          }
+          loadIndex().then(function (rows) {
+            // Annotate rows with lowercased strings once, not every call.
+            if (rows.length && !rows[0]._t) {
+              for (var i = 0; i < rows.length; i++) {
+                rows[i]._t = (rows[i].title || "").toLowerCase();
+                rows[i]._s = (rows[i].summary || "").toLowerCase();
+                rows[i]._sub = (rows[i].subcategory || "").toLowerCase();
+              }
+            }
+            var out = [];
+            for (var j = 0; j < rows.length; j++) {
+              var sc = score(rows[j], raw);
+              if (sc >= 0) {
+                rows[j]._score = sc;
+                out.push(rows[j]);
+              }
+            }
+            render(out, raw);
+          });
+        }
+
+        input.addEventListener("input", handle);
+        // Deep-link support: /search?q=rewrite lands with that query
+        // already filled in and filtered.
+        var params = new URLSearchParams(window.location.search);
+        var initial = params.get("q");
+        if (initial) {
+          input.value = initial;
+          handle();
+        }
+        // Focus on load so the keyboard-first reader can type immediately.
+        try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); }
+      })();
+    </script>
+  </div>
+
+  <style>
+    .nsb-search {
+      padding-block: var(--space-7) var(--space-9);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+      max-width: 56rem;
+    }
+    .nsb-search__head {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .nsb-search__code {
+      margin: 0;
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-ink-dim);
+      font-feature-settings: "tnum";
+    }
+    .nsb-search__title {
+      margin: 0;
+      font-size: clamp(var(--text-3xl), 6vw, 4rem);
+      line-height: 0.95;
+    }
+    .nsb-search__lede {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: var(--text-md);
+      line-height: var(--leading-snug);
+      color: var(--color-ink-dim);
+      max-width: 40rem;
+    }
+
+    /* Input form - black-framed panel with a mono label above the
+       input, matching the site's other framed-input vocabulary
+       (masthead eyebrows, reference codes). Big enough that a reader
+       scanning the page knows this is the primary action. */
+    .nsb-search__form {
+      background: var(--color-surface);
+      border: 3px solid var(--color-frame);
+      padding: var(--space-4) var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+    .nsb-search__label {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-ink);
+    }
+    .nsb-search__input {
+      font-family: var(--font-sans);
+      font-size: clamp(var(--text-lg), 2.2vw, var(--text-xl));
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      border: 0;
+      border-bottom: 3px solid var(--color-frame);
+      background: transparent;
+      padding: var(--space-2) 0;
+      color: var(--color-ink);
+      outline: none;
+      width: 100%;
+    }
+    .nsb-search__input::placeholder {
+      color: var(--color-ink-faint);
+      font-weight: 500;
+    }
+    .nsb-search__input:focus {
+      border-bottom-color: var(--accent-current);
+    }
+    .nsb-search__hint {
+      margin: 0;
+      font-family: var(--font-sans);
+      font-size: var(--text-xs);
+      font-weight: 700;
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-ink-dim);
+      font-feature-settings: "tnum";
+    }
+
+    /* Results container */
+    .nsb-search__results {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+    }
+    .nsb-search__empty,
+    .nsb-search__zero {
+      padding: var(--space-5);
+      background: var(--color-paper-alt);
+      border: 2px solid var(--color-frame);
+      border-left-width: 6px;
+      border-left-color: var(--color-yellow);
+      font-family: var(--font-serif);
+      font-size: var(--text-md);
+      color: var(--color-ink-dim);
+      font-style: italic;
+    }
+    .nsb-search__empty p,
+    .nsb-search__zero p { margin: 0; }
+
+    /* Group header - black bar with yellow code + white title. Same
+       editorial vocabulary as the landing groups and related-entries
+       panels, so a search result feels like part of the same catalog
+       system - not a generic dashboard search result. */
+    .nsb-search__group {
+      background: var(--color-surface);
+      border: 3px solid var(--color-frame);
+    }
+    .nsb-search__group-head {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: var(--space-3);
+      align-items: baseline;
+      padding: var(--space-3) var(--space-5);
+      background: var(--color-frame);
+      color: var(--color-surface);
+    }
+    .nsb-search__group-code {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      color: var(--accent-current);
+      font-feature-settings: "tnum";
+    }
+    .nsb-search__group-title {
+      margin: 0;
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-md);
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      color: var(--color-surface);
+    }
+    .nsb-search__group-count {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-yellow);
+      font-feature-settings: "tnum";
+      white-space: nowrap;
+    }
+
+    /* Result rows - catalog row treatment, same shape as the
+       RelatedEntries rows so cross-reference panels and search rows
+       look like the same kind of object. */
+    .nsb-search__list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .nsb-search__item + .nsb-search__item {
+      border-top: 2px solid var(--color-frame);
+    }
+    .nsb-search__link {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: var(--space-3) var(--space-4);
+      align-items: center;
+      padding: var(--space-3) var(--space-5);
+      text-decoration: none;
+      color: var(--color-ink);
+      transition: background var(--dur-fast) var(--ease);
+    }
+    .nsb-search__link:hover {
+      background: var(--color-yellow);
+      color: var(--color-yellow-ink);
+    }
+    .nsb-search__chip {
+      display: inline-flex;
+      align-items: center;
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: 0.68rem;
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      font-feature-settings: "tnum";
+      border: 2px solid var(--color-frame);
+      overflow: hidden;
+    }
+    .nsb-search__chip-cat {
+      background: var(--color-frame);
+      color: var(--color-surface);
+      padding: 4px 8px;
+      line-height: 1;
+    }
+    .nsb-search__chip-num {
+      background: var(--color-surface);
+      color: var(--color-ink);
+      padding: 4px 8px;
+      line-height: 1;
+      border-left: 2px solid var(--color-frame);
+    }
+    .nsb-search__link:hover .nsb-search__chip-num {
+      background: var(--color-yellow);
+      color: var(--color-yellow-ink);
+    }
+    .nsb-search__body {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .nsb-search__t {
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: var(--text-base);
+      color: inherit;
+      line-height: var(--leading-snug);
+    }
+    .nsb-search__s {
+      font-family: var(--font-serif);
+      font-size: var(--text-sm);
+      color: var(--color-ink-dim);
+      line-height: var(--leading-snug);
+    }
+    .nsb-search__link:hover .nsb-search__s { color: var(--color-yellow-ink); }
+    .nsb-search__sub {
+      font-family: var(--font-sans);
+      font-weight: 800;
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-ink-dim);
+      white-space: nowrap;
+    }
+    .nsb-search__link:hover .nsb-search__sub { color: var(--color-yellow-ink); }
+
+    @media (max-width: 640px) {
+      .nsb-search__link {
+        grid-template-columns: auto 1fr;
+        row-gap: var(--space-2);
+      }
+      .nsb-search__sub { grid-column: 1 / -1; }
+    }
+  </style>
+</BaseLayout>

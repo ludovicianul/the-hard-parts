@@ -96,8 +96,12 @@ const prettify = (s: string): string =>
       countLabel={`${String(group.entries.length).padStart(2, "0")} ${group.entries.length === 1 ? "playbook" : "playbooks"}`}
     >
       {group.entries.map((e) => (
-        /* Card meta carries `Owner · {primaryOwner}` — the single
-           most useful "is this for me?" scan signal for EP. Time
+        /* Card meta carries the primary owner role as plain text —
+           the single most useful "is this for me?" scan signal for
+           EP. The word "Owner" was dropped from the meta bit because
+           the value itself (e.g. "tech lead", "engineering manager")
+           already reads unambiguously as a role, and the eyebrow
+           label added visual noise without adding meaning. Time
            horizon + difficulty + roles all live on the detail
            MetaRail / AtAGlance. */
         <EntryCard
@@ -109,9 +113,9 @@ const prettify = (s: string): string =>
           severity={severityCardFill(e.difficulty)}
           refNum={refBySlug.get(e.slug)}
           fillFromSeverity
-          metaBits={[
-            e.primaryOwner ? `Owner · ${e.primaryOwner}` : undefined,
-          ].filter((s): s is string => typeof s === "string")}
+          metaBits={[e.primaryOwner].filter(
+            (s): s is string => typeof s === "string" && s.length > 0,
+          )}
         />
       ))}
     </LandingGroup>

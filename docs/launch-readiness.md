@@ -173,9 +173,6 @@ framing; category pages compose the middle.
 
 ### Technical backlog (nice-to-have, not blockers)
 
-- **Client-side search** — prebuilt JSON index + tiny lunr-style
-  matcher. Aligns with static-first policy from
-  `docs/deployment-target.md §Search Guidance`
 - **OG image rendering** — each page currently has OG text fields but
   no image. A build-time `og-image.png` generator (Satori / resvg)
   would add social cards without runtime infrastructure

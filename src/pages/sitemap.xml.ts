@@ -35,6 +35,10 @@ export const GET: APIRoute = ({ site }) => {
   // Homepage — front door, highest priority.
   urls.push({ loc: `${origin}/`, changefreq: "weekly", priority: "1.0" });
 
+  // Supporting pages (About / Method + Search).
+  urls.push({ loc: `${origin}/about`,  changefreq: "monthly", priority: "0.5" });
+  urls.push({ loc: `${origin}/search`, changefreq: "monthly", priority: "0.5" });
+
   // Category landings.
   for (const code of CATEGORY_ORDER) {
     urls.push({

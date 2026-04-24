@@ -1,0 +1,658 @@
+---
+/**
+ * /about - method / preface page.
+ *
+ * Field-guide preface, not a corporate "about us". Voice target: the
+ * opening pages of a technical manual - small typographic anatomy
+ * ("NSB / METHOD / 01"), numbered sections, tabloid frames,
+ * deliberately no headshots / no team photos / no CTA buttons.
+ *
+ * Uses BaseLayout (not CategoryLayout / DetailLayout) because this
+ * page has no category accent and no catalog-entry structure.
+ * Shared primitives reused: CalloutBand (blue serif synthesis at
+ * the close), LabeledList (boxed AI lists) - so the About page
+ * reads as part of the same product, not as a separate template.
+ */
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import CalloutBand from "@/components/CalloutBand.astro";
+import LabeledList from "@/components/LabeledList.astro";
+import SectionHeader from "@/components/SectionHeader.astro";
+import { CATEGORIES, CATEGORY_ORDER } from "@/lib/categories";
+import { listEntries } from "@/lib/load";
+import { ensureValidated } from "@/lib/validate";
+
+ensureValidated();
+
+// Per-category stats rendered inside the "Four catalogs" section.
+const catCards = CATEGORY_ORDER.map((code) => ({
+  code,
+  route: CATEGORIES[code].route,
+  name: CATEGORIES[code].name,
+  count: listEntries(code).length,
+  accent: code.toLowerCase() as "fm" | "td" | "rf" | "ep",
+}));
+const totalEntries = catCards.reduce((sum, c) => sum + c.count, 0);
+
+// Section model for the in-page index. Keeping the structure declarative
+// makes the anchor list trivially in-sync with the headings below.
+const sections = [
+  { step: "01", id: "sec-what",     label: "What this is" },
+  { step: "02", id: "sec-four",     label: "The four catalogs" },
+  { step: "03", id: "sec-use",      label: "How to use it" },
+  { step: "04", id: "sec-entries",  label: "How entries are structured" },
+  { step: "05", id: "sec-ai",       label: "How AI is treated" },
+  { step: "06", id: "sec-pending",  label: "Cross-references and pending entries" },
+  { step: "07", id: "sec-stance",   label: "What this site is not" },
+];
+---
+<BaseLayout
+  title="About"
+  description="What nosilverbullet.dev is, how the four catalogs are organized, how to use them, and how AI is treated throughout the system."
+>
+  <div class="nsb-container nsb-about">
+    {/* --- Masthead strip -------------------------------------------
+        Three-part tabloid ID block: NSB code, section label, edition.
+        Identical rhythm to the homepage closer plate and the detail
+        masthead reference code, so a reader sees "the method page"
+        as part of the same editorial system, not a separate About
+        template. */}
+    <header class="nsb-about__masthead nsb-frame nsb-frame--heavy" aria-label="About masthead">
+      <div class="nsb-about__strip">
+        <span class="nsb-about__strip-code">NSB</span>
+        <span class="nsb-about__strip-sep">&middot;</span>
+        <span class="nsb-about__strip-label">About</span>
+        <span class="nsb-about__strip-spacer" />
+        <span class="nsb-about__strip-edition">Edition 01</span>
+      </div>
+      <div class="nsb-about__title-col">
+        <h1 class="nsb-display nsb-about__title">
+          How this<br />reference<br />is built.
+        </h1>
+        <p class="nsb-about__lede">
+          nosilverbullet.dev is a reference-first field guide for
+          software work: {totalEntries} named patterns, trade-offs,
+          warning signals, and playbooks organised across four
+          catalogs. This page is the preface &mdash; what the site is,
+          what it is not, and how to use it.
+        </p>
+      </div>
+    </header>
+
+    {/* In-page index. Mirrors the detail-page SectionIndex visual but
+        stripped down (no sticky rail, no scroll-spy JS) because the
+        About page is short and the reader is not in lookup mode. */}
+    <nav class="nsb-about__toc" aria-label="On this page">
+      <p class="nsb-about__toc-head">On this page</p>
+      <ol class="nsb-about__toc-list">
+        {sections.map((s) => (
+          <li>
+            <a href={`#${s.id}`} class="nsb-about__toc-link">
+              <span class="nsb-about__toc-step">{s.step}</span>
+              <span class="nsb-about__toc-label">{s.label}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+
+    {/* 01. What this is */}
+    <section class="nsb-about__section">
+      <SectionHeader id="sec-what" step="01" title="What this is" />
+      <p>
+        Most software writing on the internet is one of these: shallow
+        inspiration, blog-post opinion, tool marketing, or fragmented
+        best practices.
+      </p>
+      <p>
+        nosilverbullet.dev is not any of those. It is a
+        <strong>reference system</strong> &mdash; a catalog of named
+        patterns you can look up the way you'd look up an entry in a
+        field guide. Entries are structured, cross-linked, and intended
+        to be revisited repeatedly, not consumed once.
+      </p>
+      <p>
+        The stance is deliberately anti-dogmatic. Software work is
+        contextual; trade-offs are real; patterns repeat. Naming them
+        lets people act earlier and argue better.
+      </p>
+    </section>
+
+    {/* 02. The four catalogs */}
+    <section class="nsb-about__section">
+      <SectionHeader id="sec-four" step="02" title="The four catalogs" />
+      <p>
+        The site is organised around four complementary categories.
+        Each has its own voice, its own metadata ladders, and its own
+        signature section on the detail page.
+      </p>
+      <ul class="nsb-about__cats" aria-label="The four catalogs">
+        {catCards.map((c) => (
+          <li class="nsb-about__cat" data-accent={c.accent}>
+            <a class="nsb-about__cat-link" href={`/${c.route}`}>
+              <span class="nsb-about__cat-code">{c.code}</span>
+              <span class="nsb-about__cat-body">
+                <span class="nsb-about__cat-name">{c.name}</span>
+                <span class="nsb-about__cat-blurb">
+                  {c.code === "FM" && "Named failure patterns in software work - how they start, how they escalate, and what good responses look like."}
+                  {c.code === "TD" && "Structured trade-off references for consequential engineering decisions. Two options side-by-side, honest about what's lost on each side."}
+                  {c.code === "RF" && "Early-warning signals across code, team, process, leadership, and AI-enabled work. What you notice, what it usually means, what to check next."}
+                  {c.code === "EP" && "Operational playbooks for recurring engineering situations. Steps, actions, outputs, common mistakes - the reference you'd keep open while running one."}
+                </span>
+              </span>
+              <span class="nsb-about__cat-count">{String(c.count).padStart(2, "0")}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    {/* 03. How to use it */}
+    <section class="nsb-about__section">
+      <SectionHeader id="sec-use" step="03" title="How to use it" />
+      <p>
+        Two reading modes the design supports equally:
+      </p>
+      <div class="nsb-two-col nsb-two-col--equal">
+        <LabeledList
+          variant="boxed"
+          label="Browse mode"
+          caption="You are exploring patterns."
+          items={[
+            "Open a category landing page.",
+            "Scan the grid for card weight (darker = more severe / more difficult).",
+            "Open any entry whose title matches something you have seen.",
+            "Follow the Connected-X cross-references into adjacent entries.",
+          ]}
+        />
+        <LabeledList
+          variant="boxed"
+          label="Lookup mode"
+          caption="You arrived with a specific problem."
+          items={[
+            "Use /search or the homepage's \"Pick your way in\" panel to reach the right catalog.",
+            "Land on a detail page; read the AT-A-GLANCE identity panel first.",
+            "Skim the MetaRail for the ordinal dimensions that matter to you.",
+            "Read only the sections that answer your question - the in-page index keeps you oriented.",
+          ]}
+        />
+      </div>
+    </section>
+
+    {/* 04. How entries are structured */}
+    <section class="nsb-about__section">
+      <SectionHeader id="sec-entries" step="04" title="How entries are structured" />
+      <p>
+        Every detail page shares the same outer chassis so a reader
+        can move across categories without relearning the layout:
+      </p>
+      <ul class="nsb-about__chassis">
+        <li>
+          <strong>Masthead.</strong> Category code + catalog reference
+          number (e.g. <span class="nsb-about__mono">FM-05</span>), the
+          entry title, and one or two severity-style pills that map
+          gravity to a grayscale weight ramp.
+        </li>
+        <li>
+          <strong>MetaRail.</strong> A framed strip of ordinal
+          attributes with bar-ladder indicators &mdash; severity,
+          frequency, detectability, difficulty, confidence. The same
+          ladders drive the reading-guide tiles on each category
+          landing page.
+        </li>
+        <li>
+          <strong>At-a-glance.</strong> Three or four identity rows
+          (&ldquo;often mistaken for&rdquo;, &ldquo;primary owner&rdquo;,
+          &ldquo;really about&rdquo;). Framing, not prose.
+        </li>
+        <li>
+          <strong>Narrative sections.</strong> Category-specific
+          structure: FM walks the arc, TD weighs options, RF
+          diagnoses, EP walks the procedure. Section anatomy is
+          consistent; section ordering is schema-driven.
+        </li>
+        <li>
+          <strong>Connected patterns.</strong> A grid of
+          cross-references into the other three catalogs, resolved
+          through the shared catalog reference codes.
+        </li>
+      </ul>
+      <p>
+        Category identity shows up as accent color on the masthead and
+        on relationship panels. Severity shows up as a grayscale weight
+        ramp. Those two channels stay strictly separate &mdash; color
+        is never severity, weight is never category.
+      </p>
+    </section>
+
+    {/* 05. How AI is treated */}
+    <section class="nsb-about__section">
+      <SectionHeader id="sec-ai" step="05" title="How AI is treated" />
+      <p>
+        AI shows up as a first-class dimension on almost every detail
+        page. Not because AI is inherently special &mdash; because AI
+        is changing how software work actually goes wrong, and a
+        reference that ignores that would be dishonest.
+      </p>
+      <p>
+        Every entry that has an AI dimension renders the same section:
+        two boxed lists (&ldquo;AI can help with&rdquo; /
+        &ldquo;AI can make worse by&rdquo;) followed by a blue-serif
+        synthesis callout. Same anatomy on FM, TD, RF, and EP detail
+        pages.
+      </p>
+      <CalloutBand label="AI synthesis" variant="blue" serif>
+        <p>
+          The site is AI-aware, not AI-hyped. There is no promise that
+          AI solves the patterns named here, and there are entries
+          specifically about AI making existing failure modes harder
+          to see. Both postures live in the catalog; neither wins by
+          default.
+        </p>
+      </CalloutBand>
+    </section>
+
+    {/* 06. Cross-references and pending entries */}
+    <section class="nsb-about__section">
+      <SectionHeader id="sec-pending" step="06" title="Cross-references and pending entries" />
+      <p>
+        Every entry lists related failure modes, tech decisions, red
+        flags, and playbooks. These are structured references &mdash;
+        not free-text footnotes &mdash; so a reader can move between
+        adjacent patterns in one click.
+      </p>
+      <p>
+        Some of those references point to entries that have not been
+        authored yet. When that happens, the site does not hide the
+        reference or fabricate the link. Pending entries render as a
+        dedicated subpanel with a
+        <span class="nsb-about__pend">PEND</span>
+        marker next to the slug &mdash; honest, visible, and a clear
+        signal of editorial backlog. They do <strong>not</strong>
+        render as broken links.
+      </p>
+      <p>
+        If a pending reference keeps showing up next to entries you
+        care about, that's the site telling you which entry is
+        worth authoring next.
+      </p>
+    </section>
+
+    {/* 07. What this site is not */}
+    <section class="nsb-about__section">
+      <SectionHeader id="sec-stance" step="07" title="What this site is not" />
+      <ul class="nsb-about__not">
+        <li>Not a blog.</li>
+        <li>Not a discussion forum.</li>
+        <li>Not a learning management system.</li>
+        <li>Not a &ldquo;frameworks for engineering&rdquo; product.</li>
+        <li>Not a tool-marketing site dressed up as editorial.</li>
+        <li>Not trying to be exhaustive &mdash; trying to be useful.</li>
+      </ul>
+      <p>
+        The goal is the opposite of &ldquo;one more thing to read&rdquo;.
+        The goal is a catalog you keep open while thinking.
+      </p>
+    </section>
+
+    {/* Closer - same two-beat editorial motto the homepage uses, so
+        the method page's voice lines up with the rest of the
+        product. No CTA buttons, no "get started", no newsletter. */}
+    <aside class="nsb-about__closer" aria-label="Working motto">
+      <div class="nsb-about__closer-code">
+        <span class="nsb-about__closer-code-cat">N S B</span>
+        <span class="nsb-about__closer-code-num">&middot; 01</span>
+      </div>
+      <div class="nsb-about__closer-body">
+        <p class="nsb-about__closer-lede">
+          Software is hard. That&rsquo;s the point.
+        </p>
+        <p class="nsb-about__closer-motto">
+          Name the patterns. Show the trade-offs.<br />
+          Surface the signals. Make the useful path visible.
+        </p>
+      </div>
+    </aside>
+  </div>
+
+  <style>
+    .nsb-about {
+      padding-block: var(--space-6) var(--space-9);
+      display: flex;
+      flex-direction: column;
+      /* Gap is small here because SectionHeader carries its own
+         `margin-top: var(--space-8)` + a top accent rule — the same
+         vertical rhythm used on FM/TD/RF/EP detail pages. Adding a
+         big flex gap on top of that double-spaces every section and
+         makes the About page feel airier than the detail pages it
+         mirrors. Masthead → TOC → first section get their top space
+         from SectionHeader; the small gap only separates pieces
+         that don't bring their own leading margin (masthead ↔ TOC,
+         last section ↔ closer). */
+      gap: var(--space-3);
+      max-width: 56rem;
+    }
+    /* Neutralise SectionHeader's top margin on the very first section
+       so the TOC and the first chapter aren't separated by a full
+       detail-page-sized gap — the TOC already has its own padding. */
+    .nsb-about__section:first-of-type :global(.nsb-section-header) {
+      margin-top: var(--space-4);
+    }
+
+    /* ---- Masthead ----------------------------------------------- */
+    .nsb-about__masthead { padding: 0; }
+    .nsb-about__strip {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-5);
+      background: var(--color-frame);
+      color: var(--color-surface);
+      font-family: var(--font-sans);
+      font-weight: 800;
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      font-size: var(--text-xs);
+      border-bottom: 3px solid var(--color-frame);
+    }
+    .nsb-about__strip-code { color: var(--color-yellow); font-weight: 900; }
+    .nsb-about__strip-sep { opacity: 0.5; }
+    .nsb-about__strip-label { color: var(--color-surface); }
+    .nsb-about__strip-spacer { flex: 1 1 auto; }
+    .nsb-about__strip-edition { color: var(--color-surface); opacity: 0.75; }
+    .nsb-about__title-col {
+      padding: clamp(var(--space-5), 3vw, var(--space-7));
+      background: var(--color-surface);
+    }
+    .nsb-about__title {
+      margin: 0;
+      font-size: clamp(var(--text-3xl), 7vw, 5rem);
+      line-height: 0.95;
+    }
+    .nsb-about__lede {
+      margin: var(--space-5) 0 0 0;
+      font-family: var(--font-serif);
+      font-size: clamp(var(--text-md), 1.6vw, var(--text-lg));
+      line-height: var(--leading-snug);
+      color: var(--color-ink-dim);
+      max-width: 42rem;
+    }
+
+    /* ---- Contents index ----------------------------------------- */
+    .nsb-about__toc {
+      background: var(--color-surface);
+      border: 2px solid var(--color-frame);
+      padding: var(--space-4) var(--space-5);
+    }
+    .nsb-about__toc-head {
+      margin: 0 0 var(--space-3) 0;
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-ink);
+    }
+    .nsb-about__toc-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+    }
+    @media (min-width: 640px) {
+      .nsb-about__toc-list { grid-template-columns: 1fr 1fr; gap: var(--space-2) var(--space-5); }
+    }
+    .nsb-about__toc-link {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: var(--space-3);
+      align-items: baseline;
+      text-decoration: none;
+      color: var(--color-ink);
+      padding: 4px 0;
+      border-bottom: 1px solid transparent;
+      transition: border-color var(--dur-fast) var(--ease);
+    }
+    .nsb-about__toc-link:hover { border-bottom-color: var(--color-ink); }
+    .nsb-about__toc-step {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      color: var(--color-ink-dim);
+      font-feature-settings: "tnum";
+      min-width: 1.5rem;
+    }
+    .nsb-about__toc-label {
+      font-family: var(--font-serif);
+      font-size: var(--text-sm);
+      line-height: var(--leading-snug);
+    }
+
+    /* ---- Sections ----------------------------------------------- */
+    /* Section chassis now delegates heading anatomy to the shared
+       SectionHeader component — same thick accent rule + filled
+       black numeric step badge used on FM/TD/RF/EP detail pages.
+       The earlier custom `.nsb-about__sec-head` / Roman-numeral
+       treatment was removed so the About chapters read as part of
+       the same editorial system, not a parallel template. */
+    .nsb-about__section {
+      scroll-margin-top: var(--space-6);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+    /* Prose paragraphs that are DIRECT children of the section only.
+       Using `> p` (not `p`) stops this rule from cascading into
+       embedded components that bring their own typography — the
+       CalloutBand's blue-serif body, for instance, needs its own
+       white-on-blue color to stay readable. With plain `p`, the
+       scoped-style specificity ladder (.nsb-about__section[scope] p
+       = 0,2,1) was outscoring CalloutBand's :global(p) rule (0,1,1)
+       and forcing the AI-synthesis body to near-black ink on the
+       blue fill. Direct-child scoping keeps the rule local to this
+       page's prose without invading embedded components. */
+    .nsb-about__section > p {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: var(--text-md);
+      line-height: var(--leading-snug);
+      color: var(--color-ink);
+    }
+
+    /* ---- Four catalogs list ------------------------------------- */
+    .nsb-about__cats {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      border: 3px solid var(--color-frame);
+      background: var(--color-surface);
+    }
+    .nsb-about__cat + .nsb-about__cat {
+      border-top: 2px solid var(--color-frame);
+    }
+    .nsb-about__cat-link {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: var(--space-4);
+      align-items: center;
+      padding: var(--space-4) var(--space-5);
+      text-decoration: none;
+      color: var(--color-ink);
+      transition: background var(--dur-fast) var(--ease);
+    }
+    .nsb-about__cat-link:hover {
+      background: var(--color-yellow);
+      color: var(--color-yellow-ink);
+    }
+    .nsb-about__cat-code {
+      display: inline-block;
+      padding: 6px 10px;
+      background: var(--accent-current);
+      color: var(--color-surface);
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      font-feature-settings: "tnum";
+    }
+    .nsb-about__cat-link:hover .nsb-about__cat-code {
+      background: var(--color-frame);
+      color: var(--color-yellow);
+    }
+    .nsb-about__cat-body {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .nsb-about__cat-name {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      font-size: var(--text-base);
+      color: inherit;
+    }
+    .nsb-about__cat-blurb {
+      font-family: var(--font-serif);
+      font-size: var(--text-sm);
+      line-height: var(--leading-snug);
+      color: var(--color-ink-dim);
+    }
+    .nsb-about__cat-link:hover .nsb-about__cat-blurb { color: var(--color-yellow-ink); }
+    .nsb-about__cat-count {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-lg);
+      letter-spacing: -0.01em;
+      font-feature-settings: "tnum";
+      color: var(--color-ink);
+    }
+    .nsb-about__cat-link:hover .nsb-about__cat-count { color: var(--color-yellow-ink); }
+
+    /* ---- Chassis list (how entries are structured) -------------- */
+    .nsb-about__chassis {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .nsb-about__chassis li {
+      font-family: var(--font-serif);
+      font-size: var(--text-md);
+      line-height: var(--leading-snug);
+      color: var(--color-ink);
+      padding-left: 1.3em;
+      position: relative;
+    }
+    .nsb-about__chassis li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.55em;
+      width: 6px;
+      height: 6px;
+      background: var(--color-frame);
+    }
+    .nsb-about__mono {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.92em;
+      color: var(--color-ink);
+      background: var(--color-paper-alt);
+      padding: 1px 4px;
+    }
+    .nsb-about__pend {
+      display: inline-block;
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: 0.72em;
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-surface);
+      background: var(--color-red);
+      padding: 2px 6px;
+      line-height: 1;
+      vertical-align: baseline;
+    }
+
+    /* ---- Not list ----------------------------------------------- */
+    .nsb-about__not {
+      list-style: none;
+      padding: var(--space-4) var(--space-5);
+      margin: 0;
+      background: var(--color-paper-alt);
+      border: 2px solid var(--color-frame);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+    .nsb-about__not li {
+      font-family: var(--font-sans);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      font-size: var(--text-md);
+      color: var(--color-ink);
+    }
+
+    /* ---- Closer ------------------------------------------------- */
+    .nsb-about__closer {
+      background: var(--color-surface);
+      border: 3px solid var(--color-frame);
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: stretch;
+    }
+    .nsb-about__closer-code {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-4) var(--space-5);
+      background: var(--color-frame);
+      color: var(--color-yellow);
+      font-family: var(--font-sans);
+      font-weight: 900;
+      letter-spacing: var(--tracking-label);
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .nsb-about__closer-code-cat { color: var(--color-yellow); }
+    .nsb-about__closer-code-num {
+      color: var(--color-surface);
+      opacity: 0.7;
+      font-feature-settings: "tnum";
+    }
+    .nsb-about__closer-body {
+      padding: var(--space-4) var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+    .nsb-about__closer-lede {
+      margin: 0;
+      font-family: var(--font-sans);
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      font-size: clamp(var(--text-base), 1.6vw, var(--text-lg));
+      color: var(--color-ink);
+      line-height: 1.1;
+    }
+    .nsb-about__closer-motto {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: var(--text-sm);
+      line-height: var(--leading-snug);
+      color: var(--color-ink-dim);
+    }
+    @media (max-width: 640px) {
+      .nsb-about__closer { grid-template-columns: 1fr; }
+    }
+  </style>
+</BaseLayout>
