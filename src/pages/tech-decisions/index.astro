@@ -64,19 +64,19 @@ entries.forEach((e, i) => {
 <CategoryLayout
   code="TD"
   heroTitle="Tech Decisions"
-  tagline="Structured trade-off references for consequential engineering and product decisions — the kind where context matters more than ideology, and where the honest answer is almost always 'it depends, and here's on what'."
+  tagline="Structured trade-off references for consequential engineering and product decisions. The kind where context matters more than ideology, and the honest answer is almost always 'it depends, and here's on what'."
 >
   <header class="nsb-landing-prelude" aria-label="About this catalog">
     <LandingIntroPanel>
       Each entry in this catalog is a <strong>trade-off</strong>, not a
       recommendation. Two concrete options are laid out side by side with
       their real conditions, costs, hidden costs, and the failure modes
-      each invites when misapplied. The grid below groups decisions by
-      the <em>axis</em> of the call &mdash; architecture shape, delivery
-      posture, team model, quality bar, AI systems &mdash; not by the
-      kind of team making it. Card weight reflects
-      <strong>severity if wrong</strong> on a five-step grayscale ramp
-      &mdash; paper at <em>low</em>, near-black at <em>critical</em>.
+      each invites when misapplied. The grid below groups decisions by the <em>axis</em> of the
+      call (architecture shape, delivery posture, team model, quality
+      bar, AI systems), not by the kind of team making it. Card weight
+      reflects <strong>severity if wrong</strong> on a five-step
+      grayscale ramp: paper at <em>low</em>, near-black at
+      <em>critical</em>.
     </LandingIntroPanel>
 
     <ReadingGuide>
@@ -87,21 +87,21 @@ entries.forEach((e, i) => {
       />
       <AttributeCard
         title="Frequency"
-        description="How often this decision actually shows up in real engineering work — from rare architectural bets to universal team questions."
+        description="How often this decision actually shows up in real engineering work: from rare architectural bets to universal team questions."
         scale={FREQUENCY_SCALE}
         trendNote={{
           label: "increasing",
-          caption: "Not a point on the scale — a trend. Flags decisions whose prevalence is rising (often AI-era).",
+          caption: "Not a point on the scale. A trend. Flags decisions whose prevalence is rising (often AI-era).",
         }}
       />
       <AttributeCard
         title="Reversibility"
-        description="How hard it is to undo this decision once taken — from cheap to walk back, to a one-way door you'll live with for years."
+        description="How hard it is to undo this decision once taken: from cheap to walk back, to a one-way door you'll live with for years."
         scale={REVERSIBILITY_SCALE}
       />
       <AttributeCard
         title="Confidence"
-        description="How sure we are the framing here holds up across teams — provisional vs. repeatedly observed trade-offs."
+        description="How sure we are the framing here holds up across teams: provisional vs. repeatedly observed trade-offs."
         scale={CONFIDENCE_SCALE}
       />
     </ReadingGuide>

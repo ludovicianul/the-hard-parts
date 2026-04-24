@@ -39,7 +39,7 @@ const NAV_NAME_OVERRIDES: Partial<Record<keyof typeof CATEGORIES, string>> = {
 // each page reinventing it.
 const SITE_NAME = "thehardparts.dev";
 const SITE_TAGLINE =
-  "The Hard Parts \u2014 an engineering reference for recurring software failures, warning signals, hard decisions, and practical playbooks.";
+  "The Hard Parts. An engineering reference for recurring software failures, warning signals, hard decisions, and practical playbooks.";
 const fullTitle = title === SITE_NAME ? title : `${title} · ${SITE_NAME}`;
 const metaDescription = description ?? SITE_TAGLINE;
 
@@ -102,7 +102,7 @@ const CF_BEACON_TOKEN = import.meta.env.PUBLIC_CF_BEACON_TOKEN as
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="The Hard Parts — an engineering reference. Failure modes. Red flags. Trade-offs. Playbooks." />
+    <meta property="og:image:alt" content="The Hard Parts. An engineering reference. Failure modes. Red flags. Trade-offs. Playbooks." />
 
     {/* Twitter / X — upgraded to summary_large_image to render the
         full editorial card rather than a thumbnail. Same image as OG. */}
@@ -110,7 +110,7 @@ const CF_BEACON_TOKEN = import.meta.env.PUBLIC_CF_BEACON_TOKEN as
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={metaDescription} />
     <meta name="twitter:image" content={ogImageUrl} />
-    <meta name="twitter:image:alt" content="The Hard Parts — an engineering reference. Failure modes. Red flags. Trade-offs. Playbooks." />
+    <meta name="twitter:image:alt" content="The Hard Parts. An engineering reference. Failure modes. Red flags. Trade-offs. Playbooks." />
 
     {/* Cloudflare Web Analytics — privacy-friendly, cookie-less,
         free on all Cloudflare accounts. Emitted only when the
@@ -142,7 +142,7 @@ const CF_BEACON_TOKEN = import.meta.env.PUBLIC_CF_BEACON_TOKEN as
             yellow secondary cue matching the existing color rhythm
             (yellow dot + yellow .dev) so the nameplate silhouette is
             unchanged. */}
-        <a href="/" class="nsb-brand" aria-label="The Hard Parts — home">
+        <a href="/" class="nsb-brand" aria-label="The Hard Parts, home">
           <span class="nsb-brand__dot" aria-hidden="true"></span>
           <span class="nsb-brand__text">The Hard Parts<span class="nsb-brand__tld">.dev</span></span>
         </a>

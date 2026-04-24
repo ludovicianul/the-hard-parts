@@ -227,7 +227,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         step={stepFor("sec-situation")}
         eyebrow="Context"
         title="The situation"
-        note="Deciding whether to reach for this playbook — when it fits, and when it doesn't."
+        note="Deciding whether to reach for this playbook: when it fits, and when it doesn't."
       />
       <div class="nsb-two-col ep-situation">
         {entry.useWhen && entry.useWhen.length > 0 && (
@@ -283,7 +283,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         step={stepFor("sec-what-good")}
         eyebrow="Quality bar"
         title="What good looks like"
-        note="The observable qualities of a team or system that is actually doing this well — not just going through the motions."
+        note="The observable qualities of a team or system that is actually doing this well. Not just going through the motions."
       />
       <div class="ep-what-good">
         <LabeledList
@@ -304,7 +304,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         step={stepFor("sec-before")}
         eyebrow="Preparation"
         title="Before you start"
-        note="What you need available and true before running the procedure — skipping this is the most common reason playbooks fail."
+        note="What you need available and true before running the procedure. Skipping this is the most common reason playbooks fail."
       />
       <div class="nsb-two-col">
         {entry.inputs && entry.inputs.length > 0 && (
@@ -335,7 +335,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         step={stepFor("sec-procedure")}
         eyebrow="Procedure"
         title="The procedure"
-        note="Each step carries its purpose (why it exists), its actions (what you do), and its outputs (what you produce). Read the purpose — it's what keeps the step from degenerating into checklist theatre."
+        note="Each step carries its purpose (why it exists), its actions (what you do), and its outputs (what you produce). Read the purpose. It's what keeps the step from degenerating into checklist theatre."
       />
       <ProcedureSteps steps={entry.steps} />
     </>

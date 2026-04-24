@@ -2,7 +2,7 @@
   "category": {
     "code": "EP",
     "name": "Engineering Playbook",
-    "summary": "Practical playbooks for recurring engineering situations — delivery, architecture, operations, teamwork, and AI adoption.",
+    "summary": "Practical playbooks for recurring engineering situations - delivery, architecture, operations, teamwork, and AI adoption.",
     "categories": [
       "delivery",
       "team",
@@ -1209,7 +1209,7 @@
       "title": "Reduce review bottlenecks without lowering quality",
       "situation": "Code or design review is slowing delivery, but quality still matters.",
       "category": "team",
-      "summary": "Reduce bottlenecks by changing review shape, diff quality, ownership, and review expectations—not by silently lowering the bar or converting review into a rubber stamp.",
+      "summary": "Reduce bottlenecks by changing review shape, diff quality, ownership, and review expectations-not by silently lowering the bar or converting review into a rubber stamp.",
       "goal": "Increase review throughput while preserving understanding, risk control, and team learning.",
       "useWhen": [
         "review turnaround time is hurting delivery",
@@ -1227,7 +1227,7 @@
         "reviews are smaller, clearer, and faster for the right reasons",
         "review depth matches change risk",
         "more people can review meaningful changes safely",
-        "review comments focus on behavior, risks, and design—not only style",
+        "review comments focus on behavior, risks, and design-not only style",
         "review quality remains trusted even as flow improves"
       ],
       "inputs": [

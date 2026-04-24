@@ -2,7 +2,7 @@
   "category": {
     "code": "EP",
     "name": "Engineering Playbook",
-    "summary": "Practical playbooks for recurring engineering situations — delivery, architecture, operations, teamwork, and AI adoption.",
+    "summary": "Practical playbooks for recurring engineering situations - delivery, architecture, operations, teamwork, and AI adoption.",
     "categories": [
       "delivery",
       "team",
@@ -1387,7 +1387,7 @@
       "title": "Improve release confidence",
       "situation": "The team can ship, but does not truly trust what happens when it does.",
       "category": "operations",
-      "summary": "Improve release confidence by strengthening the system of evidence, controls, ownership, and recovery around deployment—not by asking people to feel calmer about the same fragile process.",
+      "summary": "Improve release confidence by strengthening the system of evidence, controls, ownership, and recovery around deployment-not by asking people to feel calmer about the same fragile process.",
       "goal": "Make releases safer, more routine, and less dependent on luck, rituals, or specific people being present.",
       "useWhen": [
         "deployments create unusual anxiety",

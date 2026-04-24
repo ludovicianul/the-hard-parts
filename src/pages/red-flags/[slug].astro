@@ -247,7 +247,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         step={stepFor("sec-indicates")}
         eyebrow="Primary reading"
         title="What it usually indicates"
-        note="Most likely underlying patterns when this signal shows up — not a diagnosis, a starting hypothesis."
+        note="Most likely underlying patterns when this signal shows up. Not a diagnosis, a starting hypothesis."
       />
       <div class="rf-indicates">
         {hasIndicates && (
@@ -310,7 +310,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         step={stepFor("sec-check-next")}
         eyebrow="Inspection"
         title="What to check next"
-        note="Deliberate steps to confirm or disconfirm the primary reading above. Not a checklist — an order of inspection."
+        note="Deliberate steps to confirm or disconfirm the primary reading above. Not a checklist. An order of inspection."
       />
       {hasCheckNext && (
         <ol class="rf-inspect">
@@ -534,7 +534,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
           <LabeledList
             variant="boxed"
             label="AI masks"
-            caption="Ways AI tooling tends to hide this signal — so it keeps growing under the surface."
+            caption="Ways AI tooling tends to hide this signal, so it keeps growing under the surface."
             items={entry.aiMasks}
           />
         )}

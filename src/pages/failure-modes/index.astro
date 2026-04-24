@@ -58,16 +58,16 @@ entries.forEach((e, i) => {
 ---
 <CategoryLayout
   code="FM"
-  tagline="Named failure patterns that recur in software engineering — how they start, how they escalate, what they look like at each stage, and what good responses look like."
+  tagline="Named failure patterns that recur in software engineering: how they start, how they escalate, what they look like at each stage, and what good responses look like."
 >
   <header class="nsb-landing-prelude" aria-label="About this catalog">
     <LandingIntroPanel>
-      The catalog is grouped by where the pattern lives &mdash; planning,
+      The catalog is grouped by where the pattern lives: planning,
       people, technical, process, leadership, AI-specific. Each entry
       carries a severity rating shown two ways: as a
       <strong>five-step bar</strong> on the card and as the card&rsquo;s
-      own <strong>weight</strong> &mdash; the fill darkens through five
-      grays from paper at <em>low</em> to near-black at <em>critical</em>.
+      own <strong>weight</strong>. The fill darkens through five grays,
+      from paper at <em>low</em> to near-black at <em>critical</em>.
       Color is reserved for category identity; severity reads purely as
       gravity. Scan the grid for weight first, then read the names.
     </LandingIntroPanel>
@@ -80,21 +80,21 @@ entries.forEach((e, i) => {
       />
       <AttributeCard
         title="Frequency"
-        description="How often this pattern actually shows up in practice — from rare one-offs to near-universal."
+        description="How often this pattern actually shows up in practice: from rare one-offs to near-universal."
         scale={FREQUENCY_SCALE}
         trendNote={{
           label: "increasing",
-          caption: "Not a point on the scale — a trend. Flags patterns whose prevalence is rising (often AI-era).",
+          caption: "Not a point on the scale. A trend. Flags patterns whose prevalence is rising (often AI-era).",
         }}
       />
       <AttributeCard
         title="Recovery"
-        description="How hard it is to climb back out once you are in it — tactical fix vs. structural teardown."
+        description="How hard it is to climb back out once you are in it: tactical fix vs. structural teardown."
         scale={RECOVERY_SCALE}
       />
       <AttributeCard
         title="Confidence"
-        description="How sure we are the pattern is real and consistent — provisional vs. repeatedly observed."
+        description="How sure we are the pattern is real and consistent: provisional vs. repeatedly observed."
         scale={CONFIDENCE_SCALE}
       />
     </ReadingGuide>

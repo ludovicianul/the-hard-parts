@@ -74,14 +74,14 @@ const prettify = (s: string): string =>
 <CategoryLayout
   code="RF"
   heroTitle="Red Flags"
-  tagline="Early-warning signals across code, teams, process, leadership, and AI-enabled work — what you notice, what it usually means, and what to check next."
+  tagline="Early-warning signals across code, teams, process, leadership, and AI-enabled work: what you notice, what it usually means, and what to check next."
 >
   <header class="nsb-landing-prelude" aria-label="About this reference">
     <LandingIntroPanel>
       Every entry is a named <strong>signal</strong>, not a diagnosis. The
       page opens with <em>what you would actually notice</em>, and walks
       you through <em>what it usually indicates</em> and
-      <em>what to check next</em> &mdash; so scanning for a pattern you've
+      <em>what to check next</em>. Scanning for a pattern you've
       half-seen in your own work should land you on the right entry in
       under a minute.
     </LandingIntroPanel>
@@ -104,21 +104,21 @@ const prettify = (s: string): string =>
       />
       <AttributeCard
         title="Frequency"
-        description="How often this red flag actually shows up across teams — from occasional cameos to chronic patterns."
+        description="How often this red flag actually shows up across teams: from occasional cameos to chronic patterns."
         scale={FREQUENCY_SCALE}
         trendNote={{
           label: "increasing",
-          caption: "Not a point on the scale — a trend. Flags signals whose prevalence is rising (often AI-era).",
+          caption: "Not a point on the scale. A trend. Flags signals whose prevalence is rising (often AI-era).",
         }}
       />
       <AttributeCard
         title="Detectability"
-        description="How easy the signal is to miss — from obvious if you look once, to quietly normalized by the organization."
+        description="How easy the signal is to miss: from obvious if you look once, to quietly normalized by the organization."
         scale={DETECTABILITY_SCALE}
       />
       <AttributeCard
         title="Confidence"
-        description="How sure we are this reading of the signal holds up across contexts — provisional vs. repeatedly observed."
+        description="How sure we are this reading of the signal holds up across contexts: provisional vs. repeatedly observed."
         scale={CONFIDENCE_SCALE}
       />
     </ReadingGuide>

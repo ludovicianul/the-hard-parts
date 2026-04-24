@@ -128,7 +128,7 @@ const prettifyEp = (s: string): string =>
 ---
 <BaseLayout
   title="thehardparts.dev"
-  description="The Hard Parts — an engineering reference for recurring software failures, warning signals, hard decisions, and practical playbooks. Four catalogs: Failure Modes, Tech Decisions, Red Flags, and the Engineering Playbook."
+  description="The Hard Parts. An engineering reference for recurring software failures, warning signals, hard decisions, and practical playbooks. Four catalogs: Failure Modes, Tech Decisions, Red Flags, and the Engineering Playbook."
 >
   <div class="nsb-container nsb-home">
     {/* --------- TABLOID MASTHEAD ---------
@@ -260,7 +260,7 @@ const prettifyEp = (s: string): string =>
       <ul class="nsb-home__orient-list">
         <li class="nsb-home__orient-item" data-accent="fm">
           <a href="/failure-modes" class="nsb-home__orient-link">
-            <span class="nsb-home__orient-q">I&rsquo;ve seen this project go wrong before &mdash; what am I looking at?</span>
+            <span class="nsb-home__orient-q">I&rsquo;ve seen this project go wrong before. What am I looking at?</span>
             <span class="nsb-home__orient-a">
               <span class="nsb-home__orient-code">FM</span>
               <span class="nsb-home__orient-name">Failure Modes</span>
@@ -280,7 +280,7 @@ const prettifyEp = (s: string): string =>
         </li>
         <li class="nsb-home__orient-item" data-accent="rf">
           <a href="/red-flags" class="nsb-home__orient-link">
-            <span class="nsb-home__orient-q">Something about this feels off &mdash; what am I noticing?</span>
+            <span class="nsb-home__orient-q">Something about this feels off. What am I noticing?</span>
             <span class="nsb-home__orient-a">
               <span class="nsb-home__orient-code">RF</span>
               <span class="nsb-home__orient-name">Red Flags</span>
@@ -290,7 +290,7 @@ const prettifyEp = (s: string): string =>
         </li>
         <li class="nsb-home__orient-item" data-accent="ep">
           <a href="/engineering-playbook" class="nsb-home__orient-link">
-            <span class="nsb-home__orient-q">I know the situation &mdash; what&rsquo;s the right way to run it?</span>
+            <span class="nsb-home__orient-q">I know the situation. What&rsquo;s the right way to run it?</span>
             <span class="nsb-home__orient-a">
               <span class="nsb-home__orient-code">EP</span>
               <span class="nsb-home__orient-name">Engineering Playbook</span>
@@ -304,7 +304,7 @@ const prettifyEp = (s: string): string =>
     {fmFeatured.length > 0 && (
       <section class="nsb-home__preview" aria-label="From Failure Modes" data-accent="fm">
         <CalloutBand label="Field guide" variant="yellow">
-          <p>Failure Modes &mdash; named patterns that recur in software teams.</p>
+          <p>Failure Modes: named patterns that recur in software teams.</p>
         </CalloutBand>
 
         <header class="nsb-home__preview-header">
@@ -353,13 +353,13 @@ const prettifyEp = (s: string): string =>
          state, etc.) picks up TD's hue without extra wiring. */
       <section class="nsb-home__preview" aria-label="From Tech Decisions" data-accent="td">
         <CalloutBand label="Decision ledger" variant="yellow">
-          <p>Tech Decisions &mdash; structured trade-off references for consequential engineering calls.</p>
+          <p>Tech Decisions: structured trade-off references for consequential engineering calls.</p>
         </CalloutBand>
 
         <header class="nsb-home__preview-header">
           <h2 class="nsb-display nsb-home__preview-title">From Tech Decisions</h2>
           <p class="nsb-home__preview-note">
-            One decision per axis the catalog covers &mdash; architecture,
+            One decision per axis the catalog covers: architecture,
             delivery, team, quality, and AI systems. Each entry lays out
             two concrete options with their real conditions, costs,
             hidden costs, and failure modes when misapplied.
@@ -404,13 +404,13 @@ const prettifyEp = (s: string): string =>
          distinct dimension — instead of a second severity-style pill. */
       <section class="nsb-home__preview" aria-label="From Red Flags" data-accent="rf">
         <CalloutBand label="Signal bulletin" variant="yellow">
-          <p>Red Flags &mdash; early-warning signals across code, teams, process, leadership, and AI-enabled work.</p>
+          <p>Red Flags: early-warning signals across code, teams, process, leadership, and AI-enabled work.</p>
         </CalloutBand>
 
         <header class="nsb-home__preview-header">
           <h2 class="nsb-display nsb-home__preview-title">From Red Flags</h2>
           <p class="nsb-home__preview-note">
-            One signal per layer the catalog covers &mdash; code, team,
+            One signal per layer the catalog covers: code, team,
             process, leadership, and AI. Each entry opens with
             <em>what you would actually notice</em> and walks through what
             it usually indicates and what to check next.
@@ -457,14 +457,14 @@ const prettifyEp = (s: string): string =>
          preview and the landing grid read as one continuous catalog. */
       <section class="nsb-home__preview" aria-label="From Engineering Playbook" data-accent="ep">
         <CalloutBand label="Operating manual" variant="yellow">
-          <p>Engineering Playbook &mdash; structured procedures for recurring engineering situations.</p>
+          <p>Engineering Playbook: structured procedures for recurring engineering situations.</p>
         </CalloutBand>
 
         <header class="nsb-home__preview-header">
           <h2 class="nsb-display nsb-home__preview-title">From Engineering Playbook</h2>
           <p class="nsb-home__preview-note">
-            One playbook per subcategory the catalog covers &mdash;
-            delivery, team, architecture, operations, and AI adoption.
+            One playbook per subcategory the catalog covers: delivery,
+            team, architecture, operations, and AI adoption.
             Each entry opens with <em>when to use it</em>,
             <em>when not to</em>, and walks you through the steps,
             common mistakes, and signals that it actually landed.
