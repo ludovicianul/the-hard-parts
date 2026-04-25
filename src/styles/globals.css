@@ -32,6 +32,22 @@ html {
      body never extends past the visible viewport unless content
      forces it to. */
   height: 100%;
+  /* iOS rubber-band fix — applies to every iOS browser, not just
+     Safari. iOS forces all browsers (Chrome, Firefox, Edge, etc.)
+     to render via WebKit (WKWebView), so they all inherit Safari's
+     elastic overscroll on the document scroll container.
+     ----------------------------------------------------------------
+     Without this, dragging up at the bottom of the page lets the
+     reader pull the document past its actual end, exposing a band
+     of paper below the footer. `overscroll-behavior: none` disables
+     the rubber-band on both axes — the page hard-stops at the
+     footer's bottom edge and at the masthead's top edge with no
+     overscroll reveal. We accept the trade-off (no pull-to-refresh
+     gesture) because this is a static reference site, not a feed;
+     nothing useful is anchored to that gesture, and the overscroll
+     reveal was reading as a layout bug rather than a native
+     affordance. */
+  overscroll-behavior: none;
 }
 
 body {
