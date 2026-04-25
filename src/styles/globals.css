@@ -259,10 +259,17 @@ code, pre, .mono {
  *                           LabeledLists in detail sections
  *                           (inputs + prerequisites, decisionPoints +
  *                           commonMistakes, aiCanHelp + aiCanMakeWorse)
- *   · nsb-two-col--equal — same, plus `grid-auto-rows: 1fr` so row-
- *                           aligned heights hold. Used when two panels
- *                           need to share a visual bottom edge (the
- *                           Connected-X cross-reference grids)
+ *   · nsb-two-col--equal — same chassis as `.nsb-two-col`, kept as a
+ *                           hook for paired blocks that ever need a
+ *                           shared bottom edge in future. Currently
+ *                           a no-op: each panel sizes to its own
+ *                           content so the framed bottom border hugs
+ *                           the last row, with no whitespace between
+ *                           the last row and the frame, and no
+ *                           expanded selection state on a stretched
+ *                           last entry. Side-by-side panels with
+ *                           different content lengths keep different
+ *                           heights — the trade-off is intentional.
  * =====================================================================*/
 .nsb-landing-prelude {
   display: flex;
@@ -286,43 +293,22 @@ code, pre, .mono {
 .nsb-two-col--wide-gap {
   gap: var(--space-5) var(--space-6);
 }
-/* `--equal` only applies once we cross the 2-col breakpoint; at narrow
-   widths the grid is 1-col and there is nothing to equalise. */
-@media (min-width: 820px) {
-  /* Equalise WITHIN each row, not across all rows.
-     ----------------------------------------------------------------
-     The earlier rule used `grid-auto-rows: 1fr`, which forces every
-     row in the grid to the same height — so on the FM "Connected
-     patterns" 4-cell grid (Often leads to / Often caused by / Related
-     red flags / Related tech decisions) every row inflated to the
-     height of the tallest row. A short row like (FM-only causal pair)
-     ended up the same height as a row carrying a pending-entries sub-
-     panel, leaving large empty regions inside the shorter cards.
-     Replacing it with `align-items: stretch` keeps siblings within a
-     row equal (the actual goal: no jagged bottom edges next to each
-     other) while letting each row size to its own content. The parent
-     `.nsb-two-col` rule sets `align-items: start` for the default
-     two-col grid; `--equal` overrides that. */
-  .nsb-two-col--equal {
-    align-items: stretch;
-  }
-}
-/* `align-items: stretch` stretches each grid *cell* to fill the row's
-   height, but a child with natural content-height (like `.nsb-related`,
-   which has its own block flow, or `.nsb-labeled-list--boxed`) won't
-   actually fill that cell unless it is explicitly told to. Without
-   this, the AI-impact row (paired boxed LabeledLists) renders with
-   uneven bottom edges when siblings carry different amounts of
-   content. Applied to any direct child so the utility is usable for
-   any framed primitive we pair side-by-side in future.
-
-   The `margin-top: 0` reset is scoped to `.nsb-related` only because
-   that's the one primitive that carries a default top margin (it
-   normally sits under body prose); boxed LabeledLists and other
-   primitives don't need the reset. */
-.nsb-two-col--equal > * {
-  height: 100%;
-}
+/* `.nsb-two-col--equal` is currently a no-op modifier on top of
+   `.nsb-two-col`. It used to apply `grid-auto-rows: 1fr` (which made
+   every row in the grid match the tallest row, ballooning short rows
+   on the FM "Connected patterns" 4-cell grid), then `align-items:
+   stretch` (which equalised siblings within a row but left a band of
+   paper between the last entry and the frame's bottom border on the
+   shorter sibling — visible as an empty selection target on hover).
+   Both equalisation strategies created a worse visual artifact than
+   the jagged bottoms they were trying to fix, so the modifier is
+   kept as a structural hook (callers still use the class) but has
+   no rules of its own. Each child sizes to its own content, the
+   frame hugs the last row, hover highlights stop where the row
+   stops. The `.nsb-related` margin reset is preserved because the
+   component carries a default top margin meant for body-prose
+   contexts; inside a paired grid that margin reads as a misalignment
+   between the two boxes' top edges. */
 .nsb-two-col--equal > .nsb-related {
   margin-top: 0;
 }

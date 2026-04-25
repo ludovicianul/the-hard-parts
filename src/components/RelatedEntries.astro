@@ -152,58 +152,14 @@ const crossCategory = expectCategory
 <style>
   /* Framed reference panel with black title bar + pill-tag codes.
      Reads as a catalog subsection: black masthead + white list body.
-
-     `display: flex` (column) is what lets the trailing sub-section
-     fill any vertical slack the parent grid forced on this box. On
-     FM/TD/RF/EP detail pages the related-entries blocks live inside
-     `.nsb-two-col--equal`, which stretches both side-by-side boxes
-     to the height of the taller one. Without flex on this box, the
-     shorter sibling left a band of paper between its last row and
-     the frame's bottom border — visible the moment a reader hovered
-     the last entry, since the yellow highlight stopped where the row
-     ended instead of meeting the frame. The rules below let the last
-     interactive row absorb that slack so the hover surface reaches
-     the bottom edge. */
+     Sizes to its own content; the box's bottom border hugs the last
+     row regardless of what a sibling box renders. */
   .nsb-related {
     margin-top: var(--space-5);
     background: var(--color-surface);
     border: 3px solid var(--color-frame);
-    display: flex;
-    flex-direction: column;
   }
   .nsb-related--dense { margin-top: var(--space-4); }
-
-  /* Whichever sub-section was rendered last (the in-expected list,
-     the cross-category block, or the pending block) grows to fill
-     the remaining height of the framed box. */
-  .nsb-related > :last-child {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-  }
-  /* When that trailing block is a wrapper (cross / pending), its
-     inner <ol>/<ul> takes the growth — the wrapper's eyebrow label
-     stays content-sized at the top. No-ops on the simple case where
-     the trailing block IS the <ol>. */
-  .nsb-related > :last-child > .nsb-related__list {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-  }
-  /* The very last list item stretches to fill the remaining vertical
-     space inside whichever block is trailing, so the hover highlight
-     covers it edge-to-edge. */
-  .nsb-related .nsb-related__list > .nsb-related__item:last-child {
-    flex: 1 1 auto;
-  }
-  /* The link itself is a grid (`display: grid` below), which by
-     default stays content-sized inside its grown <li>. Stretching
-     its height to 100% is what actually paints the hover background
-     across the absorbed slack — without this the <li> grows but the
-     <a>'s background stops at the row's natural height. */
-  .nsb-related .nsb-related__list > .nsb-related__item:last-child > .nsb-related__link {
-    height: 100%;
-  }
 
   /* --- Black title bar ------------------------------------------- */
   .nsb-related__head {
