@@ -618,7 +618,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
            a warning distinct from the blue synthesis below (which
            carries the editorial takeaway). Parallels the same field
            on the FM detail page so readers recognize the treatment. */
-        <CalloutBand label="AI false confidence" variant="red">
+        <CalloutBand label="AI false confidence" variant="red" quiet>
           <p>{capFirst(entry.aiFalseConfidence)}</p>
         </CalloutBand>
       )}

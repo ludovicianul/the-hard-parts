@@ -21,11 +21,21 @@ export interface Props {
   variant?: "yellow" | "red" | "blue";
   /** Render body as regular case serif instead of uppercase sans. */
   serif?: boolean;
+  /**
+   * Quiet mode: keep the variant fill (so the band still reads as an
+   * alert / takeaway) but drop the heavy uppercase imperative styling.
+   * Used for warning paragraphs that are too long to be shouted, like
+   * the AI false-confidence callouts on FM and TD detail pages, where
+   * an uppercase block of 30–60 words reads as overwhelming rather
+   * than urgent. Has no effect when `serif` is also set (serif always
+   * implies sentence case).
+   */
+  quiet?: boolean;
 }
 
-const { label, variant = "yellow", serif = false } = Astro.props;
+const { label, variant = "yellow", serif = false, quiet = false } = Astro.props;
 ---
-<aside class:list={["nsb-callout", `nsb-callout--${variant}`, { "nsb-callout--serif": serif }]}>
+<aside class:list={["nsb-callout", `nsb-callout--${variant}`, { "nsb-callout--serif": serif, "nsb-callout--quiet": quiet && !serif }]}>
   {label && <p class="nsb-callout__label">{label}</p>}
   <div class="nsb-callout__body"><slot /></div>
 </aside>
@@ -66,5 +76,17 @@ const { label, variant = "yellow", serif = false } = Astro.props;
     text-transform: none;
     font-style: italic;
     font-size: clamp(var(--text-md), 1.6vw, var(--text-lg));
+  }
+  /* Quiet sans — keeps the heavy variant fill (red / yellow / blue)
+     and the sans family so the band still reads as alert vocabulary,
+     but drops uppercase + lowers weight so a 30–60 word warning
+     paragraph is readable instead of shouted. Used by FM + TD's
+     "AI false confidence" callouts. */
+  .nsb-callout--quiet .nsb-callout__body {
+    text-transform: none;
+    font-weight: 700;
+    font-size: clamp(var(--text-md), 1.6vw, var(--text-lg));
+    letter-spacing: -0.005em;
+    line-height: 1.4;
   }
 </style>

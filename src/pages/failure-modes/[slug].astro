@@ -250,14 +250,33 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     </div>
   )}
 
-  {/* 3. What it is — definition */}
+  {/* 3. What it is — definition
+        Blast radius is rendered NOT as a serif note inside the section
+        header (where it disappears as a quiet caption) but as a stamped
+        operational strip beneath it: framed, FM-wash-fill, label divided
+        from chips by a vertical rule. Same tabloid vocabulary as the
+        intervention strip and the at-a-glance panel, so the reader sees
+        "how far does this damage reach?" as a first-class scope marker
+        before the definition prose. */}
   <SectionHeader
     id="sec-definition"
     step={stepFor("sec-definition")}
     eyebrow="Definition"
     title="What it is"
-    note={entry.blastRadius && entry.blastRadius.length > 0 ? `Blast radius: ${entry.blastRadius.join(" · ")}` : undefined}
   />
+  {entry.blastRadius && entry.blastRadius.length > 0 && (
+    <p class="fm-blast" aria-label="Blast radius">
+      <span class="fm-blast__label">Blast radius</span>
+      <span class="fm-blast__chips">
+        {entry.blastRadius.map((scope, i) => (
+          <>
+            {i > 0 && <span class="fm-blast__sep" aria-hidden="true">·</span>}
+            <span class="fm-blast__chip">{scope}</span>
+          </>
+        ))}
+      </span>
+    </p>
+  )}
   <p class="fm-prose">{capFirst(entry.whatItIs)}</p>
 
   {/* 4. Story arc — the canonical four-beat narrative */}
@@ -417,7 +436,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
            takeaway. The two bands are intentionally sequenced
            warning → synthesis, not synthesis → warning, so a
            reader sees the caution before the summary. */
-        <CalloutBand label="AI false confidence" variant="red">
+        <CalloutBand label="AI false confidence" variant="red" quiet>
           <p>{capFirst(entry.aiFalseConfidence)}</p>
         </CalloutBand>
       )}
@@ -606,6 +625,72 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
      (shared with TD and RF). The component owns all `nsb-glance__*`
      styles; no FM-local CSS is needed for that block. */
 
+  /* ---- Blast radius stamp ----------------------------------------
+     A framed operational strip that names which scopes the pattern
+     damages. Sits between the "What it is" section header and the
+     definition prose. The visual contract:
+       · 2px black frame on FM-wash background (the same wash used by
+         the AtAGlance panel and the looks-healthy box, so the strip
+         reads as part of the FM identity system, not a one-off chip).
+       · Inline-flex so the strip is exactly as wide as its content,
+         not a full-width band. A full-width band would compete with
+         the section header's rule above it.
+       · "BLAST RADIUS" label in heavy uppercase sans, separated from
+         the chips by a 2px vertical black rule (matches the heavy
+         frame so the divider reads as part of the same stamp).
+       · Each scope rendered as a small uppercase chip; chips dot-
+         separated to signal "list of dimensions", not a hierarchy. */
+  .fm-blast {
+    display: inline-flex;
+    align-items: stretch;
+    gap: 0;
+    margin: var(--space-3) 0 0 0;
+    padding: 0;
+    border: 2px solid var(--color-frame);
+    background: var(--accent-fm-wash);
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .fm-blast__label {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    background: var(--color-frame);
+    color: var(--color-yellow);
+    font-weight: 900;
+  }
+  .fm-blast__chips {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 12px;
+    color: var(--color-ink);
+    font-weight: 800;
+  }
+  .fm-blast__chip {
+    color: var(--color-ink);
+  }
+  .fm-blast__sep {
+    color: var(--accent-fm);
+    font-weight: 900;
+  }
+  @media (max-width: 540px) {
+    .fm-blast {
+      /* On narrow widths the strip becomes its own row so a long
+         blast list can wrap without colliding with the section
+         header's step badge above. */
+      display: flex;
+      width: 100%;
+    }
+    .fm-blast__chips {
+      flex: 1 1 auto;
+    }
+  }
+
   /* ---- prose body text in sections --------------------------------
      Short reference-style paragraphs (1–3 sentences). NO `max-width`
      cap here — the detail content column is ~800px, and any prose
@@ -639,7 +724,10 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
   }
   .fm-arc__beat {
     display: grid;
-    grid-template-columns: 5rem minmax(10rem, 15rem) 1fr;
+    /* Numeral column narrowed from 5rem → 3.5rem so the badge sits
+       proportional to its smaller font-size below; eyebrow column
+       given more room since the eyebrow text scaled up too. */
+    grid-template-columns: 3.5rem minmax(10rem, 15rem) 1fr;
     gap: var(--space-5);
     padding: var(--space-5) var(--space-5);
     border-bottom: 2px solid var(--color-frame);
@@ -651,28 +739,43 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
   }
   .fm-arc__num {
     font-family: var(--font-sans);
-    font-size: 2.25rem;
+    /* Reduced from 2.25rem → 1.5rem so the badge no longer dwarfs
+       the eyebrow + body text in the same row. The badge is now
+       a marker, not a feature. */
+    font-size: 1.5rem;
     line-height: 1;
     color: var(--color-surface);
     background: var(--color-frame);
     font-weight: 900;
     font-feature-settings: "tnum";
-    padding: 8px 10px;
+    padding: 6px 10px;
     text-transform: uppercase;
     text-align: center;
     justify-self: start;
     align-self: start;
+    min-width: 2.5rem;
   }
   .fm-arc__code {
     margin: 0;
     font-family: var(--font-sans);
-    font-size: var(--text-xs);
+    /* Bumped from --text-xs (12.75px) to --text-sm (14.875px) so the
+       beat label reads at body-equivalent weight, in scale with the
+       numeral and prose. Was reading as a small eyebrow trapped
+       between two larger blocks. */
+    font-size: var(--text-sm);
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
     font-weight: 900;
     color: var(--accent-fm);
   }
-  .fm-arc__beat .fm-prose { margin: 0; }
+  .fm-arc__beat .fm-prose {
+    margin: 0;
+    /* Slightly larger and tighter than the page-default fm-prose so
+       the four arc beats read as a denser narrative block, not as
+       four separate body paragraphs. */
+    font-size: 1.05rem;
+    line-height: 1.45;
+  }
   @media (max-width: 720px) {
     .fm-arc__beat {
       grid-template-columns: auto 1fr;
