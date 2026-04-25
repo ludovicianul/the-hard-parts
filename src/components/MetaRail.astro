@@ -227,10 +227,57 @@ const visible = items
   }
 
   @media (max-width: 640px) {
+    /* Pin to a 2-column compact "datasheet" layout on phones —
+       4 metadata cells read as a clean 2×2 instead of a tall
+       4-row stack, matching the reference's rhythm even at iPhone
+       width. The desktop `auto-fit` rule above would already give
+       2 cols at ~375px, but at ~600–640px container widths it can
+       fit 3, which would put a single straggler cell in row 2 and
+       leave its border-bottom hanging over empty space. Pinning
+       2 cols here gives the corner-case rules below a known column
+       count to work against. */
+    .nsb-meta-rail {
+      grid-template-columns: 1fr 1fr;
+    }
+    /* Default: every cell carries its own right + bottom border.
+       The corner-case overrides below remove the borders that
+       would double-up against the outer frame (col 2's right
+       edge) or hang against empty space (bottom of the last
+       row in a 2×N grid). */
     .nsb-meta-rail__item {
-      border-right: 0;
+      border-right: 2px solid var(--color-frame);
       border-bottom: 2px solid var(--color-frame);
     }
-    .nsb-meta-rail__item:last-child { border-bottom: 0; }
+    /* Col 2 (even position) is at the right edge of the grid —
+       its border-right would double up against the outer frame's
+       3px right side. */
+    .nsb-meta-rail__item:nth-child(even) {
+      border-right: 0;
+    }
+    /* The very last cell never needs a right or bottom border —
+       it is always at the right + bottom edge of the rendered
+       content regardless of whether total is even or odd. */
+    .nsb-meta-rail__item:last-child {
+      border-right: 0;
+      border-bottom: 0;
+    }
+    /* Second-to-last cell IF it sits at an odd position (column 1)
+       — that means the total is even and this cell is in the
+       same (last) row as the last child. Without this override
+       it would render a horizontal divider below itself pointing
+       at empty space. This is exactly the "Primary owner" cell
+       on the EP MetaRail at iPhone width that read as an extra
+       bottom line under PO. */
+    .nsb-meta-rail__item:nth-last-child(2):nth-child(odd) {
+      border-bottom: 0;
+    }
+    /* Odd total: the last cell sits alone in col 1 — span both
+       columns so the final row reads as a complete band rather
+       than a half-filled one. (Edge case for MetaRails with 3 or
+       5 visible fields, e.g. an FM rail where one optional field
+       is missing.) */
+    .nsb-meta-rail__item:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
   }
 </style>
