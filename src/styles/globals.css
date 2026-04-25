@@ -22,19 +22,38 @@ html {
   background: var(--color-paper);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* Anchor the html element to the actual visible viewport so any
+     `body { min-height: 100% }` fallback resolves against a real
+     parent height. Without this, percent-based body min-heights
+     have no parent reference and collapse on some iOS Safari
+     versions. `height: auto` would let html grow to content; we
+     want html to be exactly viewport-sized so body controls the
+     overflow. The footer sits at body's bottom (flex column), and
+     body never extends past the visible viewport unless content
+     forces it to. */
+  height: 100%;
 }
 
 body {
   margin: 0;
-  /* iOS Safari quirk: `100vh` is fixed at the value the viewport had
-     when the URL bar was visible. When the bar collapses on scroll,
-     `100vh` overshoots the real visible area, leaving an empty band
-     of body background below the footer. `100dvh` (dynamic viewport
-     height) recalculates as the chrome moves, so the body matches
-     the actual visible viewport on every device. The `100vh` line
-     is kept as a fallback for older browsers that don't support dvh. */
+  /* Footer-at-bottom on short pages, content-sized on long pages.
+     The cascade is intentional and order-sensitive:
+       1. `100vh`  — universal fallback for very old browsers; on
+                     iOS Safari pre-15 this can overshoot but it's
+                     better than no min-height at all.
+       2. `100%`   — resolves against `html { height: 100% }` above;
+                     gives a stable, viewport-anchored value that
+                     iOS Safari has handled correctly for years.
+       3. `100svh` — preferred where supported. svh = smallest
+                     possible viewport (URL-bar-shown state). Using
+                     svh (not dvh) means body's min-height never
+                     overshoots the visible area when the URL bar
+                     collapses, which is what was leaving a band of
+                     paper below the footer on iOS Safari with the
+                     previous `100dvh` rule. */
   min-height: 100vh;
-  min-height: 100dvh;
+  min-height: 100%;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
 }

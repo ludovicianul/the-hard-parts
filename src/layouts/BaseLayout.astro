@@ -387,11 +387,26 @@ const CF_BEACON_TOKEN = import.meta.env.PUBLIC_CF_BEACON_TOKEN as
         .nsb-nav li.nsb-nav__util .nsb-nav__name {
           display: none;
         }
-        .nsb-nav li.nsb-nav__util .nsb-nav__code {
-          /* Slight visual upweight for the glyph since it's now alone
-             in the pill. Kept inside the mobile-only block so desktop
-             rendering is unchanged. */
-          font-size: var(--text-sm);
+        /* Utility pills now match the category pill chassis exactly:
+           inherit `--text-xs` from `.nsb-nav__code` above, same
+           padding, same border. The previous `--text-sm` upweight
+           on utility glyphs made the Search / About boxes visibly
+           taller than the FM / TD / RF / EP boxes next to them on
+           the wrapped mobile nav row, breaking the "siblings, not a
+           separate rail" reading. No override needed here — utility
+           glyphs inherit the same xs size as category codes. */
+
+        /* Search pill only: bump the magnifying-glass glyph for
+           stronger visual presence — search is the primary
+           navigational affordance on mobile (where the wordmark
+           link is the only other option). `line-height: 1` keeps
+           the line-box bounded by the parent's xs line-height so
+           the pill stays the same height as its siblings; only the
+           rendered glyph grows. About (§) stays at xs because it's
+           a secondary affordance and shouldn't compete with search. */
+        .nsb-nav li.nsb-nav__util:first-of-type .nsb-nav__code {
+          font-size: 1.1rem;
+          line-height: 1;
         }
       }
     </style>
