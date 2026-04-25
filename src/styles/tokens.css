@@ -123,9 +123,15 @@
   --text-2xl:    1.875rem;
   --text-3xl:    2.375rem;
   --text-4xl:    3rem;
-  /* Display scale — giant tabloid headlines. Clamp keeps them responsive. */
-  --text-display:    clamp(2.75rem, 7vw, 5.25rem);
-  --text-display-xl: clamp(3.25rem, 9vw, 7rem);
+  /* Display scale — giant tabloid headlines. Clamp keeps them responsive.
+     Floors lowered (display: 2.75 → 2rem, xl: 3.25 → 2.5rem) so long
+     uppercase titles like "MONOLITH VS MICROSERVICES" and "TECH DECISIONS"
+     fit cleanly inside framed mastheads on a 375px viewport without
+     pushing letters to the edge of their container. The vw scale and
+     desktop cap are unchanged: the change only affects narrow widths
+     where the floor was driving overflow. */
+  --text-display:    clamp(2rem, 7vw, 5.25rem);
+  --text-display-xl: clamp(2.5rem, 9vw, 7rem);
   --text-stat:       clamp(2.5rem, 6vw, 3.5rem);
 
   --leading-tight: 1.15;

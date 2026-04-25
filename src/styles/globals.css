@@ -26,7 +26,15 @@ html {
 
 body {
   margin: 0;
+  /* iOS Safari quirk: `100vh` is fixed at the value the viewport had
+     when the URL bar was visible. When the bar collapses on scroll,
+     `100vh` overshoots the real visible area, leaving an empty band
+     of body background below the footer. `100dvh` (dynamic viewport
+     height) recalculates as the chrome moves, so the body matches
+     the actual visible viewport on every device. The `100vh` line
+     is kept as a fallback for older browsers that don't support dvh. */
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }

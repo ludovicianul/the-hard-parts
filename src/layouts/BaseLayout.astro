@@ -170,7 +170,7 @@ const CF_BEACON_TOKEN = import.meta.env.PUBLIC_CF_BEACON_TOKEN as
               </a>
             </li>
             <li class="nsb-nav__util">
-              <a href="/about">
+              <a href="/about" aria-label="About this reference">
                 <span class="nsb-nav__code" aria-hidden="true">&sect;</span>
                 <span class="nsb-nav__name">About</span>
               </a>
@@ -376,6 +376,22 @@ const CF_BEACON_TOKEN = import.meta.env.PUBLIC_CF_BEACON_TOKEN as
            utility pills from the categories above them. */
         .nsb-nav li.nsb-nav__util:first-of-type {
           margin-left: 0;
+        }
+        /* Mobile: collapse utility pills (Search, About) to icon-only,
+           same compaction the category pills use at this width. The
+           nav glyph (⌕ / §) already sits in `.nsb-nav__code`; we just
+           hide the label so [⌕] [§] sit alongside [FM][TD][RF][EP]
+           in a tight, single-row-ish grid. The aria-label on the
+           Search link (and the visible "About" affordance on its own
+           page) keeps the meaning intact for assistive tech. */
+        .nsb-nav li.nsb-nav__util .nsb-nav__name {
+          display: none;
+        }
+        .nsb-nav li.nsb-nav__util .nsb-nav__code {
+          /* Slight visual upweight for the glyph since it's now alone
+             in the pill. Kept inside the mobile-only block so desktop
+             rendering is unchanged. */
+          font-size: var(--text-sm);
         }
       }
     </style>

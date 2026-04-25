@@ -596,7 +596,12 @@ const prettifyEp = (s: string): string =>
       margin: 0;
       font-family: var(--font-sans);
       font-weight: 900;
-      font-size: clamp(1.25rem, 2.1vw, 1.55rem);
+      /* Mobile floor raised (1.25rem → 1.65rem) so the brand reads
+         as the anchor of the left rail when the hero stacks. The
+         vw factor stays moderate so on desktop it still settles
+         well under the headline's display size and the visual
+         hierarchy (headline > brand) is preserved. */
+      font-size: clamp(1.65rem, 5vw, 1.85rem);
       line-height: 1.05;
       letter-spacing: -0.015em;
       text-transform: uppercase;
@@ -606,7 +611,9 @@ const prettifyEp = (s: string): string =>
       margin: 0;
       font-family: var(--font-sans);
       font-weight: 800;
-      font-size: var(--text-xs);
+      /* Bumped from --text-xs (12.75px) to --text-sm (14.875px) so
+         the subtitle stays in proportion with the larger name above. */
+      font-size: var(--text-sm);
       letter-spacing: var(--tracking-label);
       text-transform: uppercase;
       color: var(--color-surface);
@@ -626,7 +633,11 @@ const prettifyEp = (s: string): string =>
       gap: 2px;
       font-family: var(--font-sans);
       font-weight: 900;
-      font-size: clamp(1.1rem, 1.9vw, 1.4rem);
+      /* Floor raised from 1.1rem to 1.4rem so the four-beat section
+         list (Failure modes. Red flags. Trade-offs. Playbooks.) carries
+         enough weight on mobile to balance the giant headline that
+         appears in the column below. Desktop cap unchanged. */
+      font-size: clamp(1.4rem, 4vw, 1.55rem);
       line-height: 1.1;
       letter-spacing: -0.01em;
       color: var(--color-surface);

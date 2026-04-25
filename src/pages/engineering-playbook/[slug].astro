@@ -72,12 +72,50 @@ const { refCode } = formatRefCode("EP", index, allEp.length);
 const prettify = (s: string): string =>
   s.split("-").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 
+/**
+ * `capFirst` — force a leading capital on body-prose strings rendered
+ * on this page. EP fields are authored mid-sentence (lowercase first
+ * letter) because they conceptually continue the section header's
+ * frame ("Use when: review turnaround time is hurting delivery").
+ * That reads correctly inline but renders as a typo when the same
+ * string is the standalone first word of a list item or paragraph.
+ *
+ * Same approach used by the FM/TD/RF detail pages — kept local to
+ * this file (not a shared helper) so each detail surface keeps full
+ * authorial control over which fields are normalised.
+ *
+ * `text-transform: uppercase`-driven UI (AtAGlance values, MetaRail
+ * cells, eyebrows) is intentionally left alone — those normalize
+ * case via CSS already.
+ */
+function capFirst(s: string | undefined | null): string {
+  if (typeof s !== "string") return "";
+  const trimmed = s.trimStart();
+  if (trimmed.length === 0) return "";
+  return trimmed[0].toUpperCase() + trimmed.slice(1);
+}
+function capItems(items: readonly string[] | undefined | null): string[] {
+  if (!Array.isArray(items)) return [];
+  return items.map((s) => capFirst(s));
+}
+
 // Masthead difficulty pill — reuses the severity-ramp Tag variants
 // via the shared `severityTagVariant` helper. EP's `difficulty` enum
 // aligns exactly with the first four severity tokens, so the mapping
 // is identity; values outside the ladder fall through to a safe
 // `sev-medium` inside the helper.
 const difficultyPillVariant = severityTagVariant(entry.difficulty);
+
+// Procedure steps with body-prose strings normalised: title is left
+// alone (the component uppercases it), but purpose / actions / outputs
+// are sentence-case prose that should always start with a capital. We
+// transform once here so the component stays generic.
+const stepsCapped = (entry.steps ?? []).map((s) => ({
+  ...s,
+  purpose: capFirst(s.purpose),
+  actions: capItems(s.actions),
+  outputs: capItems(s.outputs),
+}));
 
 // Section visibility — every current EP entry carries every optional
 // field, but the page must stay honest if a future edit removes one.
@@ -234,7 +272,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
           <LabeledList
             label="Use when"
             caption="Conditions where this playbook is the right tool."
-            items={entry.useWhen}
+            items={capItems(entry.useWhen)}
           />
         )}
         {entry.doNotUseWhen && entry.doNotUseWhen.length > 0 && (
@@ -242,7 +280,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
             <LabeledList
               label="Do not use when"
               caption="Contexts where this playbook will waste effort or make things worse."
-              items={entry.doNotUseWhen}
+              items={capItems(entry.doNotUseWhen)}
               dense
             />
           </aside>
@@ -270,7 +308,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     note="What this playbook protects against, and why skipping or half-running it tends to be expensive."
   />
   <blockquote class="ep-why">
-    <p>{entry.whyThisMatters}</p>
+    <p>{capFirst(entry.whyThisMatters)}</p>
   </blockquote>
 
   {/* 3. WHAT GOOD LOOKS LIKE — the quality bar for this playbook.
@@ -288,7 +326,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
       <div class="ep-what-good">
         <LabeledList
           label="Signs of the playbook done well"
-          items={entry.whatGoodLooksLike}
+          items={capItems(entry.whatGoodLooksLike)}
         />
       </div>
     </>
@@ -311,14 +349,14 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
           <LabeledList
             label="Inputs"
             caption="Material you'll want to gather first."
-            items={entry.inputs}
+            items={capItems(entry.inputs)}
           />
         )}
         {entry.prerequisites && entry.prerequisites.length > 0 && (
           <LabeledList
             label="Prerequisites"
             caption="Conditions that should be true for this to work."
-            items={entry.prerequisites}
+            items={capItems(entry.prerequisites)}
           />
         )}
       </div>
@@ -337,7 +375,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         title="The procedure"
         note="Each step carries its purpose (why it exists), its actions (what you do), and its outputs (what you produce). Read the purpose. It's what keeps the step from degenerating into checklist theatre."
       />
-      <ProcedureSteps steps={entry.steps} />
+      <ProcedureSteps steps={stepsCapped} />
     </>
   )}
 
@@ -359,28 +397,28 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
           <LabeledList
             label="Decision points"
             caption="Moments where judgment and trade-offs matter more than procedure."
-            items={entry.decisionPoints}
+            items={capItems(entry.decisionPoints)}
           />
         )}
         {entry.examplePromptsOrQuestions && entry.examplePromptsOrQuestions.length > 0 && (
           <LabeledList
             label="Questions worth asking"
             caption="Prompts to use on yourself, the team, or an AI assistant while running the procedure."
-            items={entry.examplePromptsOrQuestions}
+            items={capItems(entry.examplePromptsOrQuestions)}
           />
         )}
         {entry.commonMistakes && entry.commonMistakes.length > 0 && (
           <LabeledList
             label="Common mistakes"
             caption="Patterns that surface across teams running this playbook."
-            items={entry.commonMistakes}
+            items={capItems(entry.commonMistakes)}
           />
         )}
         {entry.warningSignsYouAreDoingItWrong && entry.warningSignsYouAreDoingItWrong.length > 0 && (
           <LabeledList
             label="Warning signs you are doing it wrong"
             caption="Signals that the playbook is being executed but not landing."
-            items={entry.warningSignsYouAreDoingItWrong}
+            items={capItems(entry.warningSignsYouAreDoingItWrong)}
           />
         )}
       </div>
@@ -403,28 +441,28 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
           <LabeledList
             label="Artifacts to produce"
             caption="Durable outputs the playbook should leave behind."
-            items={entry.artifactsToProduce}
+            items={capItems(entry.artifactsToProduce)}
           />
         )}
         {entry.successSignals && entry.successSignals.length > 0 && (
           <LabeledList
             label="Success signals"
             caption="Observable changes that mean the playbook landed."
-            items={entry.successSignals}
+            items={capItems(entry.successSignals)}
           />
         )}
         {entry.followUpActions && entry.followUpActions.length > 0 && (
           <LabeledList
             label="Follow-up actions"
             caption="Moves that keep the playbook's effects compounding after it finishes."
-            items={entry.followUpActions}
+            items={capItems(entry.followUpActions)}
           />
         )}
         {entry.metricsOrSignals && entry.metricsOrSignals.length > 0 && (
           <LabeledList
             label="Metrics or signals to watch"
             caption="Longer-horizon indicators that the underlying problem is receding."
-            items={entry.metricsOrSignals}
+            items={capItems(entry.metricsOrSignals)}
           />
         )}
       </div>
@@ -454,7 +492,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
             variant="boxed"
             label="AI can help with"
             caption="Where AI tooling genuinely reduces the cost of running this playbook well."
-            items={entry.aiCanHelpWith}
+            items={capItems(entry.aiCanHelpWith)}
           />
         )}
         {entry.aiCanMakeWorseBy && entry.aiCanMakeWorseBy.length > 0 && (
@@ -462,13 +500,13 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
             variant="boxed"
             label="AI can make worse by"
             caption="Distortions AI introduces that make the underlying problem harder to see."
-            items={entry.aiCanMakeWorseBy}
+            items={capItems(entry.aiCanMakeWorseBy)}
           />
         )}
       </div>
       {entry.aiSpecificNotes && (
         <CalloutBand label="AI synthesis" variant="blue" serif>
-          <p>{entry.aiSpecificNotes}</p>
+          <p>{capFirst(entry.aiSpecificNotes)}</p>
         </CalloutBand>
       )}
     </>
