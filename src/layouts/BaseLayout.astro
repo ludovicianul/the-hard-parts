@@ -186,8 +186,21 @@ const CF_BEACON_TOKEN = import.meta.env.PUBLIC_CF_BEACON_TOKEN as
 
     <footer class="nsb-footer">
       <div class="nsb-container nsb-footer__inner">
+        {/* The licence note sits in the same line as the wordmark so
+            it reads as part of the editorial colophon, not as a
+            legal disclaimer pinned to the corner. `rel="license"` is
+            the canonical hint so search engines and link-checkers
+            can identify the licence target without parsing prose;
+            `noopener` is added with the external `target` per
+            standard practice. */}
         <p class="nsb-footer__line">
-          thehardparts.dev &middot; an engineering reference.
+          thehardparts.dev &middot; an engineering reference &middot;
+          <a
+            class="nsb-footer__license"
+            href="https://creativecommons.org/licenses/by-nc/4.0/"
+            rel="license noopener"
+            target="_blank"
+          >CC BY-NC 4.0</a>
         </p>
         <nav class="nsb-footer__nav" aria-label="Utility">
           <a href="/about">About</a>
@@ -300,6 +313,22 @@ const CF_BEACON_TOKEN = import.meta.env.PUBLIC_CF_BEACON_TOKEN as
         font-size: var(--text-sm);
         color: var(--color-ink-soft);
         margin: 0;
+      }
+      /* Inline licence link in the colophon line. Inherits the line's
+         soft-ink tone (the licence is informational, not a CTA) but
+         lifts to the full ink color on hover, with the accent
+         underline staying constant so the link affordance is visible
+         at rest without competing with the wordmark. */
+      .nsb-footer__license {
+        color: inherit;
+        text-decoration-color: var(--color-rule);
+        text-underline-offset: 2px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .nsb-footer__license:hover {
+        color: var(--color-ink);
+        text-decoration-color: var(--accent-current);
       }
       .nsb-footer__nav {
         display: inline-flex;
