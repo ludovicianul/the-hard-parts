@@ -50,6 +50,7 @@
   },
   "entries": [
     {
+      "edition": "edition-01",
       "slug": "upgrade-code-review-for-ai-assisted-work",
       "title": "Upgrade code review for AI-assisted work",
       "situation": "AI-assisted code generation is common, but review practices have not adapted.",
@@ -242,6 +243,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "define-safe-ai-development-zones",
       "title": "Define safe AI development zones",
       "situation": "A team wants to use AI productively without applying the same risk model to every task.",
@@ -432,6 +434,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "introduce-ai-tools-without-synthetic-velocity",
       "title": "Introduce AI tools without synthetic velocity",
       "situation": "A team is adopting AI tools and wants real leverage, not just more apparent output.",
@@ -626,6 +629,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "build-a-grounded-rag-system",
       "title": "Build a grounded RAG system",
       "situation": "A team wants retrieval-augmented generation that is genuinely grounded in trustworthy sources.",
@@ -822,6 +826,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "evaluate-an-ai-feature-against-real-tasks",
       "title": "Evaluate an AI feature against real tasks",
       "situation": "An AI feature needs evaluation beyond synthetic benchmarks or generic demos.",
@@ -1016,6 +1021,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "design-human-review-that-is-not-rubber-stamping",
       "title": "Design human review that is not rubber-stamping",
       "situation": "An AI workflow includes human review, but the review step risks becoming symbolic.",
@@ -1205,6 +1211,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "detect-ai-drift-before-users-do",
       "title": "Detect AI drift before users do",
       "situation": "An AI system can change over time through model, prompt, retrieval, or workflow drift.",
@@ -1398,6 +1405,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "create-ai-usage-norms-for-a-team",
       "title": "Create AI usage norms for a team",
       "situation": "AI is already being used by the team, but expectations and norms are inconsistent.",

@@ -59,6 +59,7 @@
   },
   "entries": [
     {
+      "edition": "edition-01",
       "slug": "nobody-can-explain-this-module-simply",
       "title": "Nobody can explain this module simply",
       "layer": "code",
@@ -165,6 +166,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "one-file-does-too-much",
       "title": "One file does too much",
       "layer": "code",
@@ -265,6 +267,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "changes-always-touch-too-many-places",
       "title": "Changes always touch too many places",
       "layer": "code",
@@ -365,6 +368,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "naming-is-generic-where-understanding-is-weak",
       "title": "Naming is generic where understanding is weak",
       "layer": "code",
@@ -460,6 +464,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "business-logic-leaks-across-layers",
       "title": "Business logic leaks across layers",
       "layer": "code",
@@ -554,6 +559,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "tests-are-hard-to-write-for-normal-changes",
       "title": "Tests are hard to write for normal changes",
       "layer": "code",
@@ -652,6 +658,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "end-to-end-tests-carry-all-the-confidence",
       "title": "End-to-end tests carry all the confidence",
       "layer": "code",
@@ -746,6 +753,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "shared-utility-layer-grows-faster-than-products",
       "title": "Shared utility layer grows faster than products",
       "layer": "code",
@@ -842,6 +850,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "integration-contracts-are-implicit",
       "title": "Integration contracts are implicit",
       "layer": "code",
@@ -941,6 +950,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "generated-code-is-merged-without-deep-review",
       "title": "Generated code is merged without deep review",
       "layer": "code",
@@ -1042,6 +1052,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "everyone-asks-the-same-person",
       "title": "Everyone asks the same person",
       "layer": "team",
@@ -1144,6 +1155,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "critical-knowledge-lives-in-chat-and-memory",
       "title": "Critical knowledge lives in chat and memory",
       "layer": "team",
@@ -1243,6 +1255,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "people-avoid-touching-certain-areas",
       "title": "People avoid touching certain areas",
       "layer": "team",
@@ -1342,6 +1355,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "prs-are-approved-faster-than-they-are-understood",
       "title": "PRs are approved faster than they are understood",
       "layer": "team",
@@ -1442,6 +1456,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "ownership-is-claimed-but-not-visible",
       "title": "Ownership is claimed but not visible",
       "layer": "team",
@@ -1540,6 +1555,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "no-one-disagrees-in-meetings-everyone-complains-later",
       "title": "No one disagrees in meetings, everyone complains later",
       "layer": "team",
@@ -1636,6 +1652,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "the-loudest-person-wins-architecture-discussions",
       "title": "The loudest person wins architecture discussions",
       "layer": "team",
@@ -1732,6 +1749,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "ai-use-is-widespread-but-norms-are-unclear",
       "title": "AI use is widespread but norms are unclear",
       "layer": "team",
@@ -1829,6 +1847,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "work-enters-faster-than-it-leaves",
       "title": "Work enters faster than it leaves",
       "layer": "process",
@@ -1929,6 +1948,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "everything-is-urgent",
       "title": "Everything is urgent",
       "layer": "process",
@@ -2027,6 +2047,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "scope-changes-without-decision-records",
       "title": "Scope changes without decision records",
       "layer": "process",
@@ -2122,6 +2143,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "dates-are-fixed-but-trade-offs-are-implicit",
       "title": "Dates are fixed but trade-offs are implicit",
       "layer": "process",
@@ -2219,6 +2241,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "tickets-substitute-for-thinking",
       "title": "Tickets substitute for thinking",
       "layer": "process",
@@ -2315,6 +2338,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "metrics-are-visible-but-not-trusted",
       "title": "Metrics are visible but not trusted",
       "layer": "process",
@@ -2413,6 +2437,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "retrospectives-repeat-the-same-outputs",
       "title": "Retrospectives repeat the same outputs",
       "layer": "process",
@@ -2506,6 +2531,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "release-confidence-depends-on-luck-and-timing",
       "title": "Release confidence depends on luck and timing",
       "layer": "process",
@@ -2604,6 +2630,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "dependencies-are-discovered-late-every-cycle",
       "title": "Dependencies are discovered late every cycle",
       "layer": "process",
@@ -2700,6 +2727,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "teams-cannot-explain-what-done-means",
       "title": "Teams cannot explain what done means",
       "layer": "process",
@@ -2797,6 +2825,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "reporting-looks-healthier-than-delivery-feels",
       "title": "Reporting looks healthier than delivery feels",
       "layer": "leadership",
@@ -2892,6 +2921,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "teams-are-measured-on-output-not-outcome",
       "title": "Teams are measured on output, not outcome",
       "layer": "leadership",
@@ -2988,6 +3018,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "ownership-and-authority-do-not-match",
       "title": "Ownership and authority do not match",
       "layer": "leadership",
@@ -3084,6 +3115,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "platform-work-has-no-users-only-sponsors",
       "title": "Platform work has no users, only sponsors",
       "layer": "leadership",
@@ -3181,6 +3213,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "risks-are-acknowledged-but-never-priced-into-plans",
       "title": "Risks are acknowledged but never priced into plans",
       "layer": "leadership",
@@ -3278,6 +3311,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "governance-exists-mainly-as-ceremony",
       "title": "Governance exists mainly as ceremony",
       "layer": "leadership",
@@ -3376,6 +3410,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "nobody-can-say-what-the-company-will-stop-doing",
       "title": "Nobody can say what the company will stop doing",
       "layer": "leadership",
@@ -3471,6 +3506,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "more-output-less-certainty",
       "title": "More output, less certainty",
       "layer": "ai",
@@ -3567,6 +3603,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "ai-generated-artifacts-are-trusted-more-than-source-material",
       "title": "AI-generated artifacts are trusted more than source material",
       "layer": "ai",
@@ -3663,6 +3700,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "prompt-changes-replace-system-thinking",
       "title": "Prompt changes replace system thinking",
       "layer": "ai",
@@ -3758,6 +3796,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "benchmarks-are-discussed-more-than-real-user-outcomes",
       "title": "Benchmarks are discussed more than real user outcomes",
       "layer": "ai",
@@ -3854,6 +3893,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "humans-in-the-loop-are-rubber-stamps",
       "title": "Humans in the loop are rubber stamps",
       "layer": "ai",
@@ -3950,6 +3990,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "rag-uses-sources-nobody-actually-trusts",
       "title": "RAG uses sources nobody actually trusts",
       "layer": "ai",
@@ -4049,6 +4090,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "model-drift-is-noticed-informally-not-measured",
       "title": "Model drift is noticed informally, not measured",
       "layer": "ai",

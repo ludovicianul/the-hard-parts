@@ -50,6 +50,7 @@
   },
   "entries": [
     {
+      "edition": "edition-01",
       "slug": "review-service-boundaries",
       "title": "Review service boundaries",
       "situation": "You need to evaluate whether current service boundaries are helping or hurting.",
@@ -249,6 +250,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "reduce-change-fan-out",
       "title": "Reduce change fan-out",
       "situation": "Small changes spread across too many files, modules, or teams.",
@@ -437,6 +439,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "make-an-integration-contract-explicit",
       "title": "Make an integration contract explicit",
       "situation": "A producer and consumer depend on behavior that is currently implicit or informal.",
@@ -628,6 +631,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "improve-testability-without-stopping-delivery",
       "title": "Improve testability without stopping delivery",
       "situation": "The system is hard to test, but delivery cannot pause for a large rewrite.",
@@ -817,6 +821,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "choose-where-business-rules-should-live",
       "title": "Choose where business rules should live",
       "situation": "A business rule is duplicated or inconsistently implemented across layers.",
@@ -1007,6 +1012,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "audit-a-shared-layer-for-accidental-complexity",
       "title": "Audit a shared layer for accidental complexity",
       "situation": "A common/shared layer keeps growing and may be hiding speculative abstraction.",
@@ -1199,6 +1205,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "design-a-safe-rollout-path",
       "title": "Design a safe rollout path",
       "situation": "A change is ready to ship, but rollout strategy matters as much as the code itself.",
@@ -1390,6 +1397,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "refactor-a-dangerous-hotspot",
       "title": "Refactor a dangerous hotspot",
       "situation": "A frequently changing or high-risk code area is slowing delivery and raising risk.",

@@ -50,6 +50,7 @@
   },
   "entries": [
     {
+      "edition": "edition-01",
       "slug": "run-a-phased-migration",
       "title": "Run a phased migration",
       "situation": "You need to replace or move a live system without stopping delivery.",
@@ -258,6 +259,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "start-a-rewrite-safely",
       "title": "Start a rewrite safely",
       "situation": "The current system is painful enough that a rewrite is being seriously considered.",
@@ -460,6 +462,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "de-risk-a-risky-release",
       "title": "De-risk a risky release",
       "situation": "A release has meaningful technical, operational, customer, or business risk.",
@@ -661,6 +664,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "recover-a-slipping-project",
       "title": "Recover a slipping project",
       "situation": "A project is falling behind and confidence is degrading.",
@@ -860,6 +864,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "re-scope-without-lying",
       "title": "Re-scope without lying",
       "situation": "You need to reduce or reshape scope while preserving trust.",
@@ -1051,6 +1056,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "handle-a-high-dependency-delivery",
       "title": "Handle a high-dependency delivery",
       "situation": "A delivery depends on many teams, systems, or approval paths.",
@@ -1244,6 +1250,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "turn-recurring-urgent-work-into-managed-work",
       "title": "Turn recurring urgent work into managed work",
       "situation": "The same urgent issues keep recurring and disrupting planned work.",
@@ -1435,6 +1442,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "stabilize-a-fragile-service",
       "title": "Stabilize a fragile service",
       "situation": "A service is unreliable, scary to change, or operationally noisy.",

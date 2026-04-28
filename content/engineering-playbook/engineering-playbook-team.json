@@ -50,6 +50,7 @@
   },
   "entries": [
     {
+      "edition": "edition-01",
       "slug": "onboard-a-new-engineer-well",
       "title": "Onboard a new engineer well",
       "situation": "A new engineer joins and needs to become productive without relying on luck or heroics.",
@@ -248,6 +249,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "spread-knowledge-out-of-one-expert",
       "title": "Spread knowledge out of one expert",
       "situation": "Critical knowledge is concentrated in one person or a very small group.",
@@ -444,6 +446,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "re-establish-ownership-in-a-blurry-area",
       "title": "Re-establish ownership in a blurry area",
       "situation": "A system area has unclear, overlapping, or invisible ownership.",
@@ -638,6 +641,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "run-a-healthy-engineering-retrospective",
       "title": "Run a healthy engineering retrospective",
       "situation": "A team needs to reflect on delivery, collaboration, and system friction in a useful way.",
@@ -825,6 +829,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "repair-trust-after-a-painful-incident",
       "title": "Repair trust after a painful incident",
       "situation": "A serious incident damaged trust inside the team, with leadership, or with users.",
@@ -1015,6 +1020,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "facilitate-a-difficult-technical-disagreement",
       "title": "Facilitate a difficult technical disagreement",
       "situation": "A technical disagreement is blocking progress or damaging team alignment.",
@@ -1205,6 +1211,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "reduce-review-bottlenecks-without-lowering-quality",
       "title": "Reduce review bottlenecks without lowering quality",
       "situation": "Code or design review is slowing delivery, but quality still matters.",
@@ -1395,6 +1402,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "recover-a-team-stuck-in-reactive-mode",
       "title": "Recover a team stuck in reactive mode",
       "situation": "A team spends most of its time handling interruption, urgency, and spillover work.",

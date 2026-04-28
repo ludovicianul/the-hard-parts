@@ -50,6 +50,7 @@
   },
   "entries": [
     {
+      "edition": "edition-01",
       "slug": "run-an-incident-review-that-actually-helps",
       "title": "Run an incident review that actually helps",
       "situation": "An incident happened and the team needs to learn from it usefully.",
@@ -245,6 +246,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "write-a-useful-runbook",
       "title": "Write a useful runbook",
       "situation": "A team needs operational guidance that works under pressure.",
@@ -434,6 +436,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "build-a-practical-rollback-strategy",
       "title": "Build a practical rollback strategy",
       "situation": "A team needs credible recovery options when a release or change goes wrong.",
@@ -624,6 +627,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "reduce-operational-dependence-on-heroes",
       "title": "Reduce operational dependence on heroes",
       "situation": "Operations, incidents, or risky changes depend on a small number of people.",
@@ -815,6 +819,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "create-meaningful-alerts",
       "title": "Create meaningful alerts",
       "situation": "Alerting is noisy, weak, or not tied to meaningful operational action.",
@@ -1002,6 +1007,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "triage-operational-debt",
       "title": "Triage operational debt",
       "situation": "Operational pain is accumulating faster than the team can address it all at once.",
@@ -1193,6 +1199,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "prepare-a-handover-properly",
       "title": "Prepare a handover properly",
       "situation": "Knowledge, ownership, or operational responsibility needs to transfer from one person or team to another.",
@@ -1383,6 +1390,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "improve-release-confidence",
       "title": "Improve release confidence",
       "situation": "The team can ship, but does not truly trust what happens when it does.",

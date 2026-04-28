@@ -51,6 +51,7 @@
   },
   "entries": [
     {
+      "edition": "edition-01",
       "slug": "monolith-vs-microservices",
       "title": "Monolith vs Microservices",
       "decisionQuestion": "Should this system remain a monolith or be split into microservices?",
@@ -238,6 +239,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "modular-monolith-vs-distributed-services",
       "title": "Modular Monolith vs Distributed Services",
       "decisionQuestion": "Should we enforce boundaries inside one deployable unit or across independently deployed services?",
@@ -414,6 +416,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "rest-vs-graphql",
       "title": "REST vs GraphQL",
       "decisionQuestion": "Should this API surface be REST-based or GraphQL-based?",
@@ -591,6 +594,7 @@
       "patternConfidence": "medium-high"
     },
     {
+      "edition": "edition-01",
       "slug": "sql-vs-nosql",
       "title": "SQL vs NoSQL",
       "decisionQuestion": "Should this data model live in a relational or non-relational store?",
@@ -767,6 +771,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "sync-vs-event-driven",
       "title": "Sync Communication vs Event-Driven",
       "decisionQuestion": "Should services coordinate synchronously or through events?",
@@ -944,6 +949,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "shared-database-vs-service-owned-data",
       "title": "Shared Database vs Service-Owned Data",
       "decisionQuestion": "Should multiple services share one database or own their data separately?",
@@ -1115,6 +1121,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "strong-consistency-vs-eventual-consistency",
       "title": "Strong Consistency vs Eventual Consistency",
       "decisionQuestion": "Should this workflow guarantee immediate consistency or tolerate convergence over time?",
@@ -1286,6 +1293,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "batch-vs-real-time-processing",
       "title": "Batch vs Real-Time Processing",
       "decisionQuestion": "Should this data or workflow be processed in scheduled batches or in real time?",
@@ -1455,6 +1463,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "edge-logic-vs-centralized-backend-logic",
       "title": "Edge Logic vs Centralized Backend Logic",
       "decisionQuestion": "Should logic execute closer to users or requests at the edge, or remain centralized in backend systems?",
@@ -1623,6 +1632,7 @@
       "patternConfidence": "medium"
     },
     {
+      "edition": "edition-01",
       "slug": "build-vs-buy",
       "title": "Build vs Buy",
       "decisionQuestion": "Should we build this capability ourselves or buy an external solution?",
@@ -1807,6 +1817,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "speed-vs-robustness",
       "title": "Speed vs Robustness",
       "decisionQuestion": "Should we optimize for faster delivery now or for stronger resilience and hardening now?",
@@ -1979,6 +1990,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "scope-flexibility-vs-date-certainty",
       "title": "Scope Flexibility vs Date Certainty",
       "decisionQuestion": "Should scope move to preserve date, or should date move to preserve scope?",
@@ -2142,6 +2154,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "platform-first-vs-product-first",
       "title": "Platform First vs Product First",
       "decisionQuestion": "Should we invest in a generalized internal platform now or solve immediate product needs first?",
@@ -2321,6 +2334,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "rewrite-vs-refactor",
       "title": "Rewrite vs Refactor",
       "decisionQuestion": "Should we replace this system wholesale or improve it incrementally?",
@@ -2500,6 +2514,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "generic-solution-vs-case-specific-solution",
       "title": "Generic Solution vs Case-Specific Solution",
       "decisionQuestion": "Should we build for broad reuse now or solve this specific case directly?",
@@ -2666,6 +2681,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "one-way-door-vs-two-way-door-rollout",
       "title": "One-Way Door vs Two-Way Door Rollout",
       "decisionQuestion": "Is this change hard to reverse, or can we rollout in a reversible way?",
@@ -2830,6 +2846,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "customization-vs-standardization",
       "title": "Customization vs Standardization",
       "decisionQuestion": "Should we adapt the system heavily for local needs or push toward standard patterns?",
@@ -2992,6 +3009,7 @@
       "patternConfidence": "medium-high"
     },
     {
+      "edition": "edition-01",
       "slug": "experimentation-vs-operational-stability",
       "title": "Experimentation vs Operational Stability",
       "decisionQuestion": "How much change and experimentation can this system tolerate without undermining reliability?",
@@ -3154,6 +3172,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "central-platform-team-vs-embedded-enablement",
       "title": "Central Platform Team vs Embedded Enablement",
       "decisionQuestion": "Should platform capability live in a central team or be embedded to enable product teams directly?",
@@ -3319,6 +3338,7 @@
       "patternConfidence": "medium-high"
     },
     {
+      "edition": "edition-01",
       "slug": "specialist-teams-vs-cross-functional-teams",
       "title": "Specialist Teams vs Cross-Functional Teams",
       "decisionQuestion": "Should work be organized around specialists or end-to-end cross-functional teams?",
@@ -3496,6 +3516,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "strong-ownership-vs-shared-ownership",
       "title": "Strong Ownership vs Shared Ownership",
       "decisionQuestion": "Should one team clearly own this area, or should multiple teams share ownership?",
@@ -3657,6 +3678,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "local-autonomy-vs-central-governance",
       "title": "Local Team Autonomy vs Central Governance",
       "decisionQuestion": "How much freedom should teams have versus centrally enforced standards and controls?",
@@ -3824,6 +3846,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "documentation-first-vs-tacit-coordination",
       "title": "Documentation First vs Tacit Coordination",
       "decisionQuestion": "Should teams rely primarily on written artifacts or on synchronous or tacit coordination?",
@@ -3990,6 +4013,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "synchronous-collaboration-vs-async-first",
       "title": "Synchronous Collaboration vs Async-First Collaboration",
       "decisionQuestion": "Should the team coordinate mainly through real-time meetings or chat, or asynchronous artifacts and workflows?",
@@ -4155,6 +4179,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "test-pyramid-vs-heavy-end-to-end",
       "title": "Test Pyramid vs Heavy End-to-End",
       "decisionQuestion": "Should confidence rely mainly on lower-level tests or on broad end-to-end coverage?",
@@ -4319,6 +4344,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "ci-gate-strictness-vs-developer-throughput",
       "title": "CI Gate Strictness vs Developer Throughput",
       "decisionQuestion": "How strict should delivery gates be versus how much friction can developers tolerate?",
@@ -4485,6 +4511,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "feature-flags-vs-branch-based-release-isolation",
       "title": "Feature Flags vs Branch-Based Release Isolation",
       "decisionQuestion": "Should release control happen through runtime flags or through branching and release isolation?",
@@ -4650,6 +4677,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "backward-compatibility-vs-faster-evolution",
       "title": "Backward Compatibility vs Faster Evolution",
       "decisionQuestion": "Should we preserve compatibility longer or evolve faster and accept breaking-change pressure?",
@@ -4816,6 +4844,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "convention-over-configuration-vs-flexibility",
       "title": "Convention over Configuration vs Flexibility",
       "decisionQuestion": "Should the system prefer opinionated defaults or expose more configuration flexibility?",
@@ -4977,6 +5006,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "manual-review-depth-vs-automation-dependence",
       "title": "Manual Review Depth vs Automation Dependence",
       "decisionQuestion": "How much confidence should come from human judgment versus automated checks?",
@@ -5144,6 +5174,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "ai-assisted-development-vs-manual-only-development",
       "title": "AI-Assisted Development vs Manual-Only Development",
       "decisionQuestion": "How much of the engineering workflow should rely on AI assistance?",
@@ -5322,6 +5353,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "model-api-vs-self-hosted-model",
       "title": "Model API vs Self-Hosted Model",
       "decisionQuestion": "Should we rely on external model APIs or host models ourselves?",
@@ -5492,6 +5524,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "rag-vs-fine-tuning",
       "title": "RAG vs Fine-Tuning",
       "decisionQuestion": "Should this AI capability rely on retrieval-augmented generation or model fine-tuning?",
@@ -5668,6 +5701,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "prompt-layer-vs-workflow-tooling-layer",
       "title": "Prompt Layer vs Workflow/Tooling Layer",
       "decisionQuestion": "Should system quality depend mainly on prompt engineering or on stronger orchestration, tools, and workflow structure?",
@@ -5830,6 +5864,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "human-in-the-loop-vs-full-automation",
       "title": "Human-in-the-Loop vs Full Automation",
       "decisionQuestion": "Should this workflow require human review or intervention, or run autonomously end to end?",
@@ -5999,6 +6034,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "fast-ai-adoption-vs-governance-first",
       "title": "Fast AI Adoption vs Governance-First AI Adoption",
       "decisionQuestion": "Should the organization move quickly on AI adoption or establish stronger governance before broad rollout?",
@@ -6168,6 +6204,7 @@
       "patternConfidence": "high"
     },
     {
+      "edition": "edition-01",
       "slug": "broad-ai-enablement-vs-restricted-high-trust-use",
       "title": "Broad AI Enablement vs Restricted High-Trust AI Use",
       "decisionQuestion": "Should AI use be broadly available or limited to high-trust workflows and teams?",
@@ -6335,6 +6372,7 @@
       "patternConfidence": "medium-high"
     },
     {
+      "edition": "edition-01",
       "slug": "synthetic-evaluation-vs-real-world-evaluation",
       "title": "Synthetic Evaluation vs Real-World Evaluation",
       "decisionQuestion": "Should model or system quality be judged mostly through synthetic evals or through real task and production evidence?",
