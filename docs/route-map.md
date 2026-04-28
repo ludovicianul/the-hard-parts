@@ -177,17 +177,12 @@ Purpose of detail pages:
 
 ---
 
-## Optional Near-Term Routes
+## Editorial / Supporting Routes
 
-These are not mandatory for the first implementation, but they are acceptable extensions.
-
-### Global search
-
-```text
-/search
-```
-
-Use only if search is actually implemented.
+In addition to the four catalog families above, these supporting
+routes are part of the canonical site and ship with v1. They are
+editorial / publication-meta surfaces — they do not contain catalog
+entries, but they frame the rest of the publication.
 
 ### About / Method
 
@@ -195,12 +190,49 @@ Use only if search is actually implemented.
 /about
 ```
 
-This can explain:
+Method / preface page. Explains what the site is, how the four
+catalogs are organized, how to use them, and how AI is treated
+throughout. Editorial voice; not a corporate "about us".
 
-* what the site is
-* how to read it
-* editorial framing
-* how categories relate
+### Global search
+
+```text
+/search
+```
+
+Client-side search across all four catalogs.
+
+### Issues archive
+
+```text
+/issues
+```
+
+Public release-notes archive. Lists every issue that currently has
+at least one entry, newest first. The reference ships in numbered
+issues; this is the table of contents for that publication
+layer. See **Issue detail** below.
+
+### Issue detail
+
+```text
+/issues/[issue]
+```
+
+Example:
+
+```text
+/issues/01
+```
+
+Per-issue release notes. Groups every entry that belongs to the
+issue (membership comes from each entry's `edition` field) by
+category, then by `issueStatus` (`new` / `modified` / `removed`).
+Links back to canonical entry pages — it is a changelog, not a
+versioned copy of the catalog.
+
+Issue numbers are zero-padded two-digit strings (`01`, `02`, ...,
+`12`). The matching `edition` value on entries is `edition-NN`.
 
 ### Browse-all page
 
@@ -208,9 +240,9 @@ This can explain:
 /browse
 ```
 
-Optional.
-Only useful if there is a clear cross-category browse experience.
-Do not add it unless it serves a real product need.
+Optional. Not yet implemented. Only useful if a clear cross-
+category browse experience emerges; do not add it unless it
+serves a real product need.
 
 ---
 
@@ -441,6 +473,30 @@ Page type:
 
 * Engineering Playbook detail page
 
+### `/about`
+
+Page type:
+
+* Editorial preface / method page
+
+### `/search`
+
+Page type:
+
+* Client-side search across all catalogs
+
+### `/issues`
+
+Page type:
+
+* Public release-notes archive
+
+### `/issues/[issue]`
+
+Page type:
+
+* Per-issue release-notes / changelog page
+
 ---
 
 ## Static Generation Expectation
@@ -473,8 +529,14 @@ Any future route should be evaluated against the question:
 
 ## Final Canonical Route List
 
+Shipped routes:
+
 ```text
 /
+/about
+/search
+/issues
+/issues/[issue]
 /failure-modes
 /failure-modes/[slug]
 /tech-decisions
@@ -488,10 +550,18 @@ Any future route should be evaluated against the question:
 Optional later:
 
 ```text
-/about
-/search
 /browse
 ```
+
+### Why `/issues` lives at the top level
+
+The issue system is a thin public release-notes layer over the
+canonical catalog — not a versioned copy. Entry URLs are never
+versioned (`/failure-modes/friendly-rewrite` always points to the
+latest canonical entry). The `/issues/*` routes are the *only*
+place issue numbers appear in URLs, and they always link back to
+canonical entry pages. This keeps the route system simple and
+avoids parallel public identifiers (rule #2 above).
 
 ---
 

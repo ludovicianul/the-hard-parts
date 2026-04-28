@@ -206,6 +206,42 @@ These names should remain consistent when used:
 * `aiCanMakeWorseBy`
 * `aiSpecificNotes`
 * `patternConfidence`
+* `edition`
+* `issueStatus`
+
+#### `edition` (required, every entry)
+
+Identifies which issue the entry was last created or modified in.
+Stored as a string of the form `edition-NN`, where `NN` is a
+zero-padded issue number (`edition-01`, `edition-02`, ...,
+`edition-12`).
+
+Mandatory because it backs the public release-notes layer at
+`/issues/[issue]` — issue membership is derived from this field.
+The schema validates the format strictly; the build fails on
+malformed values.
+
+Authors: bump this whenever you meaningfully revise an entry, and
+set it to the current issue when adding a new one. Don't touch
+it for cosmetic / typo fixes — it's an editorial change marker,
+not a "last modified" timestamp.
+
+#### `issueStatus` (optional, every entry)
+
+Per-entry change-status tag for the public release notes. Optional
+enum, one of:
+
+* `"new"` — entry is new in `edition`. (Default when omitted, so
+  the inaugural issue's entries don't need this set.)
+* `"modified"` — entry existed in a prior edition; its content
+  was meaningfully revised in `edition`.
+* `"removed"` — entry was retired in `edition`. The JSON record
+  is kept for the changelog, but `lib/load.ts` filters it out of
+  every canonical site listing (category landings, detail pages,
+  search index, sitemap).
+
+Issue membership is determined by `edition`; `issueStatus` only
+tells the changelog how to bucket the entry within that issue.
 
 ### Shared field naming rules
 
@@ -583,6 +619,9 @@ Each category should be validate-able against:
 * no undeclared subcategory is used
 * required fields are present
 * field types match schema expectations
+* `edition` matches the strict `edition-NN` format (zero-padded
+  two-digit issue number; build fails fast on malformed values)
+* `issueStatus`, when present, is one of `new` / `modified` / `removed`
 
 ---
 

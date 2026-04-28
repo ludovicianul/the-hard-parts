@@ -399,6 +399,20 @@ Purpose:
 
 > A wider set of attribute-type glyphs (severity triangle, frequency tally marks, recovery staircase, confidence bullseye) was prototyped and rejected: per-attribute icons on label cells read as dashboard decoration rather than editorial signal. The `AttrGlyph` component retains the full glyph set in its frontmatter in case a future use case needs one, but only the trend chevron is rendered today. If reaching for an attribute-type icon in future work, reread the rationale before shipping.
 
+### `IssueRibbon`
+
+(`src/components/IssueRibbon.astro`)
+
+Purpose:
+
+* homepage current-issue strip — yellow eyebrow + black issue label on the left, editorial title + counts in the centre, "See what's inside" / "See what changed" CTA on the right
+* data-driven from `getCurrentIssue()` in `src/lib/issues.ts`; renders nothing if no issues exist
+* CTA copy and the centre beats auto-flip between two states based on the issue's totals:
+  * **Pure-additions** (e.g. the inaugural Issue 01): "151 entries · See what's inside"
+  * **Changelog** (any issue with `modified` or `removed` entries): "20 new · 5 modified · See what changed"
+
+Used only on the homepage today. The same `IssueSummary` shape is also consumed by `pages/issues/index.astro` and the `/issues/[issue]` detail header, so the wording stays congruent across surfaces.
+
 ### `Pending` (status)
 
 Not a component — a shared convention. Cross-references that point to entries not yet authored are rendered by `RelatedEntries` with a `PEND` marker in the same list structure as resolved entries. The placeholder slot stays honest rather than hidden, matching the catalog-first voice of the site.

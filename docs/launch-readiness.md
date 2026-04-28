@@ -143,11 +143,13 @@ framing; category pages compose the middle.
 | **Canonical URLs** | `<link rel="canonical">` computed from `Astro.url.pathname + Astro.site` — set once in `BaseLayout` |
 | **Description meta** | Every page now has `<meta name="description">` (falls back to site tagline when a page doesn't pass one) |
 | **Theme color** | `<meta name="theme-color">` for browser chrome |
-| **Sitemap** | `sitemap.xml` generated at build time from the same loaders that drive the detail routes — can't drift from built routes |
+| **Sitemap** | `sitemap.xml` generated at build time from the same loaders that drive the detail routes — can't drift from built routes. Includes the `/issues` archive and every published `/issues/[issue]` page. |
 | **Robots** | `robots.txt` with sitemap URL, allow-all (reference-first site, no private areas) |
 | **404 page** | Branded, non-apologetic "no such call number" page with four category shortcuts + back-home link |
 | **Accessibility** | Skip link, `lang="en"` on every `<html>`, semantic `<main id="nsb-main">`, 0 pages missing `<title>` / description |
 | **Print / screenshot** | `@media print` rules strip nav/footer/rail, flatten ink, force page-break-avoid on framed panels |
+| **Licensing** | Site published under **CC BY-NC 4.0** — footer colophon link on every page (`rel="license noopener"`) and a dedicated paragraph in About § 08 |
+| **Issues / release notes** | Public release-notes layer at `/issues` and `/issues/[issue]`. Membership comes from each entry's `edition` field; per-entry `issueStatus` (`new` / `modified` / `removed`) buckets entries within an issue. Inaugural state: Issue 01, 151 entries, all NEW. Homepage carries an IssueRibbon that auto-flips from inaugural framing to changelog framing when modifications/removals appear |
 | **CF Pages Free compat** | 0 runtime `fetch()` calls in built HTML · 0 inline `on*=` handlers · 8.1 MB total build · 100 KB total CSS across 8 hash-named files |
 
 ---
@@ -192,8 +194,9 @@ framing; category pages compose the middle.
 
 Deploy plan:
 
-1. `npm run build` → `dist/` (static output, 157 HTML pages + 100 KB
-   assets)
+1. `npm run build` → `dist/` (static output, 161 HTML pages + 100 KB
+   assets; the public route count grew from 157 over the lifetime
+   of the project, most recently with `/issues` and `/issues/01`)
 2. Connect the repo to CF Pages; set build command `npm run build`
    and output directory `dist`
 3. No environment variables, no runtime config, no functions, no KV

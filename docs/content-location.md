@@ -126,6 +126,26 @@ Each of these should follow:
 * the top-level shared schema from `docs/content-schema.md`
 * the category-specific schema doc for that content family
 
+### Issue metadata (optional)
+
+```text
+content/issues.json
+```
+
+Single editorial-metadata file backing the public release-notes
+layer at `/issues`. Each issue can carry an optional `title`,
+`releaseDate` (ISO YYYY-MM-DD), and `summary`.
+
+This file is **not** the source of truth for issue membership —
+that lives on each entry's `edition` field. `content/issues.json`
+only adds human-readable metadata for the archive list and the
+issue-detail header. An issue can exist in the data without
+appearing here; an issue listed here without any matching entries
+will be skipped (we don't publish empty issues).
+
+Schema lives at `src/content/schemas/issue.ts`; loader logic at
+`src/lib/issues.ts`.
+
 ---
 
 ## Content Ownership Model

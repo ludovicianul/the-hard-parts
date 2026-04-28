@@ -148,6 +148,28 @@ Responsibilities:
 
 The output of this layer should be clean, predictable data for templates.
 
+### Issues / release-notes derivation (sub-layer)
+
+A thin derivation pass on top of the content-resolution layer
+(`src/lib/issues.ts`) groups the canonical content into issues for
+the public release-notes surfaces. It is **not** a parallel data
+source:
+
+* Issue membership comes from each entry's `edition` field
+  (`edition-NN`). Status within an issue comes from the optional
+  `issueStatus` enum (`new` / `modified` / `removed`).
+* Issue metadata (title / date / summary) is layered in from
+  `content/issues.json` when present; absence is fine.
+* `lib/load.ts` filters `issueStatus: "removed"` entries out of
+  every canonical-site listing (category landings, detail pages,
+  search index, sitemap). Issue release-notes pages are the only
+  surface that intentionally surfaces retired entries.
+
+The derivation never produces alternate URL identifiers for
+entries — entry URLs stay canonical (`/<category>/<slug>`). The
+only routes that mention an issue number are the `/issues/*`
+release-notes pages.
+
 ---
 
 ## 4. Page-Template Layer
@@ -159,11 +181,13 @@ Primary page types:
 * Home page
 * Category landing page
 * Detail page
+* Issues archive (`/issues`)
+* Issue detail / release notes (`/issues/[issue]`)
 
 Optional later:
 
-* Search page
-* About / Method page
+* Search page (now shipped)
+* About / Method page (now shipped)
 * Browse-all page
 
 ### Template philosophy
