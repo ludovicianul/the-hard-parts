@@ -286,33 +286,35 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     eyebrow="How it unfolds"
     title="The arc of the pattern"
   />
+  {/* Story arc as a row ledger.
+
+      Grammar pass: the arc previously prefixed each beat with a
+      filled-black roman-numeral plate (i / ii / iii / iv). The
+      numerals didn't encode anything the labels don't already say
+      — `Starts → Feels reasonable because → Escalates → Ends`
+      carries the order semantically — so the badges read as
+      decorative chrome and gave the section its own private
+      grammar. The arc is now a Type-A row ledger sharing the same
+      skeleton as Notes from practice (§09) and Easy-to-confuse-with
+      (§07): 3px-framed panel, 2px row dividers, 2-col rows
+      (label stack on the left, serif body on the right). The
+      framed panel itself stays — it groups the four beats as one
+      narrative block, which is meaningful structure. */}
   <ol class="fm-arc">
     <li class="fm-arc__beat">
-      <div class="fm-arc__marker">
-        <span class="fm-arc__num" aria-hidden="true">i</span>
-        <p class="nsb-eyebrow fm-arc__code">Starts</p>
-      </div>
+      <p class="nsb-eyebrow fm-arc__code">Starts</p>
       <p class="fm-prose">{capFirst(entry.starts)}</p>
     </li>
     <li class="fm-arc__beat">
-      <div class="fm-arc__marker">
-        <span class="fm-arc__num" aria-hidden="true">ii</span>
-        <p class="nsb-eyebrow fm-arc__code">Feels reasonable because</p>
-      </div>
+      <p class="nsb-eyebrow fm-arc__code">Feels reasonable because</p>
       <p class="fm-prose">{capFirst(entry.feelsReasonableBecause)}</p>
     </li>
     <li class="fm-arc__beat">
-      <div class="fm-arc__marker">
-        <span class="fm-arc__num" aria-hidden="true">iii</span>
-        <p class="nsb-eyebrow fm-arc__code">Escalates</p>
-      </div>
+      <p class="nsb-eyebrow fm-arc__code">Escalates</p>
       <p class="fm-prose">{capFirst(entry.escalates)}</p>
     </li>
     <li class="fm-arc__beat">
-      <div class="fm-arc__marker">
-        <span class="fm-arc__num" aria-hidden="true">iv</span>
-        <p class="nsb-eyebrow fm-arc__code">Ends</p>
-      </div>
+      <p class="nsb-eyebrow fm-arc__code">Ends</p>
       <p class="fm-prose">{capFirst(entry.ends)}</p>
     </li>
   </ol>
@@ -593,7 +595,15 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
         title="What experienced people notice"
         note="Annotations from engineers who have worked this pattern before."
       />
+      {/* `quiet` opts this panel into the page-wide Type-A row-ledger
+          family (same skeleton as §02 Arc and §07 Easy-to-confuse-
+          with). It drops the filled-black title bar (which duplicated
+          the SectionHeader above) and the per-row 01/02/03 step
+          badges (decorative — three labeled axes, not an ordered
+          sequence). TD's detail page does not pass `quiet`, so its
+          rendering is unchanged. */}
       <OperatorNotes
+        quiet
         items={[
           {
             label: "Best moment",
@@ -711,78 +721,79 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
     .fm-prose { text-wrap: balance; }
   }
 
-  /* ---- Story arc — four beats framed as a black-bordered panel with
-     a black title bar, each beat a row with a big bold roman numeral. -- */
+  /* ---- Story arc — 2×2 box grid.
+     Four beats laid out as a 2×2 grid inside one black-bordered
+     panel. Each cell is a card with the stage label as an eyebrow
+     at the top and the serif body below. Reading order is the
+     CSS source order: top-left → top-right → bottom-left →
+     bottom-right (Starts / Feels reasonable / Escalates / Ends),
+     which matches the natural left-to-right then top-to-bottom
+     scan and reflects the canonical narrative progression.
+
+     Grammar-pass note: this previously rendered as four full-width
+     rows with a filled-black roman-numeral plate per row. The
+     numerals were purely decorative — the four labels already
+     encode the order semantically — so they were dropped. The
+     2×2 box layout reads more compactly than four stacked rows
+     (the two top cells balance against the two bottom cells) while
+     still reading as one framed narrative block. Below 720px the
+     grid collapses to a single column, which is just the four
+     cards stacked vertically. */
   .fm-arc {
     list-style: none;
     padding: 0;
     margin: var(--space-5) 0 0 0;
     display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 0;
     border: 3px solid var(--color-frame);
     background: var(--color-surface);
   }
   .fm-arc__beat {
-    display: grid;
-    /* Numeral column narrowed from 5rem → 3.5rem so the badge sits
-       proportional to its smaller font-size below; eyebrow column
-       given more room since the eyebrow text scaled up too. */
-    grid-template-columns: 3.5rem minmax(10rem, 15rem) 1fr;
-    gap: var(--space-5);
-    padding: var(--space-5) var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-5);
+    /* Frame-stroke dividers between the four cells. Right border on
+       odd cells (1st and 3rd) draws the central vertical rule;
+       bottom border on the first two cells draws the central
+       horizontal rule. The border-rule helpers below collapse
+       cleanly when the grid stacks at narrow widths. */
+    border-right: 2px solid var(--color-frame);
     border-bottom: 2px solid var(--color-frame);
-    align-items: baseline;
   }
-  .fm-arc__beat:last-child { border-bottom: 0; }
-  .fm-arc__marker {
-    display: contents;
-  }
-  .fm-arc__num {
-    font-family: var(--font-sans);
-    /* Reduced from 2.25rem → 1.5rem so the badge no longer dwarfs
-       the eyebrow + body text in the same row. The badge is now
-       a marker, not a feature. */
-    font-size: 1.5rem;
-    line-height: 1;
-    color: var(--color-surface);
-    background: var(--color-frame);
-    font-weight: 900;
-    font-feature-settings: "tnum";
-    padding: 6px 10px;
-    text-transform: uppercase;
-    text-align: center;
-    justify-self: start;
-    align-self: start;
-    min-width: 2.5rem;
-  }
+  .fm-arc__beat:nth-child(2n) { border-right: 0; }
+  .fm-arc__beat:nth-child(n + 3) { border-bottom: 0; }
   .fm-arc__code {
     margin: 0;
     font-family: var(--font-sans);
-    /* Bumped from --text-xs (12.75px) to --text-sm (14.875px) so the
-       beat label reads at body-equivalent weight, in scale with the
-       numeral and prose. Was reading as a small eyebrow trapped
-       between two larger blocks. */
-    font-size: var(--text-sm);
+    font-size: var(--text-xs);
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
     font-weight: 900;
-    color: var(--accent-fm);
+    color: var(--color-ink);
   }
   .fm-arc__beat .fm-prose {
     margin: 0;
-    /* Slightly larger and tighter than the page-default fm-prose so
-       the four arc beats read as a denser narrative block, not as
-       four separate body paragraphs. */
-    font-size: 1.05rem;
+    /* Slightly tighter than the page-default fm-prose so each card
+       reads as a dense narrative beat, not a freestanding paragraph.
+       Smaller than the previous row layout (1.05rem → 1rem) because
+       cells in a 2×2 grid are narrower than full-width rows. */
+    font-size: 1rem;
     line-height: 1.45;
   }
   @media (max-width: 720px) {
-    .fm-arc__beat {
-      grid-template-columns: auto 1fr;
-      gap: var(--space-3);
+    .fm-arc {
+      grid-template-columns: 1fr;
     }
-    .fm-arc__code { grid-column: 2; }
-    .fm-arc__beat > .fm-prose { grid-column: 1 / -1; }
+    /* In single-column mode the right-border rule is meaningless;
+       restore a uniform bottom rule between cells and clear it on
+       the last one. */
+    .fm-arc__beat {
+      border-right: 0;
+      border-bottom: 2px solid var(--color-frame);
+    }
+    .fm-arc__beat:last-child { border-bottom: 0; }
   }
 
   /* ---- plain bulleted lists (structural fixes, root causes, etc.) -- */

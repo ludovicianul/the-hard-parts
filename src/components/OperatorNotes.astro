@@ -28,25 +28,49 @@ export interface OperatorNote {
 
 export interface Props {
   items: readonly OperatorNote[];
+  /**
+   * Quiet variant — when true, suppresses purely decorative chrome:
+   *   · the filled-black title bar at the top of the panel (`fm-ops__bar`),
+   *     which otherwise duplicates the section header that already
+   *     announces this section on the calling page;
+   *   · the per-row 01 / 02 / NN step badges, which don't encode anything
+   *     a reader needs (the three notes are three labeled axes, not an
+   *     ordered sequence).
+   *
+   * Used by the Failure Modes detail page to make this panel a sibling of
+   * the §02 Arc and §07 Easy-to-confuse-with row ledgers (same Type-A
+   * skeleton). Tech Decisions does not pass this and continues to render
+   * the original framed-bar variant.
+   *
+   * Default: false (preserves existing rendering on every other page).
+   */
+  quiet?: boolean;
 }
 
-const { items } = Astro.props;
+const { items, quiet = false } = Astro.props;
 const visible = items.filter(
   (i): i is OperatorNote & { body: string } =>
     typeof i.body === "string" && i.body.trim().length > 0,
 );
 ---
 {visible.length > 0 && (
-  <section class="fm-ops" aria-label="Notes from practice">
-    <div class="fm-ops__bar">
-      <span>What experienced people notice</span>
-      <span class="fm-ops__bar-count">{String(visible.length).padStart(2, "0")} notes</span>
-    </div>
+  <section
+    class={`fm-ops${quiet ? " fm-ops--quiet" : ""}`}
+    aria-label="Notes from practice"
+  >
+    {!quiet && (
+      <div class="fm-ops__bar">
+        <span>What experienced people notice</span>
+        <span class="fm-ops__bar-count">{String(visible.length).padStart(2, "0")} notes</span>
+      </div>
+    )}
     <dl class="fm-ops__list">
       {visible.map((item, i) => (
         <div class="fm-ops__item">
           <dt class="fm-ops__label">
-            <span class="fm-ops__num" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+            {!quiet && (
+              <span class="fm-ops__num" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+            )}
             <span class="fm-ops__label-stack">
               <span class="fm-ops__label-text">{item.label}</span>
               {item.hint && <span class="fm-ops__label-hint">{item.hint}</span>}
@@ -108,6 +132,15 @@ const visible = items.filter(
     align-items: start;
   }
   .fm-ops__item:first-child { border-top: 0; }
+
+  /* Quiet variant — used by the Failure Modes detail page only.
+     Drops the filled-black bar and the per-row step badges so the
+     panel reads as a Type-A row ledger (same skeleton as the §02
+     Arc and the §07 Easy-to-confuse-with panel). The 3px frame and
+     2px row dividers stay; only decorative chrome is removed. With
+     no bar above, the first row uses the panel's top edge as its
+     own boundary, so no inter-row top-rule adjustment is needed. */
+  .fm-ops--quiet .fm-ops__item:first-child { border-top: 0; }
 
   .fm-ops__label {
     display: flex;
