@@ -1,6 +1,8 @@
 import { z } from "zod";
 import {
+  EditionSchema,
   FrequencyEnum,
+  IssueStatusSchema,
   PatternConfidenceSchema,
   RefArray,
   RelatedRefs,
@@ -160,6 +162,10 @@ export const FailureModeEntrySchema = z
     falsePositive: z.string().optional(),
 
     patternConfidence: PatternConfidenceSchema,
+
+    /* Edition / issue tracking — see shared.ts for full semantics. */
+    edition: EditionSchema,
+    issueStatus: IssueStatusSchema.optional(),
   })
   .passthrough();
 

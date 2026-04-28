@@ -1,5 +1,7 @@
 import { z } from "zod";
 import {
+  EditionSchema,
+  IssueStatusSchema,
   PatternConfidenceSchema,
   RelatedRefs,
   SharedAiFields,
@@ -57,6 +59,10 @@ export const PlaybookEntrySchema = z
     ...RelatedRefs.shape,
     examplePromptsOrQuestions: z.array(z.string()).optional(),
     patternConfidence: PatternConfidenceSchema,
+
+    /* Edition / issue tracking — see shared.ts for full semantics. */
+    edition: EditionSchema,
+    issueStatus: IssueStatusSchema.optional(),
   })
   .passthrough();
 

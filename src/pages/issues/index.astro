@@ -1,0 +1,363 @@
+---
+/**
+ * /issues — public release-notes archive.
+ *
+ * A lightweight table of contents listing every issue that
+ * currently has at least one entry, newest first. Mirrors the
+ * editorial-front-matter voice of the rest of the site rather
+ * than a software-changelog dashboard: numbered cells, serif
+ * titles, no badges, no tags, no buttons.
+ *
+ * The page is data-derived. It will render cleanly when only
+ * Issue 01 exists (the current state) and again unchanged when
+ * Issue 02+ ship — no edit needed here.
+ *
+ * If `content/issues.json` carries metadata for an issue, that
+ * metadata is rendered (title / date / summary). Issues with no
+ * metadata still render with just the number + counts so the
+ * archive is never blocked on metadata authoring.
+ */
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { listAllIssues } from "@/lib/issues";
+import { ensureValidated } from "@/lib/validate";
+
+ensureValidated();
+
+const issues = listAllIssues();
+
+// Format release date the same way the homepage ribbon does, so
+// the two surfaces read the same way.
+function fmtDate(iso: string | undefined): string | null {
+  if (!iso) return null;
+  return new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+    timeZone: "UTC",
+  });
+}
+---
+
+<BaseLayout
+  title="Issues"
+  description="Public release notes for the reference. Each issue lists what was added, revised, or retired across the four catalogs."
+>
+  <div class="nsb-container nsb-issues">
+    {/* ── Editorial masthead ─────────────────────────────────────
+        Same three-cell strip the About masthead uses (THP code ·
+        section · edition pin), so the issues archive reads as a
+        named section of the publication rather than an admin
+        page. */}
+    <header class="nsb-issues__masthead nsb-frame nsb-frame--heavy" aria-label="Issues archive masthead">
+      <div class="nsb-issues__strip">
+        <span class="nsb-issues__strip-code">THP</span>
+        <span class="nsb-issues__strip-sep">·</span>
+        <span class="nsb-issues__strip-label">Issues</span>
+        <span class="nsb-issues__strip-spacer" />
+        <span class="nsb-issues__strip-edition">{issues.length} on file</span>
+      </div>
+      <div class="nsb-issues__title-col">
+        <h1 class="nsb-display nsb-issues__title">Issues</h1>
+        <p class="nsb-issues__lede">
+          The reference ships in numbered issues. Each issue is a
+          public release note — what was added, revised, or retired
+          across the four catalogs. Latest first.
+        </p>
+      </div>
+    </header>
+
+    {issues.length === 0 ? (
+      <p class="nsb-issues__empty">No issues have been published yet.</p>
+    ) : (
+      <ol class="nsb-issues__list" aria-label="All issues">
+        {issues.map((issue) => {
+          const date = fmtDate(issue.meta?.releaseDate);
+          // Beats: prefer the changelog framing when modifications
+          // exist, otherwise show the bare entry total. Same rule
+          // as IssueRibbon so the two views stay congruent.
+          const isPureAdditions =
+            issue.totals.modified === 0 && issue.totals.removed === 0;
+          return (
+            <li class="nsb-issues__item">
+              <a class="nsb-issues__link" href={issue.href}>
+                {/* Left rail — issue number plate. Black ground,
+                    yellow numeral, mirrors the cover-of-magazine
+                    treatment a reader expects from "Issue 01". */}
+                <div class="nsb-issues__num-plate">
+                  <span class="nsb-issues__num-eyebrow">Issue</span>
+                  <span class="nsb-issues__num-value">{issue.number}</span>
+                </div>
+
+                {/* Centre — title + summary + counts row. Title is
+                    serif (editorial), counts are sans-bold (data). */}
+                <div class="nsb-issues__body">
+                  {issue.meta?.title && (
+                    <p class="nsb-issues__item-title">{issue.meta.title}</p>
+                  )}
+                  <p class="nsb-issues__beats">
+                    {date && <span class="nsb-issues__beat-date">{date}</span>}
+                    {date && <span class="nsb-issues__sep" aria-hidden="true">·</span>}
+                    {isPureAdditions ? (
+                      <>
+                        <span class="nsb-issues__beat">
+                          <span class="nsb-issues__beat-value">{issue.totals.total}</span>
+                          <span class="nsb-issues__beat-label">{issue.totals.total === 1 ? "entry" : "entries"}</span>
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        {issue.totals.new > 0 && (
+                          <span class="nsb-issues__beat">
+                            <span class="nsb-issues__beat-value">{issue.totals.new}</span>
+                            <span class="nsb-issues__beat-label">new</span>
+                          </span>
+                        )}
+                        {issue.totals.modified > 0 && (
+                          <>
+                            <span class="nsb-issues__sep" aria-hidden="true">·</span>
+                            <span class="nsb-issues__beat">
+                              <span class="nsb-issues__beat-value">{issue.totals.modified}</span>
+                              <span class="nsb-issues__beat-label">modified</span>
+                            </span>
+                          </>
+                        )}
+                        {issue.totals.removed > 0 && (
+                          <>
+                            <span class="nsb-issues__sep" aria-hidden="true">·</span>
+                            <span class="nsb-issues__beat">
+                              <span class="nsb-issues__beat-value">{issue.totals.removed}</span>
+                              <span class="nsb-issues__beat-label">removed</span>
+                            </span>
+                          </>
+                        )}
+                      </>
+                    )}
+                  </p>
+                  {issue.meta?.summary && (
+                    <p class="nsb-issues__summary">{issue.meta.summary}</p>
+                  )}
+                </div>
+
+                {/* Right rail — arrow. Standard editorial chevron
+                    treatment, lifts on hover. */}
+                <span class="nsb-issues__arrow" aria-hidden="true">→</span>
+              </a>
+            </li>
+          );
+        })}
+      </ol>
+    )}
+  </div>
+
+  <style>
+    .nsb-issues {
+      padding-block: var(--space-6) var(--space-9);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+      max-width: 56rem;
+    }
+
+    /* ── Masthead — mirrors the About masthead anatomy ────────── */
+    .nsb-issues__masthead { padding: 0; }
+    .nsb-issues__strip {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-5);
+      background: var(--color-frame);
+      color: var(--color-surface);
+      font-family: var(--font-sans);
+      font-weight: 800;
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      font-size: var(--text-xs);
+      border-bottom: 3px solid var(--color-frame);
+    }
+    .nsb-issues__strip-code { color: var(--color-yellow); font-weight: 900; }
+    .nsb-issues__strip-sep { opacity: 0.5; }
+    .nsb-issues__strip-spacer { flex: 1 1 auto; }
+    .nsb-issues__strip-edition { color: var(--color-surface); opacity: 0.75; }
+    .nsb-issues__title-col {
+      padding: clamp(var(--space-5), 3vw, var(--space-7));
+      background: var(--color-surface);
+    }
+    .nsb-issues__title {
+      margin: 0;
+      font-size: clamp(var(--text-3xl), 7vw, 5rem);
+      line-height: 0.95;
+    }
+    .nsb-issues__lede {
+      margin: var(--space-4) 0 0 0;
+      font-family: var(--font-serif);
+      font-size: var(--text-md);
+      line-height: var(--leading-snug);
+      color: var(--color-ink-dim);
+      max-width: 42rem;
+    }
+
+    /* ── Empty state (defensive — no issues exist yet) ────────── */
+    .nsb-issues__empty {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: var(--text-md);
+      color: var(--color-ink-dim);
+      padding: var(--space-5);
+      border: 3px solid var(--color-frame);
+      background: var(--color-paper-alt);
+    }
+
+    /* ── Issue list — each row is a framed editorial cell ─────── */
+    .nsb-issues__list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+    .nsb-issues__item { margin: 0; }
+    .nsb-issues__link {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: stretch;
+      gap: 0;
+      text-decoration: none;
+      color: var(--color-ink);
+      background: var(--color-surface);
+      border: 3px solid var(--color-frame);
+      transition: background var(--dur-fast) var(--ease);
+    }
+    .nsb-issues__link:hover { background: var(--color-paper-alt); }
+    .nsb-issues__link:hover .nsb-issues__arrow { transform: translateX(4px); }
+    .nsb-issues__link:focus-visible {
+      outline: 3px solid var(--color-yellow);
+      outline-offset: 2px;
+    }
+
+    /* Issue number plate — black panel with yellow numeral. */
+    .nsb-issues__num-plate {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: var(--space-4) var(--space-5);
+      background: var(--color-frame);
+      color: var(--color-surface);
+      border-right: 3px solid var(--color-frame);
+      min-width: 6rem;
+    }
+    .nsb-issues__num-eyebrow {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-surface);
+      opacity: 0.6;
+      line-height: 1;
+    }
+    .nsb-issues__num-value {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: clamp(var(--text-3xl), 5vw, var(--text-display));
+      line-height: 1;
+      color: var(--color-yellow);
+      font-feature-settings: "tnum";
+    }
+
+    /* Body cell — editorial title + counts + summary. */
+    .nsb-issues__body {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      padding: var(--space-4) var(--space-5);
+      min-width: 0;
+    }
+    .nsb-issues__item-title {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: var(--text-lg);
+      line-height: var(--leading-snug);
+      color: var(--color-ink);
+    }
+    .nsb-issues__beats {
+      margin: 0;
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: var(--space-2);
+      font-family: var(--font-sans);
+      font-feature-settings: "tnum";
+    }
+    .nsb-issues__sep { color: var(--color-ink-faint); }
+    .nsb-issues__beat-date {
+      font-family: var(--font-sans);
+      font-weight: 700;
+      font-size: var(--text-sm);
+      color: var(--color-ink);
+    }
+    .nsb-issues__beat {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .nsb-issues__beat-value {
+      font-weight: 900;
+      font-size: var(--text-sm);
+      color: var(--color-ink);
+    }
+    .nsb-issues__beat-label {
+      font-weight: 800;
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-ink-soft);
+    }
+    .nsb-issues__summary {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: var(--text-base);
+      line-height: var(--leading-snug);
+      color: var(--color-ink-dim);
+    }
+
+    /* Arrow rail — same chevron treatment as RelatedEntries. */
+    .nsb-issues__arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-4) var(--space-5);
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-xl);
+      color: var(--color-ink);
+      border-left: 3px solid var(--color-frame);
+      transition: transform var(--dur-fast) var(--ease);
+    }
+
+    /* On narrow viewports the three-column grid collapses to a
+       stack: number plate on top, body in the middle, arrow at the
+       bottom. Internal borders rotate from vertical to horizontal
+       to keep the cell anatomy visible. */
+    @media (max-width: 600px) {
+      .nsb-issues__link { grid-template-columns: 1fr; }
+      .nsb-issues__num-plate {
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: var(--space-3);
+        border-right: 0;
+        border-bottom: 3px solid var(--color-frame);
+        min-width: 0;
+      }
+      .nsb-issues__num-value { font-size: var(--text-3xl); }
+      .nsb-issues__arrow {
+        border-left: 0;
+        border-top: 3px solid var(--color-frame);
+        justify-content: flex-end;
+      }
+    }
+  </style>
+</BaseLayout>

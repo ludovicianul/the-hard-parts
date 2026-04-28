@@ -4,6 +4,7 @@ import NumberCard from "@/components/NumberCard.astro";
 import type { CategoryCode } from "@/content/schemas/shared";
 import { categoryByCode } from "@/lib/categories";
 import { categoryBlock, listEntries } from "@/lib/load";
+import { getCurrentIssue } from "@/lib/issues";
 
 export interface Props {
   code: CategoryCode;
@@ -32,6 +33,13 @@ const desc = categoryByCode(code);
 const meta = categoryBlock(code);
 const accent = code.toLowerCase() as "fm" | "td" | "rf" | "ep";
 
+// Issue pin in the masthead's right rail — data-derived from the
+// highest-numbered issue. Reads "Issue NN" to match the public-
+// surface terminology contract (see `pages/index.astro` for the
+// contract; mirrored in `pages/about.astro`).
+const currentIssue = getCurrentIssue();
+const issueLabel = currentIssue ? currentIssue.label : "Issue";
+
 const defaultStrip = [
   { label: "Entries", value: String(listEntries(code).length).padStart(2, "0"), variant: "yellow" as const },
   { label: "Classes", value: String(meta.subcategories.length).padStart(2, "0"), variant: "blue" as const },
@@ -51,7 +59,7 @@ const strip = dataStrip ?? defaultStrip;
           <span class="nsb-cat-hero__edition-sep">·</span>
           <span class="nsb-cat-hero__edition-name">{desc.name}</span>
         </span>
-        <span class="nsb-cat-hero__edition-right">Edition 01</span>
+        <span class="nsb-cat-hero__edition-right">{issueLabel}</span>
       </div>
 
       <div class="nsb-cat-hero__main">

@@ -1,6 +1,8 @@
 import { z } from "zod";
 import {
+  EditionSchema,
   FrequencyEnum,
+  IssueStatusSchema,
   PatternConfidenceSchema,
   RefArray,
   SeverityEnum,
@@ -95,6 +97,10 @@ export const RedFlagEntrySchema = z
     exampleSignals: z.array(z.string()).optional(),
 
     patternConfidence: PatternConfidenceSchema,
+
+    /* Edition / issue tracking — see shared.ts for full semantics. */
+    edition: EditionSchema,
+    issueStatus: IssueStatusSchema.optional(),
   })
   .passthrough();
 

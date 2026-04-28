@@ -1,0 +1,272 @@
+---
+/**
+ * IssueRibbon — homepage current-issue strip.
+ *
+ * Renders a single horizontal newspaper-style ribbon announcing the
+ * latest issue. Designed so the same component handles every state
+ * we expect to see across the lifetime of the site:
+ *
+ *   · Inaugural issue (today): "ISSUE 01 · 151 entries · The
+ *     inaugural edition · See what's inside →".
+ *   · Subsequent issues with changes: "ISSUE 02 · 20 NEW · 5
+ *     MODIFIED · See what changed →".
+ *   · No issues at all (defensive): renders nothing.
+ *
+ * The data shape it consumes is `IssueSummary` from `lib/issues.ts`,
+ * so the homepage doesn't carry per-state branching — it just hands
+ * over the latest summary and lets this component pick the right
+ * render shape based on the totals.
+ *
+ * Visual contract:
+ *   · Same `nsb-frame nsb-frame--heavy` chassis as the hero, so the
+ *     ribbon reads as part of the same masthead system rather than
+ *     a separate widget.
+ *   · Yellow "current issue" eyebrow → black issue label →
+ *     editorial counts → arrow link. Left-to-right scan order.
+ *   · CTA copy adapts:
+ *       inaugural / no-modifications  → "See what's inside"
+ *       any modifications or removals → "See what changed"
+ */
+import type { IssueSummary } from "@/lib/issues";
+
+export interface Props {
+  issue: IssueSummary;
+}
+
+const { issue } = Astro.props;
+
+// CTA voice: "See what's inside" reads correctly for the first
+// issue (no prior state to compare against) and for any release
+// that's pure additions. The moment any modifications or removals
+// appear, the changelog framing ("See what changed") takes over.
+const isPureAdditions = issue.totals.modified === 0 && issue.totals.removed === 0;
+const cta = isPureAdditions ? "See what's inside" : "See what changed";
+
+// Choose the metric that best summarises the issue at a glance:
+//   · pure-additions issue: total entry count ("151 entries")
+//   · changelog issue: NEW count ("20 NEW") plus modified/removed
+//     beats. Keeping the same beat order across rebuilds means
+//     the ribbon shape doesn't suddenly change between releases.
+type Beat = { value: number; label: string };
+const beats: Beat[] = [];
+if (isPureAdditions) {
+  beats.push({ value: issue.totals.total, label: issue.totals.total === 1 ? "entry" : "entries" });
+} else {
+  if (issue.totals.new > 0)      beats.push({ value: issue.totals.new,      label: "new" });
+  if (issue.totals.modified > 0) beats.push({ value: issue.totals.modified, label: "modified" });
+  if (issue.totals.removed > 0) beats.push({ value: issue.totals.removed, label: "removed" });
+}
+
+// Optional release-date pill on the right rail, only when authored.
+const dateLabel = issue.meta?.releaseDate
+  ? new Date(`${issue.meta.releaseDate}T00:00:00Z`).toLocaleDateString("en-GB", {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      timeZone: "UTC",
+    })
+  : null;
+---
+
+<aside class="nsb-issue-ribbon nsb-frame nsb-frame--heavy" aria-label="Current issue">
+  <a class="nsb-issue-ribbon__link" href={issue.href}>
+    {/* ── Left rail: yellow eyebrow + black issue label ── */}
+    <div class="nsb-issue-ribbon__left">
+      <span class="nsb-issue-ribbon__eyebrow">Current issue</span>
+      <span class="nsb-issue-ribbon__label">{issue.label}</span>
+    </div>
+
+    {/* ── Centre: editorial title + counts strip ── */}
+    <div class="nsb-issue-ribbon__centre">
+      {issue.meta?.title && (
+        <p class="nsb-issue-ribbon__title">{issue.meta.title}</p>
+      )}
+      <p class="nsb-issue-ribbon__beats" aria-label="Issue contents">
+        {beats.map((b, i) => (
+          <>
+            {i > 0 && <span class="nsb-issue-ribbon__sep" aria-hidden="true">·</span>}
+            <span class="nsb-issue-ribbon__beat">
+              <span class="nsb-issue-ribbon__beat-value">{b.value}</span>
+              <span class="nsb-issue-ribbon__beat-label">{b.label}</span>
+            </span>
+          </>
+        ))}
+        {dateLabel && (
+          <>
+            <span class="nsb-issue-ribbon__sep" aria-hidden="true">·</span>
+            <span class="nsb-issue-ribbon__beat nsb-issue-ribbon__beat--date">
+              <span class="nsb-issue-ribbon__beat-label">{dateLabel}</span>
+            </span>
+          </>
+        )}
+      </p>
+    </div>
+
+    {/* ── Right rail: CTA + arrow ── */}
+    <div class="nsb-issue-ribbon__cta">
+      <span class="nsb-issue-ribbon__cta-text">{cta}</span>
+      <span class="nsb-issue-ribbon__arrow" aria-hidden="true">→</span>
+    </div>
+  </a>
+</aside>
+
+<style>
+  .nsb-issue-ribbon {
+    margin-bottom: var(--space-7);
+    background: var(--color-surface);
+  }
+
+  /* Single anchor wraps the whole ribbon — the entire strip is the
+     click target, not just the CTA. Hover repaints the right rail
+     yellow so the affordance is obvious without a button chrome. */
+  .nsb-issue-ribbon__link {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    text-decoration: none;
+    color: inherit;
+  }
+  @media (min-width: 720px) {
+    .nsb-issue-ribbon__link {
+      grid-template-columns: minmax(11rem, auto) minmax(0, 1fr) minmax(11rem, auto);
+      align-items: stretch;
+    }
+  }
+
+  /* Left rail — black panel with a yellow eyebrow + the issue label.
+     Same vocabulary as the hero's brand rail so the ribbon reads as
+     part of the masthead system rather than a separate widget. */
+  .nsb-issue-ribbon__left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-1);
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-frame);
+    color: var(--color-surface);
+  }
+  .nsb-issue-ribbon__eyebrow {
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-yellow);
+    line-height: 1;
+  }
+  .nsb-issue-ribbon__label {
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-xl);
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    color: var(--color-surface);
+    line-height: 1;
+  }
+
+  /* Centre — editorial title + beat strip. Beats use tnum so the
+     numbers align across rebuilds (so "151 entries" doesn't jitter
+     when it becomes "152 entries"). */
+  .nsb-issue-ribbon__centre {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-4) var(--space-5);
+    border-top: 3px solid var(--color-frame);
+    min-width: 0;
+  }
+  @media (min-width: 720px) {
+    .nsb-issue-ribbon__centre {
+      border-top: 0;
+      border-left: 3px solid var(--color-frame);
+      border-right: 3px solid var(--color-frame);
+    }
+  }
+  .nsb-issue-ribbon__title {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+    color: var(--color-ink);
+  }
+  .nsb-issue-ribbon__beats {
+    margin: 0;
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2);
+    font-family: var(--font-sans);
+    font-feature-settings: "tnum";
+  }
+  .nsb-issue-ribbon__sep { color: var(--color-ink-faint); }
+  .nsb-issue-ribbon__beat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .nsb-issue-ribbon__beat-value {
+    font-weight: 900;
+    font-size: var(--text-md);
+    color: var(--color-ink);
+  }
+  .nsb-issue-ribbon__beat-label {
+    font-weight: 800;
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+  }
+  .nsb-issue-ribbon__beat--date .nsb-issue-ribbon__beat-label {
+    /* Date pill stays sentence-case (regular tracking) so it doesn't
+       compete with the count beats next to it. */
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  /* Right rail — CTA. White at rest, full yellow on hover (matches
+     the hero's Sections / Entries plates so the affordance is part
+     of the same vocabulary). */
+  .nsb-issue-ribbon__cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-surface);
+    border-top: 3px solid var(--color-frame);
+    font-family: var(--font-sans);
+    font-weight: 900;
+    font-size: var(--text-sm);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-ink);
+    transition: background var(--dur-fast) var(--ease),
+                color var(--dur-fast) var(--ease);
+  }
+  @media (min-width: 720px) {
+    .nsb-issue-ribbon__cta {
+      border-top: 0;
+    }
+  }
+  .nsb-issue-ribbon__arrow {
+    font-size: var(--text-lg);
+    transition: transform var(--dur-fast) var(--ease);
+  }
+
+  /* Hover state — applied to the link, propagates to the CTA panel
+     so the right rail visually "lights up" without affecting the
+     left/centre information density. */
+  .nsb-issue-ribbon__link:hover .nsb-issue-ribbon__cta {
+    background: var(--color-yellow);
+    color: var(--color-yellow-ink);
+  }
+  .nsb-issue-ribbon__link:hover .nsb-issue-ribbon__arrow {
+    transform: translateX(4px);
+  }
+  .nsb-issue-ribbon__link:focus-visible {
+    outline: 3px solid var(--accent-current, var(--color-yellow));
+    outline-offset: 2px;
+  }
+</style>

@@ -127,6 +127,49 @@ export const TemplateBlock = z
   })
   .passthrough();
 
+/**
+ * Edition / issue identifier present on every entry.
+ *
+ * Lightweight string slug, validated as `edition-NN` (zero-padded
+ * two-digit issue number). The catalog's lib/issues.ts loader
+ * derives the issue number ("01") from this string by stripping
+ * the prefix. Keeping the prefix in the stored value makes the
+ * field self-describing when reading raw JSON ("edition-01" reads
+ * unambiguously; a bare "01" would not).
+ *
+ * Mandatory because every entry must declare which issue it was
+ * last created or modified in — this is the basis for the public
+ * changelog at /issues/[issue]. Authors must NOT leave it blank.
+ */
+export const EditionSchema = z
+  .string()
+  .regex(
+    /^edition-\d{2,}$/,
+    "edition must be of the form `edition-NN` (e.g. edition-01, edition-12)",
+  );
+
+/**
+ * Per-entry change-status tag for the public release-notes layer.
+ *
+ * Optional. Semantics:
+ *   · undefined  — entry is "new" in `edition`. The default for
+ *                  inaugural-issue entries (Issue 01) and for any
+ *                  brand-new entry added in a later issue.
+ *   · "new"      — explicit form of the above (rarely needed).
+ *   · "modified" — entry existed in a prior edition; its content
+ *                  was meaningfully revised in `edition`.
+ *   · "removed"  — entry was retired in `edition`. The JSON record
+ *                  is kept so the retirement appears in the
+ *                  changelog, but `lib/load.ts` filters it from
+ *                  canonical listings (it does not appear on
+ *                  category landings, detail pages, or search).
+ *
+ * Issue-membership is determined by `edition`; `issueStatus` only
+ * tells the change-log how to bucket the entry within that issue.
+ */
+export const IssueStatusSchema = z.enum(["new", "modified", "removed"]);
+export type IssueStatus = z.infer<typeof IssueStatusSchema>;
+
 /** Categories used in cross-site routing/identity. */
 export const CategoryCodeEnum = z.enum(["FM", "TD", "RF", "EP"]);
 export type CategoryCode = z.infer<typeof CategoryCodeEnum>;

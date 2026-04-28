@@ -1,0 +1,577 @@
+---
+/**
+ * /issues/[issue] — public release notes for one issue.
+ *
+ * Renders an editorial changelog for one issue (e.g. "Issue 01"):
+ * an issue header (number, title, date, summary, totals), then
+ * one section per category (FM / TD / RF / EP), each with up to
+ * three subsections (NEW / MODIFIED / REMOVED) listing the
+ * entries that changed in this issue.
+ *
+ * Voice contract:
+ *   · This is a release note in a publication, not a software
+ *     release dashboard. No badges, no semver, no "what's new"
+ *     marketing. Just a numbered manifest of what shifted.
+ *
+ * Linking contract:
+ *   · NEW and MODIFIED rows link to the canonical entry page.
+ *   · REMOVED rows render as plain text with strikethrough — the
+ *     canonical detail page has been retired (filtered out by
+ *     `lib/load.ts`), so a link would 404.
+ *
+ * Empty subsections are hidden so the inaugural issue, which has
+ * only NEW entries, doesn't carry six "0 modified · 0 removed"
+ * eyebrows that would read as software-release placeholder noise.
+ */
+import type { GetStaticPaths } from "astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import {
+  getIssueDetail,
+  listIssueNumbers,
+  type IssueCategoryBucket,
+  type IssueEntryRef,
+} from "@/lib/issues";
+import type { IssueStatus } from "@/content/schemas/shared";
+import { ensureValidated } from "@/lib/validate";
+
+ensureValidated();
+
+export const getStaticPaths: GetStaticPaths = () => {
+  return listIssueNumbers().map((num) => ({
+    params: { issue: num },
+  }));
+};
+
+const { issue } = Astro.params;
+if (!issue) throw new Error("Issue route requires :issue param");
+const detail = getIssueDetail(issue);
+if (!detail) {
+  // Should be unreachable thanks to getStaticPaths, but failing
+  // loudly is better than rendering a stripped page.
+  throw new Error(`Unknown issue: ${issue}`);
+}
+
+const fmtDate = (iso: string | undefined): string | null => {
+  if (!iso) return null;
+  return new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-GB", {
+    year: "numeric",
+    month: "long",
+    day: "2-digit",
+    timeZone: "UTC",
+  });
+};
+const releaseDate = fmtDate(detail.meta?.releaseDate);
+
+// Display order for the three status subsections inside each
+// category. NEW first because it's the most-anticipated bucket;
+// MODIFIED next as the natural follow-up; REMOVED last because
+// it's the editorial "what we cut" closer.
+const STATUS_ORDER: IssueStatus[] = ["new", "modified", "removed"];
+const STATUS_LABEL: Record<IssueStatus, string> = {
+  new: "New",
+  modified: "Modified",
+  removed: "Removed",
+};
+
+// Determine which categories actually have content in this issue.
+// We hide entire category blocks that contributed nothing rather
+// than rendering "FAILURE MODES · 0 changes" rows.
+const activeCategories: IssueCategoryBucket[] = detail.categories.filter(
+  (c) => c.total > 0,
+);
+
+// Same pure-additions detection the homepage / archive use, so
+// the header copy stays congruent across surfaces.
+const isPureAdditions =
+  detail.totals.modified === 0 && detail.totals.removed === 0;
+
+// Per-category accent class. Reuses the per-category accent token
+// scheme from globals.css / tokens.css so each category section
+// carries its own colour rule on the heading underline.
+const ACCENT_CLASS: Record<string, string> = {
+  FM: "nsb-issue-detail__cat--fm",
+  TD: "nsb-issue-detail__cat--td",
+  RF: "nsb-issue-detail__cat--rf",
+  EP: "nsb-issue-detail__cat--ep",
+};
+
+const pageTitle = detail.meta?.title
+  ? `${detail.label} — ${detail.meta.title}`
+  : detail.label;
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={detail.meta?.summary ?? `Release notes for ${detail.label}.`}
+>
+  <div class="nsb-container nsb-issue-detail">
+    {/* ── Issue masthead ─────────────────────────────────────────
+        Same anatomy as About / Issues archive masthead. Keeps the
+        publication's voice consistent across editorial pages. */}
+    <header class="nsb-issue-detail__masthead nsb-frame nsb-frame--heavy" aria-label={`${detail.label} masthead`}>
+      <div class="nsb-issue-detail__strip">
+        <span class="nsb-issue-detail__strip-code">THP</span>
+        <span class="nsb-issue-detail__strip-sep">·</span>
+        <span class="nsb-issue-detail__strip-label">Issues</span>
+        <span class="nsb-issue-detail__strip-sep">·</span>
+        <span class="nsb-issue-detail__strip-num">{detail.number}</span>
+        <span class="nsb-issue-detail__strip-spacer" />
+        <a class="nsb-issue-detail__strip-back" href="/issues">All issues →</a>
+      </div>
+      <div class="nsb-issue-detail__title-col">
+        <p class="nsb-issue-detail__label">{detail.label}</p>
+        {detail.meta?.title && (
+          <h1 class="nsb-display nsb-issue-detail__title">{detail.meta.title}</h1>
+        )}
+        {!detail.meta?.title && (
+          <h1 class="nsb-display nsb-issue-detail__title">Release notes</h1>
+        )}
+        <p class="nsb-issue-detail__beats">
+          {releaseDate && (
+            <>
+              <span class="nsb-issue-detail__beat-date">{releaseDate}</span>
+              <span class="nsb-issue-detail__sep" aria-hidden="true">·</span>
+            </>
+          )}
+          {isPureAdditions ? (
+            <span class="nsb-issue-detail__beat">
+              <span class="nsb-issue-detail__beat-value">{detail.totals.total}</span>
+              <span class="nsb-issue-detail__beat-label">{detail.totals.total === 1 ? "entry" : "entries"}</span>
+            </span>
+          ) : (
+            <>
+              {detail.totals.new > 0 && (
+                <span class="nsb-issue-detail__beat">
+                  <span class="nsb-issue-detail__beat-value">{detail.totals.new}</span>
+                  <span class="nsb-issue-detail__beat-label">new</span>
+                </span>
+              )}
+              {detail.totals.modified > 0 && (
+                <>
+                  <span class="nsb-issue-detail__sep" aria-hidden="true">·</span>
+                  <span class="nsb-issue-detail__beat">
+                    <span class="nsb-issue-detail__beat-value">{detail.totals.modified}</span>
+                    <span class="nsb-issue-detail__beat-label">modified</span>
+                  </span>
+                </>
+              )}
+              {detail.totals.removed > 0 && (
+                <>
+                  <span class="nsb-issue-detail__sep" aria-hidden="true">·</span>
+                  <span class="nsb-issue-detail__beat">
+                    <span class="nsb-issue-detail__beat-value">{detail.totals.removed}</span>
+                    <span class="nsb-issue-detail__beat-label">removed</span>
+                  </span>
+                </>
+              )}
+            </>
+          )}
+        </p>
+        {detail.meta?.summary && (
+          <p class="nsb-issue-detail__summary">{detail.meta.summary}</p>
+        )}
+      </div>
+    </header>
+
+    {/* ── Per-category sections ──────────────────────────────── */}
+    {activeCategories.length === 0 ? (
+      <p class="nsb-issue-detail__empty">
+        This issue exists in metadata but has no entries yet.
+      </p>
+    ) : (
+      <div class="nsb-issue-detail__cats">
+        {activeCategories.map((bucket) => {
+          const accent = ACCENT_CLASS[bucket.code] ?? "";
+          return (
+            <section class={`nsb-issue-detail__cat ${accent}`} aria-label={bucket.name}>
+              <header class="nsb-issue-detail__cat-head">
+                <p class="nsb-issue-detail__cat-eyebrow">{bucket.code}</p>
+                <h2 class="nsb-issue-detail__cat-title">
+                  <a href={`/${bucket.route}`}>{bucket.name}</a>
+                </h2>
+                <p class="nsb-issue-detail__cat-counts">
+                  {STATUS_ORDER
+                    .filter((s) => bucket.counts[s] > 0)
+                    .map((s, i, arr) => (
+                      <>
+                        {i > 0 && (
+                          <span class="nsb-issue-detail__sep" aria-hidden="true">·</span>
+                        )}
+                        <span class="nsb-issue-detail__cat-count">
+                          <span class="nsb-issue-detail__cat-count-value">{bucket.counts[s]}</span>
+                          <span class="nsb-issue-detail__cat-count-label">{STATUS_LABEL[s].toLowerCase()}</span>
+                        </span>
+                      </>
+                    ))}
+                </p>
+              </header>
+
+              {STATUS_ORDER.map((status) => {
+                const items = bucket.byStatus[status];
+                if (items.length === 0) return null;
+                return (
+                  <div class={`nsb-issue-detail__status nsb-issue-detail__status--${status}`}>
+                    <p class="nsb-issue-detail__status-eyebrow">
+                      {STATUS_LABEL[status]}
+                      <span class="nsb-issue-detail__status-count">{String(items.length).padStart(2, "0")}</span>
+                    </p>
+                    <ol class="nsb-issue-detail__list">
+                      {items.map((ref: IssueEntryRef) => (
+                        <li class="nsb-issue-detail__row">
+                          {ref.href ? (
+                            <a class="nsb-issue-detail__row-link" href={ref.href} data-accent={ref.code.toLowerCase()}>
+                              <span class="nsb-issue-detail__code">
+                                <span class="nsb-issue-detail__code-cat">{ref.code}</span>
+                                <span class="nsb-issue-detail__code-num">{ref.refNum}</span>
+                              </span>
+                              <span class="nsb-issue-detail__row-title">{ref.title}</span>
+                              <span class="nsb-issue-detail__row-arrow" aria-hidden="true">→</span>
+                            </a>
+                          ) : (
+                            // Removed entries: keep the row visible
+                            // for the changelog but render without
+                            // a link (the canonical page is gone).
+                            <span class="nsb-issue-detail__row-link nsb-issue-detail__row-link--removed">
+                              <span class="nsb-issue-detail__code">
+                                <span class="nsb-issue-detail__code-cat">{ref.code}</span>
+                                <span class="nsb-issue-detail__code-num">{ref.refNum}</span>
+                              </span>
+                              <span class="nsb-issue-detail__row-title">{ref.title}</span>
+                              <span class="nsb-issue-detail__row-tag">retired</span>
+                            </span>
+                          )}
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                );
+              })}
+            </section>
+          );
+        })}
+      </div>
+    )}
+  </div>
+
+  <style>
+    .nsb-issue-detail {
+      padding-block: var(--space-6) var(--space-9);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-7);
+      max-width: 60rem;
+    }
+
+    /* ── Masthead ─────────────────────────────────────────────── */
+    .nsb-issue-detail__masthead { padding: 0; }
+    .nsb-issue-detail__strip {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-5);
+      background: var(--color-frame);
+      color: var(--color-surface);
+      font-family: var(--font-sans);
+      font-weight: 800;
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      font-size: var(--text-xs);
+      border-bottom: 3px solid var(--color-frame);
+    }
+    .nsb-issue-detail__strip-code { color: var(--color-yellow); font-weight: 900; }
+    .nsb-issue-detail__strip-sep { opacity: 0.5; }
+    .nsb-issue-detail__strip-num { color: var(--color-surface); font-weight: 900; }
+    .nsb-issue-detail__strip-spacer { flex: 1 1 auto; }
+    .nsb-issue-detail__strip-back {
+      color: var(--color-yellow);
+      text-decoration: none;
+      font-weight: 800;
+    }
+    .nsb-issue-detail__strip-back:hover { text-decoration: underline; }
+    .nsb-issue-detail__title-col {
+      padding: clamp(var(--space-5), 3vw, var(--space-7));
+      background: var(--color-surface);
+    }
+    .nsb-issue-detail__label {
+      margin: 0 0 var(--space-2) 0;
+      font-family: var(--font-sans);
+      font-weight: 900;
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      font-size: var(--text-xs);
+      color: var(--color-ink-soft);
+    }
+    .nsb-issue-detail__title {
+      margin: 0;
+      font-size: clamp(var(--text-3xl), 6vw, 4rem);
+      line-height: 0.95;
+    }
+    .nsb-issue-detail__beats {
+      margin: var(--space-4) 0 0 0;
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: var(--space-2);
+      font-family: var(--font-sans);
+      font-feature-settings: "tnum";
+    }
+    .nsb-issue-detail__sep { color: var(--color-ink-faint); }
+    .nsb-issue-detail__beat-date {
+      font-weight: 700;
+      font-size: var(--text-sm);
+      color: var(--color-ink);
+    }
+    .nsb-issue-detail__beat {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .nsb-issue-detail__beat-value {
+      font-weight: 900;
+      font-size: var(--text-sm);
+      color: var(--color-ink);
+    }
+    .nsb-issue-detail__beat-label {
+      font-weight: 800;
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-ink-soft);
+    }
+    .nsb-issue-detail__summary {
+      margin: var(--space-4) 0 0 0;
+      font-family: var(--font-serif);
+      font-size: var(--text-md);
+      line-height: var(--leading-snug);
+      color: var(--color-ink-dim);
+      max-width: 42rem;
+    }
+
+    /* ── Empty state (defensive — not expected in normal flow) ── */
+    .nsb-issue-detail__empty {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: var(--text-md);
+      color: var(--color-ink-dim);
+      padding: var(--space-5);
+      border: 3px solid var(--color-frame);
+      background: var(--color-paper-alt);
+    }
+
+    /* ── Category sections ────────────────────────────────────── */
+    .nsb-issue-detail__cats {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-7);
+    }
+    .nsb-issue-detail__cat {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+    .nsb-issue-detail__cat-head {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: baseline;
+      gap: var(--space-3);
+      padding-bottom: var(--space-3);
+      border-bottom: 3px solid var(--accent-current, var(--color-frame));
+    }
+    .nsb-issue-detail__cat--fm { --accent-current: var(--accent-fm); }
+    .nsb-issue-detail__cat--td { --accent-current: var(--accent-td); }
+    .nsb-issue-detail__cat--rf { --accent-current: var(--accent-rf); }
+    .nsb-issue-detail__cat--ep { --accent-current: var(--accent-ep); }
+
+    .nsb-issue-detail__cat-eyebrow {
+      margin: 0;
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--accent-current, var(--color-ink));
+      font-feature-settings: "tnum";
+    }
+    .nsb-issue-detail__cat-title {
+      margin: 0;
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-2xl);
+      letter-spacing: -0.01em;
+      line-height: 1;
+    }
+    .nsb-issue-detail__cat-title a {
+      color: inherit;
+      text-decoration: none;
+    }
+    .nsb-issue-detail__cat-title a:hover {
+      color: var(--accent-current, var(--color-ink));
+    }
+    .nsb-issue-detail__cat-counts {
+      margin: 0;
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      font-family: var(--font-sans);
+      font-feature-settings: "tnum";
+    }
+    .nsb-issue-detail__cat-count {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .nsb-issue-detail__cat-count-value {
+      font-weight: 900;
+      font-size: var(--text-sm);
+      color: var(--color-ink);
+    }
+    .nsb-issue-detail__cat-count-label {
+      font-weight: 800;
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-ink-soft);
+    }
+
+    /* ── Status subsections (NEW / MODIFIED / REMOVED) ────────── */
+    .nsb-issue-detail__status {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .nsb-issue-detail__status-eyebrow {
+      margin: 0;
+      display: inline-flex;
+      align-items: baseline;
+      gap: var(--space-2);
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-ink-soft);
+    }
+    .nsb-issue-detail__status-count {
+      font-feature-settings: "tnum";
+      color: var(--color-ink-faint);
+      font-weight: 800;
+    }
+
+    /* ── Entry rows — same anatomy as RelatedEntries ──────────── */
+    .nsb-issue-detail__list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      background: var(--color-surface);
+      border: 2px solid var(--color-frame);
+    }
+    .nsb-issue-detail__row { border-top: 2px solid var(--color-frame); }
+    .nsb-issue-detail__row:first-child { border-top: 0; }
+
+    .nsb-issue-detail__row-link {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: var(--space-4);
+      align-items: center;
+      padding: var(--space-3) var(--space-4);
+      text-decoration: none;
+      color: var(--color-ink);
+      background: var(--color-surface);
+      transition: background var(--dur-fast) var(--ease),
+                  color var(--dur-fast) var(--ease);
+    }
+    a.nsb-issue-detail__row-link:hover {
+      background: var(--color-yellow);
+      color: var(--color-yellow-ink);
+    }
+    a.nsb-issue-detail__row-link:hover .nsb-issue-detail__row-arrow {
+      transform: translateX(3px);
+    }
+
+    /* Pill code badge — identical to RelatedEntries codes for
+       cross-page consistency. */
+    .nsb-issue-detail__code {
+      display: inline-flex;
+      align-items: center;
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: 0.68rem;
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      font-feature-settings: "tnum";
+      border: 2px solid var(--color-frame);
+      overflow: hidden;
+    }
+    .nsb-issue-detail__code-cat {
+      background: var(--color-frame);
+      color: var(--color-surface);
+      padding: 4px 8px;
+      line-height: 1;
+    }
+    .nsb-issue-detail__code-num {
+      background: var(--color-surface);
+      color: var(--color-ink);
+      padding: 4px 8px;
+      line-height: 1;
+      border-left: 2px solid var(--color-frame);
+    }
+    a.nsb-issue-detail__row-link:hover .nsb-issue-detail__code-num {
+      background: var(--color-yellow);
+      color: var(--color-yellow-ink);
+    }
+    .nsb-issue-detail__row-title {
+      font-family: var(--font-sans);
+      font-size: var(--text-base);
+      font-weight: 700;
+      color: inherit;
+      line-height: var(--leading-snug);
+    }
+    .nsb-issue-detail__row-arrow {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-lg);
+      color: inherit;
+      transition: transform var(--dur-fast) var(--ease);
+    }
+
+    /* Removed-row treatment. The row stays visible (it's a
+       changelog entry) but is muted, with the title struck and a
+       small `retired` tag in the trailing slot in place of the
+       arrow. No hover affordance — this row isn't a link. */
+    .nsb-issue-detail__row-link--removed {
+      cursor: default;
+      color: var(--color-ink-dim);
+      background: var(--color-paper-alt);
+    }
+    .nsb-issue-detail__row-link--removed .nsb-issue-detail__row-title {
+      text-decoration: line-through;
+      color: var(--color-ink-dim);
+    }
+    .nsb-issue-detail__row-tag {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: 0.65rem;
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-surface);
+      background: var(--color-frame);
+      padding: 3px 7px;
+      line-height: 1;
+    }
+
+    /* Narrow viewport — drop the trailing arrow column so the row
+       title can use the freed width. Same rule RelatedEntries
+       applies at the same breakpoint. */
+    @media (max-width: 520px) {
+      .nsb-issue-detail__row-link {
+        grid-template-columns: auto 1fr;
+        gap: var(--space-3);
+      }
+      .nsb-issue-detail__row-arrow { display: none; }
+      .nsb-issue-detail__cat-head {
+        grid-template-columns: 1fr;
+        gap: var(--space-1);
+      }
+    }
+  </style>
+</BaseLayout>

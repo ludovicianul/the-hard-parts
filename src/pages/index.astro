@@ -2,7 +2,9 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import EntryCard from "@/components/EntryCard.astro";
 import CalloutBand from "@/components/CalloutBand.astro";
+import IssueRibbon from "@/components/IssueRibbon.astro";
 import Tag from "@/components/Tag.astro";
+import { getCurrentIssue } from "@/lib/issues";
 import { CATEGORIES, CATEGORY_ORDER } from "@/lib/categories";
 import { categoryBlock, listEntries, loadFailureModes, loadTechDecisions, loadRedFlags, loadPlaybooks } from "@/lib/load";
 import { formatRefCode } from "@/lib/resolve";
@@ -11,6 +13,25 @@ import type { SeverityLevel } from "@/lib/attribute-scales";
 
 // Fail the build if content integrity is broken (strict checks only).
 ensureValidated();
+
+// Current issue powers two homepage surfaces:
+//   1. The "Issue NN" tag in the hero eyebrow (data-derived from
+//      the highest-numbered issue in the catalog so the masthead
+//      stays in sync automatically).
+//   2. The IssueRibbon row rendered between the hero and the
+//      "Pick your way in" section, which links to /issues/NN.
+//
+// Public-surface terminology contract: every UI label that names
+// a release uses "Issue NN", never "Edition NN". The internal
+// data field on entries is still called `edition` (it's the
+// implementation key for the issue→entries relationship), but
+// nothing reader-facing exposes that name. See also the
+// equivalent labels in `layouts/CategoryLayout.astro` and
+// `pages/about.astro`.
+//
+// Defensive: undefined when no issues exist; both surfaces hide.
+const currentIssue = getCurrentIssue();
+const issueTagLabel = currentIssue ? currentIssue.label : "Issue";
 
 const cards = CATEGORY_ORDER.map((code) => {
   const meta = categoryBlock(code);
@@ -170,16 +191,13 @@ const prettifyEp = (s: string): string =>
         </p>
       </div>
 
-      {/* Center column — Edition tag eyebrow + headline + supporting
-          copy. The eyebrow Tag was NOT part of the rebrand ask and
-          is preserved as-is; the right rail separately carries a new
-          ISSUE cell (see stats rail below). The two markers coexist:
-          the eyebrow is a small editorial tag alongside the headline;
-          the ISSUE cell is a metadata entry in the catalog-stats
-          vertical stack. */}
+      {/* Center column — Issue tag eyebrow + headline + supporting
+          copy. The eyebrow Tag now reads from `getCurrentIssue()`
+          so it stays in sync with the highest-numbered issue in
+          the catalog (no more hardcoded "Edition 01" string). */}
       <div class="nsb-home__hero-title-col nsb-home__hero-col">
         <div class="nsb-home__hero-eyebrow">
-          <Tag label="Edition 01" variant="yellow" size="sm" />
+          <Tag label={issueTagLabel} variant="yellow" size="sm" />
         </div>
         <h1 class="nsb-display nsb-display--xl nsb-home__hero-title">
           Software fails<br />the same way.<br />Every time.
@@ -221,6 +239,16 @@ const prettifyEp = (s: string): string =>
         </div>
       </div>
     </header>
+
+    {/* --------- CURRENT ISSUE RIBBON ---------
+        Sits between the masthead and the category map so the latest
+        public release announcement is the first beat a returning
+        reader hits. Data-derived from the highest-numbered issue in
+        the catalog; renders nothing if no issues exist (defensive).
+        For Issue 01 (today) the ribbon reads as an inaugural
+        introduction; for Issue 02+ it auto-flips into changelog
+        framing — see IssueRibbon.astro for the cta/beats logic. */}
+    {currentIssue && <IssueRibbon issue={currentIssue} />}
 
     {/* --------- CATEGORY MAP ---------
         Four framed cards, each with a saturated header strip. The head

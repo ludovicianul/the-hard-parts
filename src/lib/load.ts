@@ -149,6 +149,24 @@ export function listSlugs(code: CategoryCode): string[] {
   return listEntries(code).map((e) => e.slug);
 }
 
+/**
+ * Canonical filter applied to every site-facing listing.
+ *
+ * `issueStatus: "removed"` entries are kept in the JSON catalog so
+ * the public release-notes page (`/issues/[issue]`) can still
+ * announce the retirement, but the canonical site (category
+ * landings, detail pages, search index, sitemap, cross-reference
+ * resolver) treats them as if they no longer exist.
+ *
+ * If you ever need the unfiltered list (e.g. inside the issues
+ * loader, which intentionally surfaces removals), read directly
+ * from `loadFailureModes().entries` etc. — that's why the per-
+ * category loaders above remain raw.
+ */
+function isPubliclyVisible(entry: { issueStatus?: string }): boolean {
+  return entry.issueStatus !== "removed";
+}
+
 export function listEntries(code: CategoryCode): Array<
   | FailureModeEntry
   | TechDecisionEntry
@@ -157,13 +175,13 @@ export function listEntries(code: CategoryCode): Array<
 > {
   switch (code) {
     case "FM":
-      return loadFailureModes().entries;
+      return loadFailureModes().entries.filter(isPubliclyVisible);
     case "TD":
-      return loadTechDecisions().entries;
+      return loadTechDecisions().entries.filter(isPubliclyVisible);
     case "RF":
-      return loadRedFlags().entries;
+      return loadRedFlags().entries.filter(isPubliclyVisible);
     case "EP":
-      return loadPlaybooks().entries;
+      return loadPlaybooks().entries.filter(isPubliclyVisible);
   }
 }
 

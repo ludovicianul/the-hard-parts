@@ -1,0 +1,10 @@
+{
+  "issues": [
+    {
+      "number": "01",
+      "title": "The inaugural edition",
+      "releaseDate": "2026-04-27",
+      "summary": "First public release of the reference. Four catalogs ship together — failure modes, tech decisions, red flags, engineering playbooks — covering the recurring shape of software work."
+    }
+  ]
+}

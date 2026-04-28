@@ -19,9 +19,17 @@ import LabeledList from "@/components/LabeledList.astro";
 import SectionHeader from "@/components/SectionHeader.astro";
 import { CATEGORIES, CATEGORY_ORDER } from "@/lib/categories";
 import { listEntries } from "@/lib/load";
+import { getCurrentIssue } from "@/lib/issues";
 import { ensureValidated } from "@/lib/validate";
 
 ensureValidated();
+
+// Issue pin in the masthead strip — data-derived from the highest-
+// numbered issue so it stays in sync as new issues ship. Reads
+// "Issue NN" to match the public-surface terminology contract
+// (see `pages/index.astro` for the contract, mirrored here).
+const currentIssue = getCurrentIssue();
+const issueLabel = currentIssue ? currentIssue.label : "Issue";
 
 // Per-category stats rendered inside the "Four catalogs" section.
 const catCards = CATEGORY_ORDER.map((code) => ({
@@ -63,7 +71,7 @@ const sections = [
         <span class="nsb-about__strip-sep">&middot;</span>
         <span class="nsb-about__strip-label">About</span>
         <span class="nsb-about__strip-spacer" />
-        <span class="nsb-about__strip-edition">Edition 01</span>
+        <span class="nsb-about__strip-edition">{issueLabel}</span>
       </div>
       <div class="nsb-about__title-col">
         <h1 class="nsb-display nsb-about__title">
