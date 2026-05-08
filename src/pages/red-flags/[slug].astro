@@ -133,6 +133,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
   summary={entry.summary}
   subcategory={`${prettify(entry.layer)} · ${prettify(entry.signalType)}`}
   refCode={refCode}
+  slug={entry.slug}
 >
   {/* Masthead pill row — severity carries the ramp color (same ink
       the landing grid card used) and frequency rides as a plain outline

@@ -207,6 +207,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
   summary={entry.summary}
   subcategory={prettifySub(entry.category)}
   refCode={refCode}
+  slug={entry.slug}
 >
   {/* Masthead pill row — severity-if-wrong carries the ramp color,
       frequency rendered plain. Reversibility is intentionally NOT

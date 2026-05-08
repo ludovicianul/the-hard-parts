@@ -14,9 +14,11 @@ export interface Props {
   description?: string;
   /** Optional reference code shown in the black pill on the masthead, e.g. "FM-01". */
   refCode?: string;
+  /** Slug for this entry — used to derive the per-entry OG image path. */
+  slug?: string;
 }
 
-const { code, title, summary, subcategory, description, refCode } = Astro.props;
+const { code, title, summary, subcategory, description, refCode, slug } = Astro.props;
 const desc = categoryByCode(code);
 const accent = code.toLowerCase() as "fm" | "td" | "rf" | "ep";
 ---
@@ -24,6 +26,7 @@ const accent = code.toLowerCase() as "fm" | "td" | "rf" | "ep";
   title={title}
   description={description ?? summary}
   accent={accent}
+  ogImage={slug ? `/og/${desc.route}/${slug}.png` : undefined}
 >
   <article class="nsb-detail-shell">
     {/* Breadcrumbs row on paper — small, mono, uppercase. */}

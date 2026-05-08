@@ -175,6 +175,7 @@ const stepFor = (id: string) => sections.find((s) => s.id === id)?.step ?? "";
   summary={entry.summary}
   subcategory={prettify(entry.category)}
   refCode={refCode}
+  slug={entry.slug}
 >
   {/* Masthead pill row — 2 pills, matching FM/TD/RF detail rhythm.
       Difficulty carries the severity-ramp color (same ink the landing
