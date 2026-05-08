@@ -1,0 +1,51 @@
+---
+/**
+ * /field-notes/[slug] — Field Note detail page.
+ *
+ * Renders the Markdown body of a single Field Note using Astro's
+ * native import.meta.glob() Markdown rendering (no external parser).
+ * The prose body is injected via the <Content /> component returned
+ * from the glob; metadata (title, date, summary, references) is read
+ * via the shared field-notes loader for consistent frontmatter parsing.
+ */
+import type { GetStaticPaths } from "astro";
+import FieldNoteLayout from "@/layouts/FieldNoteLayout.astro";
+import { listFieldNoteSlugs, getFieldNote } from "@/lib/field-notes";
+import { ensureValidated } from "@/lib/validate";
+
+ensureValidated();
+
+// Import all markdown files from the content directory.
+// The glob is evaluated at build time by Vite — no runtime cost.
+const mdFiles = import.meta.glob<{
+  default: any;
+  frontmatter: Record<string, unknown>;
+}>(
+  "../../../content/field-notes/*.md",
+  { eager: true },
+);
+
+export const getStaticPaths: GetStaticPaths = () => {
+  return listFieldNoteSlugs().map((slug) => ({ params: { slug } }));
+};
+
+const { slug } = Astro.params;
+if (!slug) throw new Error("Field Notes detail route requires :slug param");
+
+const note = getFieldNote(slug);
+if (!note) throw new Error(`Unknown field note: ${slug}`);
+
+// Find the matching Markdown module for this slug.
+// The glob keys look like: "../../../content/field-notes/my-note.md"
+const mdEntry = Object.entries(mdFiles).find(([key]) => {
+  const filename = key.split("/").pop()?.replace(/\.md$/, "");
+  return filename === slug || filename === note.slug;
+});
+
+// The default export of a Markdown glob entry is the rendered <Content />
+// component. If no matching file is found, we fall back to rendering nothing.
+const Content = mdEntry?.[1]?.default;
+---
+<FieldNoteLayout note={note}>
+  {Content ? <Content /> : <p>Content not available.</p>}
+</FieldNoteLayout>

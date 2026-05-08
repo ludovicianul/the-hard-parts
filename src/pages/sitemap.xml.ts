@@ -3,6 +3,7 @@ import { listEntries } from "@/lib/load";
 import { CATEGORIES, CATEGORY_ORDER } from "@/lib/categories";
 import { listAllIssues } from "@/lib/issues";
 import { ensureValidated } from "@/lib/validate";
+import { listFieldNotes } from "@/lib/field-notes";
 
 /**
  * /sitemap.xml — static sitemap emitted at build time.
@@ -75,6 +76,16 @@ export const GET: APIRoute = ({ site }) => {
         priority: "0.8",
       });
     }
+  }
+
+  // Field Notes archive + individual note pages.
+  urls.push({ loc: `${origin}/field-notes`, changefreq: "weekly", priority: "0.7" });
+  for (const note of listFieldNotes()) {
+    urls.push({
+      loc: `${origin}/field-notes/${note.slug}`,
+      changefreq: "monthly",
+      priority: "0.7",
+    });
   }
 
   // Every published issue's release-notes page. `listAllIssues()`

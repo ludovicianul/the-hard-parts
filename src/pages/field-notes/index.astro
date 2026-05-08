@@ -1,0 +1,207 @@
+---
+/**
+ * /field-notes — Field Notes archive.
+ *
+ * Lists every published Field Note, newest first.
+ * Each entry shows a date pill, title, summary, and a "Read →" link.
+ * References are not shown here — only on the detail page.
+ */
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Tag from "@/components/Tag.astro";
+import { listFieldNotes, formatFieldNoteDate } from "@/lib/field-notes";
+import { ensureValidated } from "@/lib/validate";
+
+ensureValidated();
+
+const notes = listFieldNotes();
+---
+
+<BaseLayout
+  title="Essays"
+  description="Long-form articles that connect the dots across failure modes, red flags, tech decisions, and engineering playbooks."
+>
+  <div class="nsb-container nsb-fn-index">
+    {/* Editorial masthead — same strip pattern as /about and /issues */}
+    <header class="nsb-fn-index__masthead nsb-frame nsb-frame--heavy">
+      <div class="nsb-fn-index__masthead-inner">
+        <div class="nsb-fn-index__eyebrow">
+          <span class="nsb-fn-index__code">THP</span>
+          <span class="nsb-fn-index__sep" aria-hidden="true">&middot;</span>
+          <span class="nsb-fn-index__section">Essays</span>
+        </div>
+        <h1 class="nsb-display nsb-fn-index__title">Essays</h1>
+        <p class="nsb-fn-index__intro">
+          Articles that trace how failure modes, red flags, tech decisions, and
+          playbooks connect in practice — drawing on the four catalogs to map the
+          larger patterns that individual entries only hint at.
+        </p>
+      </div>
+    </header>
+
+    {notes.length === 0 ? (
+      <p class="nsb-fn-index__empty">No essays published yet.</p>
+    ) : (
+      <ol class="nsb-fn-index__list" reversed>
+        {notes.map((note, i) => (
+          <li class="nsb-fn-index__item nsb-frame">
+            <div class="nsb-fn-index__item-meta">
+              <span class="nsb-fn-index__item-num">
+                {String(notes.length - i).padStart(2, "0")}
+              </span>
+              {note.date && (
+                <Tag label={formatFieldNoteDate(note.date)} variant="yellow" size="sm" />
+              )}
+            </div>
+            <div class="nsb-fn-index__item-body">
+              <h2 class="nsb-fn-index__item-title">
+                <a href={`/field-notes/${note.slug}`}>{note.title}</a>
+              </h2>
+              {note.summary && (
+                <p class="nsb-fn-index__item-summary">{note.summary}</p>
+              )}
+            </div>
+            <p class="nsb-fn-index__item-cta">
+              <a href={`/field-notes/${note.slug}`} aria-label={`Read: ${note.title}`}>
+                Read &rarr;
+              </a>
+            </p>
+          </li>
+        ))}
+      </ol>
+    )}
+  </div>
+
+  <style>
+    .nsb-fn-index {
+      padding-block: var(--space-6) var(--space-9);
+    }
+
+    /* Masthead */
+    .nsb-fn-index__masthead {
+      margin-bottom: var(--space-8);
+    }
+    .nsb-fn-index__masthead-inner {
+      padding: var(--space-6);
+    }
+    .nsb-fn-index__eyebrow {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      margin-bottom: var(--space-4);
+    }
+    .nsb-fn-index__code {
+      background: var(--color-frame);
+      color: var(--color-yellow);
+      padding: 1px 6px;
+      font-weight: 900;
+    }
+    .nsb-fn-index__sep { color: var(--color-ink-faint); }
+    .nsb-fn-index__section { color: var(--color-ink-soft); }
+    .nsb-fn-index__title {
+      margin: 0 0 var(--space-3) 0;
+      font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl));
+    }
+    .nsb-fn-index__intro {
+      font-family: var(--font-serif);
+      font-size: var(--text-lg);
+      color: var(--color-ink-dim);
+      margin: 0;
+      max-width: 60ch;
+      line-height: var(--leading-snug);
+    }
+
+    /* Empty state */
+    .nsb-fn-index__empty {
+      font-family: var(--font-sans);
+      font-size: var(--text-sm);
+      color: var(--color-ink-soft);
+      padding: var(--space-6) 0;
+    }
+
+    /* List */
+    .nsb-fn-index__list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+    .nsb-fn-index__item {
+      padding: var(--space-5) var(--space-6);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: var(--space-5);
+      align-items: start;
+    }
+    @media (max-width: 640px) {
+      .nsb-fn-index__item {
+        grid-template-columns: 1fr;
+      }
+    }
+    .nsb-fn-index__item-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-2);
+      min-width: 7rem;
+    }
+    .nsb-fn-index__item-num {
+      font-family: var(--font-mono);
+      font-size: var(--text-2xl);
+      font-weight: 900;
+      color: var(--color-ink-faint);
+      line-height: 1;
+    }
+    .nsb-fn-index__item-title {
+      font-family: var(--font-sans);
+      font-weight: 900;
+      font-size: var(--text-xl);
+      letter-spacing: -0.01em;
+      margin: 0 0 var(--space-2) 0;
+    }
+    .nsb-fn-index__item-title a {
+      color: var(--color-ink);
+      text-decoration: none;
+    }
+    .nsb-fn-index__item-title a:hover {
+      text-decoration: underline;
+      text-decoration-color: var(--color-ink);
+    }
+    .nsb-fn-index__item-summary {
+      font-family: var(--font-serif);
+      font-size: var(--text-base);
+      color: var(--color-ink-dim);
+      margin: 0;
+      line-height: var(--leading-snug);
+    }
+    .nsb-fn-index__item-cta {
+      margin: 0;
+      white-space: nowrap;
+    }
+    .nsb-fn-index__item-cta a {
+      font-family: var(--font-sans);
+      font-size: var(--text-sm);
+      font-weight: 800;
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-ink);
+      text-decoration-color: var(--color-rule);
+      padding: var(--space-2) var(--space-3);
+      border: 2px solid var(--color-frame);
+      display: inline-block;
+      text-decoration: none;
+      transition: background var(--dur-fast) var(--ease),
+                  color var(--dur-fast) var(--ease);
+    }
+    .nsb-fn-index__item-cta a:hover {
+      background: var(--color-yellow);
+      color: var(--color-yellow-ink);
+      border-color: var(--color-yellow);
+    }
+  </style>
+</BaseLayout>

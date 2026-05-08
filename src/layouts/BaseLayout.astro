@@ -164,6 +164,12 @@ const CF_BEACON_TOKEN = import.meta.env.PUBLIC_CF_BEACON_TOKEN as
                 the same outline-pill idiom so they read as siblings,
                 not as a separate utility rail. */}
             <li class="nsb-nav__util">
+              <a href="/field-notes" aria-label="Essays">
+                <span class="nsb-nav__code" aria-hidden="true">&#x270e;</span>
+                <span class="nsb-nav__name">Essays</span>
+              </a>
+            </li>
+            <li class="nsb-nav__util">
               <a href="/search" aria-label="Search entries">
                 <span class="nsb-nav__code" aria-hidden="true">&#x2315;</span>
                 <span class="nsb-nav__name">Search</span>
@@ -205,6 +211,8 @@ const CF_BEACON_TOKEN = import.meta.env.PUBLIC_CF_BEACON_TOKEN as
         <nav class="nsb-footer__nav" aria-label="Utility">
           <a href="/about">About</a>
           <span class="nsb-footer__sep" aria-hidden="true">&middot;</span>
+          <a href="/field-notes">Essays</a>
+          <span class="nsb-footer__sep" aria-hidden="true">&middot;</span>
           <a href="/issues">Issues</a>
           <span class="nsb-footer__sep" aria-hidden="true">&middot;</span>
           <a href="/search">Search</a>
@@ -228,6 +236,8 @@ const CF_BEACON_TOKEN = import.meta.env.PUBLIC_CF_BEACON_TOKEN as
         justify-content: space-between;
         gap: var(--space-6);
         padding-block: var(--space-3);
+        max-width: none;
+        padding-inline: clamp(1rem, 3vw, 2.5rem);
       }
       .nsb-brand {
         display: inline-flex;
@@ -275,6 +285,7 @@ const CF_BEACON_TOKEN = import.meta.env.PUBLIC_CF_BEACON_TOKEN as
         padding: 6px 10px;
         border: 2px solid var(--color-surface);
         color: var(--color-yellow);
+        white-space: nowrap;
         transition: background var(--dur-fast) var(--ease),
                     color var(--dur-fast) var(--ease);
       }
@@ -364,6 +375,10 @@ const CF_BEACON_TOKEN = import.meta.env.PUBLIC_CF_BEACON_TOKEN as
       .nsb-nav li.nsb-nav__util:first-of-type {
         margin-left: var(--space-3);
       }
+      /* Wide screen: ✎ Field Notes pill — same width as Search/About */
+      .nsb-nav li.nsb-nav__util:first-of-type .nsb-nav__code {
+        font-size: var(--text-xs);
+      }
       .nsb-nav__util a {
         color: var(--color-surface);
       }
@@ -408,6 +423,10 @@ const CF_BEACON_TOKEN = import.meta.env.PUBLIC_CF_BEACON_TOKEN as
         .nsb-nav li.nsb-nav__util:first-of-type {
           margin-left: 0;
         }
+        /* Drop margin on all utility pills when the nav wraps. */
+        .nsb-nav li.nsb-nav__util {
+          margin-left: 0;
+        }
         /* Mobile: collapse utility pills (Search, About) to icon-only,
            same compaction the category pills use at this width. The
            nav glyph (⌕ / §) already sits in `.nsb-nav__code`; we just
@@ -427,15 +446,11 @@ const CF_BEACON_TOKEN = import.meta.env.PUBLIC_CF_BEACON_TOKEN as
            separate rail" reading. No override needed here — utility
            glyphs inherit the same xs size as category codes. */
 
-        /* Search pill only: bump the magnifying-glass glyph for
-           stronger visual presence — search is the primary
-           navigational affordance on mobile (where the wordmark
-           link is the only other option). `line-height: 1` keeps
-           the line-box bounded by the parent's xs line-height so
-           the pill stays the same height as its siblings; only the
-           rendered glyph grows. About (§) stays at xs because it's
-           a secondary affordance and shouldn't compete with search. */
-        .nsb-nav li.nsb-nav__util:first-of-type .nsb-nav__code {
+        /* Search pill (second utility): bump the magnifying-glass glyph for
+           stronger visual presence. `line-height: 1` keeps the line-box
+           bounded by the parent's xs line-height so the pill height matches
+           its siblings. About (§) stays at xs — secondary affordance. */
+        .nsb-nav li.nsb-nav__util:nth-of-type(2) .nsb-nav__code {
           font-size: 1.1rem;
           line-height: 1;
         }
