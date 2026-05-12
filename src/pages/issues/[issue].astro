@@ -33,6 +33,7 @@ import {
 } from "@/lib/issues";
 import type { IssueStatus } from "@/content/schemas/shared";
 import { ensureValidated } from "@/lib/validate";
+import { absoluteUrl, articleJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
 ensureValidated();
 
@@ -42,7 +43,7 @@ export const getStaticPaths: GetStaticPaths = () => {
   }));
 };
 
-const { issue } = Astro.params;
+const issue = String(Astro.params.issue ?? "");
 if (!issue) throw new Error("Issue route requires :issue param");
 const detail = getIssueDetail(issue);
 if (!detail) {
@@ -98,11 +99,38 @@ const ACCENT_CLASS: Record<string, string> = {
 const pageTitle = detail.meta?.title
   ? `${detail.label} — ${detail.meta.title}`
   : detail.label;
+const pageUrl = absoluteUrl(detail.href, Astro.site ?? Astro.url);
+const pageDescription = detail.meta?.summary ?? `Release notes for ${detail.label}.`;
+const issueStructuredData = [
+  breadcrumbJsonLd(
+    [
+      { name: "Home", path: "/" },
+      { name: "Issues", path: "/issues" },
+      { name: detail.label, path: detail.href },
+    ],
+    Astro.site ?? Astro.url,
+  ),
+  articleJsonLd({
+    site: Astro.site ?? Astro.url,
+    url: pageUrl,
+    title: pageTitle,
+    description: pageDescription,
+    datePublished: detail.meta?.releaseDate,
+    articleSection: "Issues",
+    keywords: ["Issues", "Release notes", detail.label],
+  }),
+];
 ---
 
 <BaseLayout
   title={pageTitle}
-  description={detail.meta?.summary ?? `Release notes for ${detail.label}.`}
+  description={pageDescription}
+  ogType="article"
+  publishedTime={detail.meta?.releaseDate}
+  modifiedTime={detail.meta?.releaseDate}
+  section="Issues"
+  tags={["Issues", "Release notes", detail.label]}
+  structuredData={issueStructuredData}
 >
   <div class="nsb-container nsb-issue-detail">
     {/* ── Issue masthead ─────────────────────────────────────────

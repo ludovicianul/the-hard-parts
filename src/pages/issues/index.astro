@@ -20,10 +20,27 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import { listAllIssues } from "@/lib/issues";
 import { ensureValidated } from "@/lib/validate";
+import { absoluteUrl, collectionPageJsonLd, itemListJsonLd } from "@/lib/seo";
 
 ensureValidated();
 
 const issues = listAllIssues();
+const pageUrl = absoluteUrl("/issues", Astro.site ?? Astro.url);
+const issuesStructuredData = [
+  collectionPageJsonLd({
+    site: Astro.site ?? Astro.url,
+    url: pageUrl,
+    name: "Issues",
+    description: "Public release notes for the reference. Each issue lists what was added, revised, or retired across the four catalogs.",
+  }),
+  itemListJsonLd(
+    issues.map((issue) => ({
+      name: issue.meta?.title ? `${issue.label}: ${issue.meta.title}` : issue.label,
+      path: issue.href,
+    })),
+    Astro.site ?? Astro.url,
+  ),
+];
 
 // Format release date the same way the homepage ribbon does, so
 // the two surfaces read the same way.
@@ -41,6 +58,7 @@ function fmtDate(iso: string | undefined): string | null {
 <BaseLayout
   title="Issues"
   description="Public release notes for the reference. Each issue lists what was added, revised, or retired across the four catalogs."
+  structuredData={issuesStructuredData}
 >
   <div class="nsb-container nsb-issues">
     {/* ── Editorial masthead ─────────────────────────────────────

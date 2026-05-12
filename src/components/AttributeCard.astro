@@ -43,7 +43,7 @@ export interface Props {
   };
 }
 
-const { title, description, scale, trendNote } = Astro.props;
+const { title, description, scale, trendNote } = Astro.props as Props;
 ---
 <li class="nsb-attr-card">
   <div class="nsb-attr-card__text">

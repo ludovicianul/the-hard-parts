@@ -11,7 +11,7 @@ import SectionHeader from "@/components/SectionHeader.astro";
 import SectionIndex from "@/components/SectionIndex.astro";
 import Tag from "@/components/Tag.astro";
 import WarningSignsByStage from "@/components/WarningSignsByStage.astro";
-import { loadFailureModes } from "@/lib/load";
+import { listEntries } from "@/lib/load";
 import { formatRefCode, resolveSlug } from "@/lib/resolve";
 import { ensureValidated } from "@/lib/validate";
 import type { FailureModeEntry } from "@/content/schemas/failure-mode";
@@ -27,11 +27,12 @@ import {
 
 export async function getStaticPaths() {
   ensureValidated();
-  return loadFailureModes().entries.map((e) => ({ params: { slug: e.slug } }));
+  return listEntries("FM").map((e) => ({ params: { slug: e.slug } }));
 }
 
 const { slug } = Astro.params;
-const entry: FailureModeEntry | undefined = loadFailureModes().entries.find(
+const allFm = listEntries("FM") as FailureModeEntry[];
+const entry: FailureModeEntry | undefined = allFm.find(
   (e) => e.slug === slug,
 );
 if (!entry) {
@@ -87,7 +88,7 @@ function capFirst(s: string | undefined | null): string {
   if (typeof s !== "string") return "";
   const trimmed = s.trimStart();
   if (trimmed.length === 0) return "";
-  return trimmed[0].toUpperCase() + trimmed.slice(1);
+  return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
 }
 function capItems(items: readonly string[] | undefined | null): string[] {
   if (!Array.isArray(items)) return [];
@@ -122,7 +123,6 @@ const easilyConfusedResolved = (entry.easilyConfusedWith ?? []).map((item) => ({
 // the pill on this masthead and the "FM-05 · Hero Trap" cell on every
 // page that links here are guaranteed to match. Rendered as the black
 // pill on the tabloid masthead and in the AT-A-GLANCE block below.
-const allFm = loadFailureModes().entries;
 const indexInFile = allFm.findIndex((e) => e.slug === entry.slug);
 const { refCode } = formatRefCode("FM", indexInFile, allFm.length);
 

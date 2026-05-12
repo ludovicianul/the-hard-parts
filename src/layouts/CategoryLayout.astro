@@ -5,6 +5,7 @@ import type { CategoryCode } from "@/content/schemas/shared";
 import { categoryByCode } from "@/lib/categories";
 import { categoryBlock, listEntries } from "@/lib/load";
 import { getCurrentIssue } from "@/lib/issues";
+import { absoluteUrl, collectionPageJsonLd, itemListJsonLd } from "@/lib/seo";
 
 export interface Props {
   code: CategoryCode;
@@ -32,6 +33,24 @@ const { code, tagline, heroTitle, dataStrip } = Astro.props;
 const desc = categoryByCode(code);
 const meta = categoryBlock(code);
 const accent = code.toLowerCase() as "fm" | "td" | "rf" | "ep";
+const entries = listEntries(code);
+const pagePath = `/${desc.route}`;
+const pageUrl = absoluteUrl(pagePath, Astro.site ?? Astro.url);
+const categoryStructuredData = [
+  collectionPageJsonLd({
+    site: Astro.site ?? Astro.url,
+    url: pageUrl,
+    name: desc.name,
+    description: meta.summary,
+  }),
+  itemListJsonLd(
+    entries.map((entry) => ({
+      name: entry.title,
+      path: `/${desc.route}/${entry.slug}`,
+    })),
+    Astro.site ?? Astro.url,
+  ),
+];
 
 // Issue pin in the masthead's right rail — data-derived from the
 // highest-numbered issue. Reads "Issue NN" to match the public-
@@ -41,12 +60,12 @@ const currentIssue = getCurrentIssue();
 const issueLabel = currentIssue ? currentIssue.label : "Issue";
 
 const defaultStrip = [
-  { label: "Entries", value: String(listEntries(code).length).padStart(2, "0"), variant: "yellow" as const },
+  { label: "Entries", value: String(entries.length).padStart(2, "0"), variant: "yellow" as const },
   { label: "Classes", value: String(meta.subcategories.length).padStart(2, "0"), variant: "blue" as const },
 ];
 const strip = dataStrip ?? defaultStrip;
 ---
-<BaseLayout title={desc.name} description={meta.summary} accent={accent}>
+<BaseLayout title={desc.name} description={meta.summary} accent={accent} structuredData={categoryStructuredData}>
   {/* Framed bright tabloid hero — three bands inside one heavy black frame:
       (1) masthead edition strip: CATEGORY · CODE
       (2) main row: display title on white + stat-card column on paper-alt

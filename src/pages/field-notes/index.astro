@@ -10,15 +10,33 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import Tag from "@/components/Tag.astro";
 import { listFieldNotes, formatFieldNoteDate } from "@/lib/field-notes";
 import { ensureValidated } from "@/lib/validate";
+import { absoluteUrl, collectionPageJsonLd, itemListJsonLd } from "@/lib/seo";
 
 ensureValidated();
 
 const notes = listFieldNotes();
+const pageUrl = absoluteUrl("/field-notes", Astro.site ?? Astro.url);
+const fieldNotesStructuredData = [
+  collectionPageJsonLd({
+    site: Astro.site ?? Astro.url,
+    url: pageUrl,
+    name: "Essays",
+    description: "Long-form articles that connect the dots across failure modes, red flags, tech decisions, and engineering playbooks.",
+  }),
+  itemListJsonLd(
+    notes.map((note) => ({
+      name: note.title,
+      path: `/field-notes/${note.slug}`,
+    })),
+    Astro.site ?? Astro.url,
+  ),
+];
 ---
 
 <BaseLayout
   title="Essays"
   description="Long-form articles that connect the dots across failure modes, red flags, tech decisions, and engineering playbooks."
+  structuredData={fieldNotesStructuredData}
 >
   <div class="nsb-container nsb-fn-index">
     {/* Editorial masthead — same strip pattern as /about and /issues */}

@@ -5,6 +5,7 @@ import RelatedEntries from "@/components/RelatedEntries.astro";
 import type { FieldNote } from "@/lib/field-notes";
 import { formatFieldNoteDate } from "@/lib/field-notes";
 import type { CategoryCode } from "@/content/schemas/shared";
+import { absoluteUrl, articleJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
 export interface Props {
   note: FieldNote;
@@ -12,6 +13,8 @@ export interface Props {
 
 const { note } = Astro.props;
 const displayDate = formatFieldNoteDate(note.date);
+const pagePath = `/field-notes/${note.slug}`;
+const pageUrl = absoluteUrl(pagePath, Astro.site ?? Astro.url);
 
 // Group reference slugs by category code for RelatedEntries blocks.
 const CATEGORY_ORDER: CategoryCode[] = ["FM", "TD", "RF", "EP"];
@@ -29,11 +32,37 @@ for (const ref of note.references) {
 const refGroups = CATEGORY_ORDER
   .filter((code) => refsByCode.has(code))
   .map((code) => ({ code, slugs: refsByCode.get(code)!, label: CATEGORY_LABELS[code] }));
+const noteStructuredData = [
+  breadcrumbJsonLd(
+    [
+      { name: "Home", path: "/" },
+      { name: "Essays", path: "/field-notes" },
+      { name: note.title, path: pagePath },
+    ],
+    Astro.site ?? Astro.url,
+  ),
+  articleJsonLd({
+    site: Astro.site ?? Astro.url,
+    url: pageUrl,
+    title: note.title,
+    description: note.summary,
+    image: `/og/essays/${note.slug}.png`,
+    datePublished: note.date,
+    articleSection: "Essays",
+    keywords: ["Essays", ...note.references.map((ref) => ref.title ?? ref.slug)],
+  }),
+];
 ---
 <BaseLayout
   title={note.title}
   description={note.summary}
   ogImage={`/og/essays/${note.slug}.png`}
+  ogType="article"
+  publishedTime={note.date}
+  modifiedTime={note.date}
+  section="Essays"
+  tags={["Essays", ...note.references.map((ref) => ref.title ?? ref.slug)]}
+  structuredData={noteStructuredData}
 >
   <article class="nsb-fn-shell">
     {/* Breadcrumbs */}

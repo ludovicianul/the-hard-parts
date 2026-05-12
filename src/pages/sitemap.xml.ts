@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { listEntries } from "@/lib/load";
 import { CATEGORIES, CATEGORY_ORDER } from "@/lib/categories";
-import { listAllIssues } from "@/lib/issues";
+import { getIssueMeta, listAllIssues, parseEditionNumber } from "@/lib/issues";
 import { ensureValidated } from "@/lib/validate";
 import { listFieldNotes } from "@/lib/field-notes";
 
@@ -38,29 +38,47 @@ export const GET: APIRoute = ({ site }) => {
     throw new Error("Astro `site` must be set for sitemap generation. See astro.config.mjs.");
   }
   const origin = site.toString().replace(/\/$/, "");
+  const escapeXml = (value: string) =>
+    value
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&apos;");
+  const entryLastmod = (edition: string): string | undefined => {
+    const issueNumber = parseEditionNumber(edition);
+    return issueNumber ? getIssueMeta(issueNumber)?.releaseDate : undefined;
+  };
+  const latest = (values: Array<string | undefined>): string | undefined =>
+    values.filter((v): v is string => Boolean(v)).sort().at(-1);
 
-  type Url = { loc: string; changefreq?: string; priority?: string };
+  type Url = { loc: string; changefreq?: string; priority?: string; lastmod?: string };
   const urls: Url[] = [];
+  const latestIssueDate = latest(listAllIssues().map((issue) => issue.meta?.releaseDate));
+  const latestFieldNoteDate = latest(listFieldNotes().map((note) => note.date));
+  const latestSiteDate = latest([latestIssueDate, latestFieldNoteDate]);
 
   // Homepage — front door, highest priority.
-  urls.push({ loc: `${origin}/`, changefreq: "weekly", priority: "1.0" });
+  urls.push({ loc: `${origin}/`, changefreq: "weekly", priority: "1.0", lastmod: latestSiteDate });
 
   // Supporting pages (About / Method + Search).
-  urls.push({ loc: `${origin}/about`,  changefreq: "monthly", priority: "0.5" });
-  urls.push({ loc: `${origin}/search`, changefreq: "monthly", priority: "0.5" });
+  urls.push({ loc: `${origin}/about`,  changefreq: "monthly", priority: "0.5", lastmod: latestSiteDate });
+  urls.push({ loc: `${origin}/search`, changefreq: "monthly", priority: "0.5", lastmod: latestSiteDate });
 
   // Issues archive — public release-notes index. Sits at "weekly"
   // so a crawler picks up new issues quickly when they ship; rated
   // below category landings since it is editorial-meta, not the
   // primary catalog surface.
-  urls.push({ loc: `${origin}/issues`, changefreq: "weekly", priority: "0.6" });
+  urls.push({ loc: `${origin}/issues`, changefreq: "weekly", priority: "0.6", lastmod: latestIssueDate });
 
   // Category landings.
   for (const code of CATEGORY_ORDER) {
+    const entries = listEntries(code);
     urls.push({
       loc: `${origin}/${CATEGORIES[code].route}`,
       changefreq: "weekly",
       priority: "0.9",
+      lastmod: latest(entries.map((entry) => entryLastmod(entry.edition))),
     });
   }
 
@@ -74,17 +92,19 @@ export const GET: APIRoute = ({ site }) => {
         loc: `${origin}/${CATEGORIES[code].route}/${e.slug}`,
         changefreq: "monthly",
         priority: "0.8",
+        lastmod: entryLastmod(e.edition),
       });
     }
   }
 
   // Field Notes archive + individual note pages.
-  urls.push({ loc: `${origin}/field-notes`, changefreq: "weekly", priority: "0.7" });
+  urls.push({ loc: `${origin}/field-notes`, changefreq: "weekly", priority: "0.7", lastmod: latestFieldNoteDate });
   for (const note of listFieldNotes()) {
     urls.push({
       loc: `${origin}/field-notes/${note.slug}`,
       changefreq: "monthly",
       priority: "0.7",
+      lastmod: note.date,
     });
   }
 
@@ -97,6 +117,7 @@ export const GET: APIRoute = ({ site }) => {
       loc: `${origin}${issue.href}`,
       changefreq: "monthly",
       priority: "0.5",
+      lastmod: issue.meta?.releaseDate,
     });
   }
 
@@ -107,7 +128,8 @@ export const GET: APIRoute = ({ site }) => {
       .map(
         (u) =>
           `  <url>\n` +
-          `    <loc>${u.loc}</loc>\n` +
+          `    <loc>${escapeXml(u.loc)}</loc>\n` +
+          (u.lastmod ? `    <lastmod>${u.lastmod}</lastmod>\n` : "") +
           (u.changefreq ? `    <changefreq>${u.changefreq}</changefreq>\n` : "") +
           (u.priority ? `    <priority>${u.priority}</priority>\n` : "") +
           `  </url>`,

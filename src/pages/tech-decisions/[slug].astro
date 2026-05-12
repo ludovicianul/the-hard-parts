@@ -36,7 +36,7 @@ import RelatedEntries from "@/components/RelatedEntries.astro";
 import SectionHeader from "@/components/SectionHeader.astro";
 import SectionIndex from "@/components/SectionIndex.astro";
 import Tag from "@/components/Tag.astro";
-import { loadTechDecisions } from "@/lib/load";
+import { listEntries } from "@/lib/load";
 import { formatRefCode, resolveSlug } from "@/lib/resolve";
 import { ensureValidated } from "@/lib/validate";
 import type { TechDecisionEntry } from "@/content/schemas/tech-decision";
@@ -53,11 +53,11 @@ import {
 
 export async function getStaticPaths() {
   ensureValidated();
-  return loadTechDecisions().entries.map((e) => ({ params: { slug: e.slug } }));
+  return listEntries("TD").map((e) => ({ params: { slug: e.slug } }));
 }
 
 const { slug } = Astro.params;
-const allTd = loadTechDecisions().entries;
+const allTd = listEntries("TD") as TechDecisionEntry[];
 const entry: TechDecisionEntry | undefined = allTd.find((e) => e.slug === slug);
 if (!entry) {
   throw new Error(`Tech Decision not found for slug "${slug}"`);
@@ -149,7 +149,7 @@ function capFirst(s: string | undefined | null): string {
   if (typeof s !== "string") return "";
   const trimmed = s.trimStart();
   if (trimmed.length === 0) return "";
-  return trimmed[0].toUpperCase() + trimmed.slice(1);
+  return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
 }
 function capItems(items: readonly string[] | undefined | null): string[] {
   if (!Array.isArray(items)) return [];

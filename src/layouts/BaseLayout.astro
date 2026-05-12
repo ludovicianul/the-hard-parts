@@ -1,6 +1,15 @@
 ---
 import "@/styles/globals.css";
 import { CATEGORIES, CATEGORY_ORDER } from "@/lib/categories";
+import type { JsonLd } from "@/lib/seo";
+import {
+  DEFAULT_OG_IMAGE_ALT,
+  SITE_AUTHOR,
+  jsonLdGraph,
+  organizationJsonLd,
+  webPageJsonLd,
+  webSiteJsonLd,
+} from "@/lib/seo";
 
 export interface Props {
   title: string;
@@ -16,9 +25,28 @@ export interface Props {
    * one strong card is better than dozens of weak ones.
    */
   ogImage?: string;
+  ogType?: "website" | "article";
+  noIndex?: boolean;
+  publishedTime?: string;
+  modifiedTime?: string;
+  section?: string;
+  tags?: string[];
+  structuredData?: JsonLd | JsonLd[];
 }
 
-const { title, description, accent, ogImage } = Astro.props;
+const {
+  title,
+  description,
+  accent,
+  ogImage,
+  ogType = "website",
+  noIndex = false,
+  publishedTime,
+  modifiedTime,
+  section,
+  tags = [],
+  structuredData,
+} = Astro.props;
 
 /**
  * Nav-only display override for category names.
@@ -42,6 +70,9 @@ const SITE_TAGLINE =
   "The Hard Parts. An engineering reference for recurring software failures, warning signals, hard decisions, and practical playbooks.";
 const fullTitle = title === SITE_NAME ? title : `${title} · ${SITE_NAME}`;
 const metaDescription = description ?? SITE_TAGLINE;
+const robotsContent = noIndex
+  ? "noindex,follow"
+  : "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1";
 
 // Canonical URL computed from the build-time origin + the current
 // request path. Safe even when the origin is a file:// build (Astro
@@ -59,6 +90,22 @@ const ogImageUrl = new URL(
   ogImage ?? "/og-default.png",
   Astro.site ?? Astro.url,
 ).toString();
+const suppliedStructuredData = structuredData
+  ? Array.isArray(structuredData)
+    ? structuredData
+    : [structuredData]
+  : [];
+const schemaGraph = jsonLdGraph([
+  organizationJsonLd(Astro.site ?? Astro.url),
+  webSiteJsonLd(Astro.site ?? Astro.url),
+  webPageJsonLd({
+    site: Astro.site ?? Astro.url,
+    url: canonicalUrl,
+    name: fullTitle,
+    description: metaDescription,
+  }),
+  ...suppliedStructuredData,
+]);
 
 // Cloudflare Web Analytics beacon token.
 //   · Read at build time from the `PUBLIC_CF_BEACON_TOKEN` env var.
@@ -82,27 +129,40 @@ const CF_BEACON_TOKEN = import.meta.env.PUBLIC_CF_BEACON_TOKEN as
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={metaDescription} />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content={robotsContent} />
+    <meta name="author" content={SITE_AUTHOR} />
+    <meta name="application-name" content="The Hard Parts" />
+    <meta name="apple-mobile-web-app-title" content="The Hard Parts" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" content="#1a1a1a" />
     <link rel="canonical" href={canonicalUrl} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="mask-icon" href="/favicon.svg" color="#1a1a1a" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="alternate" type="application/rss+xml" title="The Hard Parts feed" href="/feed.xml" />
 
     {/* OpenGraph — social / link-preview card. Shared default
         editorial card at /og-default.png (1200×630, rasterized from
         /og-default.svg by `npm run og`). The same PNG is used for
         Twitter/X via summary_large_image, LinkedIn, Slack, and
         Facebook — social platforms all require raster (no SVG). */}
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={metaDescription} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:locale" content="en_US" />
     <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:secure_url" content={ogImageUrl} />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="The Hard Parts. An engineering reference. Failure modes. Red flags. Trade-offs. Playbooks." />
+    <meta property="og:image:alt" content={DEFAULT_OG_IMAGE_ALT} />
+    {ogType === "article" && publishedTime && <meta property="article:published_time" content={publishedTime} />}
+    {ogType === "article" && (modifiedTime ?? publishedTime) && <meta property="article:modified_time" content={modifiedTime ?? publishedTime} />}
+    {ogType === "article" && section && <meta property="article:section" content={section} />}
+    {ogType === "article" && tags.map((tag) => <meta property="article:tag" content={tag} />)}
 
     {/* Twitter / X — upgraded to summary_large_image to render the
         full editorial card rather than a thumbnail. Same image as OG. */}
@@ -110,7 +170,9 @@ const CF_BEACON_TOKEN = import.meta.env.PUBLIC_CF_BEACON_TOKEN as
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={metaDescription} />
     <meta name="twitter:image" content={ogImageUrl} />
-    <meta name="twitter:image:alt" content="The Hard Parts. An engineering reference. Failure modes. Red flags. Trade-offs. Playbooks." />
+    <meta name="twitter:image:alt" content={DEFAULT_OG_IMAGE_ALT} />
+
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(schemaGraph)} />
 
     {/* Cloudflare Web Analytics — privacy-friendly, cookie-less,
         free on all Cloudflare accounts. Emitted only when the
@@ -216,6 +278,8 @@ const CF_BEACON_TOKEN = import.meta.env.PUBLIC_CF_BEACON_TOKEN as
           <a href="/issues">Issues</a>
           <span class="nsb-footer__sep" aria-hidden="true">&middot;</span>
           <a href="/search">Search</a>
+          <span class="nsb-footer__sep" aria-hidden="true">&middot;</span>
+          <a href="/feed.xml">RSS</a>
           <span class="nsb-footer__sep" aria-hidden="true">&middot;</span>
           <a href="/sitemap.xml">Sitemap</a>
         </nav>

@@ -3,6 +3,7 @@ import BaseLayout from "./BaseLayout.astro";
 import Tag from "@/components/Tag.astro";
 import type { CategoryCode } from "@/content/schemas/shared";
 import { categoryByCode } from "@/lib/categories";
+import { absoluteUrl, articleJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 
 export interface Props {
   code: CategoryCode;
@@ -21,12 +22,39 @@ export interface Props {
 const { code, title, summary, subcategory, description, refCode, slug } = Astro.props;
 const desc = categoryByCode(code);
 const accent = code.toLowerCase() as "fm" | "td" | "rf" | "ep";
+const pagePath = slug ? `/${desc.route}/${slug}` : `/${desc.route}`;
+const pageUrl = absoluteUrl(pagePath, Astro.site ?? Astro.url);
+const detailDescription = description ?? summary ?? "";
+const detailStructuredData = [
+  breadcrumbJsonLd(
+    [
+      { name: "Home", path: "/" },
+      { name: desc.name, path: `/${desc.route}` },
+      { name: title, path: pagePath },
+    ],
+    Astro.site ?? Astro.url,
+  ),
+  articleJsonLd({
+    site: Astro.site ?? Astro.url,
+    url: pageUrl,
+    title,
+    description: detailDescription,
+    image: slug ? `/og/${desc.route}/${slug}.png` : undefined,
+    articleSection: desc.name,
+    keywords: [desc.name, subcategory, refCode].filter((v): v is string => Boolean(v)),
+    type: "TechArticle",
+  }),
+];
 ---
 <BaseLayout
   title={title}
-  description={description ?? summary}
+  description={detailDescription}
   accent={accent}
   ogImage={slug ? `/og/${desc.route}/${slug}.png` : undefined}
+  ogType="article"
+  section={desc.name}
+  tags={[desc.name, subcategory, refCode].filter((v): v is string => Boolean(v))}
+  structuredData={detailStructuredData}
 >
   <article class="nsb-detail-shell">
     {/* Breadcrumbs row on paper — small, mono, uppercase. */}

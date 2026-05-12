@@ -29,7 +29,7 @@ export const getStaticPaths: GetStaticPaths = () => {
   return listFieldNoteSlugs().map((slug) => ({ params: { slug } }));
 };
 
-const { slug } = Astro.params;
+const slug = String(Astro.params.slug ?? "");
 if (!slug) throw new Error("Field Notes detail route requires :slug param");
 
 const note = getFieldNote(slug);
