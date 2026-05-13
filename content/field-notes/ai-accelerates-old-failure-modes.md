@@ -2,7 +2,7 @@
 title: AI Accelerates Old Failure Modes
 slug: ai-accelerates-old-failure-modes
 date: 2026-05-13
-summary: AI did not invent the ordinary gaps in software delivery: incomplete specifications, rushed reviews, unclear ownership, or architecture that is harder to explain than we would like. It made those gaps easier to carry forward into working code. This is why engineering judgment matters more than ever.
+summary: AI did not invent the ordinary gaps in software delivery: incomplete specifications, rushed reviews unclear ownership, or architecture that is harder to explain than we would like. It made those gaps easier to carry forward into working code. This is why engineering judgment matters more than ever.
 references:
   - code: FM
     slug: autocomplete-architecture
